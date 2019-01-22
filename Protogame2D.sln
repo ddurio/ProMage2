@@ -4,8 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Protogame2D", "Code\Game\Game.vcxproj", "{346BCA20-3FE3-4269-88D5-E52E0135E2A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4E996EE2-BE3A-465C-AEAF-405F3E769496} = {4E996EE2-BE3A-465C-AEAF-405F3E769496}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "..\Engine\Code\Engine\Engine.vcxproj", "{4E996EE2-BE3A-465C-AEAF-405F3E769496}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Code\Submodule\Engine\Code\Engine\Engine.vcxproj", "{4E996EE2-BE3A-465C-AEAF-405F3E769496}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
