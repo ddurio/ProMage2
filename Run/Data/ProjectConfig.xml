@@ -1,0 +1,6 @@
+<ProjectConfig
+    name="Protogame2D"
+    fullscreen="false"
+    resolution="1920,1080"
+    defaultFont="SquirrelFixedFont"
+/>
