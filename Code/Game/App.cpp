@@ -19,6 +19,7 @@ InputSystem* g_theInput;
 RenderContext* g_theRenderer;
 RNG* g_RNG;
 
+extern void* g_hWnd;
 
 App::App() {
 
@@ -38,7 +39,7 @@ void App::Startup() {
     g_theAudio      = new AudioSystem();
     g_RNG           = new RNG();
 
-    g_theRenderer->Startup();
+    g_theRenderer->Startup( g_hWnd );
     g_theInput->Startup();
     g_theAudio->Startup();
 

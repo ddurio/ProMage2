@@ -12,7 +12,8 @@
 //-----------------------------------------------------------------------------------------------
 // #SD1ToDo: Move each of these items to its proper place, once that place is established
 // 
-HWND g_hWnd = nullptr;							// ...becomes WindowContext::m_windowHandle
+HWND hWnd = nullptr;							// ...becomes WindowContext::m_windowHandle
+void* g_hWnd = nullptr;
 HDC g_displayDeviceContext = nullptr;			// ...becomes WindowContext::m_displayContext
 const char* APP_NAME = "Protogame2D (ddurio)";	// ...becomes ???
 NamedStrings g_theGameConfigBlackboard;
@@ -55,7 +56,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 //-----------------------------------------------------------------------------------------------
 // #SD1ToDo: We will move this function to a more appropriate place later on...
 //
-void CreateOpenGLWindow( HINSTANCE applicationInstanceHandle, float clientAspect ) {
+void CreateNewWindow( HINSTANCE applicationInstanceHandle, float clientAspect ) {
 	// Define a window style/class
 	WNDCLASSEX windowClassDescription;
 	memset( &windowClassDescription, 0, sizeof( windowClassDescription ) );
@@ -107,7 +108,7 @@ void CreateOpenGLWindow( HINSTANCE applicationInstanceHandle, float clientAspect
 
 	WCHAR windowTitle[1024];
 	MultiByteToWideChar( GetACP(), 0, APP_NAME, -1, windowTitle, sizeof( windowTitle ) / sizeof( windowTitle[0] ) );
-	g_hWnd = CreateWindowEx(
+	hWnd = CreateWindowEx(
 		windowStyleExFlags,
 		windowClassDescription.lpszClassName,
 		windowTitle,
@@ -121,30 +122,13 @@ void CreateOpenGLWindow( HINSTANCE applicationInstanceHandle, float clientAspect
 		applicationInstanceHandle,
 		NULL );
 
-	ShowWindow( g_hWnd, SW_SHOW );
-	SetForegroundWindow( g_hWnd );
-	SetFocus( g_hWnd );
+	ShowWindow( hWnd, SW_SHOW );
+	SetForegroundWindow( hWnd );
+	SetFocus( hWnd );
 
-	g_displayDeviceContext = GetDC( g_hWnd );
 
 	HCURSOR cursor = LoadCursor( NULL, IDC_ARROW );
 	SetCursor( cursor );
-
-	PIXELFORMATDESCRIPTOR pixelFormatDescriptor;
-	memset( &pixelFormatDescriptor, 0, sizeof( pixelFormatDescriptor ) );
-	pixelFormatDescriptor.nSize = sizeof( pixelFormatDescriptor );
-	pixelFormatDescriptor.nVersion = 1;
-	pixelFormatDescriptor.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
-	pixelFormatDescriptor.cColorBits = 24;
-	pixelFormatDescriptor.cDepthBits = 24;
-	pixelFormatDescriptor.cAccumBits = 0;
-	pixelFormatDescriptor.cStencilBits = 8;
-
-	int pixelFormatCode = ChoosePixelFormat( g_displayDeviceContext, &pixelFormatDescriptor );
-	SetPixelFormat( g_displayDeviceContext, pixelFormatCode, &pixelFormatDescriptor );
-	HGLRC openGLRenderingContext = wglCreateContext( g_displayDeviceContext ); //SD1Fixme: Started as g_openGLRenderingContext, should become RenderContext::m_apiRenderingContext eventually
-	wglMakeCurrent( g_displayDeviceContext, openGLRenderingContext );
 }
 
 
@@ -188,7 +172,9 @@ void Startup( HINSTANCE applicationInstanceHandle ) {
     GUARANTEE_OR_DIE( root != nullptr, "Poorly constructed XML file" );
     g_theGameConfigBlackboard.SetFromXMLElementAttributes(*root->ToElement() );
 
-	CreateOpenGLWindow( applicationInstanceHandle, CLIENT_ASPECT );
+	CreateNewWindow( applicationInstanceHandle, CLIENT_ASPECT );
+
+    g_hWnd = hWnd;
 	g_theApp = new App();
 	g_theApp->Startup();
 }

@@ -69,13 +69,22 @@ void Game::Update( float deltaSeconds ) {
 void Game::Render() const {
     Camera activeCamera = GetActiveCamera();
     g_theRenderer->BeginCamera( activeCamera );
-    g_theRenderer->ClearScreen( Rgba::BLUE );
 
+    // TODO: Remove after changing to D3D11
+    Rgba colors[] = { Rgba::RED, Rgba::GREEN, Rgba::BLUE };
+    int colorIndex = (int)(fmod( GetCurrentTimeSeconds(), 3 ));
+
+    g_theRenderer->ClearScreen( colors[colorIndex] );
+    // Remove up to here
+
+    /* TODO: Uncomment after changing to D3D11
+    g_theRenderer->ClearScreen( Rgba::BLUE );
     if( m_onAttractScreen ) {
         RenderAttractScreen();
     } else {
         RenderGame();
     }
+    */
 
     g_theRenderer->EndCamera( activeCamera );
 }
