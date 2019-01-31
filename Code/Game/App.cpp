@@ -118,7 +118,7 @@ void App::Update() {
 
 
 void App::Render() const {
-    g_theRenderer->ClearScreen( Rgba( 0.f, 0.f, 0.f, 1.f ) );
+    g_theRenderer->ClearColorTarget( Rgba( 0.f, 0.f, 0.f, 1.f ) );
 
     g_theGame->Render();
 

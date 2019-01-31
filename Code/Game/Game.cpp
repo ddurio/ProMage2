@@ -15,6 +15,7 @@
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/ColorTargetView.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteAnimDef.hpp"
 #include "Engine/Renderer/SpriteDef.hpp"
@@ -68,17 +69,26 @@ void Game::Update( float deltaSeconds ) {
 
 void Game::Render() const {
     Camera activeCamera = GetActiveCamera();
+
+    // Only necessary if something other than the back buffer is used
+    /*
+    ColorTargetView* targetView = g_theRenderer->GetNewColorTarget();
+    activeCamera.SetColorTarget( nullptr );
+    */
+
     g_theRenderer->BeginCamera( activeCamera );
 
     // TODO: Remove after changing to D3D11
     Rgba colors[] = { Rgba::RED, Rgba::GREEN, Rgba::BLUE };
     int colorIndex = (int)(fmod( GetCurrentTimeSeconds(), 3 ));
 
-    g_theRenderer->ClearScreen( colors[colorIndex] );
+    g_theRenderer->ClearColorTarget( colors[colorIndex] );
+    g_theRenderer->BindShader( nullptr );
+    g_theRenderer->DrawVertexArray( 3, nullptr, DRAW_MODE_ALPHA ); // This line is bogus, but necessary right now
     // Remove up to here
 
     /* TODO: Uncomment after changing to D3D11
-    g_theRenderer->ClearScreen( Rgba::BLUE );
+    g_theRenderer->ClearColorTarget( Rgba::BLUE );
     if( m_onAttractScreen ) {
         RenderAttractScreen();
     } else {
