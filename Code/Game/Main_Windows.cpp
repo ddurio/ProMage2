@@ -15,7 +15,7 @@
 HWND hWnd = nullptr;							// ...becomes WindowContext::m_windowHandle
 void* g_hWnd = nullptr;
 HDC g_displayDeviceContext = nullptr;			// ...becomes WindowContext::m_displayContext
-const char* APP_NAME = "Protogame2D (ddurio)";	// ...becomes ???
+const char* APP_NAME = "RTS (ddurio)";	// ...becomes ???
 NamedStrings g_theGameConfigBlackboard;
 
 
