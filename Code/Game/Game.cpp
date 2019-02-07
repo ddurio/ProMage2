@@ -49,6 +49,11 @@ void Game::Startup() {
 
 
 void Game::Shutdown() {
+    delete m_playerCamera;
+    m_playerCamera = nullptr;
+
+    delete m_debugCamera;
+    m_debugCamera = nullptr;
 }
 
 
@@ -68,7 +73,7 @@ void Game::Update( float deltaSeconds ) {
 
 
 void Game::Render() const {
-    Camera activeCamera = GetActiveCamera();
+    Camera* activeCamera = GetActiveCamera();
 
     // Only necessary if something other than the back buffer is used
     /*
@@ -171,9 +176,9 @@ void Game::ReturnToAttractScreen() {
 }
 
 
-const Camera& Game::GetActiveCamera() const {
+Camera* Game::GetActiveCamera() const {
     Camera* activeCamera = m_useDebugCamera ? m_debugCamera : m_playerCamera;
-    return *activeCamera;
+    return activeCamera;
 }
 
 
@@ -391,8 +396,8 @@ void Game::UpdateCameraShake( float deltaSeconds ) {
 
     float randomX = g_RNG->GetRandomFloatInRange( 0.f, m_cameraShakeAmount );
     float randomY = g_RNG->GetRandomFloatInRange( 0.f, m_cameraShakeAmount );
-    Camera activeCamera = GetActiveCamera();
-    activeCamera.Translate2D( Vec2( randomX, randomY ) );
+    Camera* activeCamera = GetActiveCamera();
+    activeCamera->Translate2D( Vec2( randomX, randomY ) );
 }
 
 

@@ -26,7 +26,7 @@ class Game {
 
     void ReturnToAttractScreen();
 
-    const Camera& GetActiveCamera() const;
+    Camera* GetActiveCamera() const;
 
     bool HasGameBeenBeaten() const;
 
