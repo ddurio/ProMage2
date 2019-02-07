@@ -84,8 +84,12 @@ void Game::Render() const {
 
     g_theRenderer->ClearColorTarget( colors[colorIndex] );
     g_theRenderer->BindShader( nullptr );
-    g_theRenderer->DrawVertexArray( 3, nullptr, DRAW_MODE_ALPHA ); // This line is bogus, but necessary right now
+
+    VertexList testVerts;
+    AddVertsForAABB2D( testVerts, AABB2( Vec2::ZERO, Vec2( 200, 100 ) ), Rgba::WHITE );
+    g_theRenderer->DrawVertexArray( testVerts );
     // Remove up to here
+
 
     /* TODO: Uncomment after changing to D3D11
     g_theRenderer->ClearColorTarget( Rgba::BLUE );
