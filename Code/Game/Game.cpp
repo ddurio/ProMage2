@@ -84,6 +84,7 @@ void Game::Render() const {
     g_theRenderer->BeginCamera( activeCamera );
 
     // TODO: Remove after changing to D3D11
+    /*
     Rgba colors[] = { Rgba::RED, Rgba::GREEN, Rgba::BLUE };
     int colorIndex = (int)(fmod( GetCurrentTimeSeconds(), 3 ));
 
@@ -91,19 +92,21 @@ void Game::Render() const {
     g_theRenderer->BindShader( nullptr );
 
     VertexList testVerts;
-    AddVertsForAABB2D( testVerts, AABB2( Vec2::ZERO, Vec2( 200, 100 ) ), Rgba::WHITE );
+    AddVertsForAABB2D( testVerts, AABB2( Vec2::ZERO, Vec2( 200, 100 ) ), Rgba::YELLOW );
+    g_theRenderer->BindTexture( "" );
     g_theRenderer->DrawVertexArray( testVerts );
+    RenderTexture( 0 );
+    */
     // Remove up to here
 
 
-    /* TODO: Uncomment after changing to D3D11
+    // TODO: Uncomment after changing to D3D11
     g_theRenderer->ClearColorTarget( Rgba::BLUE );
     if( m_onAttractScreen ) {
         RenderAttractScreen();
     } else {
         RenderGame();
     }
-    */
 
     g_theRenderer->EndCamera( activeCamera );
 }
@@ -209,7 +212,7 @@ void Game::StartupParseXMLTests() {
     //const char* projectName = root->ToElement()->Attribute( "name" );
     std::string projectName = ParseXMLAttribute( *root->ToElement(), "name", "NAME NOT FOUND" );
 
-    const BitmapFont* font =  g_theRenderer->CreateOrGetBitmapFontFromFile( FONT_NAME_SQUIRREL );
+    const BitmapFont* font =  g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
     float cellHeight = 1.5f;
     Vec2 textStart( 100.f, 97.f );
     font->AddVertsForText2D( m_xmlVerts, textStart, cellHeight, Stringf( "- Root: name = %s", projectName.c_str() ) );
@@ -217,10 +220,9 @@ void Game::StartupParseXMLTests() {
 
     // Display, fullscreen, resolution: testing bool and IntVec2
     XMLElement* display = root->FirstChildElement( "display" );
-    //bool isFullscreen = display->BoolAttribute( "fullscreen" );
     bool isFullscreen = ParseXMLAttribute( *display, "fullscreen", false );
-    //IntVec2 resolution( display->Attribute( "resolution" ) );
     IntVec2 resolution = ParseXMLAttribute( *display, "resolution", IntVec2(-1, -1) );
+
     font->AddVertsForText2D( m_xmlVerts, textStart, cellHeight, Stringf( "   - Display: fullscreen = %d, resolution = %s", isFullscreen, resolution.GetAsString().c_str() ) );
     textStart.y -= 3.f;
 
@@ -454,8 +456,7 @@ void Game::RenderGame() const {
 
 
 void Game::RenderTexture( int desktopID ) const {
-    Texture* testTexture = g_theRenderer->CreateOrGetTextureFromFile( TEXTURE_STBI_TEST );
-    g_theRenderer->BindTexture( testTexture );
+    g_theRenderer->BindTexture( TEXTURE_STBI_TEST );
 
     AABB2 box1Bounds = AABB2( Vec2( 50.f, 50.f ), Vec2( 100.f, 100.f ) );
     std::vector<Vertex_PCU> boxVerts;
@@ -467,8 +468,8 @@ void Game::RenderTexture( int desktopID ) const {
 
 
 void Game::RenderSpriteAnimations( int desktopID ) const {
-    Texture* testTexture2 = g_theRenderer->CreateOrGetTextureFromFile( TEXTURE_ANIMATION_TEST );
-    SpriteSheet spriteSheet = SpriteSheet( testTexture2, IntVec2( 8, 2 ) );
+    g_theRenderer->CreateTexture( TEXTURE_ANIMATION_TEST );
+    SpriteSheet spriteSheet = SpriteSheet( TEXTURE_ANIMATION_TEST, IntVec2( 8, 2 ) );
 
     Vec2 uvBL;
     Vec2 uvTR;
@@ -482,9 +483,6 @@ void Game::RenderSpriteAnimations( int desktopID ) const {
     AABB2 spriteBox = AABB2( Vec2( 0.f, 0.f ), Vec2( 10.f, 20.f ) );
     AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
 
-    //g_theRenderer->BindTexture( testTexture2 );
-    //g_theRenderer->DrawVertexArray( spriteVerts );
-
     // Loop Animations
     SpriteAnimDef* loopAnimation = new SpriteAnimDef( spriteSheet, 0, 15, 16.f, SPRITE_ANIM_PLAYBACK_LOOP );
     spriteDef = loopAnimation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
@@ -492,8 +490,6 @@ void Game::RenderSpriteAnimations( int desktopID ) const {
     spriteDef.GetUVs( uvBL, uvTR );
     spriteBox = AABB2( Vec2( 10.f, 0.f ), Vec2( 20.f, 20.f ) );
     AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
-    //g_theRenderer->BindTexture( testTexture2 );
-    //g_theRenderer->DrawVertexArray( (int)spriteVerts.size(), spriteVerts.data() );
 
     // PingPong Animations
     SpriteAnimDef* pingPongAnimation = new SpriteAnimDef( spriteSheet, 0, 15, 16.f, SPRITE_ANIM_PLAYBACK_PINGPONG );
@@ -504,7 +500,7 @@ void Game::RenderSpriteAnimations( int desktopID ) const {
     AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
 
     TransformVertexArrayToDesktop( desktopID, 1, spriteVerts.size(), spriteVerts.data() );
-    g_theRenderer->BindTexture( testTexture2 );
+    g_theRenderer->BindTexture( TEXTURE_ANIMATION_TEST );
     g_theRenderer->DrawVertexArray( spriteVerts );
 }
 
@@ -517,7 +513,7 @@ void Game::RenderTextInBox( int desktopID ) const {
 
 
 void Game::RenderTextAlignment( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFontFromFile( FONT_NAME_SQUIRREL );
+    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
 
     std::vector<Vertex_PCU> textVerts;
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
@@ -551,16 +547,16 @@ void Game::RenderTextAlignment( int desktopID ) const {
 
     TransformVertexArrayToDesktop( desktopID, 2, boxVerts.size(), boxVerts.data(), textVerts.size(), textVerts.data() );
 
-    g_theRenderer->BindTexture( nullptr );
+    g_theRenderer->BindTexture( "" );
     g_theRenderer->DrawVertexArray( boxVerts );
 
-    g_theRenderer->BindTexture( font->GetTexture() );
+    g_theRenderer->BindTexture( font->GetTexturePath() );
     g_theRenderer->DrawVertexArray( textVerts );
 }
 
 
 void Game::RenderTextDrawMode( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFontFromFile( FONT_NAME_SQUIRREL );
+    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
 
     std::vector<Vertex_PCU> textVerts;
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
@@ -587,16 +583,16 @@ void Game::RenderTextDrawMode( int desktopID ) const {
 
     TransformVertexArrayToDesktop( desktopID, 2, boxVerts.size(), boxVerts.data(), textVerts.size(), textVerts.data() );
 
-    g_theRenderer->BindTexture( nullptr );
+    g_theRenderer->BindTexture( "" );
     g_theRenderer->DrawVertexArray( boxVerts );
 
-    g_theRenderer->BindTexture( font->GetTexture() );
+    g_theRenderer->BindTexture( font->GetTexturePath() );
     g_theRenderer->DrawVertexArray( textVerts );
 }
 
 
 void Game::RenderTextMultiLine( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFontFromFile( FONT_NAME_SQUIRREL );
+    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
 
     std::vector<Vertex_PCU> textVerts;
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
@@ -633,20 +629,20 @@ void Game::RenderTextMultiLine( int desktopID ) const {
 
     TransformVertexArrayToDesktop( desktopID, 2, boxVerts.size(), boxVerts.data(), textVerts.size(), textVerts.data() );
 
-    g_theRenderer->BindTexture( nullptr );
+    g_theRenderer->BindTexture( "" );
     g_theRenderer->DrawVertexArray( boxVerts );
 
-    g_theRenderer->BindTexture( font->GetTexture() );
+    g_theRenderer->BindTexture( font->GetTexturePath() );
     g_theRenderer->DrawVertexArray( textVerts );
 }
 
 
 void Game::RenderXML( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFontFromFile( FONT_NAME_SQUIRREL );
+    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
     std::vector<Vertex_PCU> verts = m_xmlVerts;
 
     TransformVertexArrayToDesktop( desktopID, 1, verts.size(), verts.data() );
-    g_theRenderer->BindTexture( font->GetTexture() );
+    g_theRenderer->BindTexture( font->GetTexturePath() );
     g_theRenderer->DrawVertexArray( verts );
 }
 
