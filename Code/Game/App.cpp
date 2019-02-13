@@ -85,55 +85,16 @@ void App::RunFrame() {
 }
 
 
-void App::BeginFrame() {
-    g_theInput->BeginFrame();
-    g_theRenderer->BeginFrame();
-    g_theAudio->BeginFrame();
-    g_theDevConsole->BeginFrame();
-}
-
-
-void App::EndFrame() {
-    g_theInput->EndFrame();
-    g_theRenderer->EndFrame();
-    g_theAudio->EndFrame();
-    g_theDevConsole->EndFrame();
-}
-
-
-void App::Update() {
-    double currentTime = GetCurrentTimeSeconds();
-    float deltaSeconds = (float)(currentTime - m_timeLastFrame);
-    m_timeLastFrame = currentTime;
-    deltaSeconds = ClampFloat( deltaSeconds, 0.f, APP_MAX_DELTA_SECONDS );
-
-    if( m_isSlowMo ) {
-        deltaSeconds /= 10.f;
-    } else if( m_isFastMo ) {
-        deltaSeconds *= 4.f;
-    }
-
-    g_theGame->Update( deltaSeconds );
-}
-
-
-void App::Render() const {
-    g_theRenderer->ClearColorTarget( Rgba( 0.f, 0.f, 0.f, 1.f ) );
-
-    g_theGame->Render();
-
-    g_theDevConsole->Render( g_theRenderer, g_theGame->GetActiveCamera(), 2.f );
-}
-
-
 bool App::HandleKeyPressed( unsigned char keyCode ) {
     if( g_theDevConsole->IsTakingInput() ) {
-        if( !g_theDevConsole->HandleKeyPressed( keyCode ) ) {
+        bool consoleHandled = g_theDevConsole->HandleKeyPressed( keyCode );
+
+        if( consoleHandled ) { // If console didn't handle it, keep passing it on
             return true;
         }
     }
 
-    //g_theDevConsole->PrintString( Stringf( "KeyCode pressed: %x", keyCode ) );
+    g_theDevConsole->PrintString( Stringf( "KeyCode pressed: %x", keyCode ) );
 
     switch( keyCode ) {
         case(0x1B): {  // Escape Key
@@ -176,7 +137,64 @@ bool App::HandleKeyReleased( unsigned char keyCode ) {
 }
 
 
+bool App::HandleCharTyped( unsigned char character ) {
+    if( g_theDevConsole->IsTakingInput() ) {
+        return g_theDevConsole->HandleCharTyped( character );
+    }
+
+    return false;
+}
+
+
 bool App::HandleQuitRequested() {
     m_isQuitting = true;
     return 0;
 }
+
+
+bool App::IsQuitting() const {
+    return m_isQuitting;
+}
+
+
+void App::BeginFrame() {
+    g_theInput->BeginFrame();
+    g_theRenderer->BeginFrame();
+    g_theAudio->BeginFrame();
+    g_theDevConsole->BeginFrame();
+}
+
+
+void App::EndFrame() {
+    g_theInput->EndFrame();
+    g_theRenderer->EndFrame();
+    g_theAudio->EndFrame();
+    g_theDevConsole->EndFrame();
+}
+
+
+void App::Update() {
+    double currentTime = GetCurrentTimeSeconds();
+    float deltaSeconds = (float)(currentTime - m_timeLastFrame);
+    m_timeLastFrame = currentTime;
+    deltaSeconds = ClampFloat( deltaSeconds, 0.f, APP_MAX_DELTA_SECONDS );
+
+    if( m_isSlowMo ) {
+        deltaSeconds /= 10.f;
+    } else if( m_isFastMo ) {
+        deltaSeconds *= 4.f;
+    }
+
+    g_theGame->Update( deltaSeconds );
+}
+
+
+void App::Render() const {
+    g_theRenderer->ClearColorTarget( Rgba( 0.f, 0.f, 0.f, 1.f ) );
+
+    g_theGame->Render();
+
+    g_theDevConsole->Render( g_theRenderer, g_theGame->GetActiveCamera(), 2.f );
+}
+
+

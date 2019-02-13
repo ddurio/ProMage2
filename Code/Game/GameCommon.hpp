@@ -39,6 +39,7 @@ constexpr int GAME_NUM_MAPS = 3;
 
 constexpr char  TEXTURE_STBI_TEST[] = "Data/Images/Test_StbiFlippedAndOpenGL.png";
 constexpr char  TEXTURE_ANIMATION_TEST[] = "Data/Images/Test_SpriteSheet8x2.png";
+constexpr char  TEXTURE_EXPLOSION[] = "Data/Images/Explosion_5x5.png";
 
 constexpr char  FONT_NAME_SQUIRREL[] = "SquirrelFixedFont";
 

@@ -450,6 +450,7 @@ void Game::RenderAttractScreen() const {
 void Game::RenderGame() const {
     RenderTexture( 0 );
     RenderSpriteAnimations( 0 );
+    RenderAdditiveAnimations( 0 );
     RenderTextInBox( 0 );
     RenderXML( 0 );
 }
@@ -460,7 +461,7 @@ void Game::RenderTexture( int desktopID ) const {
 
     AABB2 box1Bounds = AABB2( Vec2( 50.f, 50.f ), Vec2( 100.f, 100.f ) );
     std::vector<Vertex_PCU> boxVerts;
-    AddVertsForAABB2D( boxVerts, box1Bounds, Rgba( 1.f, 1.f, 1.f, 1.f ), Vec2( 0.f, 0.f ), Vec2( 1.f, 1.f ) );
+    AddVertsForAABB2D( boxVerts, box1Bounds, Rgba( 1.f, 1.f, 1.f, 1.f ) );
 
     TransformVertexArrayToDesktop( desktopID, 1, boxVerts.size(), boxVerts.data() );
     g_theRenderer->DrawVertexArray( (int)boxVerts.size(), &boxVerts[0] );
@@ -502,6 +503,55 @@ void Game::RenderSpriteAnimations( int desktopID ) const {
     TransformVertexArrayToDesktop( desktopID, 1, spriteVerts.size(), spriteVerts.data() );
     g_theRenderer->BindTexture( TEXTURE_ANIMATION_TEST );
     g_theRenderer->DrawVertexArray( spriteVerts );
+}
+
+
+void Game::RenderAdditiveAnimations( int desktopID ) const {
+    g_theRenderer->CreateTexture( TEXTURE_EXPLOSION );
+    SpriteSheet spriteSheet = SpriteSheet( TEXTURE_EXPLOSION, IntVec2( 5, 5 ) );
+
+    // Draw background (needs to be black or the additive blend picks up other initial colors)
+    AABB2 desktopBounds = GetDesktopBounds( desktopID );
+    AABB2 outerBoxBounds = desktopBounds.GetBoxWithin( Vec2( 34.f, 14.f ), ALIGN_CENTER_LEFT );
+    AABB2 boxBounds = outerBoxBounds.GetBoxWithin( Vec2( 30.f, 10.f ), ALIGN_CENTER );
+    VertexList boxVerts;
+    AddVertsForAABB2D( boxVerts, outerBoxBounds, Rgba::GRAY );
+    AddVertsForAABB2D( boxVerts, boxBounds, Rgba::BLACK );
+
+    g_theRenderer->BindTexture();
+    g_theRenderer->DrawVertexArray( boxVerts );
+
+    Vec2 uvBL;
+    Vec2 uvTR;
+
+    // Play once
+    SpriteAnimDef* animation = new SpriteAnimDef( spriteSheet, 0, 24, 3.f, SPRITE_ANIM_PLAYBACK_ONCE );
+    SpriteDef spriteDef = animation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
+
+    spriteDef.GetUVs( uvBL, uvTR );
+    std::vector<Vertex_PCU> spriteVerts;
+    AABB2 spriteBox = boxBounds.GetBoxWithin( Vec2( 10.f, 10.f ), ALIGN_CENTER_LEFT );
+    AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
+
+    // Loop Animations
+    SpriteAnimDef* loopAnimation = new SpriteAnimDef( spriteSheet, 0, 24, 3.f, SPRITE_ANIM_PLAYBACK_LOOP );
+    spriteDef = loopAnimation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
+
+    spriteDef.GetUVs( uvBL, uvTR );
+    spriteBox = boxBounds.GetBoxWithin( Vec2( 10.f, 10.f ), ALIGN_CENTER );
+    AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
+
+    // PingPong Animations
+    SpriteAnimDef* pingPongAnimation = new SpriteAnimDef( spriteSheet, 0, 15, 3.f, SPRITE_ANIM_PLAYBACK_PINGPONG );
+    spriteDef = pingPongAnimation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
+
+    spriteDef.GetUVs( uvBL, uvTR );
+    spriteBox = boxBounds.GetBoxWithin( Vec2( 10.f, 10.f ), ALIGN_CENTER_RIGHT );
+    AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
+
+    TransformVertexArrayToDesktop( desktopID, 1, spriteVerts.size(), spriteVerts.data() );
+    g_theRenderer->BindTexture( TEXTURE_EXPLOSION );
+    g_theRenderer->DrawVertexArray( spriteVerts, DRAW_MODE_ADDITIVE );
 }
 
 

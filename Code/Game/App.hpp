@@ -10,12 +10,12 @@ class App {
     void Shutdown();
     void RunFrame();
 
-    bool IsQuitting() const {
-        return m_isQuitting;
-    }
     bool HandleKeyPressed( unsigned char keyCode );
     bool HandleKeyReleased( unsigned char keyCode );
+    bool HandleCharTyped( unsigned char character );
+
     bool HandleQuitRequested();
+    bool IsQuitting() const;
 
     private:
     void BeginFrame();

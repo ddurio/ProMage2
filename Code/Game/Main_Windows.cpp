@@ -10,7 +10,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-// #SD1ToDo: Move each of these items to its proper place, once that place is established
+// #SD1FIXME: Move each of these items to its proper place, once that place is established
 // 
 HWND hWnd = nullptr;							// ...becomes WindowContext::m_windowHandle
 void* g_hWnd = nullptr;
@@ -23,29 +23,32 @@ NamedStrings g_theGameConfigBlackboard;
 // Handles Windows (Win32) messages/events; i.e. the OS is trying to tell us something happened.
 // This function is called by Windows whenever we ask it for notifications
 //
-// #SD1ToDo: We will move this function to a more appropriate place later on...
+// #SD1FIXME: We will move this function to a more appropriate place later on...
 //
 LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM lParam ) {
 	switch( wmMessageCode ) {
 		// App close requested via "X" button, or right-click "Close Window" on task bar, or "Close" from system menu, or Alt-F4
-		case WM_CLOSE:
-		{
+		case WM_CLOSE: {
 			return g_theApp->HandleQuitRequested();
 		}
 
 		// Raw physical keyboard "key-was-just-depressed" event (case-insensitive, not translated)
-		case WM_KEYDOWN:
-		{
+		case WM_KEYDOWN: {
             unsigned char asKey = (unsigned char)wParam;
             return g_theApp->HandleKeyPressed( asKey );
 		}
 
 		// Raw physical keyboard "key-was-just-released" event (case-insensitive, not translated)
-		case WM_KEYUP:
-		{
+		case WM_KEYUP: {
 			unsigned char asKey = (unsigned char)wParam;
 			return g_theApp->HandleKeyReleased( asKey );
 		}
+
+        // Also keydown but provided the direct key that was pressed in ASCII
+        case WM_CHAR: {
+            unsigned char asChar = (unsigned char)wParam;
+            return g_theApp->HandleCharTyped( asChar );
+        }
 	}
 
 	// Send back to Windows any unhandled/unconsumed messages we want other apps to see (e.g. play/pause in music apps, etc.)
@@ -54,7 +57,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 
 
 //-----------------------------------------------------------------------------------------------
-// #SD1ToDo: We will move this function to a more appropriate place later on...
+// #SD1FIXME: We will move this function to a more appropriate place later on...
 //
 void CreateNewWindow( HINSTANCE applicationInstanceHandle, float clientAspect ) {
 	// Define a window style/class
@@ -69,7 +72,7 @@ void CreateNewWindow( HINSTANCE applicationInstanceHandle, float clientAspect ) 
 	windowClassDescription.lpszClassName = TEXT( "Simple Window Class" );
 	RegisterClassEx( &windowClassDescription );
 
-	// #SD1ToDo: Add support for fullscreen mode (requires different window style flags than windowed mode)
+	// #SD1FIXME: Add support for fullscreen mode (requires different window style flags than windowed mode)
 	const DWORD windowStyleFlags = WS_CAPTION | WS_BORDER | WS_THICKFRAME | WS_SYSMENU | WS_OVERLAPPED;
 	const DWORD windowStyleExFlags = WS_EX_APPWINDOW;
 
@@ -137,7 +140,7 @@ void CreateNewWindow( HINSTANCE applicationInstanceHandle, float clientAspect ) 
 // For each message in the queue, our WindowsMessageHandlingProcedure (or "WinProc") function
 //	is called, telling us what happened (key up/down, minimized/restored, gained/lost focus, etc.)
 //
-// #SD1ToDo: We will move this function to a more appropriate place later on...
+// #SD1FIXME: We will move this function to a more appropriate place later on...
 //
 void RunMessagePump() {
 	MSG queuedMessage;
