@@ -352,7 +352,7 @@ void Game::UpdateGame( float deltaSeconds ) {
     // Check Collision
     //CheckCollisionBetweenEntityArrays( (Entity**)shipArray, 1, (Entity**)m_asteroids, MAX_ASTEROIDS );
 
-    UpdateConsoleChannels( deltaSeconds );
+    //UpdateConsoleChannels( deltaSeconds );
 
     // Shake Camera
     UpdateCameraShake( deltaSeconds );
