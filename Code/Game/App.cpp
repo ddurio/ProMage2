@@ -94,7 +94,7 @@ bool App::HandleKeyPressed( unsigned char keyCode ) {
         }
     }
 
-    g_theDevConsole->PrintString( Stringf( "KeyCode pressed: %x", keyCode ) );
+    //g_theDevConsole->PrintString( Stringf( "KeyCode pressed: %x", keyCode ) );
 
     switch( keyCode ) {
         case(0x1B): {  // Escape Key
