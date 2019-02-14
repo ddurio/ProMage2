@@ -71,7 +71,7 @@ class Game {
     void RenderGame() const;
     void RenderTexture( int desktopID ) const;
     void RenderSpriteAnimations( int desktopID ) const;
-    void RenderAdditiveAnimations( int desktopID ) const;
+    void RenderAdditiveVenn( int desktopID ) const;
     void RenderTextInBox( int desktopID ) const;
     void RenderTextAlignment( int desktopID ) const;
     void RenderTextDrawMode( int desktopID ) const;

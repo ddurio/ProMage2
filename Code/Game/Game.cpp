@@ -450,7 +450,7 @@ void Game::RenderAttractScreen() const {
 void Game::RenderGame() const {
     RenderTexture( 0 );
     RenderSpriteAnimations( 0 );
-    RenderAdditiveAnimations( 0 );
+    RenderAdditiveVenn( 0 );
     RenderTextInBox( 0 );
     RenderXML( 0 );
 }
@@ -506,14 +506,11 @@ void Game::RenderSpriteAnimations( int desktopID ) const {
 }
 
 
-void Game::RenderAdditiveAnimations( int desktopID ) const {
-    g_theRenderer->CreateTexture( TEXTURE_EXPLOSION );
-    SpriteSheet spriteSheet = SpriteSheet( TEXTURE_EXPLOSION, IntVec2( 5, 5 ) );
-
+void Game::RenderAdditiveVenn( int desktopID ) const {
     // Draw background (needs to be black or the additive blend picks up other initial colors)
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
-    AABB2 outerBoxBounds = desktopBounds.GetBoxWithin( Vec2( 34.f, 14.f ), ALIGN_CENTER_LEFT );
-    AABB2 boxBounds = outerBoxBounds.GetBoxWithin( Vec2( 30.f, 10.f ), ALIGN_CENTER );
+    AABB2 outerBoxBounds = desktopBounds.GetBoxWithin( Vec2( 34.f, 34.f ), ALIGN_TOP_LEFT );
+    AABB2 boxBounds = outerBoxBounds.GetBoxWithin( Vec2( 30.f, 30.f ), ALIGN_CENTER );
     VertexList boxVerts;
     AddVertsForAABB2D( boxVerts, outerBoxBounds, Rgba::GRAY );
     AddVertsForAABB2D( boxVerts, boxBounds, Rgba::BLACK );
@@ -521,37 +518,33 @@ void Game::RenderAdditiveAnimations( int desktopID ) const {
     g_theRenderer->BindTexture();
     g_theRenderer->DrawVertexArray( boxVerts );
 
-    Vec2 uvBL;
-    Vec2 uvTR;
+    // Draw Circles
+    VertexList vennVerts;
+    float circleRadius = 8.f;
 
-    // Play once
-    SpriteAnimDef* animation = new SpriteAnimDef( spriteSheet, 0, 24, 3.f, SPRITE_ANIM_PLAYBACK_ONCE );
-    SpriteDef spriteDef = animation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
+    // Red Circle
+    Rgba circleColor = Rgba::RED;
+    circleColor.a = 0.75f;
+    Vec2 circleCenter = boxBounds.GetPointWithin( Vec2( 0.5f, 0.66f ) );
+    AddVertsForDisc2D( vennVerts, circleCenter, circleRadius, circleColor );
 
-    spriteDef.GetUVs( uvBL, uvTR );
-    std::vector<Vertex_PCU> spriteVerts;
-    AABB2 spriteBox = boxBounds.GetBoxWithin( Vec2( 10.f, 10.f ), ALIGN_CENTER_LEFT );
-    AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
+    // Green Circle
+    circleColor = Rgba::GREEN;
+    circleColor.a = 0.75f;
+    circleCenter = boxBounds.GetPointWithin( Vec2( 0.33f, 0.33f ) );
+    AddVertsForDisc2D( vennVerts, circleCenter, circleRadius, circleColor );
 
-    // Loop Animations
-    SpriteAnimDef* loopAnimation = new SpriteAnimDef( spriteSheet, 0, 24, 3.f, SPRITE_ANIM_PLAYBACK_LOOP );
-    spriteDef = loopAnimation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
+    // Blue Circle
+    circleColor = Rgba::BLUE;
+    circleColor.a = 0.75f;
+    circleCenter = boxBounds.GetPointWithin( Vec2( 0.66f, 0.33f ) );
+    AddVertsForDisc2D( vennVerts, circleCenter, circleRadius, circleColor );
 
-    spriteDef.GetUVs( uvBL, uvTR );
-    spriteBox = boxBounds.GetBoxWithin( Vec2( 10.f, 10.f ), ALIGN_CENTER );
-    AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
+    double modeFreq = 0.5f * GetCurrentTimeSeconds();
+    BlendMode modeIndex = (BlendMode)((int)modeFreq % 2);
 
-    // PingPong Animations
-    SpriteAnimDef* pingPongAnimation = new SpriteAnimDef( spriteSheet, 0, 15, 3.f, SPRITE_ANIM_PLAYBACK_PINGPONG );
-    spriteDef = pingPongAnimation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
-
-    spriteDef.GetUVs( uvBL, uvTR );
-    spriteBox = boxBounds.GetBoxWithin( Vec2( 10.f, 10.f ), ALIGN_CENTER_RIGHT );
-    AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
-
-    TransformVertexArrayToDesktop( desktopID, 1, spriteVerts.size(), spriteVerts.data() );
-    g_theRenderer->BindTexture( TEXTURE_EXPLOSION );
-    g_theRenderer->DrawVertexArray( spriteVerts, DRAW_MODE_ADDITIVE );
+    g_theRenderer->BindTexture();
+    g_theRenderer->DrawVertexArray( vennVerts, modeIndex );
 }
 
 
