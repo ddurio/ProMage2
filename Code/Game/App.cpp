@@ -3,6 +3,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Core/WindowContext.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
@@ -18,28 +19,33 @@ AudioSystem* g_theAudio;
 InputSystem* g_theInput;
 RenderContext* g_theRenderer;
 RNG* g_RNG;
+WindowContext* g_theWindow;
 
 extern void* g_hWnd;
 
-App::App() {
+App::App( void* appWinProc ) {
+    g_theDevConsole->Startup();
 
+    g_theWindow = new WindowContext( APP_TITLE, CLIENT_ASPECT, CLIENT_MAX_SCREEN_PERCENT, (WindowsProcCallback)appWinProc );
 }
 
 
 App::~App() {
+    delete g_theWindow;
+    g_theWindow = nullptr;
 
+    g_theDevConsole->Shutdown();
 }
 
 
 void App::Startup() {
-    g_theDevConsole->Startup();
+    g_theRenderer = new RenderContext();
+    g_theInput = new InputSystem();
+    g_theAudio = new AudioSystem();
+    g_RNG = new RNG();
 
-    g_theRenderer   = new RenderContext();
-    g_theInput      = new InputSystem();
-    g_theAudio      = new AudioSystem();
-    g_RNG           = new RNG();
-
-    g_theRenderer->Startup( g_hWnd );
+    g_theWindow->Startup();
+    g_theRenderer->Startup( g_theWindow );
     g_theInput->Startup();
     g_theAudio->Startup();
 
@@ -56,8 +62,7 @@ void App::Shutdown() {
     g_theAudio->Shutdown();
     g_theInput->Shutdown();
     g_theRenderer->Shutdown();
-
-    g_theDevConsole->Shutdown();
+    g_theWindow->Shutdown();
 
     delete g_RNG;
     g_RNG = nullptr;
@@ -70,10 +75,6 @@ void App::Shutdown() {
 
     delete g_theRenderer;
     g_theRenderer = nullptr;
-
-    delete g_theDevConsole;
-    g_theDevConsole = nullptr;
-
 }
 
 
@@ -166,6 +167,7 @@ bool App::IsQuitting() const {
 
 
 void App::BeginFrame() {
+    g_theWindow->BeginFrame();
     g_theInput->BeginFrame();
     g_theRenderer->BeginFrame();
     g_theAudio->BeginFrame();

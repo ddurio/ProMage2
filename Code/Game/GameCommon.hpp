@@ -25,10 +25,14 @@ extern RenderContext* g_theRenderer;
 class RNG;
 extern RNG* g_RNG;
 
+class WindowContext;
+extern WindowContext* g_theWindow;
+
 class Entity;
 typedef std::vector<Entity*> EntityList;
 
 constexpr int APP_MIN_FPS = 10;
+constexpr char  APP_TITLE[] = "Protogame3D (ddurio)";
 constexpr float APP_MAX_DELTA_SECONDS = 1.f / (float)APP_MIN_FPS;
 
 constexpr float GAME_ATTRACT_AUDIO_DELAY = 3.f;
@@ -55,6 +59,7 @@ constexpr int   MAP_RAYCAST_NUM_SAMPLES = 100;
 constexpr float MAP_RAYCAST_MAX_DISTANCE = 10.f;
 
 constexpr float CLIENT_ASPECT = (16.f / 9.f);
+constexpr float CLIENT_MAX_SCREEN_PERCENT = 0.9f;
 constexpr float CAMERA_PLAYER_HEIGHT = 7.f;
 constexpr float CAMERA_PLAYER_WIDTH = CLIENT_ASPECT * CAMERA_PLAYER_HEIGHT;
 constexpr float CAMERA_DEBUG_HEIGHT = (float)MAP_HEIGHT;

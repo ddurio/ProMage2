@@ -60,7 +60,8 @@ void Game::Shutdown() {
 void Game::Update( float deltaSeconds ) {
     Vec2 desktopOffset = GetDesktopOffset( m_activeDesktop );
 
-    m_playerCamera->SetOrthoView( Vec2::ZERO + desktopOffset, m_desktopDimensions[m_activeDesktop] + desktopOffset );
+    //m_playerCamera->SetOrthoView( Vec2::ZERO + desktopOffset, m_desktopDimensions[m_activeDesktop] + desktopOffset );
+    m_playerCamera->SetOrthoProjection( 10.f );
     m_debugCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( 2000.f, 1000.f ) );
 
     if( m_onAttractScreen ) {
@@ -84,29 +85,30 @@ void Game::Render() const {
     g_theRenderer->BeginCamera( activeCamera );
 
     // TODO: Remove after changing to D3D11
-    /*
-    Rgba colors[] = { Rgba::RED, Rgba::GREEN, Rgba::BLUE };
-    int colorIndex = (int)(fmod( GetCurrentTimeSeconds(), 3 ));
-
-    g_theRenderer->ClearColorTarget( colors[colorIndex] );
+    g_theRenderer->ClearColorTarget( Rgba::BLACK );
     g_theRenderer->BindShader( nullptr );
 
     VertexList testVerts;
-    AddVertsForAABB2D( testVerts, AABB2( Vec2::ZERO, Vec2( 200, 100 ) ), Rgba::YELLOW );
+    //AddVertsForAABB2D( testVerts, AABB2( Vec2::ZERO, Vec2( 200, 100 ) ), Rgba::YELLOW );
+    testVerts.push_back( Vertex_PCU( Vec3( -1.f, -1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
+    testVerts.push_back( Vertex_PCU( Vec3( -1.f,  1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
+    testVerts.push_back( Vertex_PCU( Vec3(  1.f, -1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
+
     g_theRenderer->BindTexture( "" );
     g_theRenderer->DrawVertexArray( testVerts );
     RenderTexture( 0 );
-    */
     // Remove up to here
 
 
     // TODO: Uncomment after changing to D3D11
+    /*
     g_theRenderer->ClearColorTarget( Rgba::BLUE );
     if( m_onAttractScreen ) {
         RenderAttractScreen();
     } else {
         RenderGame();
     }
+    */
 
     g_theRenderer->EndCamera( activeCamera );
 }

@@ -4,7 +4,7 @@
 
 class App {
     public:
-    App();
+    App( void* appWinProc );
     ~App();
     void Startup();
     void Shutdown();
