@@ -143,7 +143,7 @@ bool Game::HandleKeyPressed( unsigned char keyCode ) {
             m_useDebugCamera = !m_useDebugCamera;
             return false;
         } case('S'): {
-            SoundID testSound = g_theAudio->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
+            SoundID testSound = g_theAudio->GetOrCreateSound( "Data/Audio/TestSound.mp3" );
             g_theAudio->PlaySound( testSound );
             return false;
         }
@@ -214,7 +214,7 @@ void Game::StartupParseXMLTests() {
     //const char* projectName = root->ToElement()->Attribute( "name" );
     std::string projectName = ParseXMLAttribute( *root->ToElement(), "name", "NAME NOT FOUND" );
 
-    const BitmapFont* font =  g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
+    const BitmapFont* font =  g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
     float cellHeight = 1.5f;
     Vec2 textStart( 100.f, 97.f );
     font->AddVertsForText2D( m_xmlVerts, textStart, cellHeight, Stringf( "- Root: name = %s", projectName.c_str() ) );
@@ -558,7 +558,7 @@ void Game::RenderTextInBox( int desktopID ) const {
 
 
 void Game::RenderTextAlignment( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
+    const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
 
     std::vector<Vertex_PCU> textVerts;
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
@@ -601,7 +601,7 @@ void Game::RenderTextAlignment( int desktopID ) const {
 
 
 void Game::RenderTextDrawMode( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
+    const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
 
     std::vector<Vertex_PCU> textVerts;
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
@@ -637,7 +637,7 @@ void Game::RenderTextDrawMode( int desktopID ) const {
 
 
 void Game::RenderTextMultiLine( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
+    const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
 
     std::vector<Vertex_PCU> textVerts;
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
@@ -683,7 +683,7 @@ void Game::RenderTextMultiLine( int desktopID ) const {
 
 
 void Game::RenderXML( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->CreateOrGetBitmapFont( FONT_NAME_SQUIRREL );
+    const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
     std::vector<Vertex_PCU> verts = m_xmlVerts;
 
     TransformVertexArrayToDesktop( desktopID, 1, verts.size(), verts.data() );

@@ -204,7 +204,7 @@ void App::Render() const {
 
     g_theGame->Render();
 
-    g_theDevConsole->Render( g_theRenderer, g_theGame->GetActiveCamera(), 2.f );
+    g_theDevConsole->Render( g_theRenderer );
 }
 
 
