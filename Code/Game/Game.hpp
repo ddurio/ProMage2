@@ -6,6 +6,7 @@
 
 struct AABB2;
 class Camera;
+class CameraController;
 
 class Game {
 	public:
@@ -50,6 +51,7 @@ class Game {
     int m_activeDesktop = 0;
     Camera* m_playerCamera = nullptr;
     Camera* m_debugCamera = nullptr;
+    CameraController* m_cameraPos = nullptr;
 
     std::vector<Vertex_PCU> m_xmlVerts;
     int m_channelIndex = 0;

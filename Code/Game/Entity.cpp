@@ -3,11 +3,6 @@
 #include "Engine/Math/MathUtils.hpp"
 
 
-Entity::Entity( Game* theGame ) {
-	m_theGame = theGame;
-}
-
-
 const Vec2 Entity::GetPosition() const {
     return m_position;
 }

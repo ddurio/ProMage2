@@ -22,6 +22,7 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 
 #include "Game/App.hpp"
+#include "Game/CameraController.hpp"
 
 #include "stdarg.h"
 
@@ -61,7 +62,8 @@ void Game::Update( float deltaSeconds ) {
     Vec2 desktopOffset = GetDesktopOffset( m_activeDesktop );
 
     //m_playerCamera->SetOrthoView( Vec2::ZERO + desktopOffset, m_desktopDimensions[m_activeDesktop] + desktopOffset );
-    m_playerCamera->SetOrthoProjection( 10.f );
+    //m_playerCamera->SetOrthoProjection( 10.f );
+    m_playerCamera->SetPerspectiveProjection( 90.f, 0.1f, 100.f );
     m_debugCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( 2000.f, 1000.f ) );
 
     if( m_onAttractScreen ) {
@@ -82,6 +84,7 @@ void Game::Render() const {
     activeCamera.SetColorTarget( nullptr );
     */
 
+    m_cameraPos->Render();
     g_theRenderer->BeginCamera( activeCamera );
 
     // TODO: Remove after changing to D3D11
@@ -96,7 +99,6 @@ void Game::Render() const {
 
     g_theRenderer->BindTexture( "" );
     g_theRenderer->DrawVertexArray( testVerts );
-    RenderTexture( 0 );
     // Remove up to here
 
 
@@ -142,18 +144,13 @@ bool Game::HandleKeyPressed( unsigned char keyCode ) {
         } case(0x73): { // F4 - Toggle Debug Camera
             m_useDebugCamera = !m_useDebugCamera;
             return false;
-        } case('S'): {
-            SoundID testSound = g_theAudio->GetOrCreateSound( "Data/Audio/TestSound.mp3" );
-            g_theAudio->PlaySound( testSound );
-            return false;
         }
 	}
 
     if( !m_onAttractScreen ) {
-        //return m_thePlayerShip->HandleKeyPressed( keyCode );
-        return true;
+        return m_cameraPos->HandleKeyPressed( keyCode );
     } else {
-        return true;
+        return false;
     }
 }
 
@@ -162,16 +159,15 @@ bool Game::HandleKeyReleased( unsigned char keyCode ) {
     UNUSED( keyCode );
 
     if( !m_onAttractScreen ) {
-	    //return m_thePlayerShip->HandleKeyReleased( keyCode );
-        return 1;
+	    return m_cameraPos->HandleKeyReleased( keyCode );
     } else {
-        return 1;
+        return false;
     }
 }
 
 
 bool Game::HandleQuitRequested() {
-	return 1;
+	return false;
 }
 
 
@@ -200,6 +196,8 @@ void Game::StartupGame() {
     StartupParseXMLTests();
     StartupConsoleTests();
     StartupEventTests();
+
+    m_cameraPos = new CameraController( m_playerCamera );
 }
 
 
@@ -355,6 +353,7 @@ void Game::UpdateGame( float deltaSeconds ) {
     //CheckCollisionBetweenEntityArrays( (Entity**)shipArray, 1, (Entity**)m_asteroids, MAX_ASTEROIDS );
 
     //UpdateConsoleChannels( deltaSeconds );
+    m_cameraPos->Update( deltaSeconds );
 
     // Shake Camera
     UpdateCameraShake( deltaSeconds );

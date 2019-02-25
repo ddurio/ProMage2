@@ -6,7 +6,7 @@
 
 class Entity {
 	public:
-	Entity( Game*  theGame );
+    Entity() {};
 
 	virtual void Startup() = 0;
 	virtual void Shutdown() = 0;
@@ -23,7 +23,6 @@ class Entity {
     void TakeDamage( int damageToTake );
 
 	protected:
-	Game* m_theGame = nullptr;
 	Vec2 m_position;
 	Vec2 m_velocity;
     float m_angularVelocity = 0;
