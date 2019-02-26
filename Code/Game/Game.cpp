@@ -198,6 +198,7 @@ void Game::StartupGame() {
     StartupEventTests();
 
     m_cameraPos = new CameraController( m_playerCamera );
+    m_cameraPos->Startup();
 }
 
 

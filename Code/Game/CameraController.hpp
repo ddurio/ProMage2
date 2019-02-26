@@ -23,6 +23,7 @@ class CameraController : public Entity {
     private:
     Camera* m_camera = nullptr;
     Vec3 m_position = Vec3(0.f, 0.f, -10.f);
+    Vec3 m_rotation = Vec3::ZERO;
 
     bool m_leftPressed = false;
     bool m_rightPressed = false;

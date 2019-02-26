@@ -1,5 +1,7 @@
 #include "Game/CameraController.hpp"
 
+#include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/WindowContext.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Matrix44.hpp"
@@ -14,7 +16,9 @@ CameraController::CameraController( Camera* camera ) :
 
 
 void CameraController::Startup() {
-
+    g_theWindow->SetMouseMode( MOUSE_MODE_RELATIVE );
+    g_theWindow->LockMouse();
+    g_theWindow->HideMouse();
 }
 
 
@@ -24,15 +28,22 @@ void CameraController::Shutdown() {
 
 
 void CameraController::Update( float deltaSeconds ) {
+    IntVec2 mouseMovement = g_theWindow->GetMouseClientDisplacement();
+    Vec3 mouseRotation = Vec3( (float)mouseMovement.y / 50.f, (float)mouseMovement.x / 50.f, 0.f );
+    m_rotation += mouseRotation;
+
     int leftRight = -((int)m_leftPressed) + (int)m_rightPressed;
     int backForward = -((int)m_backPressed) + (int)m_forwardPressed;
 
     float moveX = leftRight * m_moveSpeed * deltaSeconds;
     float moveZ = backForward * m_moveSpeed * deltaSeconds;
 
-    m_position += Vec3( moveX, 0.f, moveZ );
+    Matrix44 model = Matrix44::MakeRotationDegrees3D( m_rotation );
+    Vec3 localMovement = Vec3( moveX, 0.f, moveZ );
+    Vec3 worldMovement = model.TransformPosition3D( localMovement );
+    m_position += worldMovement;
 
-    Matrix44 model = Matrix44::MakeTranslation3D( m_position );
+    model.SetTranslation( m_position );
     m_camera->SetModelMatrix( model );
 }
 
