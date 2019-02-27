@@ -1,7 +1,7 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
-#include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Core/VertexPCU.hpp"
 
 
 class Entity {
@@ -38,8 +38,8 @@ class Entity {
     const Rgba m_debugPhysicsColor = Rgba( 0, 1, 1, 1 );
     static const int s_numDebugVerts = 63;
 
-    Vertex_PCU m_debugCosmeticVerts[s_numDebugVerts];
-    Vertex_PCU m_debugPhysicsVerts[s_numDebugVerts];
+    VertexPCU m_debugCosmeticVerts[s_numDebugVerts];
+    VertexPCU m_debugPhysicsVerts[s_numDebugVerts];
 
 
     Vec2 GetForwardVector() const;

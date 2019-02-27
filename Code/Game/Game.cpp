@@ -16,6 +16,8 @@
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/ColorTargetView.hpp"
+#include "Engine/Renderer/CPUMesh.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteAnimDef.hpp"
 #include "Engine/Renderer/SpriteDef.hpp"
@@ -93,12 +95,32 @@ void Game::Render() const {
 
     VertexList testVerts;
     //AddVertsForAABB2D( testVerts, AABB2( Vec2::ZERO, Vec2( 200, 100 ) ), Rgba::YELLOW );
-    testVerts.push_back( Vertex_PCU( Vec3( -1.f, -1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
-    testVerts.push_back( Vertex_PCU( Vec3( -1.f,  1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
-    testVerts.push_back( Vertex_PCU( Vec3(  1.f, -1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
+    testVerts.push_back( VertexPCU( Vec3( -1.f, -1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
+    testVerts.push_back( VertexPCU( Vec3( -1.f,  1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
+    testVerts.push_back( VertexPCU( Vec3(  1.f, -1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
 
-    g_theRenderer->BindTexture( "" );
+    g_theRenderer->BindTexture();
     g_theRenderer->DrawVertexArray( testVerts );
+
+    CPUMesh boxCpuMesh;
+    boxCpuMesh.SetColor( Rgba::BLUE );
+    boxCpuMesh.AddCube( Vec3( -5.f, 0.f, 0.f ), Vec3( -4.f, 1.f, 1.f ) );
+
+    GPUMesh boxGpuMesh = GPUMesh( g_theRenderer );
+    boxGpuMesh.CopyCPUMesh( &boxCpuMesh );
+
+    g_theRenderer->BindTexture();
+    g_theRenderer->DrawMesh( &boxGpuMesh );
+
+    CPUMesh globeCpuMesh;
+    globeCpuMesh.AddUVSphere( Vec3( 5.f, 0.f, 0.f ), 2.f );
+
+    GPUMesh globeGpuMesh = GPUMesh( g_theRenderer );
+    globeGpuMesh.CopyCPUMesh( &globeCpuMesh );
+
+    g_theRenderer->BindTexture( "Data/Images/Globe.jpg" );
+    g_theRenderer->DrawMesh( &globeGpuMesh );
+
     // Remove up to here
 
 
@@ -199,6 +221,8 @@ void Game::StartupGame() {
 
     m_cameraPos = new CameraController( m_playerCamera );
     m_cameraPos->Startup();
+
+    g_theRenderer->CreateTexture( "Data/Images/Globe.jpg" );
 }
 
 
@@ -462,7 +486,7 @@ void Game::RenderTexture( int desktopID ) const {
     g_theRenderer->BindTexture( TEXTURE_STBI_TEST );
 
     AABB2 box1Bounds = AABB2( Vec2( 50.f, 50.f ), Vec2( 100.f, 100.f ) );
-    std::vector<Vertex_PCU> boxVerts;
+    std::vector<VertexPCU> boxVerts;
     AddVertsForAABB2D( boxVerts, box1Bounds, Rgba( 1.f, 1.f, 1.f, 1.f ) );
 
     TransformVertexArrayToDesktop( desktopID, 1, boxVerts.size(), boxVerts.data() );
@@ -482,7 +506,7 @@ void Game::RenderSpriteAnimations( int desktopID ) const {
     SpriteDef spriteDef = animation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
 
     spriteDef.GetUVs( uvBL, uvTR );
-    std::vector<Vertex_PCU> spriteVerts;
+    std::vector<VertexPCU> spriteVerts;
     AABB2 spriteBox = AABB2( Vec2( 0.f, 0.f ), Vec2( 10.f, 20.f ) );
     AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
 
@@ -560,7 +584,7 @@ void Game::RenderTextInBox( int desktopID ) const {
 void Game::RenderTextAlignment( int desktopID ) const {
     const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
 
-    std::vector<Vertex_PCU> textVerts;
+    std::vector<VertexPCU> textVerts;
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
     Vec2 desktopDimensions = desktopBounds.GetDimensions();
 
@@ -571,7 +595,7 @@ void Game::RenderTextAlignment( int desktopID ) const {
     float cellHeight = 2.f;
     std::string text = "Alignment";
     AABB2 boxBounds( Vec2( desktopCenterX * 1.25f, desktopCenterY * 0.5f ), Vec2( desktopCenterX * 1.75f, desktopCenterY * 0.75f ) );
-    std::vector<Vertex_PCU> boxVerts;
+    std::vector<VertexPCU> boxVerts;
     AABB2 borderBounds = boxBounds.GetPaddedAABB2( 2.f );
     AddVertsForAABB2D( boxVerts, borderBounds, Rgba::GRAY );
     AddVertsForAABB2D( boxVerts, boxBounds, Rgba::BLACK );
@@ -603,7 +627,7 @@ void Game::RenderTextAlignment( int desktopID ) const {
 void Game::RenderTextDrawMode( int desktopID ) const {
     const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
 
-    std::vector<Vertex_PCU> textVerts;
+    std::vector<VertexPCU> textVerts;
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
     Vec2 desktopDimensions = desktopBounds.GetDimensions();
 
@@ -639,7 +663,7 @@ void Game::RenderTextDrawMode( int desktopID ) const {
 void Game::RenderTextMultiLine( int desktopID ) const {
     const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
 
-    std::vector<Vertex_PCU> textVerts;
+    std::vector<VertexPCU> textVerts;
     AABB2 desktopBounds = GetDesktopBounds( desktopID );
     Vec2 desktopDimensions = desktopBounds.GetDimensions();
 
@@ -684,7 +708,7 @@ void Game::RenderTextMultiLine( int desktopID ) const {
 
 void Game::RenderXML( int desktopID ) const {
     const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
-    std::vector<Vertex_PCU> verts = m_xmlVerts;
+    std::vector<VertexPCU> verts = m_xmlVerts;
 
     TransformVertexArrayToDesktop( desktopID, 1, verts.size(), verts.data() );
     g_theRenderer->BindTexture( font->GetTexturePath() );
@@ -729,7 +753,7 @@ void Game::TransformVertexArrayToDesktop( int desktopID, int numArrays, ... ) co
 
     for( int arrayIndex = 0; arrayIndex < numArrays; arrayIndex++ ) {
         int numVerts = (int)va_arg( vertexArrays, size_t );
-        Vertex_PCU* verts = va_arg( vertexArrays, Vertex_PCU* );
+        VertexPCU* verts = va_arg( vertexArrays, VertexPCU* );
         TransformVertexArray( numVerts, verts, 1.f, 0.f, desktopOffset );
     }
     

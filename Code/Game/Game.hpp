@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Core/VertexPCU.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
 
@@ -53,7 +53,7 @@ class Game {
     Camera* m_debugCamera = nullptr;
     CameraController* m_cameraPos = nullptr;
 
-    std::vector<Vertex_PCU> m_xmlVerts;
+    std::vector<VertexPCU> m_xmlVerts;
     int m_channelIndex = 0;
 
     void StartupAttract();
