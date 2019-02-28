@@ -99,28 +99,32 @@ void Game::Render() const {
     testVerts.push_back( VertexPCU( Vec3( -1.f,  1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
     testVerts.push_back( VertexPCU( Vec3(  1.f, -1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
 
+    g_theRenderer->BindModelMatrix();
     g_theRenderer->BindTexture();
     g_theRenderer->DrawVertexArray( testVerts );
 
-    CPUMesh boxCpuMesh;
-    boxCpuMesh.SetColor( Rgba::BLUE );
-    boxCpuMesh.AddCube( Vec3( -5.f, 0.f, 0.f ), Vec3( -4.f, 1.f, 1.f ) );
+    CPUMesh cpuMesh;
+    GPUMesh gpuMesh = GPUMesh( g_theRenderer );
 
-    GPUMesh boxGpuMesh = GPUMesh( g_theRenderer );
-    boxGpuMesh.CopyCPUMesh( &boxCpuMesh );
+    Vec3 corner = Vec3( 0.5f, 0.5f, 0.5f );
+    cpuMesh.AddCube( -corner, corner );
 
-    g_theRenderer->BindTexture();
-    g_theRenderer->DrawMesh( &boxGpuMesh );
+    float degrees = fmod( 20 * (float)GetCurrentTimeSeconds(), 360.f );
+    Matrix44 cubeModel = Matrix44::MakeRotationDegrees3D( Vec3( degrees, -degrees * 0.5f, degrees * 2 ) );
+    cubeModel.SetTranslation( Vec3( -5.f, 0.f, 0.f ) );
 
-    CPUMesh globeCpuMesh;
-    globeCpuMesh.AddUVSphere( Vec3( 5.f, 0.f, 0.f ), 2.f );
+    gpuMesh.CopyCPUMesh( &cpuMesh );
+    g_theRenderer->BindTexture( "Data/Images/WoodCrate.jpg" );
+    g_theRenderer->DrawMesh( &gpuMesh, cubeModel );
 
-    GPUMesh globeGpuMesh = GPUMesh( g_theRenderer );
-    globeGpuMesh.CopyCPUMesh( &globeCpuMesh );
+    cpuMesh.Clear();
+    cpuMesh.AddUVSphere( Vec3::ZERO, 2.f );
+    Matrix44 rotation = Matrix44::MakeYRotationDegrees( -degrees );
+    rotation.SetTranslation( Vec3( 5.f, 0.f, 0.f ) );
 
+    gpuMesh.CopyCPUMesh( &cpuMesh );
     g_theRenderer->BindTexture( "Data/Images/Globe.jpg" );
-    g_theRenderer->DrawMesh( &globeGpuMesh );
-
+    g_theRenderer->DrawMesh( &gpuMesh, rotation );
     // Remove up to here
 
 
@@ -223,6 +227,7 @@ void Game::StartupGame() {
     m_cameraPos->Startup();
 
     g_theRenderer->CreateTexture( "Data/Images/Globe.jpg" );
+    g_theRenderer->CreateTexture( "Data/Images/WoodCrate.jpg" );
 }
 
 
