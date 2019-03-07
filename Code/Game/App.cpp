@@ -1,6 +1,7 @@
 #include "Game/App.hpp"
 
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/DebugDraw.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/WindowContext.hpp"
@@ -46,6 +47,7 @@ void App::Startup() {
 
     g_theWindow->Startup();
     g_theRenderer->Startup( g_theWindow );
+    g_theDebugger->Startup( g_theRenderer );
     g_theInput->Startup();
     g_theAudio->Startup();
 
@@ -61,6 +63,7 @@ void App::Shutdown() {
 
     g_theAudio->Shutdown();
     g_theInput->Shutdown();
+    g_theDebugger->Shutdown();
     g_theRenderer->Shutdown();
     g_theWindow->Shutdown();
 
@@ -172,6 +175,7 @@ void App::BeginFrame() {
     g_theRenderer->BeginFrame();
     g_theAudio->BeginFrame();
     g_theDevConsole->BeginFrame();
+    g_theDebugger->BeginFrame();
 }
 
 
@@ -180,6 +184,7 @@ void App::EndFrame() {
     g_theRenderer->EndFrame();
     g_theAudio->EndFrame();
     g_theDevConsole->EndFrame();
+    g_theDebugger->EndFrame();
 }
 
 
@@ -196,6 +201,7 @@ void App::Update() {
     }
 
     g_theGame->Update( deltaSeconds );
+    g_theDebugger->Update( deltaSeconds );
 }
 
 
@@ -204,6 +210,7 @@ void App::Render() const {
 
     g_theGame->Render();
 
+    g_theDebugger->RenderScreen();
     g_theDevConsole->Render( g_theRenderer );
 }
 

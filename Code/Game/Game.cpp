@@ -1,6 +1,7 @@
 #include "Game/Game.hpp"
 
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/DebugDraw.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/Time.hpp"
@@ -113,7 +114,7 @@ void Game::Render() const {
     Matrix44 cubeModel = Matrix44::MakeRotationDegrees3D( Vec3( degrees, -degrees * 0.5f, degrees * 2 ) );
     cubeModel.SetTranslation( Vec3( -5.f, 0.f, 0.f ) );
 
-    gpuMesh.CopyCPUMesh( &cpuMesh );
+    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
     g_theRenderer->BindTexture( "Data/Images/WoodCrate.jpg" );
     g_theRenderer->DrawMesh( &gpuMesh, cubeModel );
 
@@ -122,9 +123,14 @@ void Game::Render() const {
     Matrix44 rotation = Matrix44::MakeYRotationDegrees( -degrees );
     rotation.SetTranslation( Vec3( 5.f, 0.f, 0.f ) );
 
-    gpuMesh.CopyCPUMesh( &cpuMesh );
+    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
     g_theRenderer->BindTexture( "Data/Images/Globe.jpg" );
     g_theRenderer->DrawMesh( &gpuMesh, rotation );
+
+    g_theDebugger->DrawDebugPoint( Vec3( 0.f, 5.f, 0.f ), 0.f, 1.f, Rgba::BLUE );
+    g_theDebugger->DrawDebugPoint( Vec3( 0.f, -5.f, 0.f ), 0.f, 1.f, Rgba::GREEN );
+    g_theDebugger->DrawDebugPoint( Vec2(0.5f, 0.5f), Vec2::ZERO, 0.f, .2f, Rgba::CYAN );
+    g_theDebugger->RenderWorld( activeCamera );
     // Remove up to here
 
 
@@ -228,6 +234,8 @@ void Game::StartupGame() {
 
     g_theRenderer->CreateTexture( "Data/Images/Globe.jpg" );
     g_theRenderer->CreateTexture( "Data/Images/WoodCrate.jpg" );
+
+    g_theDebugger->DrawDebugPoint( Vec3( 0.f, 0.f, -5.f ), 5.f, 2.f, Rgba::YELLOW, Rgba::RED );
 }
 
 
