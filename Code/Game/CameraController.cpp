@@ -29,17 +29,19 @@ void CameraController::Shutdown() {
 
 void CameraController::Update( float deltaSeconds ) {
     IntVec2 mouseMovement = g_theWindow->GetMouseClientDisplacement();
-    Vec3 mouseRotation = Vec3( (float)mouseMovement.y / 50.f, (float)mouseMovement.x / 50.f, 0.f );
+    Vec3 mouseRotation = Vec3( (float)mouseMovement.y / 25.f, (float)mouseMovement.x / 25.f, 0.f );
     m_rotation += mouseRotation;
 
     int leftRight = -((int)m_leftPressed) + (int)m_rightPressed;
+    int downUp = -((int)m_downPressed) + (int)m_upPressed;
     int backForward = -((int)m_backPressed) + (int)m_forwardPressed;
 
     float moveX = leftRight * m_moveSpeed * deltaSeconds;
+    float moveY = downUp * m_moveSpeed * deltaSeconds;
     float moveZ = backForward * m_moveSpeed * deltaSeconds;
 
     Matrix44 model = Matrix44::MakeRotationDegrees3D( m_rotation );
-    Vec3 localMovement = Vec3( moveX, 0.f, moveZ );
+    Vec3 localMovement = Vec3( moveX, moveY, moveZ );
     Vec3 worldMovement = model.TransformPosition3D( localMovement );
     m_position += worldMovement;
 
@@ -60,17 +62,23 @@ void CameraController::Die() {
 
 bool CameraController::HandleKeyPressed( unsigned char keyCode ) {
     switch( keyCode ) {
-        case('W'): { // Up
+        case('W'): { // Forward
             m_forwardPressed = true;
             return true;
         } case('A'): { // Left
             m_leftPressed = true;
             return true;
-        } case('S'): { // Down
+        } case('S'): { // Backwards
             m_backPressed = true;
             return true;
         } case('D'): { // Right
             m_rightPressed = true;
+            return true;
+        } case('Q'): { // Down
+            m_downPressed = true;
+            return true;
+        } case('E'): { // Up
+            m_upPressed = true;
             return true;
         }
     }
@@ -92,6 +100,12 @@ bool CameraController::HandleKeyReleased( unsigned char keyCode ) {
             return true;
         } case('D'): { // Right
             m_rightPressed = false;
+            return true;
+        } case('Q'): { // Down
+            m_downPressed = false;
+            return true;
+        } case('E'): { // Up
+            m_upPressed = false;
             return true;
         }
     }

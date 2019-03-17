@@ -28,8 +28,11 @@ class CameraController : public Entity {
     bool m_leftPressed = false;
     bool m_rightPressed = false;
 
+    bool m_downPressed = false;
+    bool m_upPressed = false;
+
     bool m_forwardPressed = false;
     bool m_backPressed = false;
 
-    float m_moveSpeed = 2.f;
+    float m_moveSpeed = 4.f;
 };

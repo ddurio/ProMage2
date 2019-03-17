@@ -66,7 +66,7 @@ void Game::Update( float deltaSeconds ) {
 
     //m_playerCamera->SetOrthoView( Vec2::ZERO + desktopOffset, m_desktopDimensions[m_activeDesktop] + desktopOffset );
     //m_playerCamera->SetOrthoProjection( 10.f );
-    m_playerCamera->SetPerspectiveProjection( 90.f, 0.1f, 100.f );
+    m_playerCamera->SetPerspectiveProjection( 90.f, 0.00001f, 100.f );
     m_debugCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( 2000.f, 1000.f ) );
 
     if( m_onAttractScreen ) {
@@ -94,21 +94,32 @@ void Game::Render() const {
     g_theRenderer->ClearColorTarget( Rgba::BLACK );
     g_theRenderer->BindShader( nullptr );
 
-    VertexList testVerts;
-    //AddVertsForAABB2D( testVerts, AABB2( Vec2::ZERO, Vec2( 200, 100 ) ), Rgba::YELLOW );
-    testVerts.push_back( VertexPCU( Vec3( -1.f, -1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
-    testVerts.push_back( VertexPCU( Vec3( -1.f,  1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
-    testVerts.push_back( VertexPCU( Vec3(  1.f, -1.f, 0.f ), Rgba::WHITE, Vec2::ZERO ) );
-
-    g_theRenderer->BindModelMatrix();
-    g_theRenderer->BindTexture();
-    g_theRenderer->DrawVertexArray( testVerts );
-
     CPUMesh cpuMesh;
     GPUMesh gpuMesh = GPUMesh( g_theRenderer );
 
+    g_theDebugger->DrawDebugPoint( Vec3( 1.f, 0.f, 0.f ), 0.f, 0.05f, Rgba::RED );
+    g_theDebugger->DrawDebugPoint( Vec3( 0.f, 1.f, 0.f ), 0.f, 0.05f, Rgba::GREEN );
+    g_theDebugger->DrawDebugPoint( Vec3( 0.f, 0.f, 1.f ), 0.f, 0.05f, Rgba::BLUE );
+
+    cpuMesh.SetColor( Rgba::WHITE );
+    cpuMesh.AddCircle( Vec3::ZERO, 10.f, Vec3( 0.f, 1.f, 0.f ) );
+    cpuMesh.SetColor( Rgba::BLUE );
+    //cpuMesh.AddCircle( Vec3::ZERO, 0.5f, Vec3( -1.f, -1.f, -1.f ) );
+    //cpuMesh.AddCone( Vec3( -1.f, 0.5f, 0.f ), 0.9f, 0.25f, Vec3( -1.f, -1.f, -1.f ) );
+    //cpuMesh.AddCylinder( Vec3( 0.f, 0.f, 0.f ), 0.9f, 0.25f, Vec3( -1.f, 0.f, -1.f) );
+    //cpuMesh.AddHourGlass( Vec3( 1.f, 0.5f, 0.f ), 0.9f, 0.25f );
+
+    g_theDebugger->DrawDebugArrow( Vec3::ZERO, Vec3( 10.f, 10.f, 10.f ), 0.f, 0.1f, Rgba::YELLOW );
+    g_theDebugger->DrawDebugLine( Vec3(1.f, 0.f, 0.f), Vec3( 11.f, 10.f, 10.f ), 0.f, 0.1f, Rgba::YELLOW );
+    g_theDebugger->DrawDebugBillboardedQuad( Vec3( -2.f, 1.f, 0.f ), Vec2( 2.f, 1.f ), 0.f, ALIGN_CENTER, Rgba::MAGENTA );
+
+    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
+    g_theRenderer->BindTexture();
+    g_theRenderer->DrawMesh( &gpuMesh, Matrix44::IDENTITY );
+
     Vec3 corner = Vec3( 0.5f, 0.5f, 0.5f );
-    cpuMesh.AddCube( -corner, corner );
+    cpuMesh.Clear();
+    cpuMesh.AddBox( -corner, corner );
 
     float degrees = fmod( 20 * (float)GetCurrentTimeSeconds(), 360.f );
     Matrix44 cubeModel = Matrix44::MakeRotationDegrees3D( Vec3( degrees, -degrees * 0.5f, degrees * 2 ) );
@@ -127,9 +138,11 @@ void Game::Render() const {
     g_theRenderer->BindTexture( "Data/Images/Globe.jpg" );
     g_theRenderer->DrawMesh( &gpuMesh, rotation );
 
-    g_theDebugger->DrawDebugPoint( Vec3( 0.f, 5.f, 0.f ), 0.f, 1.f, Rgba::BLUE );
-    g_theDebugger->DrawDebugPoint( Vec3( 0.f, -5.f, 0.f ), 0.f, 1.f, Rgba::GREEN );
-    g_theDebugger->DrawDebugPoint( Vec2(0.5f, 0.5f), Vec2::ZERO, 0.f, .2f, Rgba::CYAN );
+    //g_theDebugger->DrawDebugPoint( Vec3( 0.f, 5.f, 0.f ), 0.f, 1.f, Rgba::BLUE );
+    //g_theDebugger->DrawDebugArrow( Vec3(0.f, 5.f, 0.f), Vec3(2.f, 5.f, 0.f), 0.f );
+    //g_theDebugger->DrawDebugPoint( Vec3( 0.f, -5.f, 0.f ), 0.f, 1.f, Rgba::GREEN );
+    g_theDebugger->DrawDebugPoint( Vec2( 0.1f, 0.1f ), Vec2::ZERO, 0.f, .2f, Rgba::CYAN );
+    g_theDebugger->DrawDebugLine( Vec2( 0.1f, 0.1f ), Vec2::ZERO, Vec2( 0.9f, 0.1f ), Vec2::ZERO, 0.f, 0.1f, Rgba::CYAN );
     g_theDebugger->RenderWorld( activeCamera );
     // Remove up to here
 
@@ -162,20 +175,20 @@ bool Game::HandleKeyPressed( unsigned char keyCode ) {
 	switch( keyCode ) {
         case(0x70): { // F1 - Toggle Debug Drawing
             m_debugDrawing = !m_debugDrawing;
-            return false;
+            return true;
         } case(0x71): { // F2 - Go To Previous Desktop
             m_activeDesktop--;
 
             if( m_activeDesktop < 0 ) {
                 m_activeDesktop = m_numDesktops - 1;
             }
-            return false;
+            return true;
         } case(0x72): { // F3 - Go To Next Desktop
             m_activeDesktop = ++m_activeDesktop % m_numDesktops;
-            return false;
+            return true;
         } case(0x73): { // F4 - Toggle Debug Camera
             m_useDebugCamera = !m_useDebugCamera;
-            return false;
+            return true;
         }
 	}
 
@@ -235,7 +248,7 @@ void Game::StartupGame() {
     g_theRenderer->CreateTexture( "Data/Images/Globe.jpg" );
     g_theRenderer->CreateTexture( "Data/Images/WoodCrate.jpg" );
 
-    g_theDebugger->DrawDebugPoint( Vec3( 0.f, 0.f, -5.f ), 5.f, 2.f, Rgba::YELLOW, Rgba::RED );
+    //g_theDebugger->DrawDebugPoint( Vec3( 0.f, 0.f, -5.f ), 5.f, 2.f, Rgba::YELLOW, Rgba::BLUE );
 }
 
 

@@ -91,11 +91,12 @@ void App::RunFrame() {
 
 bool App::HandleKeyPressed( unsigned char keyCode ) {
     if( g_theDevConsole->IsTakingInput() ) {
-        bool consoleHandled = g_theDevConsole->HandleKeyPressed( keyCode );
-
-        if( consoleHandled ) { // If console didn't handle it, keep passing it on
+        if( keyCode == 0xC0 ) { // ~ Key
+            g_theDevConsole->Toggle();
             return true;
         }
+
+        return g_theDevConsole->HandleKeyPressed( keyCode );
     }
 
     //g_theDevConsole->PrintString( Stringf( "KeyCode pressed: %x", keyCode ) );
@@ -107,16 +108,16 @@ bool App::HandleKeyPressed( unsigned char keyCode ) {
         } case(0x77): { // F8 Key
             Shutdown();
             Startup();
-            return false;
+            return true;
         } case('T'): {
             m_isSlowMo = true;
-            return false;
+            return true;
         } case('Y'): {
             m_isFastMo = true;
-            return false;
+            return true;
         } case(0xC0): { // ~ Key
             g_theDevConsole->Toggle();
-            return false;
+            return true;
         }
     }
 
