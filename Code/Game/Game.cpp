@@ -97,13 +97,11 @@ void Game::Render() const {
     CPUMesh cpuMesh;
     GPUMesh gpuMesh = GPUMesh( g_theRenderer );
 
+    // World Space
     g_theDebugger->DrawDebugPoint( Vec3( 1.f, 0.f, 0.f ), 0.f, 0.05f, Rgba::RED );
     g_theDebugger->DrawDebugPoint( Vec3( 0.f, 1.f, 0.f ), 0.f, 0.05f, Rgba::GREEN );
     g_theDebugger->DrawDebugPoint( Vec3( 0.f, 0.f, 1.f ), 0.f, 0.05f, Rgba::BLUE );
 
-    cpuMesh.SetColor( Rgba::WHITE );
-    cpuMesh.AddCircle( Vec3::ZERO, 10.f, Vec3( 0.f, 1.f, 0.f ) );
-    cpuMesh.SetColor( Rgba::BLUE );
     //cpuMesh.AddCircle( Vec3::ZERO, 0.5f, Vec3( -1.f, -1.f, -1.f ) );
     //cpuMesh.AddCone( Vec3( -1.f, 0.5f, 0.f ), 0.9f, 0.25f, Vec3( -1.f, -1.f, -1.f ) );
     //cpuMesh.AddCylinder( Vec3( 0.f, 0.f, 0.f ), 0.9f, 0.25f, Vec3( -1.f, 0.f, -1.f) );
@@ -111,12 +109,29 @@ void Game::Render() const {
 
     g_theDebugger->DrawDebugArrow( Vec3::ZERO, Vec3( 10.f, 10.f, 10.f ), 0.f, 0.1f, Rgba::YELLOW );
     g_theDebugger->DrawDebugLine( Vec3(1.f, 0.f, 0.f), Vec3( 11.f, 10.f, 10.f ), 0.f, 0.1f, Rgba::YELLOW );
-    g_theDebugger->DrawDebugBillboardedQuad( Vec3( -2.f, 1.f, 0.f ), Vec2( 2.f, 1.f ), 0.f, ALIGN_CENTER, Rgba::MAGENTA );
+    g_theDebugger->DrawDebugBillboardedQuad( Vec3( -2.f, 1.f, 0.f ), Vec2( 2.f, 1.f ), 0.f, ALIGN_CENTER, Rgba::MAGENTA, Rgba::MAGENTA, "", DRAW_DEPTH_MOD_XRAY );
+    g_theDebugger->DrawDebugBillboardedText( Vec3( -2.f, 2.f, 0.f ), Vec2( 2.f, 1.f ), "Hello, world!", 0.f, ALIGN_CENTER, nullptr, Rgba::MAGENTA, Rgba::MAGENTA, DRAW_DEPTH_MODE_ALWAYS );
+
+    // Floor
+    cpuMesh.SetColor( Rgba::WHITE );
+    cpuMesh.AddCircle( Vec3::ZERO, 10.f, Vec3( 0.f, 1.f, 0.f ) );
+    cpuMesh.SetColor( Rgba::BLUE );
 
     gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
     g_theRenderer->BindTexture();
     g_theRenderer->DrawMesh( &gpuMesh, Matrix44::IDENTITY );
 
+    // Screen Space
+    g_theDebugger->DrawDebugPoint( Vec2( 0.1f, 0.1f ), Vec2::ZERO, 0.f, .2f, Rgba::CYAN );
+    g_theDebugger->DrawDebugLine( Vec2( 0.1f, 0.1f ), Vec2::ZERO, Vec2( 0.9f, 0.1f ), Vec2::ZERO, 0.f, 0.1f, Rgba::CYAN );
+    g_theDebugger->DrawDebugQuad( ALIGN_TOP_RIGHT, Vec2::ZERO, Vec2( 4.f, 2.f ), 0.f, Rgba::WHITE, Rgba::WHITE, "Data/Images/Globe.jpg" );
+    g_theDebugger->DrawDebugText( ALIGN_TOP_CENTER, Vec2( 0.f, 0.2f ), Vec2( 4.f, 1.f ), "Welcome, Forseth!", 0.f );
+
+    std::string message = Stringf( "Time: %0.2f", (float)GetCurrentTimeSeconds() );
+    g_theDebugger->DrawDebugMessage( message, 0.f );
+    g_theDebugger->DrawDebugMessage( "Hello again", 0.f );
+
+    // Draw Wood Box
     Vec3 corner = Vec3( 0.5f, 0.5f, 0.5f );
     cpuMesh.Clear();
     cpuMesh.AddBox( -corner, corner );
@@ -129,6 +144,7 @@ void Game::Render() const {
     g_theRenderer->BindTexture( "Data/Images/WoodCrate.jpg" );
     g_theRenderer->DrawMesh( &gpuMesh, cubeModel );
 
+    // Draw Globe
     cpuMesh.Clear();
     cpuMesh.AddUVSphere( Vec3::ZERO, 2.f );
     Matrix44 rotation = Matrix44::MakeYRotationDegrees( -degrees );
@@ -138,11 +154,6 @@ void Game::Render() const {
     g_theRenderer->BindTexture( "Data/Images/Globe.jpg" );
     g_theRenderer->DrawMesh( &gpuMesh, rotation );
 
-    //g_theDebugger->DrawDebugPoint( Vec3( 0.f, 5.f, 0.f ), 0.f, 1.f, Rgba::BLUE );
-    //g_theDebugger->DrawDebugArrow( Vec3(0.f, 5.f, 0.f), Vec3(2.f, 5.f, 0.f), 0.f );
-    //g_theDebugger->DrawDebugPoint( Vec3( 0.f, -5.f, 0.f ), 0.f, 1.f, Rgba::GREEN );
-    g_theDebugger->DrawDebugPoint( Vec2( 0.1f, 0.1f ), Vec2::ZERO, 0.f, .2f, Rgba::CYAN );
-    g_theDebugger->DrawDebugLine( Vec2( 0.1f, 0.1f ), Vec2::ZERO, Vec2( 0.9f, 0.1f ), Vec2::ZERO, 0.f, 0.1f, Rgba::CYAN );
     g_theDebugger->RenderWorld( activeCamera );
     // Remove up to here
 
@@ -248,7 +259,8 @@ void Game::StartupGame() {
     g_theRenderer->CreateTexture( "Data/Images/Globe.jpg" );
     g_theRenderer->CreateTexture( "Data/Images/WoodCrate.jpg" );
 
-    //g_theDebugger->DrawDebugPoint( Vec3( 0.f, 0.f, -5.f ), 5.f, 2.f, Rgba::YELLOW, Rgba::BLUE );
+    g_theDebugger->DrawDebugQuad( ALIGN_TOP_LEFT, Vec2::ZERO, Vec2( 2.f, 2.f ), 5.f, Rgba::WHITE, Rgba::RED );
+    g_theDebugger->DrawDebugMessage( "This will last for 10 seconds!", 10.f, Rgba::RED, Rgba::RED );
 }
 
 
@@ -405,6 +417,25 @@ void Game::UpdateGame( float deltaSeconds ) {
 
     //UpdateConsoleChannels( deltaSeconds );
     m_cameraPos->Update( deltaSeconds );
+
+    // Color / DevConsoleClear tests
+    static Vec3 positions[4] = {
+        Vec3( -5.f, 7.f, 0.f ),
+        Vec3( -3.f, 5.f, 0.f ),
+        Vec3( -5.f, 3.f, 0.f ),
+        Vec3( -7.f, 5.f, 0.f )
+    };
+
+    int posIndex = GetIndexOverTime( 4, 2.f );
+
+    if( m_positionIndex != posIndex ) {
+        // Index has changed
+        m_positionIndex = posIndex;
+        Vec3 position = positions[m_positionIndex];
+        g_theDebugger->DrawDebugPoint( position, 6.f, 1.f, Rgba::YELLOW, Rgba::BLUE );
+        g_theDebugger->DrawDebugMessage( Stringf( "New circle at index %d", m_positionIndex ), 1.5f, Rgba::YELLOW, Rgba::YELLOW );
+    }
+
 
     // Shake Camera
     UpdateCameraShake( deltaSeconds );

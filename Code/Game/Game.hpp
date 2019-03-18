@@ -55,6 +55,7 @@ class Game {
 
     std::vector<VertexPCU> m_xmlVerts;
     int m_channelIndex = 0;
+    int m_positionIndex = -1; // For color and DevConsle DebugDrawClear test (remove for new game)
 
     void StartupAttract();
     void StartupGame();
