@@ -125,7 +125,7 @@ void Game::Render() const {
     g_theDebugger->DrawDebugLine( Vec2( 0.1f, 0.1f ), Vec2::ZERO, Vec2( 0.9f, 0.1f ), Vec2::ZERO, 0.f, 0.1f, Rgba::CYAN );
     g_theDebugger->DrawDebugArrow( Vec2( 0.1f, 0.2f ), Vec2::ZERO, Vec2( 0.9f, 0.2f ), Vec2::ZERO, 0.f, 0.1f, Rgba::CYAN );
     g_theDebugger->DrawDebugQuad( ALIGN_TOP_RIGHT, Vec2::ZERO, Vec2( 4.f, 2.f ), 0.f, Rgba::WHITE, Rgba::WHITE, "Data/Images/Globe.jpg" );
-    g_theDebugger->DrawDebugText( ALIGN_TOP_CENTER, Vec2( 0.f, 0.2f ), Vec2( 4.f, 1.f ), "Welcome, Forseth!", 0.f );
+    g_theDebugger->DrawDebugText( ALIGN_TOP_CENTER, Vec2( 0.f, -0.5f ), Vec2( 4.f, 1.f ), "Welcome, Forseth!", 0.f );
 
     std::string message = Stringf( "Time: %0.2f", (float)GetCurrentTimeSeconds() );
     g_theDebugger->DrawDebugMessage( message, 0.f );
