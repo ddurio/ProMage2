@@ -13,6 +13,7 @@
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/OBB3.hpp"
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -98,23 +99,21 @@ void Game::Render() const {
     GPUMesh gpuMesh = GPUMesh( g_theRenderer );
 
     // World Space
-    g_theDebugger->DrawDebugPoint( Vec3( 1.f, 0.f, 0.f ), 0.f, 0.05f, Rgba::RED );
-    g_theDebugger->DrawDebugPoint( Vec3( 0.f, 1.f, 0.f ), 0.f, 0.05f, Rgba::GREEN );
-    g_theDebugger->DrawDebugPoint( Vec3( 0.f, 0.f, 1.f ), 0.f, 0.05f, Rgba::BLUE );
-
-    //cpuMesh.AddCircle( Vec3::ZERO, 0.5f, Vec3( -1.f, -1.f, -1.f ) );
-    //cpuMesh.AddCone( Vec3( -1.f, 0.5f, 0.f ), 0.9f, 0.25f, Vec3( -1.f, -1.f, -1.f ) );
-    //cpuMesh.AddCylinder( Vec3( 0.f, 0.f, 0.f ), 0.9f, 0.25f, Vec3( -1.f, 0.f, -1.f) );
-    //cpuMesh.AddHourGlass( Vec3( 1.f, 0.5f, 0.f ), 0.9f, 0.25f );
+    g_theDebugger->DrawDebugBasis( Matrix44::MakeTranslation3D( Vec3( -5.f, 5.f, 0.f ) ), 0.f, 0.1f );
+    //g_theDebugger->DrawDebugPoint( Vec3( 1.f, 0.f, 0.f ), 0.f, 0.05f, Rgba::RED );
+    //g_theDebugger->DrawDebugPoint( Vec3( 0.f, 1.f, 0.f ), 0.f, 0.05f, Rgba::GREEN );
+    //g_theDebugger->DrawDebugPoint( Vec3( 0.f, 0.f, 1.f ), 0.f, 0.05f, Rgba::BLUE );
 
     g_theDebugger->DrawDebugArrow( Vec3::ZERO, Vec3( 10.f, 10.f, 10.f ), 0.f, 0.1f, Rgba::YELLOW );
     g_theDebugger->DrawDebugLine( Vec3(1.f, 0.f, 0.f), Vec3( 11.f, 10.f, 10.f ), 0.f, 0.1f, Rgba::YELLOW );
     g_theDebugger->DrawDebugBillboardedQuad( Vec3( -2.f, 1.f, 0.f ), Vec2( 2.f, 1.f ), 0.f, ALIGN_CENTER, Rgba::MAGENTA, Rgba::MAGENTA, "", DRAW_DEPTH_MOD_XRAY );
     g_theDebugger->DrawDebugBillboardedText( Vec3( -2.f, 2.f, 0.f ), Vec2( 2.f, 1.f ), "Hello, world!", 0.f, ALIGN_CENTER, nullptr, Rgba::MAGENTA, Rgba::MAGENTA, DRAW_DEPTH_MODE_ALWAYS );
 
+
     // Floor
+    //g_theDebugger->DrawDebugBillboardedText()
     cpuMesh.SetColor( Rgba::WHITE );
-    cpuMesh.AddCircle( Vec3::ZERO, 10.f, Vec3( 0.f, 1.f, 0.f ) );
+    cpuMesh.AddCircle( Vec3(0.f, -1.f, 0.f), 10.f, Vec3( 0.f, 1.f, 0.f ) );
     cpuMesh.SetColor( Rgba::BLUE );
 
     gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
@@ -122,8 +121,9 @@ void Game::Render() const {
     g_theRenderer->DrawMesh( &gpuMesh, Matrix44::IDENTITY );
 
     // Screen Space
-    g_theDebugger->DrawDebugPoint( Vec2( 0.1f, 0.1f ), Vec2::ZERO, 0.f, .2f, Rgba::CYAN );
+    g_theDebugger->DrawDebugPoint( Vec2( 0.08f, 0.1f ), Vec2::ZERO, 0.f, .2f, Rgba::CYAN );
     g_theDebugger->DrawDebugLine( Vec2( 0.1f, 0.1f ), Vec2::ZERO, Vec2( 0.9f, 0.1f ), Vec2::ZERO, 0.f, 0.1f, Rgba::CYAN );
+    g_theDebugger->DrawDebugArrow( Vec2( 0.1f, 0.2f ), Vec2::ZERO, Vec2( 0.9f, 0.2f ), Vec2::ZERO, 0.f, 0.1f, Rgba::CYAN );
     g_theDebugger->DrawDebugQuad( ALIGN_TOP_RIGHT, Vec2::ZERO, Vec2( 4.f, 2.f ), 0.f, Rgba::WHITE, Rgba::WHITE, "Data/Images/Globe.jpg" );
     g_theDebugger->DrawDebugText( ALIGN_TOP_CENTER, Vec2( 0.f, 0.2f ), Vec2( 4.f, 1.f ), "Welcome, Forseth!", 0.f );
 
@@ -135,6 +135,9 @@ void Game::Render() const {
     Vec3 corner = Vec3( 0.5f, 0.5f, 0.5f );
     cpuMesh.Clear();
     cpuMesh.AddBox( -corner, corner );
+
+    OBB3 box = OBB3( Vec3(-7.f, 0.f, 0.f), corner, Vec3::RIGHT, Vec3::UP );
+    g_theDebugger->DrawDebugBox( box, 0.f, Rgba::WHITE, Rgba::WHITE, "Data/Images/WoodCrate.jpg" );
 
     float degrees = fmod( 20 * (float)GetCurrentTimeSeconds(), 360.f );
     Matrix44 cubeModel = Matrix44::MakeRotationDegrees3D( Vec3( degrees, -degrees * 0.5f, degrees * 2 ) );
@@ -149,6 +152,8 @@ void Game::Render() const {
     cpuMesh.AddUVSphere( Vec3::ZERO, 2.f );
     Matrix44 rotation = Matrix44::MakeYRotationDegrees( -degrees );
     rotation.SetTranslation( Vec3( 5.f, 0.f, 0.f ) );
+
+    g_theDebugger->DrawDebugPoint( Vec3( 10.f, 0.f, 0.f ), 0.f, 2.f, Rgba::WHITE, Rgba::WHITE, DRAW_DEPTH_MODE_DEPTH, FILL_MODE_WIREFRAME );
 
     gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
     g_theRenderer->BindTexture( "Data/Images/Globe.jpg" );
