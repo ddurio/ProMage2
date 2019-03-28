@@ -35,6 +35,8 @@ class Game {
     bool HasGameBeenBeaten() const;
 
     static bool Command_SetAmbientLight( EventArgs& args );
+    static bool Command_SetDirectionalLight( EventArgs& args );
+    static bool Command_SetPointLights( EventArgs& args );
 
 
 	private:
@@ -63,6 +65,7 @@ class Game {
     Rgba m_ambientColor = Rgba( 1.f, 1.f, 1.f, 0.5f ); // For changing ambient light (remove for new game)
     bool m_renderNormals = false; // RFNG
     int m_numDynamicLights = 4; // RFNG
+    bool m_forcePosition = false;
 
     void StartupAttract();
     void StartupGame();

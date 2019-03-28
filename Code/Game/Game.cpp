@@ -185,17 +185,20 @@ bool Game::HandleKeyPressed( unsigned char keyCode ) {
             m_renderNormals = !m_renderNormals;
             g_theRenderer->SetRenderNormals( m_renderNormals );
             return true;
-        } case(0x72): { // F3 - Go To Next Desktop
-            m_activeDesktop = ++m_activeDesktop % m_numDesktops;
+        } case(0x72): { // F3 - Place Point Light
+            LightDesc light = g_theRenderer->GetDynamicLight( 2 );
+            light.position = m_playerCamera->GetPosition();
+            g_theGame->m_forcePosition = true;
+            g_theRenderer->SetDynamicLight( 2, light );
             return true;
         } case(0x73): { // F4 - Toggle Debug Camera
             m_useDebugCamera = !m_useDebugCamera;
             return true;
         } case(0xBC): { // F4 - Toggle Debug Camera
-            m_ambientColor.a = ClampFloat( m_ambientColor.a - 0.02f, 0.f, 1.f );
+            m_ambientColor.a = ClampFloat( m_ambientColor.a - 0.04f, 0.f, 1.f );
             return true;
         } case(0xBE): { // F4 - Toggle Debug Camera
-            m_ambientColor.a = ClampFloat( m_ambientColor.a + 0.02f, 0.f, 1.f );
+            m_ambientColor.a = ClampFloat( m_ambientColor.a + 0.04f, 0.f, 1.f );
             return true;
         }
 	}
@@ -250,6 +253,47 @@ bool Game::Command_SetAmbientLight( EventArgs& args ) {
 }
 
 
+bool Game::Command_SetDirectionalLight( EventArgs& args ) {
+    LightDesc dirLight = g_theRenderer->GetDynamicLight( 0 );
+
+    dirLight.direction = args.GetValue( "direction", dirLight.direction );
+    g_theDevConsole->PrintString( Stringf( "- Setting Directional Light direction to %s", dirLight.direction.GetAsString().c_str() ), DevConsole::CHANNEL_INFO );
+
+    dirLight.color = args.GetValue( "color", dirLight.color );
+    g_theDevConsole->PrintString( Stringf( "- Setting Directional Light color to %s", dirLight.color.GetAsString().c_str() ), DevConsole::CHANNEL_INFO );
+
+    g_theRenderer->SetDynamicLight( 0, dirLight );
+    return false;
+}
+
+
+bool Game::Command_SetPointLights( EventArgs& args ) {
+    int lightIndex = 0;
+    LightDesc light;
+
+    do {
+        lightIndex++;
+        light = g_theRenderer->GetDynamicLight( lightIndex );
+    } while( light.color.a != 0.f );
+
+    int numLights = args.GetValue( "number", lightIndex - 1 );
+
+    for( lightIndex = 1; lightIndex < 5; lightIndex++ ) {
+        light = g_theRenderer->GetDynamicLight( lightIndex );
+
+        if( lightIndex <= numLights ) {
+            light.color.a = 0.5f; // Set to a default on value
+        } else {
+            light.color.a = 0.f; // Intensity to 0 turns it off
+        }
+
+        g_theRenderer->SetDynamicLight( lightIndex, light );
+    }
+
+    return false;
+}
+
+
 void Game::StartupAttract() {
 }
 
@@ -260,6 +304,8 @@ void Game::StartupGame() {
     StartupEventTests();
 
     g_theEventSystem->SubscribeEventCallbackFunction( "SetAmbient", Command_SetAmbientLight );
+    g_theEventSystem->SubscribeEventCallbackFunction( "SetDirectional", Command_SetDirectionalLight );
+    g_theEventSystem->SubscribeEventCallbackFunction( "SetPoint", Command_SetPointLights );
     StartupLights();
 
     m_cameraPos = new CameraController( m_playerCamera );
@@ -418,35 +464,35 @@ void Game::StartupLights() {
     dirLight0.color = Rgba( 1.f, 1.f, 1.f, 0.5f );
     dirLight0.direction = Vec3( 0.f, -1.f, 1.f );
     dirLight0.isDirectional = 1.f;
-    dirLight0.positioin = Vec3( 0.f, 10.f, -10.f );
+    dirLight0.position = Vec3( 0.f, 10.f, -10.f );
     dirLight0.diffuseAttentuation = atten;
     dirLight0.specularAttenuation = atten;
 
     LightDesc pointLight1;
     pointLight1.color = Rgba( 1.f, 0.f, 0.f, 0.5f );
     pointLight1.isDirectional = 0.f;
-    pointLight1.positioin = Vec3( -5.f, 2.f, 0.f );
+    pointLight1.position = Vec3( -5.f, 2.f, 0.f );
     pointLight1.diffuseAttentuation = atten;
     pointLight1.specularAttenuation = atten;
 
     LightDesc pointLight2;
     pointLight2.color = Rgba( 0.f, 1.f, 0.f, 0.5f );
     pointLight2.isDirectional = 0.f;
-    pointLight2.positioin = Vec3( -2.5f, 2.f, 0.f );
+    pointLight2.position = Vec3( -2.5f, 2.f, 0.f );
     pointLight2.diffuseAttentuation = atten;
     pointLight2.specularAttenuation = atten;
 
     LightDesc pointLight3;
     pointLight3.color = Rgba( 0.f, 0.f, 1.f, 0.5f );
     pointLight3.isDirectional = 0.f;
-    pointLight3.positioin = Vec3( 0.f, 2.f, 0.f );
+    pointLight3.position = Vec3( 0.f, 2.f, 0.f );
     pointLight3.diffuseAttentuation = atten;
     pointLight3.specularAttenuation = atten;
 
     LightDesc pointLight4;
     pointLight4.color = Rgba( 1.f, 1.f, 1.f, 0.5f );
     pointLight4.isDirectional = 0.f;
-    pointLight4.positioin = Vec3( 2.5f, 2.f, 0.f );
+    pointLight4.position = Vec3( 2.5f, 2.f, 0.f );
     pointLight4.diffuseAttentuation = atten;
     pointLight4.specularAttenuation = atten;
 
@@ -483,20 +529,22 @@ void Game::UpdateGame( float deltaSeconds ) {
         LightDesc light = g_theRenderer->GetDynamicLight( lightIndex );
 
         if( lightIndex == 1 ) { // Circle forward
-            light.positioin.z = -cosTime;
-            light.positioin.y = sinTime;
+            light.position.z = -cosTime;
+            light.position.y = sinTime;
         } else if( lightIndex == 2 ) {
-            light.positioin.z = cosTime;
-            light.positioin.y = sinTime;
+            if( !m_forcePosition ) {
+                light.position.z = cosTime;
+                light.position.y = sinTime;
+            }
         } else if( lightIndex == 3 ) {
-            light.positioin.y = -cosTime;
-            light.positioin.z = -sinTime;
+            light.position.y = -cosTime;
+            light.position.z = -sinTime;
         } else if( lightIndex == 4 ) {
-            light.positioin.y =  2.f * cosTime;
-            light.positioin.z = -2.f * sinTime;
+            light.position.y =  2.f * cosTime;
+            light.position.z = -2.f * sinTime;
         }
 
-        g_theDebugger->DrawDebugPoint( light.positioin, 0.f, 0.25f, light.color, light.color );
+        g_theDebugger->DrawDebugPoint( light.position, 0.f, 0.25f, light.color, light.color );
         g_theRenderer->SetDynamicLight( lightIndex, light );
     }
     
