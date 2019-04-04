@@ -1,0 +1,17 @@
+<Materials>
+    <Material id="couch" shader="BuiltIn/Lit">
+        <Diffuse source="Data/Images/CouchColor.png" />
+        <Normal  source="Data/Images/CouchNormal.png" />
+        <Sampler index="0" mode="linear" />
+    </Material>
+    <Material id="brick" shader="BuiltIn/Lit">
+        <Texture index="0" source="Data/Images/BrickColor.png" />
+        <Texture index="1" source="Data/Images/BrickNormal.png" />
+        <Texture index="3" source="White" />
+        <Sampler index="0" minFilter="linear" magFilter="point" />
+    </Material>
+    <Material id="green" shader="BuiltIn/Unlit">
+        <Texture index="0" source="Green" />
+        <Sampler index="0" mode="point" />
+    </Material>
+</Materials>

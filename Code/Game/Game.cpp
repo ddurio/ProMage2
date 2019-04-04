@@ -22,6 +22,7 @@
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/SpriteAnimDef.hpp"
 #include "Engine/Renderer/SpriteDef.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
@@ -111,25 +112,30 @@ void Game::Render() const {
 
     // Test Cylinders
     cpuMesh.Clear();
-    cpuMesh.SetColor( Rgba::GRAY );
+    cpuMesh.SetColor( Rgba::WHITE );
     //cpuMesh.AddCylinder( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, Vec3( 1.f, 1.f, 1.f ) );
     //cpuMesh.AddCone( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, -Vec3( 1.f, 1.f, 1.f ) );
     //cpuMesh.AddHourGlass( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, -Vec3( 1.f, 1.f, 1.f ) );
     //cpuMesh.AddNonUniformCylinder( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, 0.5f, Vec3( -1.f, 1.f, 2.f ) );
 
+    g_theRenderer->BindMaterial( m_materials[1] );
     cpuMesh.AddQuad( Vec3( -1.f, -1.f, 0.f ), Vec3( 1.f, 1.f, 0.f ) );
 
     gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
-    g_theRenderer->BindTexture( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
+    //g_theRenderer->BindTexture( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
     g_theRenderer->DrawMesh( &gpuMesh, Matrix44::IDENTITY );
 
     // Draw Wood Box
+    g_theRenderer->BindShader( "BuiltIn/Lit" );
+    g_theRenderer->BindTexture( "Flat", TEXTURE_SLOT_NORMAL );
+    g_theRenderer->BindTexture( "Black", TEXTURE_SLOT_EMISSIVE );
+
     Vec3 corner = Vec3( 0.5f, 0.5f, 0.5f );
     cpuMesh.Clear();
     cpuMesh.AddBox( -corner, corner );
 
     float degrees = fmod( 20 * (float)GetCurrentTimeSeconds(), 360.f );
-    Matrix44 cubeModel = Matrix44::MakeRotationDegrees3D( Vec3( degrees, -degrees * 0.5f, degrees * 2 ) );
+    Matrix44 cubeModel = Matrix44::MakeRotationDegrees3D( Vec3( degrees, -degrees, degrees * 2 ) );
     cubeModel.SetTranslation( Vec3( -5.f, 0.f, 0.f ) );
 
     gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
@@ -182,8 +188,8 @@ bool Game::HandleKeyPressed( unsigned char keyCode ) {
             g_theDevConsole->ExecuteCommandString( Stringf( "DebugDrawToggle enabled=%s", (m_debugDrawing ? "true" : "false") ) );
             return true;
         } case(0x71): { // F2 - Render Normals
-            m_renderNormals = !m_renderNormals;
-            g_theRenderer->SetRenderNormals( m_renderNormals );
+            m_renderMode = (RenderMode)((m_renderMode + 1) % NUM_RENDER_MODES);
+            g_theRenderer->SetRenderMode( m_renderMode );
             return true;
         } case(0x72): { // F3 - Place Point Light
             LightDesc light = g_theRenderer->GetDynamicLight( 2 );
@@ -253,6 +259,15 @@ bool Game::Command_SetAmbientLight( EventArgs& args ) {
 }
 
 
+bool Game::Command_SetEmissiveLight( EventArgs& args ) {
+    g_theGame->m_emissiveColor = args.GetValue( "color", g_theGame->m_emissiveColor );
+    g_theDevConsole->PrintString( Stringf( "- Setting Emissive Light to %s", g_theGame->m_emissiveColor.GetAsString().c_str() ), DevConsole::CHANNEL_INFO );
+
+    g_theRenderer->SetEmissiveLight( g_theGame->m_emissiveColor );
+    return false;
+}
+
+
 bool Game::Command_SetDirectionalLight( EventArgs& args ) {
     LightDesc dirLight = g_theRenderer->GetDynamicLight( 0 );
 
@@ -304,9 +319,15 @@ void Game::StartupGame() {
     StartupEventTests();
 
     g_theEventSystem->SubscribeEventCallbackFunction( "SetAmbient", Command_SetAmbientLight );
+    g_theEventSystem->SubscribeEventCallbackFunction( "SetEmissive", Command_SetEmissiveLight );
     g_theEventSystem->SubscribeEventCallbackFunction( "SetDirectional", Command_SetDirectionalLight );
     g_theEventSystem->SubscribeEventCallbackFunction( "SetPoint", Command_SetPointLights );
     StartupLights();
+
+    m_materials.resize( 3 );
+    m_materials[0] = g_theRenderer->GetOrCreateMaterial( "Data/Materials/Example.xml:couch" );
+    m_materials[1] = g_theRenderer->GetOrCreateMaterial( "Data/Materials/Example.xml:brick" );
+    m_materials[2] = g_theRenderer->GetOrCreateMaterial( "Data/Materials/Example.xml:green" );
 
     m_cameraPos = new CameraController( m_playerCamera );
     m_cameraPos->Startup();
