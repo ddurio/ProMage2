@@ -126,10 +126,6 @@ void Game::Render() const {
     g_theRenderer->DrawMesh( &gpuMesh, Matrix44::IDENTITY );
 
     // Draw Wood Box
-    g_theRenderer->BindShader( "BuiltIn/Lit" );
-    g_theRenderer->BindTexture( "Flat", TEXTURE_SLOT_NORMAL );
-    g_theRenderer->BindTexture( "Black", TEXTURE_SLOT_EMISSIVE );
-
     Vec3 corner = Vec3( 0.5f, 0.5f, 0.5f );
     cpuMesh.Clear();
     cpuMesh.AddBox( -corner, corner );
@@ -139,10 +135,14 @@ void Game::Render() const {
     cubeModel.SetTranslation( Vec3( -5.f, 0.f, 0.f ) );
 
     gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
-    g_theRenderer->BindTexture( "Data/Images/WoodCrate.jpg" );
+    //g_theRenderer->BindTexture( "Data/Images/WoodCrate.jpg" );
     g_theRenderer->DrawMesh( &gpuMesh, cubeModel );
 
     // Draw Globe
+    g_theRenderer->BindShader( "BuiltIn/Lit" );
+    g_theRenderer->BindTexture( "Flat", TEXTURE_SLOT_NORMAL );
+    g_theRenderer->BindTexture( "Black", TEXTURE_SLOT_EMISSIVE );
+
     cpuMesh.Clear();
     cpuMesh.AddUVSphere( Vec3::ZERO, 2.f );
     Matrix44 rotation = Matrix44::MakeYRotationDegrees( -degrees );
