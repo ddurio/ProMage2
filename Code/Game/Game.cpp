@@ -44,6 +44,7 @@ Game::~Game() {
 
 
 void Game::Startup() {
+    m_gameClock = new Clock();
     m_playerCamera = new Camera();
     m_debugCamera = new Camera();
 
@@ -64,18 +65,16 @@ void Game::Shutdown() {
 }
 
 
-void Game::Update( float deltaSeconds ) {
-    Vec2 desktopOffset = GetDesktopOffset( m_activeDesktop );
-
+void Game::Update() {
     //m_playerCamera->SetOrthoView( Vec2::ZERO + desktopOffset, m_desktopDimensions[m_activeDesktop] + desktopOffset );
     //m_playerCamera->SetOrthoProjection( 10.f );
-    m_playerCamera->SetPerspectiveProjection( 90.f, 0.00001f, 100.f );
+    m_playerCamera->SetPerspectiveProjection( 90.f, 0.01f, 100.f );
     m_debugCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( 2000.f, 1000.f ) );
 
     if( m_onAttractScreen ) {
-        UpdateAttractScreen( deltaSeconds );
+        UpdateAttractScreen( m_gameClock->GetDeltaTime() );
     } else {
-        UpdateGame( deltaSeconds );
+        UpdateGame( m_gameClock->GetDeltaTime() );
     }
 
 }
@@ -84,88 +83,14 @@ void Game::Update( float deltaSeconds ) {
 void Game::Render() const {
     Camera* activeCamera = GetActiveCamera();
 
-    // Only necessary if something other than the back buffer is used
-    /*
-    ColorTargetView* targetView = g_theRenderer->GetNewColorTarget();
-    activeCamera.SetColorTarget( nullptr );
-    */
-
-    m_cameraPos->Render();
+    m_controller->Render();
     g_theRenderer->BeginCamera( activeCamera );
 
-    // TODO: Remove after changing to D3D11
-    g_theRenderer->ClearColorTarget( Rgba::BLUE );
-    g_theRenderer->BindShader( "BuiltIn/Lit" );
-    g_theRenderer->SetAmbientLight( m_ambientColor );
-
-    CPUMesh cpuMesh;
-    GPUMesh gpuMesh = GPUMesh( g_theRenderer );
-
-    // Floor
-    cpuMesh.SetColor( Rgba::WHITE );
-    cpuMesh.AddCircle( Vec3(0.f, -1.f, 0.f), 10.f, Vec3( 0.f, 1.f, 0.f ) );
-    cpuMesh.SetColor( Rgba::BLUE );
-
-    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
-    g_theRenderer->BindTexture();
-    g_theRenderer->DrawMesh( &gpuMesh, Matrix44::IDENTITY );
-
-    // Test Cylinders
-    cpuMesh.Clear();
-    cpuMesh.SetColor( Rgba::WHITE );
-    //cpuMesh.AddCylinder( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, Vec3( 1.f, 1.f, 1.f ) );
-    //cpuMesh.AddCone( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, -Vec3( 1.f, 1.f, 1.f ) );
-    //cpuMesh.AddHourGlass( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, -Vec3( 1.f, 1.f, 1.f ) );
-    //cpuMesh.AddNonUniformCylinder( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, 0.5f, Vec3( -1.f, 1.f, 2.f ) );
-
-    g_theRenderer->BindMaterial( m_materials[1] );
-    cpuMesh.AddQuad( Vec3( -1.f, -1.f, 0.f ), Vec3( 1.f, 1.f, 0.f ) );
-
-    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
-    //g_theRenderer->BindTexture( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
-    g_theRenderer->DrawMesh( &gpuMesh, Matrix44::IDENTITY );
-
-    // Draw Wood Box
-    Vec3 corner = Vec3( 0.5f, 0.5f, 0.5f );
-    cpuMesh.Clear();
-    cpuMesh.AddBox( -corner, corner );
-
-    float degrees = fmod( 20 * (float)GetCurrentTimeSeconds(), 360.f );
-    Matrix44 cubeModel = Matrix44::MakeRotationDegrees3D( Vec3( degrees, -degrees, degrees * 2 ) );
-    cubeModel.SetTranslation( Vec3( -5.f, 0.f, 0.f ) );
-
-    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
-    //g_theRenderer->BindTexture( "Data/Images/WoodCrate.jpg" );
-    g_theRenderer->DrawMesh( &gpuMesh, cubeModel );
-
-    // Draw Globe
-    g_theRenderer->BindShader( "BuiltIn/Lit" );
-    g_theRenderer->BindTexture( "Flat", TEXTURE_SLOT_NORMAL );
-    g_theRenderer->BindTexture( "Black", TEXTURE_SLOT_EMISSIVE );
-
-    cpuMesh.Clear();
-    cpuMesh.AddUVSphere( Vec3::ZERO, 2.f );
-    Matrix44 rotation = Matrix44::MakeYRotationDegrees( -degrees );
-    rotation.SetTranslation( Vec3( 5.f, 0.f, 0.f ) );
-
-    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
-    g_theRenderer->BindTexture( "Data/Images/Globe.jpg" );
-    g_theRenderer->DrawMesh( &gpuMesh, rotation );
-
-    //RenderDebugDraw();
-    g_theDebugger->RenderWorld( activeCamera );
-    // Remove up to here
-
-
-    // TODO: Uncomment after changing to D3D11
-    /*
-    g_theRenderer->ClearColorTarget( Rgba::BLUE );
     if( m_onAttractScreen ) {
         RenderAttractScreen();
     } else {
         RenderGame();
     }
-    */
 
     g_theRenderer->EndCamera( activeCamera );
 }
@@ -206,11 +131,27 @@ bool Game::HandleKeyPressed( unsigned char keyCode ) {
         } case(0xBE): { // F4 - Toggle Debug Camera
             m_ambientColor.a = ClampFloat( m_ambientColor.a + 0.04f, 0.f, 1.f );
             return true;
+        } case('P'): { // P - Pause time
+            m_isPaused = !m_isPaused;
+
+            if( m_isPaused ) {
+                m_gameClock->Pause();
+            } else {
+                m_gameClock->Unpause();
+            }
+
+            return true;
+        } case('T'): { // T - Slow down time while held
+            m_gameClock->SetTimeDilation( 0.1f );
+            return true;
+        } case('Y'): { // Y - Speed up time
+            m_gameClock->SetTimeDilation( 4.f );
+            return true;
         }
 	}
 
     if( !m_onAttractScreen ) {
-        return m_cameraPos->HandleKeyPressed( keyCode );
+        return m_controller->HandleKeyPressed( keyCode );
     } else {
         return false;
     }
@@ -218,18 +159,37 @@ bool Game::HandleKeyPressed( unsigned char keyCode ) {
 
 
 bool Game::HandleKeyReleased( unsigned char keyCode ) {
-    UNUSED( keyCode );
-
     if( !m_onAttractScreen ) {
-	    return m_cameraPos->HandleKeyReleased( keyCode );
-    } else {
-        return false;
+        bool handled = m_controller->HandleKeyReleased( keyCode );
+
+        if( handled ) {
+            return true;
+        }
     }
+
+    switch( keyCode ) {
+        case('T'): {
+            m_gameClock->SetTimeDilation( 1.f );
+            return true;
+        } case('Y'): {
+            m_gameClock->SetTimeDilation( 1.f );
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
 bool Game::HandleQuitRequested() {
 	return false;
+}
+
+
+bool Game::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f */ ) {
+    UNUSED( event );
+    UNUSED( scrollAmount );
+    return false;
 }
 
 
@@ -242,6 +202,11 @@ void Game::ReturnToAttractScreen() {
 Camera* Game::GetActiveCamera() const {
     Camera* activeCamera = m_useDebugCamera ? m_debugCamera : m_playerCamera;
     return activeCamera;
+}
+
+
+Clock* Game::GetGameClock() const {
+    return m_gameClock;
 }
 
 
@@ -329,8 +294,8 @@ void Game::StartupGame() {
     m_materials[1] = g_theRenderer->GetOrCreateMaterial( "Data/Materials/Example.xml:brick" );
     m_materials[2] = g_theRenderer->GetOrCreateMaterial( "Data/Materials/Example.xml:green" );
 
-    m_cameraPos = new CameraController( m_playerCamera );
-    m_cameraPos->Startup();
+    m_controller = new CameraController( m_playerCamera );
+    m_controller->Startup();
 
     g_theRenderer->CreateTexture( "Data/Images/Globe.jpg" );
     g_theRenderer->CreateTexture( "Data/Images/WoodCrate.jpg" );
@@ -538,7 +503,7 @@ void Game::UpdateGame( float deltaSeconds ) {
     //CheckCollisionBetweenEntityArrays( (Entity**)shipArray, 1, (Entity**)m_asteroids, MAX_ASTEROIDS );
 
     //UpdateConsoleChannels( deltaSeconds );
-    m_cameraPos->Update( deltaSeconds );
+    m_controller->Update( deltaSeconds );
 
 
     // Update Dynamic Lights
@@ -664,11 +629,66 @@ void Game::RenderAttractScreen() const {
 
 
 void Game::RenderGame() const {
-    RenderTexture( 0 );
-    RenderSpriteAnimations( 0 );
-    RenderAdditiveVenn( 0 );
-    RenderTextInBox( 0 );
-    RenderXML( 0 );
+    g_theRenderer->ClearRenderTarget( Rgba::BLUE );
+    g_theRenderer->BindShader( "BuiltIn/Lit" );
+    g_theRenderer->SetAmbientLight( m_ambientColor );
+
+    CPUMesh cpuMesh;
+    GPUMesh gpuMesh = GPUMesh( g_theRenderer );
+
+    // Floor
+    cpuMesh.SetColor( Rgba::WHITE );
+    cpuMesh.AddCircle( Vec3(0.f, -1.f, 0.f), 10.f, Vec3( 0.f, 1.f, 0.f ) );
+    cpuMesh.SetColor( Rgba::BLUE );
+
+    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
+    g_theRenderer->BindTexture();
+    g_theRenderer->DrawMesh( &gpuMesh, Matrix44::IDENTITY );
+
+    // Test Cylinders
+    cpuMesh.Clear();
+    cpuMesh.SetColor( Rgba::WHITE );
+    //cpuMesh.AddCylinder( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, Vec3( 1.f, 1.f, 1.f ) );
+    //cpuMesh.AddCone( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, -Vec3( 1.f, 1.f, 1.f ) );
+    //cpuMesh.AddHourGlass( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, -Vec3( 1.f, 1.f, 1.f ) );
+    //cpuMesh.AddNonUniformCylinder( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, 0.5f, Vec3( -1.f, 1.f, 2.f ) );
+
+    g_theRenderer->BindMaterial( m_materials[1] );
+    cpuMesh.AddQuad( Vec3( -1.f, -1.f, 0.f ), Vec3( 1.f, 1.f, 0.f ) );
+
+    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
+    //g_theRenderer->BindTexture( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
+    g_theRenderer->DrawMesh( &gpuMesh, Matrix44::IDENTITY );
+
+    // Draw Wood Box
+    Vec3 corner = Vec3( 0.5f, 0.5f, 0.5f );
+    cpuMesh.Clear();
+    cpuMesh.AddBox( -corner, corner );
+
+    float degrees = fmod( 20 * (float)GetCurrentTimeSeconds(), 360.f );
+    Matrix44 cubeModel = Matrix44::MakeRotationDegrees3D( Vec3( degrees, -degrees, degrees * 2 ) );
+    cubeModel.SetTranslation( Vec3( -5.f, 0.f, 0.f ) );
+
+    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
+    //g_theRenderer->BindTexture( "Data/Images/WoodCrate.jpg" );
+    g_theRenderer->DrawMesh( &gpuMesh, cubeModel );
+
+    // Draw Globe
+    g_theRenderer->BindShader( "BuiltIn/Lit" );
+    g_theRenderer->BindTexture( "Flat", TEXTURE_SLOT_NORMAL );
+    g_theRenderer->BindTexture( "Black", TEXTURE_SLOT_EMISSIVE );
+
+    cpuMesh.Clear();
+    cpuMesh.AddUVSphere( Vec3::ZERO, 2.f );
+    Matrix44 rotation = Matrix44::MakeYRotationDegrees( -degrees );
+    rotation.SetTranslation( Vec3( 5.f, 0.f, 0.f ) );
+
+    gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
+    g_theRenderer->BindTexture( "Data/Images/Globe.jpg" );
+    g_theRenderer->DrawMesh( &gpuMesh, rotation );
+
+    RenderDebugDraw();
+    g_theDebugger->RenderWorld( m_playerCamera );
 }
 
 
@@ -706,240 +726,6 @@ void Game::RenderDebugDraw() const {
 }
 
 
-void Game::RenderTexture( int desktopID ) const {
-    g_theRenderer->BindTexture( TEXTURE_STBI_TEST );
-
-    AABB2 box1Bounds = AABB2( Vec2( 50.f, 50.f ), Vec2( 100.f, 100.f ) );
-    std::vector<VertexPCU> boxVerts;
-    AddVertsForAABB2D( boxVerts, box1Bounds, Rgba( 1.f, 1.f, 1.f, 1.f ) );
-
-    TransformVertexArrayToDesktop( desktopID, 1, boxVerts.size(), boxVerts.data() );
-    g_theRenderer->DrawVertexArray( (int)boxVerts.size(), &boxVerts[0] );
-}
-
-
-void Game::RenderSpriteAnimations( int desktopID ) const {
-    g_theRenderer->CreateTexture( TEXTURE_ANIMATION_TEST );
-    SpriteSheet spriteSheet = SpriteSheet( TEXTURE_ANIMATION_TEST, IntVec2( 8, 2 ) );
-
-    Vec2 uvBL;
-    Vec2 uvTR;
-
-    // Play once
-    SpriteAnimDef* animation = new SpriteAnimDef( spriteSheet, 0, 15, 16.f, SPRITE_ANIM_PLAYBACK_ONCE );
-    SpriteDef spriteDef = animation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
-
-    spriteDef.GetUVs( uvBL, uvTR );
-    std::vector<VertexPCU> spriteVerts;
-    AABB2 spriteBox = AABB2( Vec2( 0.f, 0.f ), Vec2( 10.f, 20.f ) );
-    AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
-
-    // Loop Animations
-    SpriteAnimDef* loopAnimation = new SpriteAnimDef( spriteSheet, 0, 15, 16.f, SPRITE_ANIM_PLAYBACK_LOOP );
-    spriteDef = loopAnimation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
-
-    spriteDef.GetUVs( uvBL, uvTR );
-    spriteBox = AABB2( Vec2( 10.f, 0.f ), Vec2( 20.f, 20.f ) );
-    AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
-
-    // PingPong Animations
-    SpriteAnimDef* pingPongAnimation = new SpriteAnimDef( spriteSheet, 0, 15, 16.f, SPRITE_ANIM_PLAYBACK_PINGPONG );
-    spriteDef = pingPongAnimation->GetSpriteDefAtTime( (float)GetCurrentTimeSeconds() );
-
-    spriteDef.GetUVs( uvBL, uvTR );
-    spriteBox = AABB2( Vec2( 20.f, 0.f ), Vec2( 30.f, 20.f ) );
-    AddVertsForAABB2D( spriteVerts, spriteBox, Rgba( 1.f, 1.f, 1.f, 1.f ), uvBL, uvTR );
-
-    TransformVertexArrayToDesktop( desktopID, 1, spriteVerts.size(), spriteVerts.data() );
-    g_theRenderer->BindTexture( TEXTURE_ANIMATION_TEST );
-    g_theRenderer->DrawVertexArray( spriteVerts );
-}
-
-
-void Game::RenderAdditiveVenn( int desktopID ) const {
-    // Draw background (needs to be black or the additive blend picks up other initial colors)
-    AABB2 desktopBounds = GetDesktopBounds( desktopID );
-    AABB2 outerBoxBounds = desktopBounds.GetBoxWithin( Vec2( 34.f, 34.f ), ALIGN_TOP_LEFT );
-    AABB2 boxBounds = outerBoxBounds.GetBoxWithin( Vec2( 30.f, 30.f ), ALIGN_CENTER );
-    VertexList boxVerts;
-    AddVertsForAABB2D( boxVerts, outerBoxBounds, Rgba::GRAY );
-    AddVertsForAABB2D( boxVerts, boxBounds, Rgba::BLACK );
-
-    g_theRenderer->BindTexture();
-    g_theRenderer->DrawVertexArray( boxVerts );
-
-    // Draw Circles
-    VertexList vennVerts;
-    float circleRadius = 8.f;
-
-    // Red Circle
-    Rgba circleColor = Rgba::RED;
-    circleColor.a = 0.75f;
-    Vec2 circleCenter = boxBounds.GetPointWithin( Vec2( 0.5f, 0.66f ) );
-    AddVertsForDisc2D( vennVerts, circleCenter, circleRadius, circleColor );
-
-    // Green Circle
-    circleColor = Rgba::GREEN;
-    circleColor.a = 0.75f;
-    circleCenter = boxBounds.GetPointWithin( Vec2( 0.33f, 0.33f ) );
-    AddVertsForDisc2D( vennVerts, circleCenter, circleRadius, circleColor );
-
-    // Blue Circle
-    circleColor = Rgba::BLUE;
-    circleColor.a = 0.75f;
-    circleCenter = boxBounds.GetPointWithin( Vec2( 0.66f, 0.33f ) );
-    AddVertsForDisc2D( vennVerts, circleCenter, circleRadius, circleColor );
-
-    double modeFreq = 0.5f * GetCurrentTimeSeconds();
-    BlendMode modeIndex = (BlendMode)((int)modeFreq % 2);
-
-    g_theRenderer->BindTexture();
-    g_theRenderer->DrawVertexArray( vennVerts, modeIndex );
-}
-
-
-void Game::RenderTextInBox( int desktopID ) const {
-    RenderTextAlignment( desktopID );
-    RenderTextDrawMode( desktopID );
-    RenderTextMultiLine( desktopID );
-}
-
-
-void Game::RenderTextAlignment( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
-
-    std::vector<VertexPCU> textVerts;
-    AABB2 desktopBounds = GetDesktopBounds( desktopID );
-    Vec2 desktopDimensions = desktopBounds.GetDimensions();
-
-    float desktopCenterX = (desktopDimensions.x * 0.5f);
-    float desktopCenterY = (desktopDimensions.y * 0.5f);
-
-    // Text Alignment
-    float cellHeight = 2.f;
-    std::string text = "Alignment";
-    AABB2 boxBounds( Vec2( desktopCenterX * 1.25f, desktopCenterY * 0.5f ), Vec2( desktopCenterX * 1.75f, desktopCenterY * 0.75f ) );
-    std::vector<VertexPCU> boxVerts;
-    AABB2 borderBounds = boxBounds.GetPaddedAABB2( 2.f );
-    AddVertsForAABB2D( boxVerts, borderBounds, Rgba::GRAY );
-    AddVertsForAABB2D( boxVerts, boxBounds, Rgba::BLACK );
-
-    float alignmentX = cos( (float)GetCurrentTimeSeconds() ) + 0.5f;
-    float alignmentY = sin( (float)GetCurrentTimeSeconds() ) + 0.5f;
-    alignmentX = ClampFloat( alignmentX, 0.f, 1.f );
-    alignmentY = ClampFloat( alignmentY, 0.f, 1.f );
-
-    Vec2 movingAlignment = Vec2( alignmentX, alignmentY );
-    text = Stringf( "%s: %.02f, %.02f", text.c_str(), movingAlignment.x, movingAlignment.y );
-
-    double glyphRate = 10.f * GetCurrentTimeSeconds();
-    int numGlyphs = (int)glyphRate % 30;
-
-    font->AddVeretsForTextInBox2D( textVerts, boxBounds, cellHeight, text, Rgba::WHITE, 1.f, movingAlignment, TEXT_DRAW_OVERRUN, numGlyphs );
-
-
-    TransformVertexArrayToDesktop( desktopID, 2, boxVerts.size(), boxVerts.data(), textVerts.size(), textVerts.data() );
-
-    g_theRenderer->BindTexture( "" );
-    g_theRenderer->DrawVertexArray( boxVerts );
-
-    g_theRenderer->BindTexture( font->GetTexturePath() );
-    g_theRenderer->DrawVertexArray( textVerts );
-}
-
-
-void Game::RenderTextDrawMode( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
-
-    std::vector<VertexPCU> textVerts;
-    AABB2 desktopBounds = GetDesktopBounds( desktopID );
-    Vec2 desktopDimensions = desktopBounds.GetDimensions();
-
-    float desktopCenterX = (desktopDimensions.x * 0.5f);
-    float desktopCenterY = (desktopDimensions.y * 0.5f);
-
-    VertexList boxVerts;
-    AABB2 boxBounds2( Vec2( desktopCenterX * 0.5f, desktopCenterY * 0.5f ), Vec2( desktopCenterX * 1.f, desktopCenterY * 0.75f ) );
-    AABB2 borderBounds2 = boxBounds2.GetPaddedAABB2( 2.f );
-    AddVertsForAABB2D( boxVerts, borderBounds2, Rgba::GRAY );
-    AddVertsForAABB2D( boxVerts, boxBounds2, Rgba::BLACK );
-
-    std::string text = "In a Box??";
-    float cellHeight = 8.f * sin( (float)GetCurrentTimeSeconds() );
-
-    Vec2 alignments[] = { ALIGN_CENTER, ALIGN_CENTER_LEFT, ALIGN_BOTTOM_CENTER, ALIGN_CENTER_RIGHT, ALIGN_TOP_CENTER };
-    int alignmentIndex = (int)(fmod( 0.25 * GetCurrentTimeSeconds(), 5 ));
-
-    font->AddVeretsForTextInBox2D( textVerts, boxBounds2, cellHeight, text, Rgba::GRAY,  1.f, alignments[alignmentIndex], TEXT_DRAW_OVERRUN );
-    font->AddVeretsForTextInBox2D( textVerts, boxBounds2, cellHeight, text, Rgba::WHITE, 1.f, alignments[alignmentIndex], TEXT_DRAW_SHRINK_TO_FIT );
-
-
-    TransformVertexArrayToDesktop( desktopID, 2, boxVerts.size(), boxVerts.data(), textVerts.size(), textVerts.data() );
-
-    g_theRenderer->BindTexture( "" );
-    g_theRenderer->DrawVertexArray( boxVerts );
-
-    g_theRenderer->BindTexture( font->GetTexturePath() );
-    g_theRenderer->DrawVertexArray( textVerts );
-}
-
-
-void Game::RenderTextMultiLine( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
-
-    std::vector<VertexPCU> textVerts;
-    AABB2 desktopBounds = GetDesktopBounds( desktopID );
-    Vec2 desktopDimensions = desktopBounds.GetDimensions();
-
-    float desktopCenterX = (desktopDimensions.x * 0.5f);
-    float desktopCenterY = (desktopDimensions.y * 0.5f);
-
-    VertexList boxVerts;
-    AABB2 boxBounds2( Vec2( desktopCenterX * 1.25f, desktopCenterY * 0.9f ), Vec2( desktopCenterX * 1.75f, desktopCenterY * 1.25f ) );
-    AABB2 borderBounds2 = boxBounds2.GetPaddedAABB2( 2.f );
-    AddVertsForAABB2D( boxVerts, borderBounds2, Rgba::GRAY );
-    AddVertsForAABB2D( boxVerts, boxBounds2, Rgba::BLACK );
-
-    std::string textOptions[] = {
-        "\nThis is\na string \nwith multiple\n lines \n and odd spaces\n",
-        "This string\nhas less odd spacing\nand should be more obviously\naligned correctly!"
-    };
-    int textIndex = (int)(fmod( 0.1 * GetCurrentTimeSeconds(), 2 ));
-    std::string text = textOptions[textIndex];
-
-    float cellHeight = 2.f;
-
-    float alignmentX = cos( (float)GetCurrentTimeSeconds() ) + 0.5f;
-    float alignmentY = sin( (float)GetCurrentTimeSeconds() ) + 0.5f;
-    alignmentX = ClampFloat( alignmentX, 0.f, 1.f );
-    alignmentY = ClampFloat( alignmentY, 0.f, 1.f );
-    Vec2 movingAlignment = Vec2( alignmentX, alignmentY );
-
-    double glyphRate = 30.f * GetCurrentTimeSeconds();
-    int numGlyphs = (int)glyphRate % 125;
-
-    font->AddVeretsForTextInBox2D( textVerts, boxBounds2, cellHeight, text, Rgba::WHITE, 1.f, movingAlignment, TEXT_DRAW_SHRINK_TO_FIT, numGlyphs );
-
-    TransformVertexArrayToDesktop( desktopID, 2, boxVerts.size(), boxVerts.data(), textVerts.size(), textVerts.data() );
-
-    g_theRenderer->BindTexture( "" );
-    g_theRenderer->DrawVertexArray( boxVerts );
-
-    g_theRenderer->BindTexture( font->GetTexturePath() );
-    g_theRenderer->DrawVertexArray( textVerts );
-}
-
-
-void Game::RenderXML( int desktopID ) const {
-    const BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
-    std::vector<VertexPCU> verts = m_xmlVerts;
-
-    TransformVertexArrayToDesktop( desktopID, 1, verts.size(), verts.data() );
-    g_theRenderer->BindTexture( font->GetTexturePath() );
-    g_theRenderer->DrawVertexArray( verts );
-}
-
-
 void Game::RenderEntityArray( const Entity** entityArray, int numEntities ) const {
 	for( int i = 0; i < numEntities; i++ ) {
 		const Entity* entity = entityArray[i];
@@ -947,41 +733,6 @@ void Game::RenderEntityArray( const Entity** entityArray, int numEntities ) cons
 			entity->Render();
 		}
 	}
-}
-
-
-const Vec2 Game::GetDesktopOffset( int desktopID ) const {
-    Vec2 desktopOffset( 0.f, 0.f );
-
-    for( int desktopIndex = 0; desktopIndex < desktopID; desktopIndex++ ) {
-        float desktopHeight = m_desktopDimensions[desktopIndex].y;
-        desktopOffset += Vec2( 0.f, desktopHeight );
-    }
-
-    return desktopOffset;
-}
-
-
-const AABB2 Game::GetDesktopBounds( int desktopID ) const {
-    Vec2 mins = GetDesktopOffset( desktopID );
-    Vec2 maxs = mins + m_desktopDimensions[desktopID];
-    return AABB2( mins, maxs );
-}
-
-
-void Game::TransformVertexArrayToDesktop( int desktopID, int numArrays, ... ) const {
-    Vec2 desktopOffset = GetDesktopOffset( desktopID );
-
-    va_list vertexArrays;
-    va_start( vertexArrays, numArrays );
-
-    for( int arrayIndex = 0; arrayIndex < numArrays; arrayIndex++ ) {
-        int numVerts = (int)va_arg( vertexArrays, size_t );
-        VertexPCU* verts = va_arg( vertexArrays, VertexPCU* );
-        TransformVertexArray( numVerts, verts, 1.f, 0.f, desktopOffset );
-    }
-    
-    va_end( vertexArrays );
 }
 
 

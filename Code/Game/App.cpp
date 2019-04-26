@@ -8,6 +8,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
+#include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/Game.hpp"
@@ -18,6 +19,7 @@ Game* g_theGame;
 
 AudioSystem* g_theAudio;
 InputSystem* g_theInput;
+PhysicsSystem* g_thePhysicsSystem;
 RenderContext* g_theRenderer;
 RNG* g_RNG;
 WindowContext* g_theWindow;
@@ -32,17 +34,19 @@ App::App( void* appWinProc ) {
 
 
 App::~App() {
-    delete g_theWindow;
-    g_theWindow = nullptr;
+    CLEAR_POINTER( g_theWindow );
 
     g_theDevConsole->Shutdown();
 }
 
 
 void App::Startup() {
+    Clock::s_master.SetFrameLimit( APP_MAX_DELTA_SECONDS );
+
     g_theRenderer = new RenderContext();
     g_theInput = new InputSystem();
     g_theAudio = new AudioSystem();
+    g_thePhysicsSystem = new PhysicsSystem( g_theRenderer );
     g_RNG = new RNG();
 
     g_theWindow->Startup();
@@ -50,6 +54,8 @@ void App::Startup() {
     g_theDebugger->Startup( g_theRenderer );
     g_theInput->Startup();
     g_theAudio->Startup();
+    g_thePhysicsSystem->Startup();
+    g_thePhysicsSystem->SetGravity( Vec2( 0.f, -2.f ) );
 
     g_theGame = new Game();
     g_theGame->Startup();
@@ -58,26 +64,20 @@ void App::Startup() {
 
 void App::Shutdown() {
     g_theGame->Shutdown();
-    delete g_theGame;
-    g_theGame = nullptr;
+    CLEAR_POINTER( g_theGame );
 
+    g_thePhysicsSystem->Shutdown();
     g_theAudio->Shutdown();
     g_theInput->Shutdown();
     g_theDebugger->Shutdown();
     g_theRenderer->Shutdown();
     g_theWindow->Shutdown();
 
-    delete g_RNG;
-    g_RNG = nullptr;
-
-    delete g_theAudio;
-    g_theAudio = nullptr;
-
-    delete g_theInput;
-    g_theInput = nullptr;
-
-    delete g_theRenderer;
-    g_theRenderer = nullptr;
+    CLEAR_POINTER( g_RNG );
+    CLEAR_POINTER( g_thePhysicsSystem );
+    CLEAR_POINTER( g_theAudio );
+    CLEAR_POINTER( g_theInput );
+    CLEAR_POINTER( g_theRenderer );
 }
 
 
@@ -135,12 +135,10 @@ bool App::HandleKeyReleased( unsigned char keyCode ) {
     }
 
     switch( keyCode ) {
-        case('T'):
-        {
+        case('T'): {
             m_isSlowMo = false;
             return 0;
-        } case('Y'):
-        {
+        } case('Y'): {
             m_isFastMo = false;
             return 0;
         }
@@ -159,6 +157,11 @@ bool App::HandleCharTyped( unsigned char character ) {
 }
 
 
+bool App::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f*/ ) {
+    return g_theGame->HandleMouseButton( event, scrollAmount );
+}
+
+
 bool App::HandleQuitRequested() {
     m_isQuitting = true;
     return 0;
@@ -172,9 +175,11 @@ bool App::IsQuitting() const {
 
 void App::BeginFrame() {
     g_theWindow->BeginFrame();
+    Clock::s_master.Tick(); // Update master clock
     g_theInput->BeginFrame();
     g_theRenderer->BeginFrame();
     g_theAudio->BeginFrame();
+    g_thePhysicsSystem->BeginFrame();
     g_theDevConsole->BeginFrame();
     g_theDebugger->BeginFrame();
 }
@@ -184,33 +189,26 @@ void App::EndFrame() {
     g_theInput->EndFrame();
     g_theRenderer->EndFrame();
     g_theAudio->EndFrame();
+    g_thePhysicsSystem->EndFrame();
     g_theDevConsole->EndFrame();
     g_theDebugger->EndFrame();
 }
 
 
 void App::Update() {
-    double currentTime = GetCurrentTimeSeconds();
-    float deltaSeconds = (float)(currentTime - m_timeLastFrame);
-    m_timeLastFrame = currentTime;
-    deltaSeconds = ClampFloat( deltaSeconds, 0.f, APP_MAX_DELTA_SECONDS );
-
-    if( m_isSlowMo ) {
-        deltaSeconds /= 10.f;
-    } else if( m_isFastMo ) {
-        deltaSeconds *= 4.f;
-    }
-
-    g_theGame->Update( deltaSeconds );
+    float deltaSeconds = g_theGame->GetGameClock()->GetDeltaTime();
+    g_theGame->Update();
+    g_thePhysicsSystem->Update( deltaSeconds );
     g_theDebugger->Update( deltaSeconds );
 }
 
 
 void App::Render() const {
-    g_theRenderer->ClearColorTarget( Rgba( 0.f, 0.f, 0.f, 1.f ) );
+    g_theRenderer->ClearRenderTarget( Rgba( 0.f, 0.f, 0.f, 1.f ) );
 
     g_theGame->Render();
 
+    g_thePhysicsSystem->RenderDebug(); // maybe wrap in  debugRender bool?
     g_theDebugger->RenderScreen();
     g_theDevConsole->Render( g_theRenderer );
 }

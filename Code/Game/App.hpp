@@ -1,6 +1,8 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
+#include "Engine/Core/WindowContext.hpp"
+
 
 class App {
     public:
@@ -13,6 +15,7 @@ class App {
     bool HandleKeyPressed( unsigned char keyCode );
     bool HandleKeyReleased( unsigned char keyCode );
     bool HandleCharTyped( unsigned char character );
+    bool HandleMouseButton( MouseEvent event, float scrollAmount = 0.f );
 
     bool HandleQuitRequested();
     bool IsQuitting() const;

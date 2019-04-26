@@ -1,8 +1,10 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
+#include "Engine/Core/Time.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/VertexPCU.hpp"
+#include "Engine/Core/WindowContext.hpp"
 
 #include "Game/Entity.hpp"
 
@@ -33,7 +35,7 @@ class Game {
 	void Startup();
 	void Shutdown();
 
-	void Update( float deltaSeconds );
+	void Update();
 	void Render() const;
     bool IsDebugDrawingOn() const;
     void SetCameraShakeAmount( float newCameraShakeAmount );
@@ -41,10 +43,12 @@ class Game {
 	bool HandleKeyPressed( unsigned char keyCode );
 	bool HandleKeyReleased( unsigned char keyCode );
 	bool HandleQuitRequested();
+    bool HandleMouseButton( MouseEvent event, float scrollAmount = 0.f );
 
     void ReturnToAttractScreen();
 
     Camera* GetActiveCamera() const;
+    Clock* GetGameClock() const;
 
     bool HasGameBeenBeaten() const;
 
@@ -54,15 +58,10 @@ class Game {
     static bool Command_SetPointLights( EventArgs& args );
 
 
-	private:
-    static const int m_numDesktops = 3;
-    Vec2 m_desktopDimensions[m_numDesktops] = {
-        Vec2( 200.f, 100.f ),
-        Vec2( 200.f, 100.f ),
-        Vec2( 200.f, 100.f)
-    };
+    private:
+    Clock* m_gameClock = nullptr;
+    bool m_isPaused = false;
 
-    int m_frameNumber = -1;
     bool m_debugDrawing = true;
     float m_cameraShakeAmount = 0.f;
 
@@ -73,7 +72,7 @@ class Game {
     int m_activeDesktop = 0;
     Camera* m_playerCamera = nullptr;
     Camera* m_debugCamera = nullptr;
-    CameraController* m_cameraPos = nullptr;
+    CameraController* m_controller = nullptr;
 
     std::vector<VertexPCU> m_xmlVerts;
     int m_channelIndex = 0;
@@ -101,19 +100,8 @@ class Game {
     void RenderAttractScreen() const;
     void RenderGame() const;
     void RenderDebugDraw() const;
-    void RenderTexture( int desktopID ) const;
-    void RenderSpriteAnimations( int desktopID ) const;
-    void RenderAdditiveVenn( int desktopID ) const;
-    void RenderTextInBox( int desktopID ) const;
-    void RenderTextAlignment( int desktopID ) const;
-    void RenderTextDrawMode( int desktopID ) const;
-    void RenderTextMultiLine( int desktopID ) const;
-    void RenderXML( int desktopID ) const;
     void RenderEntityArray( const Entity** entityArray, int numEntities ) const;
 
-    const Vec2 GetDesktopOffset( int desktopID ) const;
-    const AABB2 GetDesktopBounds( int desktopID ) const;
-    void TransformVertexArrayToDesktop( int desktopID, int numArrays, ... ) const;
     void CheckCollisionBetweenEntityArrays( Entity** entity1Array, int maxEntity1, Entity** entity2Array, int maxEntity2);
 
     void DestroyEntity( Entity** entityArray, int entityIndex );
