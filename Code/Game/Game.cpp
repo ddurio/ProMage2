@@ -10,6 +10,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/Capsule3.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Math/IntVec2.hpp"
@@ -648,13 +649,16 @@ void Game::RenderGame() const {
     // Test Cylinders
     cpuMesh.Clear();
     cpuMesh.SetColor( Rgba::WHITE );
+
+    g_theRenderer->BindMaterial( m_materials[1] );
+    g_theRenderer->BindTexture();
+    cpuMesh.AddCapsule( Capsule3( Vec3::ZERO, Vec3(3.f, -2.f, 5.f), 0.5f ) );
     //cpuMesh.AddCylinder( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, Vec3( 1.f, 1.f, 1.f ) );
     //cpuMesh.AddCone( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, -Vec3( 1.f, 1.f, 1.f ) );
     //cpuMesh.AddHourGlass( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, -Vec3( 1.f, 1.f, 1.f ) );
     //cpuMesh.AddNonUniformCylinder( Vec3( 0.f, 1.f, -5.f ), 1.f, 0.25f, 0.5f, Vec3( -1.f, 1.f, 2.f ) );
 
-    g_theRenderer->BindMaterial( m_materials[1] );
-    cpuMesh.AddQuad( Vec3( -1.f, -1.f, 0.f ), Vec3( 1.f, 1.f, 0.f ) );
+    cpuMesh.AddQuad( Vec3( -1.f, 5.f, 0.f ), Vec3( 1.f, 7.f, 0.f ) );
 
     gpuMesh.CopyVertsFromCPUMesh( &cpuMesh );
     //g_theRenderer->BindTexture( "Data/Images/Test_StbiFlippedAndOpenGL.png" );
