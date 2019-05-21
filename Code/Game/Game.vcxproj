@@ -24,7 +24,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Starship</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
-    <ProjectName>Protogame3D</ProjectName>
+    <ProjectName>Adventure</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -188,24 +188,73 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="ActorDef.cpp" />
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="CameraController.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameInput.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="GameStateMainMenu.cpp" />
+    <ClCompile Include="GameStatePlay.cpp" />
+    <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="Item.cpp" />
+    <ClCompile Include="ItemDef.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MapDef.cpp" />
+    <ClCompile Include="MapGenStep.cpp" />
+    <ClCompile Include="MapGenStep_CellularAutomata.cpp" />
+    <ClCompile Include="MapGenStep_DistanceField.cpp" />
+    <ClCompile Include="MapGenStep_FromImage.cpp" />
+    <ClCompile Include="MapGenStep_PerlinNoise.cpp" />
+    <ClCompile Include="MapGenStep_RoomsAndPaths.cpp" />
+    <ClCompile Include="MapGenStep_Sprinkle.cpp" />
+    <ClCompile Include="Metadata.cpp" />
+    <ClCompile Include="Tile.cpp" />
+    <ClCompile Include="TileDef.cpp" />
+    <ClCompile Include="UIButton.cpp" />
+    <ClCompile Include="UILabel.cpp" />
+    <ClCompile Include="UIWidget.cpp" />
+    <ClCompile Include="XMLUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actor.hpp" />
+    <ClInclude Include="ActorDef.hpp" />
     <ClInclude Include="App.hpp" />
-    <ClInclude Include="CameraController.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
+    <ClInclude Include="GameInput.hpp" />
+    <ClInclude Include="GameState.hpp" />
+    <ClInclude Include="GameStateMainMenu.hpp" />
+    <ClInclude Include="GameStatePlay.hpp" />
+    <ClInclude Include="Inventory.hpp" />
+    <ClInclude Include="Item.hpp" />
+    <ClInclude Include="ItemDef.hpp" />
+    <ClInclude Include="Map.hpp" />
+    <ClInclude Include="MapDef.hpp" />
+    <ClInclude Include="MapGenStep.hpp" />
+    <ClInclude Include="MapGenStep_CellularAutomata.hpp" />
+    <ClInclude Include="MapGenStep_DistanceField.hpp" />
+    <ClInclude Include="MapGenStep_FromImage.hpp" />
+    <ClInclude Include="MapGenStep_PerlinNoise.hpp" />
+    <ClInclude Include="MapGenStep_RoomsAndPaths.hpp" />
+    <ClInclude Include="MapGenStep_Sprinkle.hpp" />
+    <ClInclude Include="Metadata.hpp" />
+    <ClInclude Include="Tile.hpp" />
+    <ClInclude Include="TileDef.hpp" />
+    <ClInclude Include="UIButton.hpp" />
+    <ClInclude Include="UILabel.hpp" />
+    <ClInclude Include="UIWidget.hpp" />
+    <ClInclude Include="XMLUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\..\Run\Data\Gameplay\TestExecFile.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\TestExecFile2.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\XMLTest.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />
     <Xml Include="..\..\Run\Data\ProjectConfig.xml" />
   </ItemGroup>
   <ItemGroup>

@@ -1,10 +1,53 @@
 #include "Game/Entity.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
+
+#include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Math/Capsule3.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/CPUMesh.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
+
+#include "Game/Game.hpp"
+#include "Game/Map.hpp"
+
+
+class RigidBody2D;
+
+
+Entity::Entity( Map* theMap, EntityType type /*= ENTITY_TYPE_UNKNOWN*/, FactionID faction /*= FACTION_UNKNOWN */ ) :
+    m_map( theMap ),
+    m_entityType( type ) {
+    SetFaction( faction );
+}
+
+
+Entity::~Entity() {
+    CLEAR_POINTER( m_mesh );
+}
 
 
 const Vec2 Entity::GetPosition() const {
-    return m_position;
+    return m_transform.position;
+}
+
+
+const Transform2D* Entity::GetTransformPointer() const {
+    return &m_transform;
+}
+
+
+const FactionID Entity::GetFaction() const {
+    return m_faction;
+}
+
+
+const EntityType Entity::GetEntityType() const {
+    return m_entityType;
+}
+
+
+RigidBody2D* Entity::GetRigidBody() const {
+    return m_rigidBody;
 }
 
 
@@ -18,19 +61,64 @@ bool Entity::IsGarbage() const {
 }
 
 
-void Entity::GetPhysicsDisc( Vec2& position, float& radius ) const {
-    position = m_position;
-    radius = m_physicsRadius;
+bool Entity::IsKillable() const {
+    return m_isKillable;
 }
 
 
-void Entity::GetCosmeticDist( Vec2& position, float& radius ) const {
-    position = m_position;
-    radius = m_cosmeticRadius;
+bool Entity::IsSolid() const {
+    return m_isSolid;
+}
+
+
+bool Entity::IsMovable() const {
+    return m_isMovable;
+}
+
+
+int Entity::GetHealth() const {
+    return m_health;
+}
+
+
+void Entity::SetFaction( FactionID faction ) {
+    m_faction = faction;
+
+    switch( m_faction ) {
+        // Intentional fallthrough for all player faction entities
+        // All using the same audio clip
+        case(FACTION_PLAYER0):
+        {
+        } case(FACTION_PLAYER1):
+        {
+        } case(FACTION_PLAYER2):
+        {
+        } case(FACTION_PLAYER3):
+        {
+            //m_hitSound = g_theAudio->CreateOrGetSound( AUDIO_PLAYERTANK_HIT );
+            break;
+        } case(FACTION_ENEMY1):
+        {
+            //m_hitSound = g_theAudio->CreateOrGetSound( AUDIO_ENEMY_HIT );
+            break;
+        }
+    }
+}
+
+
+void Entity::SetWorldPosition( const Vec2& worldPosition ) {
+    m_transform.position = worldPosition;
+}
+
+
+void Entity::Die() {
+    m_isDead = true;
+    m_isGarbage = true;
 }
 
 
 void Entity::TakeDamage( int damageToTake ) {
+    g_theAudio->PlaySound( m_hitSound );
     m_health -= damageToTake;
 
     if( m_health <= 0 ) {
@@ -40,50 +128,20 @@ void Entity::TakeDamage( int damageToTake ) {
 
 
 Vec2 Entity::GetForwardVector() const {
-    return Vec2( CosDegrees( m_orientationDegrees ), SinDegrees( m_orientationDegrees ) );
+    return Vec2( CosDegrees( m_transform.rotationDegrees ), SinDegrees( m_transform.rotationDegrees ) );
 }
 
 
-void Entity::UpdateDebugVerts() {
-    Vec3 triOuterVert = Vec3( 1, 0, 0 );
-    float degreesPerTriangle = 360 / (s_numDebugVerts / 3);
-    float vertAngle;
-    int numTriangle;
-    
-    for( int i = 0; i < s_numDebugVerts; i += 3 ) {
-        numTriangle = i / 3;
-        // Triangle Vert1
-        m_debugCosmeticVerts[i].position = Vec3( m_position.x, m_position.y, 0.f );
-        m_debugCosmeticVerts[i].color = m_debugCosmeticColor;
-
-        // Triangle Vert2
-        vertAngle = numTriangle * degreesPerTriangle;
-        m_debugCosmeticVerts[i + 1].position = TransformPosition( Vec3( 1, 0, 0 ), m_cosmeticRadius, vertAngle, m_position );
-        m_debugCosmeticVerts[i + 1].color = m_debugCosmeticColor;
-
-        // Triangle Vert3
-        vertAngle = (numTriangle + 1) * degreesPerTriangle;
-        m_debugCosmeticVerts[i + 2].position = TransformPosition( Vec3( 1, 0, 0 ), m_cosmeticRadius, vertAngle, m_position );
-        m_debugCosmeticVerts[i + 2].color = m_debugCosmeticColor;
+void Entity::BuildMesh( const Rgba& tint /*= Rgba::WHITE*/ ) {
+    if( m_mesh != nullptr ) {
+        CLEAR_POINTER( m_mesh );
     }
-    m_debugCosmeticVerts[s_numDebugVerts - 1] = m_debugCosmeticVerts[1];
 
-    for( int i = 0; i < s_numDebugVerts; i += 3 ) {
-        numTriangle = i / 3;
-        // Triangle Vert1
-        m_debugPhysicsVerts[i].position = Vec3( m_position.x, m_position.y, 0.f );
-        //m_debugPhysicsVerts[i].m_position = Vec3( 0, 0, 0 );
-        m_debugPhysicsVerts[i].color = m_debugPhysicsColor;
+    CPUMesh builder;
+    builder.SetColor( tint );
+    // DFS1FIXME: Set correct UVs here!
+    builder.AddQuad( m_localBounds );
 
-        // Triangle Vert2
-        vertAngle = numTriangle * degreesPerTriangle;
-        m_debugPhysicsVerts[i + 1].position = TransformPosition( Vec3( 1, 0, 0 ), m_physicsRadius, vertAngle, m_position );
-        m_debugPhysicsVerts[i + 1].color = m_debugPhysicsColor;
-
-        // Triangle Vert3
-        vertAngle = (numTriangle + 1) * degreesPerTriangle;
-        m_debugPhysicsVerts[i + 2].position = TransformPosition( Vec3( 1, 0, 0 ), m_physicsRadius, vertAngle, m_position );
-        m_debugPhysicsVerts[i + 2].color = m_debugPhysicsColor;
-    }
-    m_debugPhysicsVerts[s_numDebugVerts - 1] = m_debugPhysicsVerts[1];
+    m_mesh = new GPUMesh( g_theRenderer );
+    m_mesh->CopyVertsFromCPUMesh( &builder );
 }

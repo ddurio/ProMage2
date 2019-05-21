@@ -1,0 +1,17 @@
+<ActorDefinitions imageFilePath="Data/Images/Characters/Composite_Examples.png" gridLayout="32,32" ppu="40">
+    <ActorDefinition
+        name="Girl"
+        spriteCoords="13,3"
+        strength="2~5"
+        intelligence="7~10"
+        agility="5~9"
+    />
+    
+    <ActorDefinition
+        name="Boy"
+        spriteCoords="13,9"
+        strength="7~10"
+        intelligence="3~6"
+        agility="5~9"
+    />
+</ActorDefinitions>

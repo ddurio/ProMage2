@@ -1,0 +1,23 @@
+<MapDefinitions>
+    <MapDefinition name="Island" width="16~32" height="9~18" fillTile="Grass" edgeTile="Water">
+        <GenerationSteps>
+            <RoomsAndPaths>
+                <Rooms count="3" width="2~5" height="3~6" floor="Water" wall="Stone"/>
+                <Paths floor="Sand" loop="false"/>
+            </RoomsAndPaths>
+            <!--
+            <Sprinkle ifIsType="Grass" changeToType="Stone" count="0~4"/>
+            <CellularAutomata ifIsType="Grass" ifNeighborType="Stone" changeToType="Stone"/>
+            <GenerateDistanceField ifIsType="Water" movementType="Walk"/>
+            <CellularAutomata ifDistanceField="4~5" changeToType="Stone"/>
+            <FromImage imageFilePath="Data/Images/MGS_FromImage_Test.png" numRotations="0~3" alignX="0.9" alignY="0.9"/>
+            <CellularAutomata ifDistanceField="4~5" spawnActor="Girl"/>
+            <CellularAutomata ifDistanceField="4~5" spawnItem="ShortSword"/>
+            <CellularAutomata ifIsType="Stone" ifNeighborType="Stone" ifNumNeighbors="3" changeToType="Water"/>
+            <CellularAutomata ifIsType="Grass" ifNeighborType="Water" changeToType="Stone" chancePerTile="0.5"/>
+            <CellularAutomata ifIsType="Stone" ifNeighborType="Water" ifNumNeighbors="4" changeToType="Grass"/>
+            <PerlinNoise ifIsType="Grass" ifNoise="-0.1~0.1" octaves="1" gridSize="20" changeToType="Stone"/>
+            -->
+        </GenerationSteps>
+    </MapDefinition>
+</MapDefinitions>

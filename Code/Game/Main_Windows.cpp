@@ -15,18 +15,28 @@ bool GameWinProc( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM l
     unsigned char asKey = (unsigned char)wParam;
 
     switch( wmMessageCode ) {
-        case WM_CLOSE:
-        { // App close requested via "X" button, right-click "Close Window" on task bar, "Close" from system menu, Alt-F4, etc...
+        case WM_CLOSE: { // App close requested via "X" button, right-click "Close Window" on task bar, "Close" from system menu, Alt-F4, etc...
             return g_theApp->HandleQuitRequested();
-        } case WM_KEYDOWN:
-        { // Raw physical keyboard "key-was-just-depressed" event (case-insensitive, not translated)
+        } case WM_KEYDOWN: { // Raw physical keyboard "key-was-just-depressed" event (case-insensitive, not translated)
             return g_theApp->HandleKeyPressed( asKey );
-        } case WM_KEYUP:
-        { // Raw physical keyboard "key-was-just-released" event (case-insensitive, not translated)
+        } case WM_KEYUP: { // Raw physical keyboard "key-was-just-released" event (case-insensitive, not translated)
             return g_theApp->HandleKeyReleased( asKey );
-        } case WM_CHAR:
-        { // Also keydown but provided the direct key that was pressed in ASCII
+        } case WM_CHAR: { // Also keydown but provided the direct key that was pressed in ASCII
             return g_theApp->HandleCharTyped( asKey );
+        } case(WM_LBUTTONDOWN): {
+            return g_theApp->HandleMouseButton( MOUSE_EVENT_LBUTTON_DOWN );
+        } case(WM_LBUTTONUP): {
+            return g_theApp->HandleMouseButton( MOUSE_EVENT_LBUTTON_UP );
+        } case(WM_RBUTTONDOWN): {
+            return g_theApp->HandleMouseButton( MOUSE_EVENT_RBUTTON_DOWN );
+        } case(WM_RBUTTONUP): {
+            return g_theApp->HandleMouseButton( MOUSE_EVENT_RBUTTON_UP );
+        } case(WM_MBUTTONDOWN): {
+            return g_theApp->HandleMouseButton( MOUSE_EVENT_MBUTTON_DOWN );
+        } case(WM_MBUTTONUP): {
+            return g_theApp->HandleMouseButton( MOUSE_EVENT_MBUTTON_UP );
+        } case(WM_MOUSEWHEEL): {
+            return g_theApp->HandleMouseButton( MOUSE_EVENT_SCROLL, GET_WHEEL_DELTA_WPARAM( wParam ) / (float)WHEEL_DELTA );
         }
     }
 

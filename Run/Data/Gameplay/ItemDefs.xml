@@ -1,0 +1,17 @@
+<ItemDefinitions imageFilePath="Data/Images/Characters/Doll_Weapons_01.png" gridLayout="32,32" ppu="40">
+    <ItemDefinition
+        name="ShortSword"
+        slot="mainHand"
+        spriteCoords="8,5"
+    />
+    <ItemDefinition
+        name="Shield"
+        slot="offHand"
+        spriteCoords="22,1"
+    />
+    <ItemDefinition
+        name="MetalShard"
+        slot="none"
+        spriteCoords="27,6"
+    />
+</ItemDefinitions>

@@ -196,10 +196,9 @@ void App::EndFrame() {
 
 
 void App::Update() {
-    float deltaSeconds = g_theGame->GetGameClock()->GetDeltaTime();
     g_theGame->Update();
-    g_thePhysicsSystem->Update( deltaSeconds );
-    g_theDebugger->Update( deltaSeconds );
+    //g_thePhysicsSystem->Update( deltaSeconds ); // DFS1FIXME: Should be done inside the gameState updates if desired
+    //g_theDebugger->Update( deltaSeconds );
 }
 
 

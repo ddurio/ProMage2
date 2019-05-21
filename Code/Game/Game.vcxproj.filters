@@ -11,6 +11,12 @@
     <Filter Include="Data">
       <UniqueIdentifier>{4c835591-a5d2-4953-8db1-e922010d0e0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Map">
+      <UniqueIdentifier>{d2dd936d-8f61-497f-ad46-124ffbac0806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{b9d6a342-6dfc-4dd1-8a82-8022a6e70fae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -25,7 +31,79 @@
     <ClCompile Include="Entity.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
-    <ClCompile Include="CameraController.cpp">
+    <ClCompile Include="GameInput.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateMainMenu.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStatePlay.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="UIButton.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UILabel.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIWidget.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapDef.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_CellularAutomata.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_DistanceField.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_FromImage.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_PerlinNoise.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_RoomsAndPaths.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_Sprinkle.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="TileDef.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Metadata.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemDef.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLUtils.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorDef.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,7 +123,79 @@
     <ClInclude Include="EngineBuildPreferences.hpp">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="CameraController.hpp">
+    <ClInclude Include="GameInput.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateMainMenu.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStatePlay.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="UIButton.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UILabel.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIWidget.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapDef.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_CellularAutomata.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_DistanceField.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_FromImage.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_PerlinNoise.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_RoomsAndPaths.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_Sprinkle.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="TileDef.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Metadata.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemDef.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="XMLUtils.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorDef.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,13 +203,16 @@
     <Xml Include="..\..\Run\Data\ProjectConfig.xml">
       <Filter>Data</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\XMLTest.xml">
+    <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml">
       <Filter>Data</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\TestExecFile.xml">
+    <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml">
       <Filter>Data</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\TestExecFile2.xml">
+    <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml">
       <Filter>Data</Filter>
     </Xml>
   </ItemGroup>
