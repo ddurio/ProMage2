@@ -37,6 +37,8 @@ class Map {
     const Tile& GetTileFromTileCoords( int xIndex, int yIndex ) const;
     const Tile& GetTileFromWorldCoords( const Vec2& worldCoords ) const;
     Inventory* GetMapInventory() const;
+    Entity* GetPlayer( int playerIndex = 0 ) const;
+
     bool IsValidTileCoords( const IntVec2& tileCoords ) const;
 
     Actor* SpawnNewActor( std::string actorType, const Vec2& worldPosition, int playerID = -1 );
@@ -57,6 +59,7 @@ class Map {
     VertexList m_mapVerts;
 
     EntityList m_entities;
+    Entity* m_players[4] = {};
 
     Inventory* m_inventory = nullptr;
 

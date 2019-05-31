@@ -213,6 +213,7 @@
     <ClCompile Include="Metadata.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDef.cpp" />
+    <ClCompile Include="TopDownFollowCamera.cpp" />
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UILabel.cpp" />
     <ClCompile Include="UIWidget.cpp" />
@@ -222,6 +223,7 @@
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="ActorDef.hpp" />
     <ClInclude Include="App.hpp" />
+    <ClInclude Include="Definition.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="Game.hpp" />
@@ -245,13 +247,16 @@
     <ClInclude Include="Metadata.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDef.hpp" />
+    <ClInclude Include="TopDownFollowCamera.hpp" />
     <ClInclude Include="UIButton.hpp" />
     <ClInclude Include="UILabel.hpp" />
     <ClInclude Include="UIWidget.hpp" />
     <ClInclude Include="XMLUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />

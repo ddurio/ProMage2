@@ -10,11 +10,12 @@ class Tile;
 
 
 class Actor : public Entity {
-    friend class ActorDef;
+    //friend class ActorDef;
+    friend class Definition<Actor>;
 
     public:
     explicit Actor( Map* theMap, std::string actorType, int playerID = -1 );
-    explicit Actor( Map* theMap, const ActorDef* actorDef, int playerID = -1 );
+    explicit Actor( Map* theMap, const Definition<Actor>* actorDef, int playerID = -1 );
 
     void Startup();
     void Shutdown();
@@ -30,7 +31,7 @@ class Actor : public Entity {
     void SetWorldPosition( const Vec2& worldPosition );
 
     private:
-    const ActorDef* m_actorDef = nullptr;
+    const Definition<Actor>* m_actorDef = nullptr;
     Inventory* m_inventory = nullptr;
     bool m_isPlayerControlled = false;
     int m_playerID = -1;

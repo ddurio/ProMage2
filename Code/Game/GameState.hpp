@@ -43,8 +43,8 @@ class GameState {
 
     Clock* m_stateClock = nullptr;
 
-    Camera* m_uiCamera = nullptr;
-    Camera* m_gameCamera = nullptr;
+    Camera* m_uiCamera = nullptr;       // Constructed by default, but no Ortho/Perspective set
+    Camera* m_gameCamera = nullptr;     // NOT constructed by default, but still deleted
 
     virtual void BuildLoadingMesh();
     virtual void BuildLoadedMesh();

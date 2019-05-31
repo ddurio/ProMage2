@@ -14,7 +14,8 @@
 
 Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
     Entity( theMap, ENTITY_TYPE_ACTOR ) {
-    m_actorDef = ActorDef::GetActorDef( actorType );
+    //m_actorDef = ActorDef::GetActorDef( actorType );
+    m_actorDef = Definition<Actor>::GetDefinition( actorType );
     m_actorDef->Define( *this );
 
     if( playerID >= 0 ) {
@@ -24,7 +25,7 @@ Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
 }
 
 
-Actor::Actor( Map* theMap, const ActorDef* actorDef, int playerID /*= -1*/ ) :
+Actor::Actor( Map* theMap, const Definition<Actor>* actorDef, int playerID /*= -1*/ ) :
     Entity( theMap, ENTITY_TYPE_ACTOR ),
     m_actorDef(actorDef) {
     m_actorDef->Define( *this );
@@ -85,6 +86,11 @@ void Actor::Render() const {
         g_theRenderer->DrawVertexArray( m_debugPhysicsVerts );
     }
     */
+
+    //g_theRenderer->BindTexture( m_actorDef->GetTexturePath() );
+    std::string texturePath = m_actorDef->GetProperty( "texturePath", std::string("") );
+    g_theRenderer->BindTexture( texturePath );
+    g_theRenderer->DrawMesh( m_mesh, Matrix44::MakeTranslation2D( m_transform.position ) );
 }
 
 
@@ -208,15 +214,16 @@ void Actor::UpdateFromController( float deltaSeconds ) {
 
 
 void Actor::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
-    TextureView2D* texture = g_theRenderer->GetOrCreateTextureView2D( m_actorDef->GetTexturePath() );
+    std::string texturePath = m_actorDef->GetProperty( "texturePath", std::string() );
+    TextureView2D* texture = g_theRenderer->GetOrCreateTextureView2D( texturePath );
 
     IntVec2 textureDimensions = texture->GetDimensions();
     // DFS1FIXME: Set correct UVs!
-    AABB2 uvs = m_actorDef->GetUVs();
+    AABB2 uvs = m_actorDef->GetProperty( "spriteUVs", AABB2::ZEROTOONE );
 
     Vec2 uvDimensions = uvs.GetDimensions();
     Vec2 spriteDimensions = textureDimensions * uvDimensions;
-    Vec2 spriteWorldDimensions = spriteDimensions / (float)m_actorDef->GetPPU();
+    Vec2 spriteWorldDimensions = spriteDimensions / m_actorDef->GetProperty( "spritePPU", 1.f );
 
     float halfWidth  = spriteWorldDimensions.x / 2.f;
     float halfHeight = spriteWorldDimensions.y / 2.f;

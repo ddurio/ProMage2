@@ -1,6 +1,7 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/WindowContext.hpp"
 
 
@@ -18,6 +19,7 @@ class App {
     bool HandleMouseButton( MouseEvent event, float scrollAmount = 0.f );
 
     bool HandleQuitRequested();
+    bool Command_Quit( EventArgs& args );
     bool IsQuitting() const;
 
     private:

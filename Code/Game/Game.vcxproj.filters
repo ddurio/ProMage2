@@ -106,6 +106,9 @@
     <ClCompile Include="ActorDef.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="TopDownFollowCamera.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -197,6 +200,12 @@
     </ClInclude>
     <ClInclude Include="ActorDef.hpp">
       <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="TopDownFollowCamera.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Definition.hpp">
+      <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

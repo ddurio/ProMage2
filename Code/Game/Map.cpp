@@ -38,8 +38,8 @@ void Map::Startup() {
 
     // DFS1FIXME: Replace playerPlaceholder
     //SpawnNewEntity( ENTITY_TYPE_PLAYER_PLACEHOLDER, Vec2( 1.5f, 1.5f ), 0.f );
-    //SpawnNewActor( "Boy",  Vec2( 3.5f, 3.5f ), 0 );
-    SpawnNewActor( "Boy",  Vec2( 3.5f, 3.5f ) );
+    SpawnNewActor( "Boy",  Vec2( 3.5f, 3.5f ), 0 );
+    //SpawnNewActor( "Boy",  Vec2( 3.5f, 3.5f ) );
     SpawnNewActor( "Girl", Vec2( 2.5f, 3.5f ) );
 }
 
@@ -143,6 +143,15 @@ Inventory* Map::GetMapInventory() const {
 }
 
 
+Entity* Map::GetPlayer( int playerID /*= 0 */ ) const {
+    if( playerID >= 0 && playerID < 4 ) {
+        return m_players[playerID];
+    }
+
+    return nullptr;
+}
+
+
 bool Map::IsValidTileCoords( const IntVec2& tileCoords ) const {
     return (tileCoords.x >= 0 && tileCoords.x < m_mapDimensions.x &&
             tileCoords.y >= 0 && tileCoords.y < m_mapDimensions.y);
@@ -155,6 +164,10 @@ Actor* Map::SpawnNewActor( std::string actorType, const Vec2& worldPosition /*= 
 
     AddEntityToMap( *newActor );
     newActor->Startup();
+
+    if( playerID >= 0 && playerID < 4 ) {
+        m_players[playerID] = newActor;
+    }
 
     return newActor;
 }

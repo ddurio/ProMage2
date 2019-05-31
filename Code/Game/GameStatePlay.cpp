@@ -12,6 +12,7 @@
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/Model.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
 
@@ -22,6 +23,7 @@
 #include "Game/Map.hpp"
 #include "Game/MapDef.hpp"
 #include "Game/TileDef.hpp"
+#include "Game/TopDownFollowCamera.hpp"
 #include "Game/UIButton.hpp"
 #include "Game/UILabel.hpp"
 #include "Game/UIWidget.hpp"
@@ -30,10 +32,16 @@
 GameStatePlay::GameStatePlay() {
     // Cameras
     m_uiCamera->SetOrthoProjection( 10.f );
+
+    m_gameCamera = new TopDownFollowCamera( nullptr );
     m_gameCamera->SetOrthoProjection( 10.f );
 
     // Resources
-    g_theRenderer->BindShader( "BuiltIn/Lit" );
+    /*
+    Shader* shader = g_theRenderer->GetOrCreateShader( "BuiltIn/Unlit" );
+    shader->SetDepthMode( COMPARE_ALWAYS, false );
+    g_theRenderer->BindShader( shader );
+    */
 
     BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
     g_theRenderer->BindTexture( font->GetTexturePath() );
@@ -55,13 +63,17 @@ void GameStatePlay::Startup() {
     m_gameInput = new GameInput();
     m_gameInput->Startup();
 
-    ActorDef::InitializeActorDefs();
+    //ActorDef::InitializeActorDefs();
+    Definition<Actor>::Initialize( DATA_ACTOR_DEFS, "ActorDef" );
     ItemDef::InitializeItemDefs();
     TileDef::InitializeTileDefs();
     MapDef::InitializeMapDefs();
 
     m_map = new Map( "DFS1FIXME", "Island" ); // DFS1FIXME: Set correct map name
     m_map->Startup();
+
+    Entity* player0 = m_map->GetPlayer();
+    ((TopDownFollowCamera*)m_gameCamera)->SetFollowTarget( player0 );
 
     // DFS1FIXME: Load correct materials
     m_materials.resize( 4 );
@@ -133,6 +145,7 @@ void GameStatePlay::Update() {
     }
 
     m_map->Update( deltaSeconds );
+    ((TopDownFollowCamera*)m_gameCamera)->Update( deltaSeconds ); // Must be after map entities are updated
 }
 
 
@@ -160,7 +173,7 @@ void GameStatePlay::Render() {
     g_theRenderer->BeginCamera( m_gameCamera );
 
     g_theRenderer->ClearRenderTarget( Rgba::BLACK );
-    g_theRenderer->BindShader( "BuiltIn/Unlit" );
+    g_theRenderer->BindShader( nullptr );
 
     m_map->Render();
 

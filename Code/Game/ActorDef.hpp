@@ -1,7 +1,7 @@
 #pragma once
+#include "Game/GameCommon.hpp"
 
-#include "Game/ActorDef.hpp"
-
+/*
 #include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/FloatRange.hpp"
@@ -16,8 +16,6 @@ class Texture;
 
 class ActorDef {
     public:
-    explicit ActorDef( const XMLElement& element );
-
     static void InitializeActorDefs();
     static void DestroyActorDefs();
     static const ActorDef* GetActorDef( std::string actorType );
@@ -30,6 +28,8 @@ class ActorDef {
     const AABB2& GetUVs() const;
 
     private:
+    explicit ActorDef( const XMLElement& element );
+
     static std::map<std::string, ActorDef*> s_actorDefs;
 
     std::string m_actorType = "";
@@ -47,3 +47,18 @@ class ActorDef {
     FloatRange m_intelligence = FloatRange::ZERO;
     FloatRange m_agility      = FloatRange::ZERO;
 };
+*/
+
+
+// New Definition format
+#include "Game/Definition.hpp"
+
+
+class Actor;
+
+
+template<>
+Definition<Actor>::Definition( const XMLElement& element );
+
+template<>
+void Definition<Actor>::Define( Actor& theObject ) const;

@@ -1,6 +1,16 @@
 #include "Game/ActorDef.hpp"
 
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Math/FloatRange.hpp"
+#include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/RNG.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
+
+#include "Game/Actor.hpp"
+#include "Game/Inventory.hpp"
+
+/*
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -109,3 +119,72 @@ void ActorDef::Define( Actor& actor ) const {
     actor.m_intelligence = g_RNG->GetRandomFloatInRange( m_intelligence );
     actor.m_agility      = g_RNG->GetRandomFloatInRange( m_agility );
 }
+*/
+
+
+//template<>
+//std::map< std::string, Definition<Actor>* > Definition<Actor>::s_definitions;
+
+
+template<>
+Definition<Actor>::Definition( const XMLElement& element ) {
+    // Parse Values
+    m_defType                   = ParseXMLAttribute( element, "name",         m_defType );
+    IntVec2 spriteCoords        = ParseXMLAttribute( element, "spriteCoords", IntVec2::ZERO );
+
+    bool canSee                 = ParseXMLAttribute( element, "canSee",  true );
+    bool canWalk                = ParseXMLAttribute( element, "canWalk", true );
+    bool canFly                 = ParseXMLAttribute( element, "canFly",  false );
+    bool canSwim                = ParseXMLAttribute( element, "canSwim", false );
+
+    FloatRange strength         = ParseXMLAttribute( element, "strength",     FloatRange::ZERO );
+    FloatRange intelligence     = ParseXMLAttribute( element, "intelligence", FloatRange::ZERO );
+    FloatRange agility          = ParseXMLAttribute( element, "agility",      FloatRange::ZERO );
+
+    const XMLElement* spriteEle = element.FirstChildElement( "Sprite" );
+
+    std::string imageFilePath   = ParseXMLAttribute( *spriteEle, "imageFilePath", "" );
+    IntVec2     imageLayout     = ParseXMLAttribute( *spriteEle, "gridLayout",    IntVec2::ZERO );
+    float       imagePPU        = ParseXMLAttribute( *spriteEle, "ppu",           1.f );
+
+    SpriteSheet* sprites = new SpriteSheet( imageFilePath, imageLayout );
+
+    AABB2 spriteUVs = AABB2::ZEROTOONE;
+    sprites->GetSpriteDef( spriteCoords ).GetUVs( spriteUVs.mins, spriteUVs.maxs );
+
+
+    // Set Properties
+    m_properties.SetValue( "spriteCoords",  spriteCoords );
+    m_properties.SetValue( "canSee",        canSee );
+    m_properties.SetValue( "canWalk",       canWalk );
+    m_properties.SetValue( "canFly",        canFly );
+    m_properties.SetValue( "canSwim",       canSwim );
+    m_properties.SetValue( "strength",      strength );
+    m_properties.SetValue( "intelligence",  intelligence );
+    m_properties.SetValue( "agility",       agility );
+    m_properties.SetValue( "spriteSheet",   imageFilePath );
+    m_properties.SetValue( "spritePPU",     imagePPU );
+    m_properties.SetValue( "spriteUVs",     spriteUVs );
+
+
+    g_theDevConsole->PrintString( Stringf( "(ActorDef) Loaded new ActorDef (%s)", m_defType.c_str() ) );
+
+    m_defType = StringToLower( m_defType );
+    s_definitions[m_defType] = this;
+}
+
+
+template<>
+void Definition<Actor>::Define( Actor& theObject ) const {
+    theObject.m_inventory = new Inventory( theObject.m_map );
+
+    const FloatRange strRange = m_properties.GetValue( "strength",     FloatRange( 0.f, 0.f ) );
+    const FloatRange intRange = m_properties.GetValue( "intelligence", FloatRange::ZERO );
+    const FloatRange agiRange = m_properties.GetValue( "agility",      FloatRange::ZERO );
+
+    theObject.m_strength     = g_RNG->GetRandomFloatInRange( strRange );
+    theObject.m_intelligence = g_RNG->GetRandomFloatInRange( intRange );
+    theObject.m_agility      = g_RNG->GetRandomFloatInRange( agiRange );
+}
+
+

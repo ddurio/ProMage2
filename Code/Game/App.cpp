@@ -59,6 +59,8 @@ void App::Startup() {
 
     g_theGame = new Game();
     g_theGame->Startup();
+
+    g_theEventSystem->Subscribe( "quit", this, &App::Command_Quit );
 }
 
 
@@ -90,6 +92,8 @@ void App::RunFrame() {
 
 
 bool App::HandleKeyPressed( unsigned char keyCode ) {
+    //g_theDevConsole->PrintString( Stringf( "KeyCode pressed: %x", keyCode ) );
+
     if( g_theDevConsole->IsTakingInput() ) {
         if( keyCode == 0xC0 ) { // ~ Key
             g_theDevConsole->Toggle();
@@ -98,8 +102,6 @@ bool App::HandleKeyPressed( unsigned char keyCode ) {
 
         return g_theDevConsole->HandleKeyPressed( keyCode );
     }
-
-    //g_theDevConsole->PrintString( Stringf( "KeyCode pressed: %x", keyCode ) );
 
     switch( keyCode ) {
         case(0x1B): {  // Escape Key
@@ -165,6 +167,12 @@ bool App::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f*/ ) {
 bool App::HandleQuitRequested() {
     m_isQuitting = true;
     return 0;
+}
+
+
+bool App::Command_Quit( EventArgs& args ) {
+    UNUSED( args );
+    return HandleQuitRequested();
 }
 
 

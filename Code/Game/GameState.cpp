@@ -11,7 +11,7 @@
 
 GameState::GameState() {
     m_uiCamera = new Camera();
-    m_gameCamera = new Camera();
+    //m_gameCamera = new Camera();
 }
 
 
