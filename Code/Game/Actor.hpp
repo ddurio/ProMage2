@@ -60,7 +60,7 @@ class Actor : public Entity {
     ActorController* m_controller = nullptr;
 
     Vec2 m_moveDir = Vec2::ZERO;
-    float m_moveSpeed = 1.3f;
+    float m_moveSpeed = 3.f;
 
     float m_strength = 0;
     float m_intelligence = 0;
