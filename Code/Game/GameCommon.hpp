@@ -40,8 +40,19 @@ constexpr char  FONT_NAME_SQUIRREL[] = "SquirrelFixedFont";
 constexpr char  DATA_ACTOR_DEFS[] = "Data/Gameplay/ActorDefs.xml";
 constexpr char  DATA_ITEM_DEFS[] = "Data/Gameplay/ItemDefs.xml";
 constexpr char  DATA_MAP_DEFS[] = "Data/Gameplay/MapDefs.xml";
+constexpr char  DATA_PAPER_DOLL_ANIMS[] = "Data/Gameplay/PaperDollSpriteAnims.xml";
+constexpr char  DATA_PAPER_DOLL_ISO_ANIMS[] = "Data/Gameplay/PaperDollIsoAnims.xml";
+constexpr char  DATA_PAPER_DOLL_SPRITES[] = "Data/Gameplay/PaperDollSpriteSheets.xml";
 constexpr char  DATA_PROJECT_CONFIG[] = "Data/ProjectConfig.xml";
 constexpr char  DATA_TILE_DEFS[] = "Data/Gameplay/TileDefs.xml";
+
+constexpr char  PAPER_DOLL_ANIM_DIE[]       = "PaperDoll.Die";
+constexpr char  PAPER_DOLL_ANIM_IDLE[]      = "PaperDoll.Idle";
+constexpr char  PAPER_DOLL_ANIM_SHOOT[]     = "PaperDoll.Shoot";
+constexpr char  PAPER_DOLL_ANIM_SLASH[]     = "PaperDoll.Slash";
+constexpr char  PAPER_DOLL_ANIM_SPELL[]     = "PaperDoll.Spell";
+constexpr char  PAPER_DOLL_ANIM_THRUST[]    = "PaperDoll.Thrust";
+constexpr char  PAPER_DOLL_ANIM_WALK[]      = "PaperDoll.Walk";
 
 constexpr float CLIENT_ASPECT = (16.f / 9.f);
 constexpr float CLIENT_MAX_SCREEN_PERCENT = 0.9f;

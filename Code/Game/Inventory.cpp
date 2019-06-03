@@ -63,6 +63,19 @@ void Inventory::UpdateItemPositions( const Vec2& worldPosition ) {
 }
 
 
+void Inventory::UpdatePaperDoll( std::string( &dollSprites )[NUM_PAPER_DOLL_SLOTS] ) const {
+    for( int slotIndex = 0; slotIndex < NUM_ITEM_SLOTS; slotIndex++ ) {
+        const Item* item = m_equippedItems[slotIndex];
+
+        if( item != nullptr ) {
+            dollSprites[slotIndex] = item->GetSprites();
+        } else {
+            dollSprites[slotIndex] = "";
+        }
+    }
+}
+
+
 void Inventory::Render() const {
     if( m_renderUnequippedItems ) {
         int numUnequipped = (int)m_unequippedItems.size();
@@ -134,7 +147,7 @@ void Inventory::EquipItem( Item* itemToEquip, bool removeFromInventory /*= true*
     ItemSlot slot = itemToEquip->GetItemSlot();
 
     // This item is not equipable
-    if( slot == ITEM_SLOT_NONE ) {
+    if( !IsItemEquipable(itemToEquip) ) {
         return;
     }
 
@@ -166,6 +179,16 @@ void Inventory::UnequipItem( Item* itemToUnequip ) {
 void Inventory::SetRenderPreferences( bool renderEquippedItems /*= false*/, bool renderUnequippedItems /*= false */ ) {
     m_renderEquippedItems = renderEquippedItems;
     m_renderUnequippedItems = renderUnequippedItems;
+}
+
+
+void Inventory::AddItemSets( const Strings& validSetVec ) {
+    m_itemSets.SetTags( validSetVec );
+}
+
+
+void Inventory::AddItemSets( const std::string& validSetCSV ) {
+    m_itemSets.SetTags( validSetCSV );
 }
 
 
@@ -216,4 +239,26 @@ Item* Inventory::GetItemInSlot( int unequippedSlotIndex ) const {
 
 Item* Inventory::GetItemInSlot( ItemSlot equippedItemSlot ) const {
     return m_equippedItems[equippedItemSlot];
+}
+
+
+bool Inventory::IsItemEquipable( const Item* itemToEquip ) const {
+    ItemSlot slot = itemToEquip->GetItemSlot();
+
+    if( slot == ITEM_SLOT_NONE ) {
+        return false;
+    }
+
+    const std::vector< Tags >& setsToEquip = itemToEquip->GetItemSets();
+    int numEquipSets = (int)setsToEquip.size();
+
+    for( int setIndex = 0; setIndex < numEquipSets; setIndex++ ) {
+        const Tags& equipSet = setsToEquip[setIndex];
+
+        if( !m_itemSets.HasAtLeastOneTag( equipSet ) ) {
+            return false;
+        }
+    }
+
+    return true;
 }

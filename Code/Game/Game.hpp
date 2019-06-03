@@ -9,6 +9,7 @@
 
 class Camera;
 class Clock;
+class GameInput;
 class GameState;
 
 enum MouseEvent : int;
@@ -35,6 +36,7 @@ class Game {
     Clock* GetGameClock() const;
     GameState* GetGameState() const;
     Camera* GetUICamera() const;
+    GameInput* GetGameInput() const;
 
     private:
     Clock* m_gameClock = nullptr;

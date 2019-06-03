@@ -34,6 +34,8 @@ class GameStatePlay : public GameState {
     bool HandleMouseButton( MouseEvent event, float scrollAmount = 0.f ) override;
     bool HandleQuitRequested() override;
 
+    GameInput* GetGameInput() const override;
+
     static bool Command_PauseGame( EventArgs& args );
 
 
@@ -52,6 +54,7 @@ class GameStatePlay : public GameState {
 
     std::string m_pauseViewName = "gameStatePlay/pauseEffect";
     std::string m_pauseMatName = "Data/Materials/PauseEffect.xml";
+    std::string m_grayscaleMatName = "Data/Materials/GrayscaleEffect.xml";
 
     void BuildPauseUI();
 };

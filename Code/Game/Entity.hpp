@@ -113,6 +113,7 @@ class Entity {
     Material* m_material = nullptr;
 
     OBB2 m_localBounds = OBB2();
+    AABB2 m_spriteUVs = AABB2::ZEROTOONE;
 
     Vec2 GetForwardVector() const;
     virtual void BuildMesh( const Rgba& tint = Rgba::WHITE );

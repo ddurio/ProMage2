@@ -1,17 +1,12 @@
-<ItemDefinitions imageFilePath="Data/Images/Characters/Doll_Weapons_01.png" gridLayout="32,32" ppu="40">
-    <ItemDefinition
-        name="ShortSword"
-        slot="mainHand"
-        spriteCoords="8,5"
-    />
-    <ItemDefinition
-        name="Shield"
-        slot="offHand"
-        spriteCoords="22,1"
-    />
-    <ItemDefinition
-        name="MetalShard"
-        slot="none"
-        spriteCoords="27,6"
-    />
+<ItemDefinitions>
+    <ItemDef name="Dress" slot="Chest" spriteSheet="PaperDoll.Chest.F1">
+        <ItemSet name="Female"/>
+        <ItemSet name="Light"/>
+        <ItemSet name="Dwarf,Human"/>
+    </ItemDef>
+    <ItemDef name="Tunic" slot="Chest" spriteSheet="PaperDoll.Chest.M7">
+        <ItemSet name="Male"/>
+        <ItemSet name="Light"/>
+        <ItemSet name="Dwarf,Human"/>
+    </ItemDef>
 </ItemDefinitions>

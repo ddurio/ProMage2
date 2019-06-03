@@ -1,5 +1,6 @@
 #include "Game/Item.hpp"
 
+#include "Engine/Core/Tags.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
 
@@ -9,14 +10,16 @@
 
 Item::Item( Map* theMap, std::string itemType ) :
     Entity( theMap ) {
-    m_itemDef = ItemDef::GetItemDef( itemType );
+    m_itemDef = Definition<Item>::GetDefinition( itemType );
+    GUARANTEE_OR_DIE( m_itemDef != nullptr, Stringf( "(Item) Failed to find itemDef of name %s", itemType.c_str() ) );
     m_itemDef->Define( *this );
 }
 
 
-Item::Item( Map* theMap, const ItemDef* itemDef ) :
+Item::Item( Map* theMap, const Definition<Item>* itemDef ) :
     Entity( theMap ),
     m_itemDef(itemDef) {
+    GUARANTEE_OR_DIE( m_itemDef != nullptr, "(Item) Cannot construct from itemDef of nullptr" );
     m_itemDef->Define( *this );
 }
 
@@ -49,6 +52,7 @@ void Item::Update( float deltaSeconds ) {
 
 void Item::Render() const {
     // Add verts for render?
+    // DFS1FIXME: Fix items rendering
     /*
     if( g_theGame->IsDebugDrawingOn() ) {
         g_theRenderer->BindTexture( nullptr );
@@ -79,36 +83,37 @@ void Item::OnCollisionTile( Tile* collidingTile ) {
 
 
 ItemSlot Item::GetItemSlot() const {
-    return m_itemDef->GetItemSlot();
+    ItemSlot slot = m_itemDef->GetProperty( "slot", ITEM_SLOT_NONE );
+    return slot;
+}
+
+
+std::vector< Tags > Item::GetItemSets() const {
+    std::vector< Tags > emptySet;
+    return m_itemDef->GetProperty( "itemSets", emptySet );
+}
+
+
+std::string Item::GetSprites() const {
+    return m_itemDef->GetProperty( "spriteSheet", std::string("") );
 }
 
 
 void Item::SetWorldPosition( const Vec2& worldPosition ) {
     m_transform.position = worldPosition;
-
-    // DFS1FIXME: Test code for PLAYABLE
-    switch( m_itemDef->GetItemSlot() ) {
-        case( ITEM_SLOT_MAIN_HAND ): {
-            m_transform.position += Vec2( -1.f, 0.f );
-            break;
-        } case( ITEM_SLOT_OFF_HAND ): {
-            m_transform.position += Vec2( 1.f, 0.f );
-            break;
-        }
-    }
 }
 
 
 void Item::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
-    TextureView2D* texture = g_theRenderer->GetOrCreateTextureView2D( m_itemDef->GetTexturePath() );
+    TextureView2D* texture = g_theRenderer->GetOrCreateTextureView2D( m_itemDef->GetProperty( "texturePath", std::string("") ) );
 
     IntVec2 textureDimensions = texture->GetDimensions();
     // DFS1FIXME: Set correct UVs!
-    AABB2 uvs = m_itemDef->GetUVs();
+    AABB2 uvs = m_itemDef->GetProperty( "spriteUVs", AABB2::ZEROTOONE );
 
     Vec2 uvDimensions = uvs.GetDimensions();
     Vec2 spriteDimensions = textureDimensions * uvDimensions;
-    Vec2 spriteWorldDimensions = spriteDimensions / (float)m_itemDef->GetPPU();
+    Vec2 spriteWorldDimensions = spriteDimensions / m_itemDef->GetProperty( "spritePPU", 1.f );
 
     float halfWidth  = spriteWorldDimensions.x / 2.f;
     float halfHeight = spriteWorldDimensions.y / 2.f;

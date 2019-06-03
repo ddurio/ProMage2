@@ -9,128 +9,11 @@
 #include "Game/Actor.hpp"
 #include "Game/Inventory.hpp"
 
-/*
-#include "Engine/Core/DevConsole.hpp"
-#include "Engine/Math/IntVec2.hpp"
-#include "Engine/Math/RNG.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
-#include "Engine/Renderer/SpriteSheet.hpp"
-
-#include "Game/Actor.hpp"
-#include "Game/Inventory.hpp"
-#include "Game/XMLUtils.hpp"
-
-
-std::map<std::string, ActorDef*> ActorDef::s_actorDefs;
-
-ActorDef::ActorDef( const XMLElement& element ) {
-    m_actorType    = ParseXMLAttribute( element, "name",         m_actorType );
-    m_spriteCoords = ParseXMLAttribute( element, "spriteCoords", m_spriteCoords );
-
-    m_canSee       = ParseXMLAttribute( element, "canSee",  m_canSee );
-    m_canWalk      = ParseXMLAttribute( element, "canWalk", m_canWalk );
-    m_canFly       = ParseXMLAttribute( element, "canFly",  m_canFly );
-    m_canSwim      = ParseXMLAttribute( element, "canSwim", m_canSwim );
-
-    m_strength     = ParseXMLAttribute( element, "strength",     m_strength );
-    m_intelligence = ParseXMLAttribute( element, "intelligence", m_intelligence );
-    m_agility      = ParseXMLAttribute( element, "agility",      m_agility );
-
-    g_theDevConsole->PrintString( Stringf( "(ActorDef) Loaded new ActorDef (%s)", m_actorType.c_str() ) );
-
-    s_actorDefs[m_actorType] = this;
-}
-
-
-void ActorDef::InitializeActorDefs() {
-    XmlDocument document = new XmlDocument();
-    const XMLElement& root = ParseXMLRootElement( DATA_ACTOR_DEFS, document );
-
-    std::string imageFilePath   = ParseXMLAttribute( root, "imageFilePath", "" );
-    IntVec2     imageLayout     = ParseXMLAttribute( root, "gridLayout",    IntVec2::ZERO );
-    int         imagePPU        = ParseXMLAttribute( root, "ppu",           1 );
-
-    SpriteSheet* sprites = new SpriteSheet( imageFilePath, imageLayout );
-
-    const char* tagName = "ActorDefinition";
-    const XMLElement* element = root.FirstChildElement( tagName );
-
-    for( element; element != nullptr; element = element->NextSiblingElement( tagName ) ) {
-        ActorDef* actorDef = new ActorDef( *element ); // Upon construction, adds self to static registry
-        actorDef->m_spriteSheet = sprites;
-        actorDef->m_spritePPU = imagePPU;
-
-        Vec2 uvMins = Vec2::ZERO;
-        Vec2 uvMaxs = Vec2::ONE;
-        sprites->GetSpriteDef( actorDef->m_spriteCoords ).GetUVs(uvMins, uvMaxs);
-        actorDef->m_spriteUVs = AABB2( uvMins, uvMaxs );
-    }
-}
-
-
-void ActorDef::DestroyActorDefs() {
-    auto actorDefIter = s_actorDefs.begin();
-    SpriteSheet* sprites = actorDefIter->second->m_spriteSheet;
-    delete sprites;
-
-    for( actorDefIter; actorDefIter != s_actorDefs.end(); actorDefIter++ ) {
-        ActorDef* actorDef = actorDefIter->second;
-        delete actorDef;
-        actorDefIter->second = nullptr;
-    }
-}
-
-
-const ActorDef* ActorDef::GetActorDef( std::string actorType ) {
-     auto actorDefIter = s_actorDefs.find( actorType );
-
-    if( actorDefIter != s_actorDefs.end() ) {
-        return actorDefIter->second;
-    } else {
-        return nullptr;
-    }
-}
-
-
-const std::string& ActorDef::GetActorType() const {
-    return m_actorType;
-}
-
-
-std::string ActorDef::GetTexturePath() const {
-    return m_spriteSheet->GetTexturePath();
-}
-
-
-int ActorDef::GetPPU() const {
-    return m_spritePPU;
-}
-
-
-const AABB2& ActorDef::GetUVs() const {
-    return m_spriteUVs;
-}
-
-
-void ActorDef::Define( Actor& actor ) const {
-    actor.m_inventory = new Inventory( actor.m_map );
-
-    actor.m_strength     = g_RNG->GetRandomFloatInRange( m_strength );
-    actor.m_intelligence = g_RNG->GetRandomFloatInRange( m_intelligence );
-    actor.m_agility      = g_RNG->GetRandomFloatInRange( m_agility );
-}
-*/
-
-
-//template<>
-//std::map< std::string, Definition<Actor>* > Definition<Actor>::s_definitions;
-
 
 template<>
 Definition<Actor>::Definition( const XMLElement& element ) {
     // Parse Values
     m_defType                   = ParseXMLAttribute( element, "name",         m_defType );
-    IntVec2 spriteCoords        = ParseXMLAttribute( element, "spriteCoords", IntVec2::ZERO );
 
     bool canSee                 = ParseXMLAttribute( element, "canSee",  true );
     bool canWalk                = ParseXMLAttribute( element, "canWalk", true );
@@ -141,20 +24,43 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     FloatRange intelligence     = ParseXMLAttribute( element, "intelligence", FloatRange::ZERO );
     FloatRange agility          = ParseXMLAttribute( element, "agility",      FloatRange::ZERO );
 
-    const XMLElement* spriteEle = element.FirstChildElement( "Sprite" );
+    const XMLElement* childEle = element.FirstChildElement();
 
-    std::string imageFilePath   = ParseXMLAttribute( *spriteEle, "imageFilePath", "" );
-    IntVec2     imageLayout     = ParseXMLAttribute( *spriteEle, "gridLayout",    IntVec2::ZERO );
-    float       imagePPU        = ParseXMLAttribute( *spriteEle, "ppu",           1.f );
+    Strings     bodyOptions;
+    Strings     bodyItemSets;
+    Strings     earOptions;
+    Strings     hairOptions;
+    std::string itemSetsCSV;
 
-    SpriteSheet* sprites = new SpriteSheet( imageFilePath, imageLayout );
+    while( childEle != nullptr ) {
+        std::string tagName = childEle->Name();
 
-    AABB2 spriteUVs = AABB2::ZEROTOONE;
-    sprites->GetSpriteDef( spriteCoords ).GetUVs( spriteUVs.mins, spriteUVs.maxs );
+        if( tagName == "Body" ) {
+            std::string spriteName = ParseXMLAttribute( *childEle, "spriteSheet", "" );
+            GUARANTEE_OR_DIE( spriteName != "", "(ActorDef) Body tag missing required attribute 'spriteSheet'" );
+            bodyOptions.push_back( spriteName );
+
+            std::string setName = ParseXMLAttribute( *childEle, "itemSet", "" );
+            bodyItemSets.push_back( setName );
+        } else if( tagName == "Ears" ) {
+            std::string spriteName = ParseXMLAttribute( *childEle, "spriteSheet", "" );
+            GUARANTEE_OR_DIE( spriteName != "", "(ActorDef) Ears tag missing required attribute 'spriteSheet'" );
+            earOptions.push_back( spriteName );
+        } else if( tagName == "Hair" ) {
+            std::string spriteName = ParseXMLAttribute( *childEle, "spriteSheet", "" );
+            GUARANTEE_OR_DIE( spriteName != "", "(ActorDef) Hair tag missing required attribute 'spriteSheet''" );
+            hairOptions.push_back( spriteName );
+        } else if( tagName == "ItemSet" ) {
+            std::string setName = ParseXMLAttribute( *childEle, "name", "" );
+            GUARANTEE_OR_DIE( setName != "", "(ActorDef) ItemSet tag missing required attribute 'name'" );
+            itemSetsCSV = Stringf( "%s,%s", itemSetsCSV.c_str(), setName.c_str() );
+        }
+
+        childEle = childEle->NextSiblingElement();
+    }
 
 
     // Set Properties
-    m_properties.SetValue( "spriteCoords",  spriteCoords );
     m_properties.SetValue( "canSee",        canSee );
     m_properties.SetValue( "canWalk",       canWalk );
     m_properties.SetValue( "canFly",        canFly );
@@ -162,9 +68,11 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     m_properties.SetValue( "strength",      strength );
     m_properties.SetValue( "intelligence",  intelligence );
     m_properties.SetValue( "agility",       agility );
-    m_properties.SetValue( "spriteSheet",   imageFilePath );
-    m_properties.SetValue( "spritePPU",     imagePPU );
-    m_properties.SetValue( "spriteUVs",     spriteUVs );
+    m_properties.SetValue( "bodySprites",   bodyOptions );
+    m_properties.SetValue( "bodyItemSets",  bodyItemSets );
+    m_properties.SetValue( "earSprites",    earOptions );
+    m_properties.SetValue( "hairSprites",   hairOptions );
+    m_properties.SetValue( "validItemSets", itemSetsCSV );
 
 
     g_theDevConsole->PrintString( Stringf( "(ActorDef) Loaded new ActorDef (%s)", m_defType.c_str() ) );
@@ -185,6 +93,40 @@ void Definition<Actor>::Define( Actor& theObject ) const {
     theObject.m_strength     = g_RNG->GetRandomFloatInRange( strRange );
     theObject.m_intelligence = g_RNG->GetRandomFloatInRange( intRange );
     theObject.m_agility      = g_RNG->GetRandomFloatInRange( agiRange );
+
+
+    // Body appearance
+    Strings bodyOptions;
+    Strings bodyItemSets;
+    Strings earOptions;
+    Strings hairOptions;
+    bodyOptions  = m_properties.GetValue( "bodySprites",  bodyOptions );
+    bodyItemSets = m_properties.GetValue( "bodyItemSets", bodyItemSets );
+    earOptions   = m_properties.GetValue( "earSprites",   earOptions );
+    hairOptions  = m_properties.GetValue( "hairSprites",  hairOptions );
+
+    int numBody = (int)bodyOptions.size();
+    int numEars = (int)earOptions.size();
+    int numHair = (int)hairOptions.size();
+
+    int bodyIndex = g_RNG->GetRandomIntLessThan( numBody );
+    int earIndex  = g_RNG->GetRandomIntLessThan( numEars );
+    int hairIndex = g_RNG->GetRandomIntLessThan( numHair );
+
+    theObject.m_paperDollSprites[PAPER_DOLL_BODY] = bodyOptions[bodyIndex];
+    theObject.m_paperDollSprites[PAPER_DOLL_EARS] = earOptions[earIndex];
+    theObject.m_paperDollSprites[PAPER_DOLL_HAIR] = hairOptions[hairIndex];
+
+
+    // Item Sets
+    std::string itemSetsCSV = "";
+    itemSetsCSV = m_properties.GetValue( "validItemSets", itemSetsCSV );
+
+    std::string bodyItemSet = bodyItemSets[bodyIndex];
+
+    if( bodyItemSet != "" ) {
+        itemSetsCSV = Stringf( "%s,%s", itemSetsCSV.c_str(), bodyItemSet.c_str() );
+    }
+
+    theObject.m_inventory->AddItemSets( itemSetsCSV );
 }
-
-

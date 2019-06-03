@@ -1,5 +1,6 @@
 #include "Game/Map.hpp"
 
+#include "Engine/Core/DebugDraw.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -9,7 +10,6 @@
 #include "Game/Entity.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/MapDef.hpp"
-//#include "Game/PlayerPlaceholder.hpp"
 #include "Game/Tile.hpp"
 #include "Game/TileDef.hpp"
 
@@ -32,14 +32,7 @@ void Map::Startup() {
     m_mapDef = MapDef::GetMapDef( m_mapType );
     m_mapDef->Define( *this );
 
-    m_inventory->SpawnNewItem( "ShortSword", Vec2( 2.5f, 2.5f ) );
-    m_inventory->SpawnNewItem( "Shield",     Vec2( 3.5f, 2.5f ) );
-    m_inventory->SpawnNewItem( "MetalShard", Vec2( 4.5f, 2.5f ) );
-
-    // DFS1FIXME: Replace playerPlaceholder
-    //SpawnNewEntity( ENTITY_TYPE_PLAYER_PLACEHOLDER, Vec2( 1.5f, 1.5f ), 0.f );
     SpawnNewActor( "Boy",  Vec2( 3.5f, 3.5f ), 0 );
-    //SpawnNewActor( "Boy",  Vec2( 3.5f, 3.5f ) );
     SpawnNewActor( "Girl", Vec2( 2.5f, 3.5f ) );
 }
 
@@ -75,10 +68,11 @@ void Map::Render() const {
     g_theRenderer->DrawVertexArray( m_mapVerts );
 
     // Render items on the map
-    m_inventory->Render();
+    //m_inventory->Render();
 
     // Render actors/entities
     int numEntities = (int)m_entities.size();
+
     for( int entityIndex = 0; entityIndex < numEntities; entityIndex++ ) {
         m_entities[entityIndex]->Render();
     }

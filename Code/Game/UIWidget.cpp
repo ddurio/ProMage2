@@ -44,7 +44,7 @@ void UIWidget::UpdateBounds( const AABB2& containerBounds ) {
 
     CPUMesh builder;
     builder.SetColor( m_color );
-    builder.AddQuad( m_worldBounds );
+    builder.AddQuad( OBB2(m_worldBounds) );
 
     CLEAR_POINTER( m_mesh );
     m_mesh = new GPUMesh( g_theRenderer );

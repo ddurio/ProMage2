@@ -87,18 +87,13 @@ void Entity::SetFaction( FactionID faction ) {
     switch( m_faction ) {
         // Intentional fallthrough for all player faction entities
         // All using the same audio clip
-        case(FACTION_PLAYER0):
-        {
-        } case(FACTION_PLAYER1):
-        {
-        } case(FACTION_PLAYER2):
-        {
-        } case(FACTION_PLAYER3):
-        {
+        case(FACTION_PLAYER0): {
+        } case(FACTION_PLAYER1): {
+        } case(FACTION_PLAYER2): {
+        } case(FACTION_PLAYER3): {
             //m_hitSound = g_theAudio->CreateOrGetSound( AUDIO_PLAYERTANK_HIT );
             break;
-        } case(FACTION_ENEMY1):
-        {
+        } case(FACTION_ENEMY1): {
             //m_hitSound = g_theAudio->CreateOrGetSound( AUDIO_ENEMY_HIT );
             break;
         }
@@ -133,15 +128,11 @@ Vec2 Entity::GetForwardVector() const {
 
 
 void Entity::BuildMesh( const Rgba& tint /*= Rgba::WHITE*/ ) {
-    if( m_mesh != nullptr ) {
-        CLEAR_POINTER( m_mesh );
-    }
-
     CPUMesh builder;
     builder.SetColor( tint );
-    // DFS1FIXME: Set correct UVs here!
-    builder.AddQuad( m_localBounds );
+    builder.AddQuad( m_localBounds, m_spriteUVs );
 
+    CLEAR_POINTER( m_mesh );
     m_mesh = new GPUMesh( g_theRenderer );
     m_mesh->CopyVertsFromCPUMesh( &builder );
 }

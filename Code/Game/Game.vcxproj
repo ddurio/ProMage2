@@ -103,6 +103,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -124,6 +125,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -147,6 +149,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -172,6 +175,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -189,6 +193,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="ActorController.cpp" />
     <ClCompile Include="ActorDef.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -211,6 +216,8 @@
     <ClCompile Include="MapGenStep_RoomsAndPaths.cpp" />
     <ClCompile Include="MapGenStep_Sprinkle.cpp" />
     <ClCompile Include="Metadata.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDef.cpp" />
     <ClCompile Include="TopDownFollowCamera.cpp" />
@@ -221,7 +228,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.hpp" />
+    <ClInclude Include="ActorController.hpp" />
     <ClInclude Include="ActorDef.hpp" />
+    <ClInclude Include="Animator.hpp" />
     <ClInclude Include="App.hpp" />
     <ClInclude Include="Definition.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
@@ -245,6 +254,7 @@
     <ClInclude Include="MapGenStep_RoomsAndPaths.hpp" />
     <ClInclude Include="MapGenStep_Sprinkle.hpp" />
     <ClInclude Include="Metadata.hpp" />
+    <ClInclude Include="PlayerController.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDef.hpp" />
     <ClInclude Include="TopDownFollowCamera.hpp" />
@@ -257,8 +267,11 @@
     <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\PaperDollIsoAnims.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\PaperDollSpriteSheets.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\PaperDollSpriteAnims.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />
     <Xml Include="..\..\Run\Data\ProjectConfig.xml" />
   </ItemGroup>

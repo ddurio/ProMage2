@@ -1,0 +1,41 @@
+<SpriteAnims>
+    <!-- Die -->
+    <SpriteAnim name="PaperDoll.Die"          spriteSheet="PaperDoll.Body.Human.M1"   startIndex="260" endIndex="265" duration="1.f" playbackType="Loop"/>
+
+    <!-- Idle -->
+    <SpriteAnim name="PaperDoll.Idle.Up"      spriteSheet="PaperDoll.Body.Human.M1"   startIndex="104" endIndex="104" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Idle.Left"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="117" endIndex="117" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Idle.Down"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="130" endIndex="130" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Idle.Right"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="143" endIndex="143" duration="1.f" playbackType="Loop"/>
+    
+    <!-- Shoot -->
+    <SpriteAnim name="PaperDoll.Shoot.Up"     spriteSheet="PaperDoll.Body.Human.M1"   startIndex="208" endIndex="220" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Shoot.Left"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="221" endIndex="233" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Shoot.Down"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="234" endIndex="246" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Shoot.Right"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="247" endIndex="259" duration="1.f" playbackType="Loop"/>
+
+    <!-- Slash -->
+    <SpriteAnim name="PaperDoll.Slash.Up"     spriteSheet="PaperDoll.Body.Human.M1"   startIndex="156" endIndex="161" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Slash.Left"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="169" endIndex="174" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Slash.Down"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="182" endIndex="187" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Slash.Right"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="195" endIndex="200" duration="1.f" playbackType="Loop"/>
+
+    <!-- Spell Cast -->
+    <SpriteAnim name="PaperDoll.Spell.Up"     spriteSheet="PaperDoll.Body.Human.M1"   startIndex="0"   endIndex="6"   duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Spell.Left"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="13"  endIndex="19"  duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Spell.Down"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="26"  endIndex="32"  duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Spell.Right"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="39"  endIndex="45"  duration="1.f" playbackType="Loop"/>
+
+    <!-- Thrust -->
+    <SpriteAnim name="PaperDoll.Thrust.Up"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="52"  endIndex="59"  duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Thrust.Left"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="65"  endIndex="72"  duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Thrust.Down"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="78"  endIndex="84"  duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Thrust.Right" spriteSheet="PaperDoll.Body.Human.M1"   startIndex="91"  endIndex="98"  duration="1.f" playbackType="Loop"/>
+
+    <!-- Walk -->
+    <SpriteAnim name="PaperDoll.Walk.Up"      spriteSheet="PaperDoll.Body.Human.M1"   startIndex="104" endIndex="112" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Walk.Left"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="117" endIndex="125" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Walk.Down"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="130" endIndex="138" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Walk.Right"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="143" endIndex="151" duration="1.f" playbackType="Loop"/>
+    
+</SpriteAnims>

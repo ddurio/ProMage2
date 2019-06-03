@@ -34,6 +34,11 @@ Camera* GameState::GetGameCamera() const {
 }
 
 
+GameInput* GameState::GetGameInput() const {
+    return nullptr;
+}
+
+
 void GameState::BuildLoadingMesh() {
     if( m_loadingMesh != nullptr ) {
         return; // Already built

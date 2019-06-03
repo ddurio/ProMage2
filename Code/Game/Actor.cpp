@@ -1,14 +1,20 @@
-#include "Game/Actor.hpp"
-
+#include "Game/Actor.hpp" 
+#include "Engine/Core/Timer.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Renderer/IsoSpriteAnimDef.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
+#include "Engine/Renderer/Shader.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
+#include "Game/Animator.hpp"
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/Item.hpp"
 #include "Game/Map.hpp"
+#include "Game/PlayerController.hpp"
 #include "Game/Tile.hpp"
 
 
@@ -18,26 +24,50 @@ Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
     m_actorDef = Definition<Actor>::GetDefinition( actorType );
     m_actorDef->Define( *this );
 
+    m_material = g_theRenderer->GetOrCreateMaterial( actorType );
+
+    Shader* shader = g_theRenderer->GetOrCreateShader( "Data/Shaders/PaperDoll.hlsl" );
+    shader->CreateInputLayout<VertexPCU>();
+    shader->SetDepthMode( COMPARE_ALWAYS, false );
+    g_theRenderer->BindShader( shader );
+
+    m_material->SetShader( shader );
+
     if( playerID >= 0 ) {
-        m_isPlayerControlled = true;
-        m_playerID = playerID;
+        m_controller = new PlayerController( this, playerID );
     }
 }
 
 
-Actor::Actor( Map* theMap, const Definition<Actor>* actorDef, int playerID /*= -1*/ ) :
+// Missing code from above, but is this function necessary?
+//Actor::Actor( Map* theMap, const Definition<Actor>* actorDef, int playerID /*= -1*/ ) :
+/*
     Entity( theMap, ENTITY_TYPE_ACTOR ),
     m_actorDef(actorDef) {
     m_actorDef->Define( *this );
 
     if( playerID > 0 ) {
-        m_isPlayerControlled = true;
-        m_playerID = playerID;
+        m_controller = new PlayerController( this, playerID );
     }
+}
+*/
+
+
+Actor::~Actor() {
+    CLEAR_POINTER( m_inventory );
+    CLEAR_POINTER( m_animator );
 }
 
 
 void Actor::Startup() {
+    m_animator = new Animator( this );
+
+    Item* dress = m_inventory->SpawnNewItem( "dress" );
+    m_inventory->EquipItem( dress );
+
+    Item* tunic = m_inventory->SpawnNewItem( "tunic" );
+    m_inventory->EquipItem( tunic );
+
     BuildMesh();
 }
 
@@ -53,24 +83,24 @@ void Actor::Die() {
 
 
 void Actor::Update( float deltaSeconds ) {
-    if( m_isPlayerControlled ) {
-        UpdateFromController( deltaSeconds );
+    UpdateFromController( deltaSeconds );
+    m_animator->Update( deltaSeconds );
 
-        // Update Position
-        float thrustSpeed = 0.f;
-        if( m_movementFraction > 0.f ) {
-            thrustSpeed = 1.3f * m_movementFraction * deltaSeconds;
-        }
+    // Update Position
+    Vec2 frameMovement = m_moveDir * m_moveSpeed * deltaSeconds;
 
-        m_transform.position += thrustSpeed * GetForwardVector();
-        m_inventory->UpdateItemPositions( m_transform.position );
-        m_inventory->Update( deltaSeconds );
-    }
+    m_transform.position += frameMovement;
+    // DFS1FIXME: This shouldn't be needed anymore right?
+    //m_inventory->UpdateItemPositions( m_transform.position );
+    m_inventory->Update( deltaSeconds );
+
+    m_inventory->UpdatePaperDoll( m_paperDollSprites );
+    BuildMesh();
 }
 
 
 void Actor::Render() const {
-    /* DFS1FIXME: Need to render actors correctly
+    /* DFS1FIXME: Add physics debug drawing back in
     if( g_theGame->IsDebugDrawingOn() ) {
         g_theRenderer->BindTexture( nullptr );
         g_theRenderer->DrawVertexArray( m_debugCosmeticVerts );
@@ -87,9 +117,22 @@ void Actor::Render() const {
     }
     */
 
-    //g_theRenderer->BindTexture( m_actorDef->GetTexturePath() );
-    std::string texturePath = m_actorDef->GetProperty( "texturePath", std::string("") );
-    g_theRenderer->BindTexture( texturePath );
+
+    for( int slotIndex = 0; slotIndex < NUM_PAPER_DOLL_SLOTS; slotIndex++ ) {
+        PaperDollSlot slot = (PaperDollSlot)slotIndex;
+
+        std::string sheetName = m_paperDollSprites[slot];
+        std::string textureName = "CLEAR_BLACK";
+
+        if( sheetName != "" ) {
+            const SpriteSheet sheet = SpriteSheet::GetSpriteSheet( sheetName );
+            textureName = sheet.GetTexturePath();
+        }
+
+        m_material->SetTexture( textureName, slot );
+    }
+
+    g_theRenderer->BindMaterial( m_material );
     g_theRenderer->DrawMesh( m_mesh, Matrix44::MakeTranslation2D( m_transform.position ) );
 }
 
@@ -108,13 +151,18 @@ void Actor::OnCollisionTile( Tile* collidingTile ) {
 }
 
 
-void Actor::SetWorldPosition( const Vec2& worldPosition ) {
-    m_transform.position = worldPosition;
+Vec2 Actor::GetMoveDir() const {
+    return m_moveDir;
 }
 
 
 void Actor::UpdateFromController( float deltaSeconds ) {
-    // DFS1FIXME: Update controller key mappings
+    if( m_controller != nullptr ) {
+        m_controller->Update( deltaSeconds );
+    }
+
+
+    /* DFS1FIXME: Update controller key mappings
     UNUSED( deltaSeconds );
 
     if( m_playerID < 0 ) {
@@ -196,6 +244,7 @@ void Actor::UpdateFromController( float deltaSeconds ) {
 
     if( yButton.WasJustPressed() ) {
         // Unequip item??
+        // DFS1FIXME: Updated from mainHand/offHand to Weapon
         Item* itemToUnequip = m_inventory->GetItemInSlot( ITEM_SLOT_MAIN_HAND );
 
         if( itemToUnequip != nullptr ) {
@@ -208,23 +257,30 @@ void Actor::UpdateFromController( float deltaSeconds ) {
                 m_inventory->UnequipItem( itemToUnequip );
             }
         }
-
     }
+    */
 }
 
 
 void Actor::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
+    // Texture Dims
     std::string texturePath = m_actorDef->GetProperty( "texturePath", std::string() );
     TextureView2D* texture = g_theRenderer->GetOrCreateTextureView2D( texturePath );
-
     IntVec2 textureDimensions = texture->GetDimensions();
-    // DFS1FIXME: Set correct UVs!
-    AABB2 uvs = m_actorDef->GetProperty( "spriteUVs", AABB2::ZEROTOONE );
 
-    Vec2 uvDimensions = uvs.GetDimensions();
+    // UV Dims
+    // DFS1FIXME: Fix hard coded animation set
+    const SpriteDef sprite = m_animator->GetCurrentSpriteDef();
+    sprite.GetUVs( m_spriteUVs.mins, m_spriteUVs.maxs );
+
+    Vec2 uvDimensions = m_spriteUVs.GetDimensions();
+    uvDimensions.y *= -1.f;
+
+    // World Dims
     Vec2 spriteDimensions = textureDimensions * uvDimensions;
-    Vec2 spriteWorldDimensions = spriteDimensions / m_actorDef->GetProperty( "spritePPU", 1.f );
+    Vec2 spriteWorldDimensions = spriteDimensions / m_actorDef->GetProperty( "spritePPU", 0.05f );
 
+    // Local Dims
     float halfWidth  = spriteWorldDimensions.x / 2.f;
     float halfHeight = spriteWorldDimensions.y / 2.f;
     m_localBounds = OBB2( Vec2::ZERO, Vec2(halfWidth, halfHeight), Vec2::RIGHT );

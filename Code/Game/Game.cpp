@@ -3,7 +3,6 @@
 #include "Engine/Core/Time.hpp"
 
 #include "Game/App.hpp"
-#include "Game/GameInput.hpp"
 #include "Game/GameStateMainMenu.hpp"
 #include "Game/GameStatePlay.hpp"
 
@@ -82,4 +81,9 @@ GameState* Game::GetGameState() const {
 
 Camera* Game::GetUICamera() const {
     return m_gameState->GetUICamera();
+}
+
+
+GameInput* Game::GetGameInput() const {
+    return m_gameState->GetGameInput();
 }

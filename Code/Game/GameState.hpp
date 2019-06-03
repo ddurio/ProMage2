@@ -12,6 +12,7 @@ enum LoadState {
 
 class Camera;
 class Clock;
+class GameInput;
 class GPUMesh;
 
 enum MouseEvent : int;
@@ -35,6 +36,7 @@ class GameState {
 
     Camera* GetUICamera() const;
     Camera* GetGameCamera() const;
+    virtual GameInput* GetGameInput() const;
 
     protected:
     LoadState m_loadState = LOAD_STATE_PRE_INIT;

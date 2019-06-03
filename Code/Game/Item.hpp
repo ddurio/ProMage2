@@ -5,6 +5,7 @@
 #include "Game/ItemDef.hpp"
 
 
+class Tags;
 class Tile;
 
 
@@ -13,7 +14,7 @@ class Item : public Entity {
 
     public:
     explicit Item( Map* theMap, std::string itemType );
-    explicit Item( Map* theMap, const ItemDef* itemDef );
+    explicit Item( Map* theMap, const Definition<Item>* itemDef );
 
     void Startup();
     void Shutdown();
@@ -27,11 +28,13 @@ class Item : public Entity {
     void OnCollisionTile( Tile* collidingTile );
 
     ItemSlot GetItemSlot() const;
+    std::vector< Tags > GetItemSets() const;
+    std::string GetSprites() const;
 
     void SetWorldPosition( const Vec2& worldPosition );
 
     private:
-    const ItemDef* m_itemDef = nullptr;
+    const Definition<Item>* m_itemDef = nullptr;
 
     void BuildMesh( const Rgba& tint = Rgba::WHITE ) override;
 };

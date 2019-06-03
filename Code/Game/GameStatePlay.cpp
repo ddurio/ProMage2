@@ -10,9 +10,12 @@
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/IsoSpriteAnimDef.hpp"
 #include "Engine/Renderer/Model.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Shader.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
+#include "Engine/Renderer/SpriteAnimDef.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
 
@@ -37,12 +40,6 @@ GameStatePlay::GameStatePlay() {
     m_gameCamera->SetOrthoProjection( 10.f );
 
     // Resources
-    /*
-    Shader* shader = g_theRenderer->GetOrCreateShader( "BuiltIn/Unlit" );
-    shader->SetDepthMode( COMPARE_ALWAYS, false );
-    g_theRenderer->BindShader( shader );
-    */
-
     BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
     g_theRenderer->BindTexture( font->GetTexturePath() );
 
@@ -63,9 +60,12 @@ void GameStatePlay::Startup() {
     m_gameInput = new GameInput();
     m_gameInput->Startup();
 
-    //ActorDef::InitializeActorDefs();
+    SpriteSheet::Initialize( DATA_PAPER_DOLL_SPRITES, "SpriteSheet" );
+    SpriteAnimDef::Initialize( DATA_PAPER_DOLL_ANIMS, "SpriteAnim" );
+    IsoSpriteAnimDef::Initialize( DATA_PAPER_DOLL_ISO_ANIMS, "IsoSpriteAnim" );
+
     Definition<Actor>::Initialize( DATA_ACTOR_DEFS, "ActorDef" );
-    ItemDef::InitializeItemDefs();
+    Definition<Item>::Initialize( DATA_ITEM_DEFS, "ItemDef" );
     TileDef::InitializeTileDefs();
     MapDef::InitializeMapDefs();
 
@@ -74,13 +74,6 @@ void GameStatePlay::Startup() {
 
     Entity* player0 = m_map->GetPlayer();
     ((TopDownFollowCamera*)m_gameCamera)->SetFollowTarget( player0 );
-
-    // DFS1FIXME: Load correct materials
-    m_materials.resize( 4 );
-    m_materials[0] = g_theRenderer->GetOrCreateMaterial( "Data/Materials/Example.xml:couch" );
-    m_materials[1] = g_theRenderer->GetOrCreateMaterial( "Data/Materials/Example.xml:brick" );
-    m_materials[2] = g_theRenderer->GetOrCreateMaterial( "Data/Materials/Example.xml:green" );
-    m_materials[3] = g_theRenderer->GetOrCreateMaterial( "Data/Materials/GrayscaleEffect.xml" );
 
     BuildPauseUI();
     BuildLoadedMesh();
@@ -114,6 +107,7 @@ void GameStatePlay::Update() {
 
     m_gameInput->Update( deltaSeconds );
     bool inputPaused = m_gameInput->IsPaused();
+    // DFS1FIXME: Fix pause logic, completely disabled in gameInput
 
     if( m_isPaused && !inputPaused ) { // Unpausing but wait for fade
         if( !m_fadeOut ) {
@@ -182,7 +176,8 @@ void GameStatePlay::Render() {
 
     if( m_isPaused ) {
         TextureView2D* sceneView = g_theRenderer->GetCurrentRenderTarget();
-        g_theRenderer->ApplyEffect( sceneView, m_materials[3] ); // Grayscale to scene
+        Material* grayscaleMat = g_theRenderer->GetOrCreateMaterial( m_grayscaleMatName );
+        g_theRenderer->ApplyEffect( sceneView, grayscaleMat );
 
         g_theRenderer->BeginCamera( m_uiCamera );
         m_pauseUI->Render();
@@ -231,6 +226,11 @@ bool GameStatePlay::HandleQuitRequested() {
 }
 
 
+GameInput* GameStatePlay::GetGameInput() const {
+    return m_gameInput;
+}
+
+
 bool GameStatePlay::Command_PauseGame( EventArgs& args ) {
     GameStatePlay* state = (GameStatePlay*)g_theGame->GetGameState();
     bool shouldPause = args.GetValue( "paused", false );
@@ -276,6 +276,7 @@ void GameStatePlay::BuildPauseUI() {
 
     // Pause Shader
     g_theRenderer->GetNewRenderTarget( m_pauseViewName );
+    g_theRenderer->GetOrCreateMaterial( m_grayscaleMatName );
     g_theRenderer->GetOrCreateMaterial( m_pauseMatName );
     m_pauseUBO = new UniformBuffer( g_theRenderer );
 }

@@ -5,6 +5,24 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/IntVec2.hpp"
 
+#include "Game/Definition.hpp"
+
+
+enum ItemSlot {
+    ITEM_SLOT_NONE = -1,
+    ITEM_SLOT_HAT,
+    ITEM_SLOT_CHEST,
+    ITEM_SLOT_SHOULDER,
+    ITEM_SLOT_LEGS,
+    ITEM_SLOT_FEET,
+    //ITEM_SLOT_MAIN_HAND,
+    //ITEM_SLOT_OFF_HAND,
+    ITEM_SLOT_WEAPON,
+
+    NUM_ITEM_SLOTS
+};
+
+/*
 #include "map"
 
 
@@ -46,3 +64,14 @@ class ItemDef {
     AABB2 m_spriteUVs = AABB2::ZEROTOONE;
     int m_imagePPU = 1;
 };
+*/
+
+
+class Item;
+
+
+template<>
+Definition<Item>::Definition( const XMLElement& element );
+
+template<>
+void Definition<Item>::Define( Item& theObject ) const;

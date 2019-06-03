@@ -2,15 +2,25 @@
 
 #include "Game/ItemDef.hpp"
 
+
 ItemSlot ParseXMLAttribute( const XMLElement& element, const char* attributeName, ItemSlot defaultValue ) {
     std::string slotString = ParseXMLAttribute( element, attributeName, "none" );
+    slotString = StringToLower( slotString );
 
     ItemSlot slot = defaultValue;
 
-    if( slotString == "mainHand" ) {
-        slot = ITEM_SLOT_MAIN_HAND;
-    } else if( slotString == "offHand" ) {
-        slot = ITEM_SLOT_OFF_HAND;
+    if( slotString == "hat" ) {
+        slot = ITEM_SLOT_HAT;
+    } else if( slotString == "chest" ) {
+        slot = ITEM_SLOT_CHEST;
+    } else if( slotString == "shoulder" ) {
+        slot = ITEM_SLOT_SHOULDER;
+    } else if( slotString == "legs" ) {
+        slot = ITEM_SLOT_LEGS;
+    } else if( slotString == "feet" ) {
+        slot = ITEM_SLOT_FEET;
+    } else if( slotString == "weapon" ) {
+        slot = ITEM_SLOT_WEAPON;
     }
 
     return slot;

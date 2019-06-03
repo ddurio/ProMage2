@@ -1,6 +1,7 @@
 #include "Game/ItemDef.hpp"
 
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/Tags.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
@@ -9,95 +10,51 @@
 #include "Game/XMLUtils.hpp"
 
 
-std::map<std::string, ItemDef*> ItemDef::s_itemDefs;
+template<>
+Definition<Item>::Definition( const XMLElement& element ) {
+    // Parse Values
+    m_defType                   = ParseXMLAttribute( element, "name",         "" );
+    ItemSlot itemSlot           = ParseXMLAttribute( element, "slot",         ITEM_SLOT_NONE );
+    std::string spriteName      = ParseXMLAttribute( element, "spriteSheet",  "" );
+    GUARANTEE_OR_DIE( spriteName != "", "(ItemDef) Missing required attribute 'spriteSheet'" );
 
-ItemDef::ItemDef( const XMLElement& element ) {
-    m_itemType     = ParseXMLAttribute( element, "name",         m_itemType );
-    m_itemSlot     = ParseXMLAttribute( element, "slot",         m_itemSlot );
-    m_spriteCoords = ParseXMLAttribute( element, "spriteCoords", m_spriteCoords );
+    const XMLElement* childEle = element.FirstChildElement();
+    std::vector< Tags > itemSets;
 
-    g_theDevConsole->PrintString( Stringf( "(ItemDef) Loaded new ItemDef (%s)", m_itemType.c_str() ) );
+    while( childEle != nullptr ) {
+        std::string tagName = childEle->Name();
 
-    s_itemDefs[m_itemType] = this;
-}
+        if( tagName == "ItemSet" ) {
+            std::string setName = ParseXMLAttribute( *childEle, "name", "" );
+            GUARANTEE_OR_DIE( setName != "", "(ActorDef) ItemSet tag missing required attribute 'name'" );
 
+            Tags itemTag;
+            itemTag.SetTags( setName );
+            itemSets.push_back( itemTag );
+        }
 
-void ItemDef::InitializeItemDefs() {
-    XmlDocument document = new XmlDocument();
-    const XMLElement& root = ParseXMLRootElement( DATA_ITEM_DEFS, document );
-
-    std::string imageFilePath   = ParseXMLAttribute( root, "imageFilePath", "" );
-    IntVec2     imageLayout     = ParseXMLAttribute( root, "gridLayout",    IntVec2::ZERO );
-    int         imagePPU        = ParseXMLAttribute( root, "ppu",           1 );
-
-    SpriteSheet* sprites = new SpriteSheet( imageFilePath, imageLayout );
-
-    const char* tagName = "ItemDefinition";
-    const XMLElement* element = root.FirstChildElement( tagName );
-
-    for( element; element != nullptr; element = element->NextSiblingElement( tagName ) ) {
-        ItemDef* itemDef = new ItemDef( *element ); // Upon construction, adds self to static registry
-        itemDef->m_spriteSheet = sprites;
-        itemDef->m_imagePPU = imagePPU;
-
-        Vec2 uvMins = Vec2::ZERO;
-        Vec2 uvMaxs = Vec2::ONE;
-        sprites->GetSpriteDef( itemDef->m_spriteCoords ).GetUVs(uvMins, uvMaxs);
-        itemDef->m_spriteUVs = AABB2( uvMins, uvMaxs );
+        childEle = childEle->NextSiblingElement();
     }
+
+    // Set Properties
+    m_properties.SetValue( "slot",          itemSlot );
+    m_properties.SetValue( "spriteSheet",   spriteName );
+    m_properties.SetValue( "itemSets",      itemSets );
+
+
+    g_theDevConsole->PrintString( Stringf( "(ItemDef) Loaded new ItemDef (%s)", m_defType.c_str() ) );
+
+    m_defType = StringToLower( m_defType );
+    s_definitions[m_defType] = this;
 }
 
 
-void ItemDef::DestroyItemDefs() {
-    auto itemDefIter = s_itemDefs.begin();
-    SpriteSheet* sprites = itemDefIter->second->m_spriteSheet;
-    delete sprites;
-
-    for( itemDefIter; itemDefIter != s_itemDefs.end(); itemDefIter++ ) {
-        ItemDef* itemDef = itemDefIter->second;
-        delete itemDef;
-        itemDefIter->second = nullptr;
-    }
-}
-
-
-const ItemDef* ItemDef::GetItemDef( std::string itemType ) {
-    auto itemDefIter = s_itemDefs.find( itemType );
-
-    if( itemDefIter != s_itemDefs.end() ) {
-        return itemDefIter->second;
-    } else {
-        return nullptr;
-    }
-}
-
-
-void ItemDef::Define( Item& item ) const {
-    UNUSED( item );
+template<>
+void Definition<Item>::Define( Item& theObject ) const {
+    UNUSED( theObject );
     // Define item specific things here.. roll the dice, etc
+
+    //theObject.m_strength     = g_RNG->GetRandomFloatInRange( strRange );
 }
 
 
-const std::string& ItemDef::GetItemType() const {
-    return m_itemType;
-}
-
-
-const ItemSlot ItemDef::GetItemSlot() const {
-    return m_itemSlot;
-}
-
-
-std::string ItemDef::GetTexturePath() const {
-    return m_spriteSheet->GetTexturePath();
-}
-
-
-int ItemDef::GetPPU() const {
-    return m_imagePPU;
-}
-
-
-const AABB2& ItemDef::GetUVs() const {
-    return m_spriteUVs;
-}

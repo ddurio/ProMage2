@@ -17,6 +17,9 @@
     <Filter Include="UI">
       <UniqueIdentifier>{b9d6a342-6dfc-4dd1-8a82-8022a6e70fae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameState">
+      <UniqueIdentifier>{619bc928-4074-4a4f-ad01-661269a7add2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -32,15 +35,6 @@
       <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="GameInput.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="GameState.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStateMainMenu.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStatePlay.cpp">
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="UIButton.cpp">
@@ -109,6 +103,24 @@
     <ClCompile Include="TopDownFollowCamera.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateMainMenu.cpp">
+      <Filter>GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStatePlay.cpp">
+      <Filter>GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorController.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -127,15 +139,6 @@
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="GameInput.hpp">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.hpp">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateMainMenu.hpp">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStatePlay.hpp">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="UIButton.hpp">
@@ -207,6 +210,24 @@
     <ClInclude Include="Definition.hpp">
       <Filter>General</Filter>
     </ClInclude>
+    <ClInclude Include="GameState.hpp">
+      <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateMainMenu.hpp">
+      <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStatePlay.hpp">
+      <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorController.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\ProjectConfig.xml">
@@ -222,6 +243,15 @@
       <Filter>Data</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\PaperDollSpriteSheets.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\PaperDollSpriteAnims.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\PaperDollIsoAnims.xml">
       <Filter>Data</Filter>
     </Xml>
   </ItemGroup>

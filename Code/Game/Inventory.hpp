@@ -1,6 +1,9 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
+#include "Engine/Core/Tags.hpp"
+
+#include "Game/Actor.hpp"
 #include "Game/ItemDef.hpp"
 
 
@@ -14,6 +17,7 @@ class Inventory {
 
     void Update( float deltaSeconds );
     void UpdateItemPositions( const Vec2&  worldPosition );
+    void UpdatePaperDoll( std::string (&dollSprites)[NUM_PAPER_DOLL_SLOTS] ) const;
 
     void Render() const;
 
@@ -26,6 +30,8 @@ class Inventory {
     void UnequipItem( Item* itemToUnequip );
 
     void SetRenderPreferences( bool renderEquippedItems = true, bool renderUnequippedItems = false );
+    void AddItemSets( const Strings& validSetsVec );
+    void AddItemSets( const std::string& validSetCSV );
 
     Item* GetItemAtPosition( const Vec2& worldPosition ) const;
     Item* GetItemInSlot( int unequippedSlotIndex ) const;
@@ -38,4 +44,10 @@ class Inventory {
 
     bool m_renderEquippedItems = true;
     bool m_renderUnequippedItems = false;
+    //std::vector< std::string > m_validItemSets;
+    //std::vector< std::string > m_requiredItemSets;
+    Tags m_itemSets;
+
+
+    bool IsItemEquipable( const Item* itemToEquip ) const;
 };

@@ -1,8 +1,40 @@
 <ActorDefinitions>
     <ActorDef name="Girl" strength="2~5"  intelligence="7~10" agility="5~9">
-        <Sprite imageFilePath="Data/Images/Characters/Composite_Examples.png" gridLayout="32,32" ppu="40" spriteCoords="13,3"/>
+        <!-- Female item set added via Body -->
+        <ItemSet name="Light"/>
+
+        <Body spriteSheet="PaperDoll.Body.Human.F1" itemSet="Human,Female"/>
+        <Body spriteSheet="PaperDoll.Body.Human.F2" itemSet="Human,Female"/>
+        <Body spriteSheet="PaperDoll.Body.Human.F3" itemSet="Human,Female"/>
+
+        <Ears spriteSheet="PaperDoll.Ears.1"/>
+        <Ears spriteSheet="PaperDoll.Ears.2"/>
+        <Ears spriteSheet="PaperDoll.Ears.3"/>
+
+        <Hair spriteSheet="PaperDoll.Hair.F1"/>
+        <Hair spriteSheet="PaperDoll.Hair.F2"/>
+        <Hair spriteSheet="PaperDoll.Hair.F3"/>
+        <Hair spriteSheet="PaperDoll.Hair.F4"/>
+        <Hair spriteSheet="PaperDoll.Hair.F5"/>
+        <Hair spriteSheet="PaperDoll.Hair.F6"/>
+        <Hair spriteSheet="PaperDoll.Hair.F7"/>
     </ActorDef>
     <ActorDef name="Boy" strength="7~10" intelligence="3~6"  agility="5~9">
-        <Sprite imageFilePath="Data/Images/Characters/Composite_Examples.png" gridLayout="32,32" ppu="40" spriteCoords="13,9"/>
+        <!-- Male item set added via Body -->
+        <ItemSet name="Light"/>
+
+        <Body spriteSheet="PaperDoll.Body.Human.M1" itemSet="Human,Male"/>
+        <Body spriteSheet="PaperDoll.Body.Human.M2" itemSet="Human,Male"/>
+        <Body spriteSheet="PaperDoll.Body.Human.M3" itemSet="Human,Male"/>
+
+        <Ears spriteSheet="PaperDoll.Ears.1"/>
+        <Ears spriteSheet="PaperDoll.Ears.2"/>
+        <Ears spriteSheet="PaperDoll.Ears.3"/>
+
+        <Hair spriteSheet="PaperDoll.Hair.M1"/>
+        <Hair spriteSheet="PaperDoll.Hair.M2"/>
+        <Hair spriteSheet="PaperDoll.Hair.M3"/>
+        <Hair spriteSheet="PaperDoll.Hair.M4"/>
+        <Hair spriteSheet="PaperDoll.Hair.M5"/>
     </ActorDef>
 </ActorDefinitions>
