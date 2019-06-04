@@ -3,10 +3,26 @@
         <ItemSet name="Female"/>
         <ItemSet name="Light"/>
         <ItemSet name="Dwarf,Human"/>
+
+        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
     </ItemDef>
     <ItemDef name="Tunic" slot="Chest" spriteSheet="PaperDoll.Chest.M7">
         <ItemSet name="Male"/>
         <ItemSet name="Light"/>
         <ItemSet name="Dwarf,Human"/>
+
+        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
+    </ItemDef>
+    <ItemDef name="Slippers" slot="Feet" spriteSheet="PaperDoll.Feet.F4">
+        <ItemSet name="Female"/>
+        <ItemSet name="Dwarf,Human"/>
+
+        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
+    </ItemDef>
+    <ItemDef name="Boots" slot="Feet" spriteSheet="PaperDoll.Feet.M1">
+        <ItemSet name="Male"/>
+        <ItemSet name="Dwarf,Human"/>
+
+        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
     </ItemDef>
 </ItemDefinitions>

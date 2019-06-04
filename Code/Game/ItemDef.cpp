@@ -26,11 +26,19 @@ Definition<Item>::Definition( const XMLElement& element ) {
 
         if( tagName == "ItemSet" ) {
             std::string setName = ParseXMLAttribute( *childEle, "name", "" );
-            GUARANTEE_OR_DIE( setName != "", "(ActorDef) ItemSet tag missing required attribute 'name'" );
+            GUARANTEE_OR_DIE( setName != "", "(ItemDef) ItemSet tag missing required attribute 'name'" );
 
             Tags itemTag;
             itemTag.SetTags( setName );
             itemSets.push_back( itemTag );
+        } else if( tagName == "Portrait" ) {
+            std::string animName = ParseXMLAttribute( *childEle, "anim", "" );
+            GUARANTEE_OR_DIE( animName != "", "(ItemDef) Portrait tag missing required attribute 'name'" );
+
+            float portraitTime = ParseXMLAttribute( *childEle, "time", 0.f );
+
+            m_properties.SetValue( "portraitAnim", animName );
+            m_properties.SetValue( "portraitTime", portraitTime );
         }
 
         childEle = childEle->NextSiblingElement();

@@ -5,6 +5,7 @@
 #include "Game/ItemDef.hpp"
 
 
+class SpriteDef;
 class Tags;
 class Tile;
 
@@ -14,7 +15,7 @@ class Item : public Entity {
 
     public:
     explicit Item( Map* theMap, std::string itemType );
-    explicit Item( Map* theMap, const Definition<Item>* itemDef );
+    //explicit Item( Map* theMap, const Definition<Item>* itemDef );
 
     void Startup();
     void Shutdown();
@@ -36,5 +37,8 @@ class Item : public Entity {
     private:
     const Definition<Item>* m_itemDef = nullptr;
 
+    SpriteDef* m_portraitSprite = nullptr;
+
+    void BuildPortrait();
     void BuildMesh( const Rgba& tint = Rgba::WHITE ) override;
 };

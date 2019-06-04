@@ -20,11 +20,12 @@
 
 Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
     Entity( theMap, ENTITY_TYPE_ACTOR ) {
-    //m_actorDef = ActorDef::GetActorDef( actorType );
     m_actorDef = Definition<Actor>::GetDefinition( actorType );
+    GUARANTEE_OR_DIE( m_actorDef != nullptr, Stringf( "(Actor) Failed to find actorDef of name %s", actorType.c_str() ) );
     m_actorDef->Define( *this );
 
-    m_material = g_theRenderer->GetOrCreateMaterial( actorType );
+    // Actor PaperDoll Material
+    m_material = g_theRenderer->GetOrCreateMaterial( "PaperDoll" );
 
     Shader* shader = g_theRenderer->GetOrCreateShader( "Data/Shaders/PaperDoll.hlsl" );
     shader->CreateInputLayout<VertexPCU>();
@@ -33,6 +34,7 @@ Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
 
     m_material->SetShader( shader );
 
+    // Player Controller
     if( playerID >= 0 ) {
         m_controller = new PlayerController( this, playerID );
     }
@@ -67,6 +69,9 @@ void Actor::Startup() {
 
     Item* tunic = m_inventory->SpawnNewItem( "tunic" );
     m_inventory->EquipItem( tunic );
+
+    Item* boots = m_inventory->SpawnNewItem( "boots" );
+    m_inventory->EquipItem( boots );
 
     BuildMesh();
 }
@@ -263,22 +268,21 @@ void Actor::UpdateFromController( float deltaSeconds ) {
 
 
 void Actor::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
-    // Texture Dims
-    std::string texturePath = m_actorDef->GetProperty( "texturePath", std::string() );
-    TextureView2D* texture = g_theRenderer->GetOrCreateTextureView2D( texturePath );
-    IntVec2 textureDimensions = texture->GetDimensions();
-
     // UV Dims
-    // DFS1FIXME: Fix hard coded animation set
     const SpriteDef sprite = m_animator->GetCurrentSpriteDef();
     sprite.GetUVs( m_spriteUVs.mins, m_spriteUVs.maxs );
 
     Vec2 uvDimensions = m_spriteUVs.GetDimensions();
     uvDimensions.y *= -1.f;
 
+    // Texture Dims
+    std::string texturePath = sprite.GetTexturePath();
+    TextureView2D* texture = g_theRenderer->GetOrCreateTextureView2D( texturePath );
+    IntVec2 textureDimensions = texture->GetDimensions();
+
     // World Dims
     Vec2 spriteDimensions = textureDimensions * uvDimensions;
-    Vec2 spriteWorldDimensions = spriteDimensions / m_actorDef->GetProperty( "spritePPU", 0.05f );
+    Vec2 spriteWorldDimensions = spriteDimensions / m_actorDef->GetProperty( "spritePPU", 40.f );
 
     // Local Dims
     float halfWidth  = spriteWorldDimensions.x / 2.f;

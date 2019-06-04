@@ -25,5 +25,5 @@ class Animator {
     const IsoSpriteAnimDef* m_currentAnim = nullptr;
     Timer* m_animTimer = nullptr;
 
-    Vec2 m_prevMoveDir = Vec2::ZERO;
+    Vec2 m_prevMoveDir = Vec2::DOWN;
 };

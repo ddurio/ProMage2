@@ -33,9 +33,9 @@
     <SpriteAnim name="PaperDoll.Thrust.Right" spriteSheet="PaperDoll.Body.Human.M1"   startIndex="91"  endIndex="98"  duration="1.f" playbackType="Loop"/>
 
     <!-- Walk -->
-    <SpriteAnim name="PaperDoll.Walk.Up"      spriteSheet="PaperDoll.Body.Human.M1"   startIndex="104" endIndex="112" duration="1.f" playbackType="Loop"/>
-    <SpriteAnim name="PaperDoll.Walk.Left"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="117" endIndex="125" duration="1.f" playbackType="Loop"/>
-    <SpriteAnim name="PaperDoll.Walk.Down"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="130" endIndex="138" duration="1.f" playbackType="Loop"/>
-    <SpriteAnim name="PaperDoll.Walk.Right"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="143" endIndex="151" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Walk.Up"      spriteSheet="PaperDoll.Body.Human.M1"   startIndex="105" endIndex="112" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Walk.Left"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="118" endIndex="125" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Walk.Down"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="131" endIndex="138" duration="1.f" playbackType="Loop"/>
+    <SpriteAnim name="PaperDoll.Walk.Right"   spriteSheet="PaperDoll.Body.Human.M1"   startIndex="144" endIndex="151" duration="1.f" playbackType="Loop"/>
     
 </SpriteAnims>

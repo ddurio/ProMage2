@@ -34,6 +34,9 @@ void Map::Startup() {
 
     SpawnNewActor( "Boy",  Vec2( 3.5f, 3.5f ), 0 );
     SpawnNewActor( "Girl", Vec2( 2.5f, 3.5f ) );
+
+    m_inventory->SpawnNewItem( "Slippers", Vec2( 4.5f, 4.5f ) );
+    m_inventory->SpawnNewItem( "Boots", Vec2( 5.5f, 5.5f ) );
 }
 
 
@@ -68,7 +71,7 @@ void Map::Render() const {
     g_theRenderer->DrawVertexArray( m_mapVerts );
 
     // Render items on the map
-    //m_inventory->Render();
+    m_inventory->Render();
 
     // Render actors/entities
     int numEntities = (int)m_entities.size();
