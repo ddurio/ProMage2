@@ -5,11 +5,13 @@
 
 #include "Game/Actor.hpp"
 #include "Game/Game.hpp"
+#include "Game/GameState.hpp"
 
 
 Animator::Animator( Actor* myActor ) :
     m_myActor( myActor ) {
-    m_animTimer = new Timer( g_theGame->GetGameClock() );
+    GameState* state = g_theGame->GetGameState();
+    m_animTimer = new Timer( state->GetStateClock() );
     m_animTimer->Start( 1.f );
 
     m_currentAnim = IsoSpriteAnimDef::GetDefinition( PAPER_DOLL_ANIM_IDLE );
@@ -33,7 +35,13 @@ void Animator::Update( float deltaSeconds ) {
         animName = PAPER_DOLL_ANIM_WALK;
     }
 
-    m_currentAnim = IsoSpriteAnimDef::GetDefinition( animName );
+    const IsoSpriteAnimDef* newAnim = IsoSpriteAnimDef::GetDefinition( animName );
+
+    if( m_currentAnim != newAnim ) {
+        m_currentAnim = newAnim;
+        m_animTimer->Restart();
+    }
+
     m_prevMoveDir = (moveDir == Vec2::ZERO) ? m_prevMoveDir : moveDir; // Keep last facing if you're not moving now
 }
 

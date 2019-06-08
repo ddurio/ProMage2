@@ -267,6 +267,7 @@
     <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\Inventory.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\PaperDollIsoAnims.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />

@@ -1,0 +1,11 @@
+<Inventory>
+    <SpriteSheet name="Inventory"     texturePath="Data/Images/InventorySlots.png"    gridLayout="5,5"/>
+
+    <ItemSlot name="Helm"       spriteSheet="Inventory"     spriteCoords="3,3"/>
+    <ItemSlot name="Chest"      spriteSheet="Inventory"     spriteCoords="2,1"/>
+    <ItemSlot name="Shoulder"   spriteSheet="Inventory"     spriteCoords="2,2"/>
+    <ItemSlot name="Hands"      spriteSheet="Inventory"     spriteCoords="4,2"/>
+    <ItemSlot name="Legs"       spriteSheet="Inventory"     spriteCoords="3,2"/>
+    <ItemSlot name="Feet"       spriteSheet="Inventory"     spriteCoords="1,3"/>
+    <ItemSlot name="Empty"      spriteSheet="Inventory"     spriteCoords="0,4"/>
+</Inventory>

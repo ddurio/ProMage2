@@ -7,6 +7,8 @@
 Inventory::Inventory( Map* map, bool renderEquippedItems /*= false*/, bool renderUnequippedItems /*= false*/ ) :
     m_map(map) {
     SetRenderPreferences( renderEquippedItems, renderUnequippedItems );
+
+    m_unequippedItems.resize( m_numItemSlots );
 }
 
 
@@ -143,6 +145,30 @@ void Inventory::RemoveItemFromInventory( Item* itemToRemove ) {
 }
 
 
+void Inventory::DropItem( Item* itemToDrop ) {
+    for( int itemIndex = 0; itemIndex < m_numItemSlots; itemIndex++ ) {
+        const Item* item = m_unequippedItems[itemIndex];
+
+        if( item == itemToDrop ) {
+            DropItem( itemIndex );
+            return;
+        }
+    }
+}
+
+
+void Inventory::DropItem( int itemIndexToDrop ) {
+    Inventory* mapInventory = m_map->GetMapInventory();
+
+    Item* itemToDrop = m_unequippedItems[itemIndexToDrop];
+    m_unequippedItems[itemIndexToDrop] = nullptr;
+
+    if( itemToDrop != nullptr ) {
+        mapInventory->AddItemToInventory( itemToDrop );
+    }
+}
+
+
 void Inventory::EquipItem( Item* itemToEquip, bool removeFromInventory /*= true*/ ) {
     ItemSlot slot = itemToEquip->GetItemSlot();
 
@@ -179,6 +205,24 @@ void Inventory::UnequipItem( Item* itemToUnequip ) {
 void Inventory::SetRenderPreferences( bool renderEquippedItems /*= false*/, bool renderUnequippedItems /*= false */ ) {
     m_renderEquippedItems = renderEquippedItems;
     m_renderUnequippedItems = renderUnequippedItems;
+}
+
+
+void Inventory::SetInventorySize( int numItemSlots ) {
+    if( numItemSlots < m_numItemSlots ) { // Remove slots
+        for( int itemIndex = numItemSlots; itemIndex < m_numItemSlots; itemIndex++ ) {
+            // DFS1FIXME: Should probably look for empty slots before dropping the items
+            DropItem( itemIndex );
+        }
+    }
+
+    m_numItemSlots = numItemSlots;
+    m_unequippedItems.resize( m_numItemSlots );
+}
+
+
+void Inventory::ToggleInventory() {
+    m_isOpen = !m_isOpen;
 }
 
 

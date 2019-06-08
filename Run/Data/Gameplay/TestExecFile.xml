@@ -1,5 +1,0 @@
-<DevConsoleCommands>
-    <DevConsoleCommand command="Help"/>
-    <DevConsoleCommand command="Test good=boy veryGood=boi"/>
-    <DevConsoleCommand command="Exec file=Data/Gameplay/TestExecFile2.xml"/>
-</DevConsoleCommands>

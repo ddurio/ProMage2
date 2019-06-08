@@ -27,7 +27,7 @@ Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
     // Actor PaperDoll Material
     m_material = g_theRenderer->GetOrCreateMaterial( "PaperDoll" );
 
-    Shader* shader = g_theRenderer->GetOrCreateShader( "Data/Shaders/PaperDoll.hlsl" );
+    Shader* shader = g_theRenderer->GetOrCreateShader( "Data/Shaders/PaperDoll2.hlsl" );
     shader->CreateInputLayout<VertexPCU>();
     shader->SetDepthMode( COMPARE_ALWAYS, false );
     g_theRenderer->BindShader( shader );

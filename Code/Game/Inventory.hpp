@@ -25,11 +25,16 @@ class Inventory {
 
     void AddItemToInventory( Item* itemToAdd );
     void RemoveItemFromInventory( Item* itemToRemove );
+    void DropItem( Item* itemToDrop );
+    void DropItem( int itemIndexToDrop );
 
     void EquipItem( Item* itemToEquip, bool removeFromInventory = true );
     void UnequipItem( Item* itemToUnequip );
 
     void SetRenderPreferences( bool renderEquippedItems = true, bool renderUnequippedItems = false );
+    void SetInventorySize( int numItemSlots );
+    void ToggleInventory();
+
     void AddItemSets( const Strings& validSetsVec );
     void AddItemSets( const std::string& validSetCSV );
 
@@ -39,14 +44,17 @@ class Inventory {
 
     private:
     Map* m_map = nullptr;
+
+    int m_numItemSlots = 30;
     std::vector<Item*> m_unequippedItems;
     Item* m_equippedItems[NUM_ITEM_SLOTS] = { nullptr };
 
     bool m_renderEquippedItems = true;
     bool m_renderUnequippedItems = false;
-    //std::vector< std::string > m_validItemSets;
-    //std::vector< std::string > m_requiredItemSets;
+    bool m_isOpen = false;
+
     Tags m_itemSets;
+    //UIWidget* m_
 
 
     bool IsItemEquipable( const Item* itemToEquip ) const;

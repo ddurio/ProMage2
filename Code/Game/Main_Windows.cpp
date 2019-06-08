@@ -1,11 +1,15 @@
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
+
+#include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/XMLUtils.hpp"
+
 #include "Game/App.hpp"
 
 
 NamedStrings g_theGameConfigBlackboard;
+IMGUI_IMPL_API LRESULT  ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
 // SD2FIXME: I feel like we should be able to replace this somehow...
@@ -13,6 +17,10 @@ bool GameWinProc( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM l
     UNUSED( windowHandle );
     UNUSED( lParam );
     unsigned char asKey = (unsigned char)wParam;
+
+    if( ImGui_ImplWin32_WndProcHandler( windowHandle, wmMessageCode, wParam, lParam ) ) {
+        return true;
+    }
 
     switch( wmMessageCode ) {
         case WM_CLOSE: { // App close requested via "X" button, right-click "Close Window" on task bar, "Close" from system menu, Alt-F4, etc...

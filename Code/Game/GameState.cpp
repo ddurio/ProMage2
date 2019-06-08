@@ -39,6 +39,11 @@ GameInput* GameState::GetGameInput() const {
 }
 
 
+Clock* GameState::GetStateClock() const {
+    return m_stateClock;
+}
+
+
 void GameState::BuildLoadingMesh() {
     if( m_loadingMesh != nullptr ) {
         return; // Already built

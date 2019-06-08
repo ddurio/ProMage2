@@ -40,9 +40,9 @@ constexpr char  FONT_NAME_SQUIRREL[] = "SquirrelFixedFont";
 constexpr char  DATA_ACTOR_DEFS[] = "Data/Gameplay/ActorDefs.xml";
 constexpr char  DATA_ITEM_DEFS[] = "Data/Gameplay/ItemDefs.xml";
 constexpr char  DATA_MAP_DEFS[] = "Data/Gameplay/MapDefs.xml";
-constexpr char  DATA_PAPER_DOLL_ANIMS[] = "Data/Gameplay/PaperDollSpriteAnims.xml";
-constexpr char  DATA_PAPER_DOLL_ISO_ANIMS[] = "Data/Gameplay/PaperDollIsoAnims.xml";
-constexpr char  DATA_PAPER_DOLL_SPRITES[] = "Data/Gameplay/PaperDollSpriteSheets.xml";
+constexpr char  DATA_PAPER_DOLL_ANIMS[] = "Data/Gameplay/PaperDoll.SpriteAnims.xml";
+constexpr char  DATA_PAPER_DOLL_ISO_ANIMS[] = "Data/Gameplay/PaperDoll.IsoAnims.xml";
+constexpr char  DATA_PAPER_DOLL_SPRITES[] = "Data/Gameplay/PaperDoll.SpriteSheets.xml";
 constexpr char  DATA_PROJECT_CONFIG[] = "Data/ProjectConfig.xml";
 constexpr char  DATA_TILE_DEFS[] = "Data/Gameplay/TileDefs.xml";
 

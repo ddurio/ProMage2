@@ -1,4 +1,0 @@
-<DevConsoleCommands>
-    <DevConsoleCommand command="Echo text=Hello color=YELLOW"/>
-    <DevConsoleCommand command="Echo text=World color=GREEN"/>
-</DevConsoleCommands>

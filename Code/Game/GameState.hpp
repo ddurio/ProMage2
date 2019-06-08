@@ -37,6 +37,7 @@ class GameState {
     Camera* GetUICamera() const;
     Camera* GetGameCamera() const;
     virtual GameInput* GetGameInput() const;
+    virtual Clock* GetStateClock() const;
 
     protected:
     LoadState m_loadState = LOAD_STATE_PRE_INIT;

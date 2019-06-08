@@ -10,7 +10,7 @@
 
 enum ItemSlot {
     ITEM_SLOT_NONE = -1,
-    ITEM_SLOT_HAT,
+    ITEM_SLOT_HELM,
     ITEM_SLOT_CHEST,
     ITEM_SLOT_SHOULDER,
     ITEM_SLOT_LEGS,

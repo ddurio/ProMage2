@@ -41,4 +41,10 @@ class Game {
     private:
     Clock* m_gameClock = nullptr;
     GameState* m_gameState = nullptr;
+
+    // TESTING
+    bool ui_testCheck1 = false;
+    bool ui_testCheck2 = false;
+    float ui_testSlider = 0.f;
+    Rgba ui_testColor = Rgba::WHITE;
 };
