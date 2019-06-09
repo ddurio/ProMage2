@@ -32,3 +32,8 @@ void ActorController::SetMoveDir( const Vec2& moveDir ) const {
 void ActorController::ToggleInventory() const {
     m_myActor->m_inventory->ToggleInventory();
 }
+
+
+void ActorController::UpdateActorPortrait() const {
+    m_myActor->BuildPortraitMesh();
+}

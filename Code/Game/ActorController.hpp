@@ -18,6 +18,9 @@ class ActorController {
     void SetMoveDir( const Vec2& moveDir ) const;
     void ToggleInventory() const;
 
-    private:
+    protected:
     Actor* m_myActor = nullptr;
+
+
+    void UpdateActorPortrait() const;
 };

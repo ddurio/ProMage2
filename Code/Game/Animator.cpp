@@ -51,3 +51,10 @@ const SpriteDef& Animator::GetCurrentSpriteDef() const {
 
     return m_currentAnim->GetSpriteDefAtTimeAndDirection( elapsedTime, m_prevMoveDir );
 }
+
+
+const SpriteDef& Animator::GetPortraitSpriteDef() const {
+    const IsoSpriteAnimDef* idleAnim = IsoSpriteAnimDef::GetDefinition( ANIM_PAPER_DOLL_IDLE );
+
+    return idleAnim->GetSpriteDefAtTimeAndDirection( 0.f, Vec2::DOWN );
+}

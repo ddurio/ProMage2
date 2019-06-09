@@ -9,7 +9,7 @@ ItemSlot ParseXMLAttribute( const XMLElement& element, const char* attributeName
 
     ItemSlot slot = defaultValue;
 
-    if( slotString == "hat" ) {
+    if( slotString == "helm" ) {
         slot = ITEM_SLOT_HELM;
     } else if( slotString == "chest" ) {
         slot = ITEM_SLOT_CHEST;

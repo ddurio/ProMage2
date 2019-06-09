@@ -35,7 +35,8 @@ constexpr int GAME_NUM_MAPS = 3;
 
 constexpr char  TEXTURE_TERRAIN[] = "Data/Images/Terrain_32x32.png";
 
-constexpr char  FONT_NAME_SQUIRREL[] = "SquirrelFixedFont";
+constexpr char  FONT_NAME_SQUIRREL[]        = "SquirrelFixedFont";
+constexpr char  MAT_NAME_PAPER_DOLL[]       = "PaperDoll";
 
 constexpr char  DATA_ACTOR_DEFS[]           = "Data/Gameplay/ActorDefs.xml";
 constexpr char  DATA_INVENTORY_SPRITES[]    = "Data/Gameplay/Inventory.xml";

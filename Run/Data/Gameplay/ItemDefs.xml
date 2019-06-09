@@ -32,4 +32,9 @@
 
         <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
     </ItemDef>
+    <ItemDef name="PlateHelm" slot="Helm" spriteSheet="PaperDoll.Hat.3">
+        <ItemSet name="Heavy"/>
+
+        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
+    </ItemDef>
 </ItemDefinitions>

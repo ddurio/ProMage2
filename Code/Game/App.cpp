@@ -60,7 +60,7 @@ void App::Startup() {
     g_thePhysicsSystem->SetGravity( Vec2( 0.f, -2.f ) );
     g_theGui->Startup();
 
-    g_theGame = new Game();
+    g_theGame = new Game( false );
     g_theGame->Startup();
 
     g_theEventSystem->Subscribe( "quit", this, &App::Command_Quit );

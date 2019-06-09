@@ -30,9 +30,9 @@
     <SpriteSheet name="PaperDoll.Hair.M4"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_parted_m.png"    gridLayout="13,21"/>
     <SpriteSheet name="PaperDoll.Hair.M5"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_shorthawk_m.png"    gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Hat.1"             texturePath="Data/Images/Humanoids/Head/Hat/head_bandana.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hat.2"             texturePath="Data/Images/Humanoids/Head/Hat/head_leather_cap.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hat.3"             texturePath="Data/Images/Humanoids/Head/Hat/head_plate_helm.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hat.1"             texturePath="Data/Images/Humanoids/Head/Hats/head_bandana.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hat.2"             texturePath="Data/Images/Humanoids/Head/Hats/head_leather_cap.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hat.3"             texturePath="Data/Images/Humanoids/Head/Hats/head_plate_helmet.png"    gridLayout="13,21"/>
 
     <!-- Chest -->
     <SpriteSheet name="PaperDoll.Chest.F1"          texturePath="Data/Images/Humanoids/Chest/Female/chest_dress_f.png"    gridLayout="13,21"/>

@@ -1,7 +1,10 @@
 #include "Game/Actor.hpp" 
+
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Renderer/CPUMesh.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/IsoSpriteAnimDef.hpp"
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
@@ -25,7 +28,7 @@ Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
     m_actorDef->Define( *this );
 
     // Actor PaperDoll Material
-    m_material = g_theRenderer->GetOrCreateMaterial( "PaperDoll" );
+    m_material = g_theRenderer->GetOrCreateMaterial( MAT_NAME_PAPER_DOLL );
 
     Shader* shader = g_theRenderer->GetOrCreateShader( "Data/Shaders/PaperDoll2.hlsl" );
     shader->CreateInputLayout<VertexPCU>();
@@ -58,6 +61,7 @@ Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
 Actor::~Actor() {
     CLEAR_POINTER( m_inventory );
     CLEAR_POINTER( m_animator );
+    CLEAR_POINTER( m_portraitMesh );
 }
 
 
@@ -76,10 +80,11 @@ void Actor::Startup() {
     Item* boots = m_inventory->SpawnNewItem( "boots" );
     m_inventory->EquipItem( boots );
 
-    Item* boots2 = m_inventory->SpawnNewItem( "boots" );
-    m_inventory->EquipItem( boots2 );
+    Item* helm = m_inventory->SpawnNewItem( "PlateHelm" );
+    m_inventory->EquipItem( helm );
 
     BuildMesh();
+    BuildPortraitMesh();
 }
 
 
@@ -145,6 +150,26 @@ void Actor::Render() const {
 
     g_theRenderer->BindMaterial( m_material );
     g_theRenderer->DrawMesh( m_mesh, Matrix44::MakeTranslation2D( m_transform.position ) );
+}
+
+
+void Actor::RenderPortrait() const {
+    for( int slotIndex = 0; slotIndex < NUM_PAPER_DOLL_SLOTS; slotIndex++ ) {
+        PaperDollSlot slot = (PaperDollSlot)slotIndex;
+
+        std::string sheetName = m_paperDollSprites[slot];
+        std::string textureName = "CLEAR_BLACK";
+
+        if( sheetName != "" ) {
+            const SpriteSheet sheet = SpriteSheet::GetSpriteSheet( sheetName );
+            textureName = sheet.GetTexturePath();
+        }
+
+        m_material->SetTexture( textureName, slot );
+    }
+
+    g_theRenderer->BindMaterial( m_material );
+    g_theRenderer->DrawMesh( m_portraitMesh, Matrix44::IDENTITY );
 }
 
 
@@ -298,5 +323,26 @@ void Actor::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
     m_physicsRadius = 0.4f;
 
     Entity::BuildMesh( tint );
+}
+
+
+void Actor::BuildPortraitMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
+    const SpriteDef sprite = m_animator->GetPortraitSpriteDef();
+    sprite.GetUVs( m_spriteUVs.mins, m_spriteUVs.maxs );
+
+    Vec2 uvDimensions = m_spriteUVs.GetDimensions();
+    uvDimensions.y *= -1.f;
+
+    Camera* uiCamera = g_theGame->GetUICamera();
+    AABB2 cameraBounds = uiCamera->GetBounds();
+
+
+    CPUMesh builder;
+    builder.SetColor( tint );
+    builder.AddQuad( OBB2( cameraBounds ), m_spriteUVs );
+
+    CLEAR_POINTER( m_portraitMesh );
+    m_portraitMesh = new GPUMesh( g_theRenderer );
+    m_portraitMesh->CopyVertsFromCPUMesh( &builder );
 }
 

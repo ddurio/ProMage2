@@ -16,4 +16,9 @@ class PlayerController : public ActorController {
     private:
     GameInput* m_gameInput = nullptr;
     int m_playerIndex = -1;
+
+    std::string m_portraitViewName = "playerController/portraitView";
+
+
+    void UpdateHUD();
 };

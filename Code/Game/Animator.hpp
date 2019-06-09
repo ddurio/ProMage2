@@ -18,6 +18,7 @@ class Animator {
     void Update( float deltaSeconds );
 
     const SpriteDef& GetCurrentSpriteDef() const;
+    const SpriteDef& GetPortraitSpriteDef() const;
 
     private:
     Actor* m_myActor = nullptr;

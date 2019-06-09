@@ -48,6 +48,7 @@ class Actor : public Entity {
 
     void Update( float deltaSeconds );
     void Render() const;
+    void RenderPortrait() const;
 
     void OnCollisionEntity( Entity* collidingEntity );
     void OnCollisionTile( Tile* collidingTile );
@@ -69,6 +70,10 @@ class Actor : public Entity {
     std::string m_paperDollSprites[NUM_PAPER_DOLL_SLOTS] = { "" };
     Animator* m_animator = nullptr;
 
+    GPUMesh* m_portraitMesh = nullptr;
+
     void UpdateFromController( float deltaSeconds );
+
     void BuildMesh( const Rgba& tint = Rgba::WHITE ) override;
+    void BuildPortraitMesh( const Rgba& ting = Rgba::WHITE );
 };

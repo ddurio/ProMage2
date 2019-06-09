@@ -391,17 +391,6 @@ void Inventory::UpdateUI() {
     AddEquippedItemTile( ITEM_SLOT_WEAPON, tileSize );
 
     style.ItemSpacing.y *= 0.25f;
-
-    /*
-    ImGui::Text( "Bounds %.2f,%.2f - %.2f,%.2f", clientBounds.mins.x, clientBounds.mins.y, clientBounds.maxs.x, clientBounds.maxs.y );
-    ImGui::Text( "WindowSize %.2f,%.2f", windowSize.x, windowSize.y );
-    ImGui::Text( "Actual Size %.2f,%.2f", ImGui::GetWindowSize().x, ImGui::GetWindowSize().y );
-    ImGui::Text( "Width %.2f", ImGui::GetColumnWidth() );
-    ImGui::Text( "Offset %.2f", ImGui::GetColumnOffset() );
-    */
-
-
-
     ImGui::End();
 }
 
