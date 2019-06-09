@@ -8,6 +8,7 @@
 class ActorController;
 class Animator;
 class Inventory;
+class StatsManager;
 class Tile;
 class Timer;
 
@@ -59,13 +60,9 @@ class Actor : public Entity {
     const Definition<Actor>* m_actorDef = nullptr;
     Inventory* m_inventory = nullptr;
     ActorController* m_controller = nullptr;
+    StatsManager* m_statsManager = nullptr;
 
     Vec2 m_moveDir = Vec2::ZERO;
-    float m_moveSpeed = 3.f;
-
-    float m_strength = 0;
-    float m_intelligence = 0;
-    float m_agility = 0;
 
     std::string m_paperDollSprites[NUM_PAPER_DOLL_SLOTS] = { "" };
     Animator* m_animator = nullptr;

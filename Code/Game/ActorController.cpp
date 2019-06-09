@@ -34,6 +34,11 @@ void ActorController::ToggleInventory() const {
 }
 
 
+const StatsManager* ActorController::GetActorStats() const {
+    return m_myActor->m_statsManager;
+}
+
+
 void ActorController::UpdateActorPortrait() const {
     m_myActor->BuildPortraitMesh();
 }

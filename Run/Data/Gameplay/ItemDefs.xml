@@ -1,40 +1,139 @@
 <ItemDefinitions>
-    <ItemDef name="Dress" slot="Chest" spriteSheet="PaperDoll.Chest.F1">
-        <ItemSet name="Female"/>
-        <ItemSet name="Light"/>
-        <ItemSet name="Dwarf,Human"/>
-
-        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
-    </ItemDef>
-    <ItemDef name="Hauberk" slot="Chest" spriteSheet="PaperDoll.Chest.M3">
-        <ItemSet name="Male"/>
-        <ItemSet name="Heavy"/>
-        <ItemSet name="Dwarf,Human"/>
-
-        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
-    </ItemDef>
-    <ItemDef name="Tunic" slot="Chest" spriteSheet="PaperDoll.Chest.M7">
-        <ItemSet name="Male"/>
-        <ItemSet name="Light"/>
-        <ItemSet name="Dwarf,Human"/>
-
-        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
-    </ItemDef>
-    <ItemDef name="Slippers" slot="Feet" spriteSheet="PaperDoll.Feet.F4">
-        <ItemSet name="Female"/>
-        <ItemSet name="Dwarf,Human"/>
-
-        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
-    </ItemDef>
-    <ItemDef name="Boots" slot="Feet" spriteSheet="PaperDoll.Feet.M1">
-        <ItemSet name="Male"/>
-        <ItemSet name="Dwarf,Human"/>
-
-        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
+    <!-- Helm -->
+    <ItemDef name="Bandana" slot="Helm" spriteSheet="PaperDoll.Hat.1"/>
+    <ItemDef name="LeatherHelm" slot="Helm" spriteSheet="PaperDoll.Hat.2">
+        <ItemSet name="Medium"/>
     </ItemDef>
     <ItemDef name="PlateHelm" slot="Helm" spriteSheet="PaperDoll.Hat.3">
         <ItemSet name="Heavy"/>
-
-        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
+    </ItemDef>
+    <!-- Chest -->
+    <ItemDef name="Dress" slot="Chest" spriteSheet="PaperDoll.Chest.F1">
+        <ItemSet name="Female"/>
+    </ItemDef>
+    <ItemDef name="ShortDress" slot="Chest" spriteSheet="PaperDoll.Chest.F2">
+        <ItemSet name="Female"/>
+    </ItemDef>
+    <ItemDef name="Blouse" slot="Chest" spriteSheet="PaperDoll.Chest.F3">
+        <ItemSet name="Female"/>
+    </ItemDef>
+    <ItemDef name="TankTop" slot="Chest" spriteSheet="PaperDoll.Chest.F4">
+        <ItemSet name="Female"/>
+    </ItemDef>
+    <ItemDef name="LeatherChestF" slot="Chest" spriteSheet="PaperDoll.Chest.F5">
+        <ItemSet name="Female"/>
+        <ItemSet name="Medium"/>
+    </ItemDef>
+    <ItemDef name="PlateChestF" slot="Chest" spriteSheet="PaperDoll.Chest.F6">
+        <ItemSet name="Female"/>
+        <ItemSet name="Heavy"/>
+    </ItemDef>
+    <ItemDef name="LeatherChestM" slot="Chest" spriteSheet="PaperDoll.Chest.M1">
+        <ItemSet name="Male"/>
+        <ItemSet name="Medium"/>
+    </ItemDef>
+    <ItemDef name="SleevelessLeatherChest" slot="Chest" spriteSheet="PaperDoll.Chest.M2">
+        <ItemSet name="Male"/>
+        <ItemSet name="Medium"/>
+    </ItemDef>
+    <ItemDef name="PlateChestM" slot="Chest" spriteSheet="PaperDoll.Chest.M3">
+        <ItemSet name="Male"/>
+        <ItemSet name="Heavy"/>
+    </ItemDef>
+    <ItemDef name="SleevelessPlateChestM" slot="Chest" spriteSheet="PaperDoll.Chest.M4">
+        <ItemSet name="Male"/>
+        <ItemSet name="Heavy"/>
+    </ItemDef>
+    <ItemDef name="Shirt" slot="Chest" spriteSheet="PaperDoll.Chest.M5">
+        <ItemSet name="Male"/>
+    </ItemDef>
+    <ItemDef name="ShirtBelt" slot="Chest" spriteSheet="PaperDoll.Chest.M6">
+        <ItemSet name="Male"/>
+    </ItemDef>
+    <ItemDef name="Tunic" slot="Chest" spriteSheet="PaperDoll.Chest.M7">
+        <ItemSet name="Male"/>
+    </ItemDef>
+    <!-- Shoulder -->
+    <ItemDef name="LeatherShoulderF" slot="Shoulder" spriteSheet="PaperDoll.Shoulder.F1">
+        <ItemSet name="Female"/>
+        <ItemSet name="Medium"/>
+    </ItemDef>
+    <ItemDef name="PlateShoulderF" slot="Shoulder" spriteSheet="PaperDoll.Shoulder.F2">
+        <ItemSet name="Female"/>
+        <ItemSet name="Heavy"/>
+    </ItemDef>
+    <ItemDef name="LeatherShoulderM" slot="Shoulder" spriteSheet="PaperDoll.Shoulder.M1">
+        <ItemSet name="Male"/>
+        <ItemSet name="Medium"/>
+    </ItemDef>
+    <ItemDef name="PlateShoulderM" slot="Shoulder" spriteSheet="PaperDoll.Shoulder.M2">
+        <ItemSet name="Male"/>
+        <ItemSet name="Heavy"/>
+    </ItemDef>
+    <!-- Legs -->
+    <ItemDef name="PantsF" slot="Legs" spriteSheet="PaperDoll.Legs.F1">
+        <ItemSet name="Female"/>
+    </ItemDef>
+    <ItemDef name="LeatherLegsF" slot="Legs" spriteSheet="PaperDoll.Legs.F2">
+        <ItemSet name="Female"/>
+        <ItemSet name="Medium"/>
+    </ItemDef>
+    <ItemDef name="PlateLegsF" slot="Legs" spriteSheet="PaperDoll.Legs.F3">
+        <ItemSet name="Female"/>
+        <ItemSet name="Heavy"/>
+    </ItemDef>
+    <ItemDef name="PantsM" slot="Legs" spriteSheet="PaperDoll.Legs.M1">
+        <ItemSet name="Male"/>
+    </ItemDef>
+    <ItemDef name="LeatherLegsM" slot="Legs" spriteSheet="PaperDoll.Legs.M2">
+        <ItemSet name="Male"/>
+        <ItemSet name="Medium"/>
+    </ItemDef>
+    <ItemDef name="PlateLegsM" slot="Legs" spriteSheet="PaperDoll.Legs.M6">
+        <ItemSet name="Male"/>
+        <ItemSet name="Heavy"/>
+    </ItemDef>
+    <!-- Feet -->
+    <ItemDef name="BootsF" slot="Feet" spriteSheet="PaperDoll.Feet.F1">
+        <ItemSet name="Female"/>
+    </ItemDef>
+    <ItemDef name="LeatherBootsF" slot="Feet" spriteSheet="PaperDoll.Feet.F2">
+        <ItemSet name="Female"/>
+        <ItemSet name="Medium"/>
+    </ItemDef>
+    <ItemDef name="PlateBootsF" slot="Feet" spriteSheet="PaperDoll.Feet.F3">
+        <ItemSet name="Female"/>
+        <ItemSet name="Heavy"/>
+    </ItemDef>
+    <ItemDef name="Slippers" slot="Feet" spriteSheet="PaperDoll.Feet.F4">
+        <ItemSet name="Female"/>
+    </ItemDef>
+    <ItemDef name="BootsM" slot="Feet" spriteSheet="PaperDoll.Feet.M1">
+        <ItemSet name="Male"/>
+    </ItemDef>
+    <ItemDef name="LeatherBootsM" slot="Feet" spriteSheet="PaperDoll.Feet.M2">
+        <ItemSet name="Male"/>
+        <ItemSet name="Medium"/>
+    </ItemDef>
+    <ItemDef name="PlateBootsM" slot="Feet" spriteSheet="PaperDoll.Feet.M3">
+        <ItemSet name="Male"/>
+        <ItemSet name="Heavy"/>
+    </ItemDef>
+    <ItemDef name="Shoes" slot="Feet" spriteSheet="PaperDoll.Feet.M4">
+        <ItemSet name="Male"/>
+    </ItemDef>
+    <!-- Weapons -->
+    <!-- Weapon sprite sheets are messed up for now -->
+    <ItemDef name="Bow" slot="Weapon" spriteSheet="PaperDoll.Weapon.Bow">
+        <ItemSet name="Ranged"/>
+    </ItemDef>
+    <ItemDef name="RecurveBow" slot="Weapon" spriteSheet="PaperDoll.Weapon.RecurveBow">
+        <ItemSet name="Ranged"/>
+    </ItemDef>
+    <ItemDef name="Dagger" slot="Weapon" spriteSheet="PaperDoll.Weapon.Dagger">
+        <ItemSet name="Melee"/>
+    </ItemDef>
+    <ItemDef name="Longsword" slot="Weapon" spriteSheet="PaperDoll.Weapon.Longsword">
+        <ItemSet name="Melee"/>
     </ItemDef>
 </ItemDefinitions>

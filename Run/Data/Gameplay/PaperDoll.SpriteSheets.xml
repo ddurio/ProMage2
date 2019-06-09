@@ -71,13 +71,13 @@
 
     <!-- Feet -->
     <SpriteSheet name="PaperDoll.Feet.F1"           texturePath="Data/Images/Humanoids/Feet/Female/feet_boots_brown_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.F2"           texturePath="Data/Images/Humanoids/Feet/Female/feet_boots_plate_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.F3"           texturePath="Data/Images/Humanoids/Feet/Female/feet_shoes_brown_f.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.F2"           texturePath="Data/Images/Humanoids/Feet/Female/feet_shoes_brown_f.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.F3"           texturePath="Data/Images/Humanoids/Feet/Female/feet_boots_plate_f.png"    gridLayout="13,21"/>
     <SpriteSheet name="PaperDoll.Feet.F4"           texturePath="Data/Images/Humanoids/Feet/Female/feet_slippers_brown_f.png"    gridLayout="13,21"/>
 
     <SpriteSheet name="PaperDoll.Feet.M1"           texturePath="Data/Images/Humanoids/Feet/Male/feet_boots_brown_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.M2"           texturePath="Data/Images/Humanoids/Feet/Male/feet_boots_plate_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.M3"           texturePath="Data/Images/Humanoids/Feet/Male/feet_shoes_black_m.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.M2"           texturePath="Data/Images/Humanoids/Feet/Male/feet_shoes_black_m.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.M3"           texturePath="Data/Images/Humanoids/Feet/Male/feet_boots_plate_m.png"    gridLayout="13,21"/>
     <SpriteSheet name="PaperDoll.Feet.M4"           texturePath="Data/Images/Humanoids/Feet/Male/feet_shoes_brown_m.png"    gridLayout="13,21"/>
 
     <!-- Weapons -->

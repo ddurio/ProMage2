@@ -8,6 +8,7 @@
 #include "Game/Actor.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
+#include "Game/StatsManager.hpp"
 
 
 PlayerController::PlayerController( Actor* myActor, int playerID ) :
@@ -48,14 +49,16 @@ void PlayerController::UpdateHUD() {
     AABB2 clientBounds = g_theWindow->GetClientBounds();
     Vec2 clientDimensions = clientBounds.GetDimensions();
 
-    float windowWidth = 0.1f * clientDimensions.x;
-    Vec2 windowSize = Vec2( windowWidth, -windowWidth );
+    float portraitWidth = 0.1f * clientDimensions.x;
 
-    AABB2 window = clientBounds.GetBoxWithin( windowSize, Vec2::ZERO );
-    Vec2 windowOrigin = Vec2( window.mins.x, window.maxs.y );
+    ImGuiStyle& portraitStyle = ImGui::GetStyle();
+    Vec2 portraitSize = Vec2( portraitWidth, -portraitWidth ) + Vec2( portraitStyle.WindowPadding.x, portraitStyle.WindowPadding.y );
 
-    ImGui::SetNextWindowPos( ImVec2( windowOrigin.x, windowOrigin.y ), ImGuiCond_Always );
-    ImGui::SetNextWindowSize( ImVec2( windowWidth, windowWidth ), ImGuiCond_Always );
+    AABB2 portrait = clientBounds.GetBoxWithin( portraitSize, Vec2::ZERO );
+    Vec2 portraitOrigin = Vec2( portrait.mins.x, portrait.maxs.y - 10.f );
+
+    ImGui::SetNextWindowPos( ImVec2( portraitOrigin.x, portraitOrigin.y ), ImGuiCond_Always );
+    ImGui::SetNextWindowSize( ImVec2( portraitWidth, portraitWidth ), ImGuiCond_Always );
     ImGui::Begin( "Portrait", nullptr, windowFlags );
 
     // Setup Portrait
@@ -70,10 +73,33 @@ void PlayerController::UpdateHUD() {
     g_theRenderer->EndCamera( uiCamera );
 
     void* shaderResourceView = portraitView->GetShaderView();
-    ImGui::Image( shaderResourceView, ImVec2( windowWidth, windowWidth ), ImVec2( 0.3f, 0.175f ), ImVec2( 0.75f, 0.625f ) );
+    ImGui::Image( shaderResourceView, ImVec2( portraitWidth, portraitWidth ), ImVec2( 0.3f, 0.175f ), ImVec2( 0.75f, 0.625f ) );
+    ImGui::End();
+
 
     // Setup Health Bar
+    Vec2 healthSize = Vec2( 2.f * portraitWidth, 0.1f * portraitWidth );
+    Vec2 healthOrigin = Vec2( portraitOrigin.x + portraitWidth, portraitOrigin.y + (0.8f * portraitWidth) );
 
+    ImGui::SetNextWindowPos( ImVec2( healthOrigin.x, healthOrigin.y ), ImGuiCond_Always );
+    ImGui::SetNextWindowSize( ImVec2( healthSize.x, healthSize.y ), ImGuiCond_Always );
+    ImGui::Begin( "HealthBar", nullptr, windowFlags );
+
+    const StatsManager* actorStats = GetActorStats();
+
+    float health = actorStats->GetHealth();
+    float maxHealth = actorStats->GetMaxHealth();
+    float healthPercent = actorStats->GetPercentHealth();
+
+    std::string healthText = Stringf( "%d/%d", (int)health, (int)maxHealth );
+
+    ImGuiStyle& healthStyle = ImGui::GetStyle();
+    ImVec4 origColor = healthStyle.Colors[ImGuiCol_PlotHistogram];
+    healthStyle.Colors[ImGuiCol_PlotHistogram] = ImVec4( Rgba::RED.r, Rgba::RED.g, Rgba::RED.b, Rgba::RED.a );
+
+    ImGui::ProgressBar( healthPercent, ImVec2( -1, 0 ), healthText.c_str() );
+
+    healthStyle.Colors[ImGuiCol_PlotHistogram] = origColor;
     ImGui::End();
 }
 

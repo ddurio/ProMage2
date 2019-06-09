@@ -36,7 +36,7 @@ void Map::Startup() {
     SpawnNewActor( "Girl", Vec2( 2.5f, 3.5f ) );
 
     m_inventory->SpawnNewItem( "Slippers", Vec2( 4.5f, 4.5f ) );
-    m_inventory->SpawnNewItem( "Boots", Vec2( 5.5f, 5.5f ) );
+    m_inventory->SpawnNewItem( "Shoes", Vec2( 5.5f, 5.5f ) );
 }
 
 

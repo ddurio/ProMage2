@@ -21,6 +21,9 @@ Definition<Item>::Definition( const XMLElement& element ) {
     const XMLElement* childEle = element.FirstChildElement();
     std::vector< Tags > itemSets;
 
+    float portraitTime = 0.f;
+    std::string portraitAnim = Stringf( "%s.%s", ANIM_PAPER_DOLL_IDLE, "Down" );
+
     while( childEle != nullptr ) {
         std::string tagName = childEle->Name();
 
@@ -32,13 +35,8 @@ Definition<Item>::Definition( const XMLElement& element ) {
             itemTag.SetTags( setName );
             itemSets.push_back( itemTag );
         } else if( tagName == "Portrait" ) {
-            std::string animName = ParseXMLAttribute( *childEle, "anim", "" );
-            GUARANTEE_OR_DIE( animName != "", "(ItemDef) Portrait tag missing required attribute 'name'" );
-
-            float portraitTime = ParseXMLAttribute( *childEle, "time", 0.f );
-
-            m_properties.SetValue( "portraitAnim", animName );
-            m_properties.SetValue( "portraitTime", portraitTime );
+            portraitAnim = ParseXMLAttribute( *childEle, "anim", portraitAnim );
+            portraitTime = ParseXMLAttribute( *childEle, "time", portraitTime );
         }
 
         childEle = childEle->NextSiblingElement();
@@ -48,6 +46,9 @@ Definition<Item>::Definition( const XMLElement& element ) {
     m_properties.SetValue( "slot",          itemSlot );
     m_properties.SetValue( "spriteSheet",   spriteName );
     m_properties.SetValue( "itemSets",      itemSets );
+
+    m_properties.SetValue( "portraitAnim", portraitAnim );
+    m_properties.SetValue( "portraitTime", portraitTime );
 
 
     g_theDevConsole->PrintString( Stringf( "(ItemDef) Loaded new ItemDef (%s)", m_defType.c_str() ) );

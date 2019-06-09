@@ -18,6 +18,7 @@
 #include "Game/Item.hpp"
 #include "Game/Map.hpp"
 #include "Game/PlayerController.hpp"
+#include "Game/StatsManager.hpp"
 #include "Game/Tile.hpp"
 
 
@@ -68,20 +69,28 @@ Actor::~Actor() {
 void Actor::Startup() {
     m_animator = new Animator( this );
 
-    Item* dress = m_inventory->SpawnNewItem( "dress" );
-    m_inventory->EquipItem( dress );
+    Strings items = {
+        "dress",
+        "PlateChestM",
+        "tunic",
+        "PlateHelm",
+        "Bandana",
+        "LeatherLegsM",
+        "RecurveBow",
+        "LongSword",
+        "BootsM",
+        "PlateShoulderM"
+    };
 
-    Item* plate = m_inventory->SpawnNewItem( "Hauberk" );
-    m_inventory->EquipItem( plate );
+    // DFS1FIXME: Weapon sprite sheets are messed up
+    //            Portraits are all blank (no idle)
+    //            Longsword is completely unusable (wrong UVs)
+    int numItems = (int)items.size();
 
-    Item* tunic = m_inventory->SpawnNewItem( "tunic" );
-    m_inventory->EquipItem( tunic );
-
-    Item* boots = m_inventory->SpawnNewItem( "boots" );
-    m_inventory->EquipItem( boots );
-
-    Item* helm = m_inventory->SpawnNewItem( "PlateHelm" );
-    m_inventory->EquipItem( helm );
+    for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
+        Item* item = m_inventory->SpawnNewItem( items[itemIndex] );
+        m_inventory->EquipItem( item );
+    }
 
     BuildMesh();
     BuildPortraitMesh();
@@ -102,8 +111,11 @@ void Actor::Update( float deltaSeconds ) {
     UpdateFromController( deltaSeconds );
     m_animator->Update( deltaSeconds );
 
+    m_statsManager->TakeDamage( deltaSeconds );
+
     // Update Position
-    Vec2 frameMovement = m_moveDir * m_moveSpeed * deltaSeconds;
+    float moveSpeed = m_statsManager->GetMoveSpeed();
+    Vec2 frameMovement = m_moveDir * moveSpeed * deltaSeconds;
 
     m_transform.position += frameMovement;
     // DFS1FIXME: This shouldn't be needed anymore right?

@@ -218,6 +218,7 @@
     <ClCompile Include="Metadata.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="Animator.cpp" />
+    <ClCompile Include="StatsManager.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDef.cpp" />
     <ClCompile Include="TopDownFollowCamera.cpp" />
@@ -255,6 +256,7 @@
     <ClInclude Include="MapGenStep_Sprinkle.hpp" />
     <ClInclude Include="Metadata.hpp" />
     <ClInclude Include="PlayerController.hpp" />
+    <ClInclude Include="StatsManager.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDef.hpp" />
     <ClInclude Include="TopDownFollowCamera.hpp" />

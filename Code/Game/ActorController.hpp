@@ -3,6 +3,7 @@
 
 
 class Actor;
+class StatsManager;
 
 
 class ActorController {
@@ -21,6 +22,6 @@ class ActorController {
     protected:
     Actor* m_myActor = nullptr;
 
-
+    const StatsManager* GetActorStats() const;
     void UpdateActorPortrait() const;
 };

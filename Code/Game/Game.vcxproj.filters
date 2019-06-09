@@ -20,11 +20,11 @@
     <Filter Include="GameState">
       <UniqueIdentifier>{619bc928-4074-4a4f-ad01-661269a7add2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ActorComponents">
+      <UniqueIdentifier>{21b44ac0-fe81-45a7-a6f0-892d46a5161d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main_Windows.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="App.cpp">
       <Filter>General</Filter>
     </ClCompile>
@@ -113,13 +113,19 @@
       <Filter>GameState</Filter>
     </ClCompile>
     <ClCompile Include="ActorController.cpp">
-      <Filter>General</Filter>
+      <Filter>ActorComponents</Filter>
     </ClCompile>
     <ClCompile Include="PlayerController.cpp">
-      <Filter>General</Filter>
+      <Filter>ActorComponents</Filter>
     </ClCompile>
     <ClCompile Include="Animator.cpp">
-      <Filter>General</Filter>
+      <Filter>ActorComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="Main_Windows.cpp">
+      <Filter>ActorComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="StatsManager.cpp">
+      <Filter>ActorComponents</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,13 +226,16 @@
       <Filter>GameState</Filter>
     </ClInclude>
     <ClInclude Include="ActorController.hpp">
-      <Filter>General</Filter>
+      <Filter>ActorComponents</Filter>
     </ClInclude>
     <ClInclude Include="PlayerController.hpp">
-      <Filter>General</Filter>
+      <Filter>ActorComponents</Filter>
     </ClInclude>
     <ClInclude Include="Animator.hpp">
-      <Filter>General</Filter>
+      <Filter>ActorComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="StatsManager.hpp">
+      <Filter>ActorComponents</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

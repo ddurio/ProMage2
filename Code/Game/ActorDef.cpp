@@ -8,6 +8,7 @@
 
 #include "Game/Actor.hpp"
 #include "Game/Inventory.hpp"
+#include "Game/StatsManager.hpp"
 
 
 template<>
@@ -20,17 +21,14 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     bool canFly                 = ParseXMLAttribute( element, "canFly",  false );
     bool canSwim                = ParseXMLAttribute( element, "canSwim", false );
 
-    FloatRange strength         = ParseXMLAttribute( element, "strength",     FloatRange::ZERO );
-    FloatRange intelligence     = ParseXMLAttribute( element, "intelligence", FloatRange::ZERO );
-    FloatRange agility          = ParseXMLAttribute( element, "agility",      FloatRange::ZERO );
-
     const XMLElement* childEle = element.FirstChildElement();
 
-    Strings     bodyOptions;
-    Strings     bodyItemSets;
-    Strings     earOptions;
-    Strings     hairOptions;
-    std::string itemSetsCSV;
+    Strings       bodyOptions;
+    Strings       bodyItemSets;
+    Strings       earOptions;
+    Strings       hairOptions;
+    std::string   itemSetsCSV;
+    StatsManager* statsManager = new StatsManager();
 
     while( childEle != nullptr ) {
         std::string tagName = childEle->Name();
@@ -54,6 +52,9 @@ Definition<Actor>::Definition( const XMLElement& element ) {
             std::string setName = ParseXMLAttribute( *childEle, "name", "" );
             GUARANTEE_OR_DIE( setName != "", "(ActorDef) ItemSet tag missing required attribute 'name'" );
             itemSetsCSV = Stringf( "%s,%s", itemSetsCSV.c_str(), setName.c_str() );
+        } else if( tagName == "Stats" ) {
+            CLEAR_POINTER( statsManager );
+            statsManager = new StatsManager( *childEle );
         }
 
         childEle = childEle->NextSiblingElement();
@@ -65,14 +66,12 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     m_properties.SetValue( "canWalk",       canWalk );
     m_properties.SetValue( "canFly",        canFly );
     m_properties.SetValue( "canSwim",       canSwim );
-    m_properties.SetValue( "strength",      strength );
-    m_properties.SetValue( "intelligence",  intelligence );
-    m_properties.SetValue( "agility",       agility );
     m_properties.SetValue( "bodySprites",   bodyOptions );
     m_properties.SetValue( "bodyItemSets",  bodyItemSets );
     m_properties.SetValue( "earSprites",    earOptions );
     m_properties.SetValue( "hairSprites",   hairOptions );
     m_properties.SetValue( "validItemSets", itemSetsCSV );
+    m_properties.SetValue( "statsManager",  (const StatsManager*)statsManager );
 
 
     g_theDevConsole->PrintString( Stringf( "(ActorDef) Loaded new ActorDef (%s)", m_defType.c_str() ) );
@@ -86,14 +85,9 @@ template<>
 void Definition<Actor>::Define( Actor& theObject ) const {
     theObject.m_inventory = new Inventory( theObject.m_map );
 
-    const FloatRange strRange = m_properties.GetValue( "strength",     FloatRange( 0.f, 0.f ) );
-    const FloatRange intRange = m_properties.GetValue( "intelligence", FloatRange::ZERO );
-    const FloatRange agiRange = m_properties.GetValue( "agility",      FloatRange::ZERO );
-
-    theObject.m_strength     = g_RNG->GetRandomFloatInRange( strRange );
-    theObject.m_intelligence = g_RNG->GetRandomFloatInRange( intRange );
-    theObject.m_agility      = g_RNG->GetRandomFloatInRange( agiRange );
-
+    const StatsManager* statsProto = m_properties.GetValue( "statsManager", (const StatsManager*)nullptr );
+    GUARANTEE_OR_DIE( statsProto != nullptr, "(ActorDef) StatsManager prototype was nullptr!" );
+    theObject.m_statsManager = new StatsManager( *statsProto );
 
     // Body appearance
     Strings bodyOptions;
