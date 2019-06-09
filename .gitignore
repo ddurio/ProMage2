@@ -102,3 +102,4 @@ data/log/
 data/config/user.config
 .vs/
 Temporary/
+Run/imgui.ini
