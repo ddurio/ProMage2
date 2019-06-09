@@ -64,6 +64,9 @@ void GameStatePlay::Startup() {
     SpriteAnimDef::Initialize( DATA_PAPER_DOLL_ANIMS, "SpriteAnim" );
     IsoSpriteAnimDef::Initialize( DATA_PAPER_DOLL_ISO_ANIMS, "IsoSpriteAnim" );
 
+    SpriteSheet::Initialize( DATA_INVENTORY_SPRITES, "SpriteSheet" );
+    SpriteAnimDef::Initialize( DATA_INVENTORY_SPRITES, "SpriteAnim" );
+
     Definition<Actor>::Initialize( DATA_ACTOR_DEFS, "ActorDef" );
     Definition<Item>::Initialize( DATA_ITEM_DEFS, "ItemDef" );
     TileDef::InitializeTileDefs();
@@ -105,7 +108,6 @@ void GameStatePlay::Update() {
 
     float deltaSeconds = m_stateClock->GetDeltaTime();
 
-    m_gameInput->Update( deltaSeconds );
     bool inputPaused = m_gameInput->IsPaused();
     // DFS1FIXME: Fix pause logic, completely disabled in gameInput
 
@@ -140,6 +142,9 @@ void GameStatePlay::Update() {
 
     m_map->Update( deltaSeconds );
     ((TopDownFollowCamera*)m_gameCamera)->Update( deltaSeconds ); // Must be after map entities are updated
+
+    // Update last to clear flags
+    m_gameInput->Update( deltaSeconds );
 }
 
 

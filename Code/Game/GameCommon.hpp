@@ -37,22 +37,31 @@ constexpr char  TEXTURE_TERRAIN[] = "Data/Images/Terrain_32x32.png";
 
 constexpr char  FONT_NAME_SQUIRREL[] = "SquirrelFixedFont";
 
-constexpr char  DATA_ACTOR_DEFS[] = "Data/Gameplay/ActorDefs.xml";
-constexpr char  DATA_ITEM_DEFS[] = "Data/Gameplay/ItemDefs.xml";
-constexpr char  DATA_MAP_DEFS[] = "Data/Gameplay/MapDefs.xml";
-constexpr char  DATA_PAPER_DOLL_ANIMS[] = "Data/Gameplay/PaperDoll.SpriteAnims.xml";
+constexpr char  DATA_ACTOR_DEFS[]           = "Data/Gameplay/ActorDefs.xml";
+constexpr char  DATA_INVENTORY_SPRITES[]    = "Data/Gameplay/Inventory.xml";
+constexpr char  DATA_ITEM_DEFS[]            = "Data/Gameplay/ItemDefs.xml";
+constexpr char  DATA_MAP_DEFS[]             = "Data/Gameplay/MapDefs.xml";
+constexpr char  DATA_PAPER_DOLL_ANIMS[]     = "Data/Gameplay/PaperDoll.SpriteAnims.xml";
 constexpr char  DATA_PAPER_DOLL_ISO_ANIMS[] = "Data/Gameplay/PaperDoll.IsoAnims.xml";
-constexpr char  DATA_PAPER_DOLL_SPRITES[] = "Data/Gameplay/PaperDoll.SpriteSheets.xml";
-constexpr char  DATA_PROJECT_CONFIG[] = "Data/ProjectConfig.xml";
-constexpr char  DATA_TILE_DEFS[] = "Data/Gameplay/TileDefs.xml";
+constexpr char  DATA_PAPER_DOLL_SPRITES[]   = "Data/Gameplay/PaperDoll.SpriteSheets.xml";
+constexpr char  DATA_PROJECT_CONFIG[]       = "Data/ProjectConfig.xml";
+constexpr char  DATA_TILE_DEFS[]            = "Data/Gameplay/TileDefs.xml";
 
-constexpr char  PAPER_DOLL_ANIM_DIE[]       = "PaperDoll.Die";
-constexpr char  PAPER_DOLL_ANIM_IDLE[]      = "PaperDoll.Idle";
-constexpr char  PAPER_DOLL_ANIM_SHOOT[]     = "PaperDoll.Shoot";
-constexpr char  PAPER_DOLL_ANIM_SLASH[]     = "PaperDoll.Slash";
-constexpr char  PAPER_DOLL_ANIM_SPELL[]     = "PaperDoll.Spell";
-constexpr char  PAPER_DOLL_ANIM_THRUST[]    = "PaperDoll.Thrust";
-constexpr char  PAPER_DOLL_ANIM_WALK[]      = "PaperDoll.Walk";
+constexpr char  ANIM_INVENTORY_CHEST[]      = "Inventory.Chest";
+constexpr char  ANIM_INVENTORY_EMPTY[]      = "Inventory.Empty";
+constexpr char  ANIM_INVENTORY_FEET[]       = "Inventory.Feet";
+constexpr char  ANIM_INVENTORY_HELM[]       = "Inventory.Helm";
+constexpr char  ANIM_INVENTORY_LEGS[]       = "Inventory.Legs";
+constexpr char  ANIM_INVENTORY_SHOULDER[]   = "Inventory.Shoulder";
+constexpr char  ANIM_INVENTORY_WEAPON[]     = "Inventory.Weapon";
+
+constexpr char  ANIM_PAPER_DOLL_DIE[]       = "PaperDoll.Die";
+constexpr char  ANIM_PAPER_DOLL_IDLE[]      = "PaperDoll.Idle";
+constexpr char  ANIM_PAPER_DOLL_SHOOT[]     = "PaperDoll.Shoot";
+constexpr char  ANIM_PAPER_DOLL_SLASH[]     = "PaperDoll.Slash";
+constexpr char  ANIM_PAPER_DOLL_SPELL[]     = "PaperDoll.Spell";
+constexpr char  ANIM_PAPER_DOLL_THRUST[]    = "PaperDoll.Thrust";
+constexpr char  ANIM_PAPER_DOLL_WALK[]      = "PaperDoll.Walk";
 
 constexpr float CLIENT_ASPECT = (16.f / 9.f);
 constexpr float CLIENT_MAX_SCREEN_PERCENT = 0.9f;

@@ -135,11 +135,7 @@ bool App::HandleKeyPressed( unsigned char keyCode ) {
 
 bool App::HandleKeyReleased( unsigned char keyCode ) {
     if( g_theDevConsole->IsTakingInput() ) {
-        bool consoleHandled = g_theDevConsole->HandleKeyReleased( keyCode );
-
-        if( consoleHandled ) { // If console didn't handle it, keep passing it on
-            return true;
-        }
+        return g_theDevConsole->HandleKeyReleased( keyCode );
     }
 
     switch( keyCode ) {

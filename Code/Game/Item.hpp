@@ -28,9 +28,12 @@ class Item : public Entity {
     void OnCollisionEntity( Entity* collidingEntity );
     void OnCollisionTile( Tile* collidingTile );
 
+    const SpriteDef* GetPortrait() const;
     ItemSlot GetItemSlot() const;
     std::vector< Tags > GetItemSets() const;
     std::string GetSprites() const;
+    std::string GetSpriteTexture() const;
+    std::string GetItemType() const;
 
     void SetWorldPosition( const Vec2& worldPosition );
 

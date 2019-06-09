@@ -106,6 +106,11 @@ void Item::OnCollisionTile( Tile* collidingTile ) {
 }
 
 
+const SpriteDef* Item::GetPortrait() const {
+    return m_portraitSprite;
+}
+
+
 ItemSlot Item::GetItemSlot() const {
     ItemSlot slot = m_itemDef->GetProperty( "slot", ITEM_SLOT_NONE );
     return slot;
@@ -120,6 +125,19 @@ std::vector< Tags > Item::GetItemSets() const {
 
 std::string Item::GetSprites() const {
     return m_itemDef->GetProperty( "spriteSheet", std::string("") );
+}
+
+
+std::string Item::GetSpriteTexture() const {
+    std::string sheetName = GetSprites();
+    const SpriteSheet sheet = SpriteSheet::GetSpriteSheet( sheetName );
+
+    return sheet.GetTexturePath();
+}
+
+
+std::string Item::GetItemType() const {
+    return m_itemDef->GetDefintionType();
 }
 
 

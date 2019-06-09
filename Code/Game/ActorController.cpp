@@ -1,6 +1,7 @@
 #include "Game/ActorController.hpp"
 
 #include "Game/Actor.hpp"
+#include "Game/Inventory.hpp"
 
 
 ActorController::ActorController( Actor* myActor ) :
@@ -25,4 +26,9 @@ void ActorController::Shutdown() {
 
 void ActorController::SetMoveDir( const Vec2& moveDir ) const {
     m_myActor->m_moveDir = moveDir;
+}
+
+
+void ActorController::ToggleInventory() const {
+    m_myActor->m_inventory->ToggleInventory();
 }

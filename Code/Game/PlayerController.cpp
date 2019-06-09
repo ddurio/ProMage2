@@ -19,6 +19,14 @@ PlayerController::~PlayerController() {
 void PlayerController::Update( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
+    // Movement
     Vec2 moveDir = m_gameInput->GetMovementDirection();
     SetMoveDir( moveDir );
+
+    // Invetory
+    bool toggleInventory = m_gameInput->WasInvtoryToggled();
+
+    if( toggleInventory ) {
+        ToggleInventory();
+    }
 }

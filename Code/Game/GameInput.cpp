@@ -27,6 +27,8 @@ void GameInput::Shutdown() {
 
 void GameInput::Update( float deltaSeconds ) {
     UNUSED( deltaSeconds );
+
+    m_toggleInventory = false;
 }
 
 
@@ -68,6 +70,9 @@ bool GameInput::HandleKeyReleased( unsigned char keyCode ) {
         } case( KB_D ): { // Right
             m_rightPressed = false;
             return true;
+        } case( KB_I ): { // Inventory
+            m_toggleInventory = true;
+            return true;
         }
     }
 
@@ -105,6 +110,11 @@ Vec2 GameInput::GetMovementDirection() const {
     Vec2 moveDir = Vec2( moveDirX, moveDirY );
 
     return moveDir.GetNormalized();
+}
+
+
+bool GameInput::WasInvtoryToggled() const {
+    return m_toggleInventory;
 }
 
 

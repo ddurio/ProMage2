@@ -14,7 +14,7 @@ Animator::Animator( Actor* myActor ) :
     m_animTimer = new Timer( state->GetStateClock() );
     m_animTimer->Start( 1.f );
 
-    m_currentAnim = IsoSpriteAnimDef::GetDefinition( PAPER_DOLL_ANIM_IDLE );
+    m_currentAnim = IsoSpriteAnimDef::GetDefinition( ANIM_PAPER_DOLL_IDLE );
 }
 
 
@@ -27,12 +27,12 @@ void Animator::Update( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
     Vec2 moveDir = m_myActor->GetMoveDir();
-    std::string animName = PAPER_DOLL_ANIM_IDLE;
+    std::string animName = ANIM_PAPER_DOLL_IDLE;
 
     if( !m_myActor->IsAlive() ) {
-        animName = PAPER_DOLL_ANIM_DIE;
+        animName = ANIM_PAPER_DOLL_DIE;
     } else if( moveDir != Vec2::ZERO ) {
-        animName = PAPER_DOLL_ANIM_WALK;
+        animName = ANIM_PAPER_DOLL_WALK;
     }
 
     const IsoSpriteAnimDef* newAnim = IsoSpriteAnimDef::GetDefinition( animName );

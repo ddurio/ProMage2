@@ -37,8 +37,7 @@ void Game::Shutdown() {
 void Game::Update() {
     m_gameState->Update();
 
-    ImGui::NewFrame();
-
+    /*
     ImGui::Begin( "Hello, world!" );
     ImGui::Text( "This is useful text.." );
     ImGui::Checkbox( "Demo Window", &ui_testCheck1 );
@@ -48,6 +47,9 @@ void Game::Update() {
     ImGui::ColorEdit3( "clear color", (float*)&ui_testColor );
 
     ImGui::End();
+    */
+
+    ImGui::ShowDemoWindow();
 }
 
 

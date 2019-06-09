@@ -22,6 +22,7 @@
     <ActorDef name="Boy" strength="7~10" intelligence="3~6"  agility="5~9">
         <!-- Male item set added via Body -->
         <ItemSet name="Light"/>
+        <ItemSet name="Heavy"/>
 
         <Body spriteSheet="PaperDoll.Body.Human.M1" itemSet="Human,Male"/>
         <Body spriteSheet="PaperDoll.Body.Human.M2" itemSet="Human,Male"/>

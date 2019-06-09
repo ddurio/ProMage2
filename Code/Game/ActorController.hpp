@@ -16,6 +16,7 @@ class ActorController {
     virtual void Update( float deltaSeconds ) = 0;
 
     void SetMoveDir( const Vec2& moveDir ) const;
+    void ToggleInventory() const;
 
     private:
     Actor* m_myActor = nullptr;

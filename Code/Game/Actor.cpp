@@ -67,11 +67,17 @@ void Actor::Startup() {
     Item* dress = m_inventory->SpawnNewItem( "dress" );
     m_inventory->EquipItem( dress );
 
+    Item* plate = m_inventory->SpawnNewItem( "Hauberk" );
+    m_inventory->EquipItem( plate );
+
     Item* tunic = m_inventory->SpawnNewItem( "tunic" );
     m_inventory->EquipItem( tunic );
 
     Item* boots = m_inventory->SpawnNewItem( "boots" );
     m_inventory->EquipItem( boots );
+
+    Item* boots2 = m_inventory->SpawnNewItem( "boots" );
+    m_inventory->EquipItem( boots2 );
 
     BuildMesh();
 }

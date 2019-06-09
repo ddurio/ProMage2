@@ -245,16 +245,16 @@
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml">
       <Filter>Data</Filter>
     </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\PaperDollSpriteSheets.xml">
-      <Filter>Data</Filter>
-    </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\PaperDollSpriteAnims.xml">
-      <Filter>Data</Filter>
-    </Xml>
-    <Xml Include="..\..\Run\Data\Gameplay\PaperDollIsoAnims.xml">
-      <Filter>Data</Filter>
-    </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\Inventory.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\PaperDoll.IsoAnims.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\PaperDoll.SpriteAnims.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\PaperDoll.SpriteSheets.xml">
       <Filter>Data</Filter>
     </Xml>
   </ItemGroup>

@@ -20,12 +20,14 @@ class GameInput {
     bool HandleMouseButton( MouseEvent event, float scrollAmount = 0.f );
 
     Vec2 GetMovementDirection() const;
+    bool WasInvtoryToggled() const;
 
     bool IsPaused() const;
 
     private:
     // State
     bool m_pause = false;
+    bool m_toggleInventory = false;
 
     bool m_upPressed = false;
     bool m_downPressed = false;

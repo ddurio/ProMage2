@@ -10,6 +10,12 @@
 class Item;
 class Map;
 
+enum ItemSlot : int;
+
+struct ImVec2;
+struct ItemTilePayload;
+
+
 class Inventory {
     public:
     explicit Inventory( Map* map, bool renderEquippedItems = true, bool renderUnequippedItems = false );
@@ -23,12 +29,12 @@ class Inventory {
 
     Item* SpawnNewItem( std::string itemType, const Vec2& worldPosition = Vec2::ZERO );
 
-    void AddItemToInventory( Item* itemToAdd );
+    void AddItemToInventory( Item* itemToAdd, int indexToAdd = -1 );
     void RemoveItemFromInventory( Item* itemToRemove );
     void DropItem( Item* itemToDrop );
     void DropItem( int itemIndexToDrop );
 
-    void EquipItem( Item* itemToEquip, bool removeFromInventory = true );
+    void EquipItem( Item* itemToEquip, bool removeFromInventory = true, int currentItemDestinationIndex = -1 );
     void UnequipItem( Item* itemToUnequip );
 
     void SetRenderPreferences( bool renderEquippedItems = true, bool renderUnequippedItems = false );
@@ -42,10 +48,12 @@ class Inventory {
     Item* GetItemInSlot( int unequippedSlotIndex ) const;
     Item* GetItemInSlot( ItemSlot equippedItemSlot ) const;
 
+    int GetItemIndex( Item* itemToFind, bool& outIsEquipped ) const;
+
     private:
     Map* m_map = nullptr;
 
-    int m_numItemSlots = 30;
+    int m_numItemSlots = 50;
     std::vector<Item*> m_unequippedItems;
     Item* m_equippedItems[NUM_ITEM_SLOTS] = { nullptr };
 
@@ -54,8 +62,14 @@ class Inventory {
     bool m_isOpen = false;
 
     Tags m_itemSets;
-    //UIWidget* m_
 
+
+    void UpdateUI();
+    void AddUnequippedItemTile( int itemIndex );
+    void AddEquippedItemTile( ItemSlot itemSlot, const ImVec2& tileSize );
+    void CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& tileSize, const std::string& emptyTileName = ANIM_INVENTORY_EMPTY  );
+
+    void SwapItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );
 
     bool IsItemEquipable( const Item* itemToEquip ) const;
 };

@@ -6,6 +6,13 @@
 
         <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
     </ItemDef>
+    <ItemDef name="Hauberk" slot="Chest" spriteSheet="PaperDoll.Chest.M3">
+        <ItemSet name="Male"/>
+        <ItemSet name="Heavy"/>
+        <ItemSet name="Dwarf,Human"/>
+
+        <Portrait anim="PaperDoll.Idle.Down" time="0.f"/>
+    </ItemDef>
     <ItemDef name="Tunic" slot="Chest" spriteSheet="PaperDoll.Chest.M7">
         <ItemSet name="Male"/>
         <ItemSet name="Light"/>
