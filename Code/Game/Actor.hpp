@@ -51,8 +51,8 @@ class Actor : public Entity {
     void Render() const;
     void RenderPortrait() const;
 
-    void OnCollisionEntity( Entity* collidingEntity );
-    void OnCollisionTile( Tile* collidingTile );
+    //void OnCollisionEntity( Entity* collidingEntity );
+    //void OnCollisionTile( Tile* collidingTile );
 
     Vec2 GetMoveDir() const;
 
@@ -68,6 +68,7 @@ class Actor : public Entity {
     Animator* m_animator = nullptr;
 
     GPUMesh* m_portraitMesh = nullptr;
+    //RigidBody2D* m_rigidBody = 
 
     void UpdateFromController( float deltaSeconds );
 

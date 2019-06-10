@@ -2,6 +2,7 @@
 
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/RNG.hpp"
+#include "Engine/Physics/PhysicsSystem.hpp"
 
 #include "Game/Map.hpp"
 #include "Game/MapGenStep.hpp"
@@ -115,5 +116,21 @@ void MapDef::Define( Map& map ) const {
     int numSteps = (int)m_mapGenSteps.size();
     for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
         m_mapGenSteps[stepIndex]->Run( map );
+    }
+
+    // Setup Tile Colliders
+    for( int tileCoordY = 0; tileCoordY < mapHeight; tileCoordY ++ ) {
+        for( int tileCoordX = 0; tileCoordX < mapWidth; tileCoordX++ ) {
+            const Tile& tile = map.GetTileFromTileCoords( tileCoordX, tileCoordY );
+
+            if( !tile.AllowsWalking() ) {
+                if( map.m_tilesRB == nullptr ) {
+                    map.m_tilesRB = g_thePhysicsSystem->CreateNewRigidBody( 1.f );
+                }
+
+                AABB2 worldBounds = tile.GetWorldBounds();
+                map.m_tilesRB->AddCollider( worldBounds );
+            }
+        }
     }
 }

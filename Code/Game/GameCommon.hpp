@@ -9,18 +9,20 @@ class DevConsole;
 class Entity;
 class Game;
 class InputSystem;
+class PhysicsSystem;
 class RenderContext;
 class RNG;
 class WindowContext;
 
-extern App* g_theApp;
-extern AudioSystem* g_theAudio;
-extern DevConsole* g_theDevConsole;
-extern Game* g_theGame;
-extern InputSystem* g_theInput;
-extern RenderContext* g_theRenderer;
-extern RNG* g_RNG;
-extern WindowContext* g_theWindow;
+extern App*             g_theApp;
+extern AudioSystem*     g_theAudio;
+extern DevConsole*      g_theDevConsole;
+extern Game*            g_theGame;
+extern InputSystem*     g_theInput;
+extern PhysicsSystem*   g_thePhysicsSystem;
+extern RenderContext*   g_theRenderer;
+extern RNG*             g_RNG;
+extern WindowContext*   g_theWindow;
 
 typedef std::vector<Entity*> EntityList;
 

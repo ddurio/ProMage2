@@ -1,8 +1,9 @@
 #include "Game/Actor.hpp" 
 
 #include "Engine/Core/Timer.hpp"
-#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/IsoSpriteAnimDef.hpp"
@@ -77,7 +78,7 @@ void Actor::Startup() {
         "Bandana",
         "LeatherLegsM",
         "RecurveBow",
-        "LongSword",
+        //"LongSword",
         "BootsM",
         "PlateShoulderM"
     };
@@ -92,8 +93,17 @@ void Actor::Startup() {
         m_inventory->EquipItem( item );
     }
 
+
+    // Create meshes
     BuildMesh();
     BuildPortraitMesh();
+
+    // Setup physics objects
+    m_rigidBody = g_thePhysicsSystem->CreateNewRigidBody( 1.f, Rgba::GREEN );
+    m_rigidBody->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
+    m_rigidBody->SetGameObject( this, &m_transform );
+    m_rigidBody->AddCollider( Vec2::ZERO, m_physicsRadius );
+
 }
 
 
@@ -185,6 +195,7 @@ void Actor::RenderPortrait() const {
 }
 
 
+/*
 void Actor::OnCollisionEntity( Entity* collidingEntity ) {
     UNUSED( collidingEntity );
 }
@@ -197,6 +208,7 @@ void Actor::OnCollisionTile( Tile* collidingTile ) {
         PushDiscOutOfAABB2( m_transform.position, m_physicsRadius, collidingTile->GetWorldBounds() );
     }
 }
+*/
 
 
 Vec2 Actor::GetMoveDir() const {

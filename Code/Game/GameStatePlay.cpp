@@ -7,6 +7,7 @@
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -141,6 +142,8 @@ void GameStatePlay::Update() {
     }
 
     m_map->Update( deltaSeconds );
+    g_thePhysicsSystem->Update( deltaSeconds );
+    g_theDebugger->Update( deltaSeconds );
     ((TopDownFollowCamera*)m_gameCamera)->Update( deltaSeconds ); // Must be after map entities are updated
 
     // Update last to clear flags
@@ -176,8 +179,14 @@ void GameStatePlay::Render() {
 
     m_map->Render();
 
-    g_theDebugger->RenderWorld( m_gameCamera );
+    if( m_isDebugging ) {
+        g_thePhysicsSystem->RenderDebug();
+        g_theDebugger->RenderWorld( m_gameCamera );
+    }
+
     g_theRenderer->EndCamera( m_gameCamera );
+
+
 
     if( m_isPaused ) {
         TextureView2D* sceneView = g_theRenderer->GetCurrentRenderTarget();
@@ -202,10 +211,15 @@ void GameStatePlay::Render() {
 
 bool GameStatePlay::HandleKeyPressed( unsigned char keyCode ) {
     if( m_loadState == LOAD_STATE_READY ) {
-        if( keyCode == 0x20 ) { // Space - Continue to Play
+        if( keyCode == KB_SPACE ) { // Continue to Play
             m_loadState = LOAD_STATE_DONE;
             return true;
         }
+    }
+
+    if( keyCode == KB_F1 ) {
+        m_isDebugging = !m_isDebugging;
+        return true;
     }
 
     return m_gameInput->HandleKeyPressed( keyCode );

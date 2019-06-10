@@ -15,18 +15,17 @@
 #include "Game/Game.hpp"
 
 
-App* g_theApp;
-Game* g_theGame;
+App*            g_theApp;
+Game*           g_theGame;
 
-AudioSystem* g_theAudio;
-ImGuiSystem* g_theGui;
-InputSystem* g_theInput;
-PhysicsSystem* g_thePhysicsSystem;
-RenderContext* g_theRenderer;
-RNG* g_RNG;
-WindowContext* g_theWindow;
+AudioSystem*    g_theAudio;
+ImGuiSystem*    g_theGui;
+InputSystem*    g_theInput;
+PhysicsSystem*  g_thePhysicsSystem;
+RenderContext*  g_theRenderer;
+RNG*            g_RNG;
+WindowContext*  g_theWindow;
 
-extern void* g_hWnd;
 
 App::App( void* appWinProc ) {
     g_theDevConsole->Startup();
@@ -57,7 +56,6 @@ void App::Startup() {
     g_theInput->Startup();
     g_theAudio->Startup();
     g_thePhysicsSystem->Startup();
-    g_thePhysicsSystem->SetGravity( Vec2( 0.f, -2.f ) );
     g_theGui->Startup();
 
     g_theGame = new Game( false );
@@ -219,7 +217,7 @@ void App::Render() const {
 
     g_theGame->Render();
 
-    g_thePhysicsSystem->RenderDebug(); // maybe wrap in  debugRender bool?
+    //g_thePhysicsSystem->RenderDebug(); // maybe wrap in  debugRender bool?
     g_theDebugger->RenderScreen();
     g_theGui->Render();
     g_theDevConsole->Render( g_theRenderer );

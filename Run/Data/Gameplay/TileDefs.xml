@@ -35,4 +35,13 @@
         allowsFlying="true"
         allowsSwimming="false"
     />
+    <TileDefinition
+        name="HardWoodFloor"
+        spriteCoords="27,0"
+        texelColor="234,234,130"
+        allowsSight="true"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
 </TileDefinitions>

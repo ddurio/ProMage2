@@ -11,6 +11,7 @@
 class Actor;
 class Inventory;
 class MapDef;
+class RigidBody2D;
 
 
 class Map {
@@ -57,6 +58,7 @@ class Map {
 
     std::vector<Tile> m_tiles;
     VertexList m_mapVerts;
+    RigidBody2D* m_tilesRB = nullptr;
 
     EntityList m_entities;
     Entity* m_players[4] = {};
@@ -64,5 +66,5 @@ class Map {
     Inventory* m_inventory = nullptr;
 
     void UpdateMapVerts( float deltaSeconds );
-    void UpdateCollision();
+    //void UpdateCollision();
 };

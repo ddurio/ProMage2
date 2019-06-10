@@ -150,6 +150,7 @@ float4 FragmentFunction( VertexToFragment input ) : SV_Target0 {
     float4 finalWeaponColor   = weaponColor   * weaponFactor;
 
     float4 finalTexColor = finalBodyColor + finalEarsColor + finalChestColor + finalShoulderColor + finalHairColor + finalHelmColor + finalLegsColor + finalFeetColor + finalWeaponColor;
+    //float4 finalColor = float4( finalTexColor.rgb * input.color.rgb, input.color.a * (1.0 - remainingAlpha) ); // component wise multiply to "tint" the output
     float4 finalColor = finalTexColor * input.color; // component wise multiply to "tint" the output
 
     return finalColor;

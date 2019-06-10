@@ -43,6 +43,7 @@ class GameStatePlay : public GameState {
     GameInput* m_gameInput = nullptr;
     std::vector<Material*> m_materials;
 
+    bool m_isDebugging = true;
     bool m_isPaused = false;
 
     Map* m_map = nullptr;

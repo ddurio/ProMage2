@@ -32,8 +32,8 @@ void Map::Startup() {
     m_mapDef = MapDef::GetMapDef( m_mapType );
     m_mapDef->Define( *this );
 
-    SpawnNewActor( "Boy",  Vec2( 3.5f, 3.5f ), 0 );
-    SpawnNewActor( "Girl", Vec2( 2.5f, 3.5f ) );
+    //SpawnNewActor( "Boy",  Vec2( 5.5f, 5.5f ) );
+    SpawnNewActor( "Girl", Vec2( 2.5f, 3.5f ), 0 );
 
     m_inventory->SpawnNewItem( "Slippers", Vec2( 4.5f, 4.5f ) );
     m_inventory->SpawnNewItem( "Shoes", Vec2( 5.5f, 5.5f ) );
@@ -57,7 +57,7 @@ void Map::Update( float deltaSeconds ) {
 
     m_inventory->Update( deltaSeconds );
 
-    UpdateCollision();
+    //UpdateCollision();
 
     //CollectGarbage();
 }
@@ -243,6 +243,7 @@ void Map::UpdateMapVerts( float deltaSeconds ) {
 }
 
 
+/*
 void Map::UpdateCollision() {
     //---------------------------------
     // Update Entity v Tile Collision
@@ -278,3 +279,4 @@ void Map::UpdateCollision() {
         }
     }
 }
+*/
