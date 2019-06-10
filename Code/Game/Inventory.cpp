@@ -291,6 +291,37 @@ Item* Inventory::GetItemAtPosition( const Vec2& worldPosition ) const {
 }
 
 
+Item* Inventory::GetClosestItemInRange( const Vec2& worldPosition, float pickupRadius ) const {
+    float radiusSquared = pickupRadius * pickupRadius;
+    int bestIndex = 0;
+
+    Item* item = m_unequippedItems[0];
+    Vec2 position = item->GetPosition();
+
+    float bestDistSquared = (position - worldPosition).GetLengthSquared();
+
+    for( int itemIndex = 0; itemIndex < m_numItemSlots; itemIndex++ ) {
+        item = m_unequippedItems[itemIndex];
+
+        if( item != nullptr ) {
+            position = item->GetPosition();
+            float distSquared = (position - worldPosition).GetLengthSquared();
+
+            if( distSquared < bestDistSquared ) {
+                bestIndex = itemIndex;
+                bestDistSquared = distSquared;
+            }
+        }
+    }
+
+    if( bestDistSquared < radiusSquared ) {
+        return m_unequippedItems[bestIndex];
+    } else {
+        return nullptr;
+    }
+}
+
+
 Item* Inventory::GetItemInSlot( int unequippedSlotIndex ) const {
     int numItems = (int)m_unequippedItems.size();
 

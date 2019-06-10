@@ -2,6 +2,8 @@
 
 #include "Game/Actor.hpp"
 #include "Game/Inventory.hpp"
+#include "Game/Map.hpp"
+#include "Game/StatsManager.hpp"
 
 
 ActorController::ActorController( Actor* myActor ) :
@@ -36,6 +38,19 @@ void ActorController::ToggleInventory() const {
 
 const StatsManager* ActorController::GetActorStats() const {
     return m_myActor->m_statsManager;
+}
+
+
+void ActorController::PickupClosestItem() const {
+    Inventory* mapInventory = m_myActor->m_map->GetMapInventory();
+    const StatsManager* actorStats = GetActorStats();
+
+    Item* itemToPickUp = mapInventory->GetClosestItemInRange( m_myActor->GetPosition(), actorStats->GetPickupRadius() );
+
+    if( itemToPickUp != nullptr ) {
+        mapInventory->RemoveItemFromInventory( itemToPickUp );
+        m_myActor->m_inventory->AddItemToInventory( itemToPickUp );
+    }
 }
 
 

@@ -45,6 +45,11 @@ float StatsManager::GetMoveSpeed() const {
 }
 
 
+float StatsManager::GetPickupRadius() const {
+    return m_pickupRadius;
+}
+
+
 void StatsManager::TakeDamage( float damageToTake ) {
     m_health -= damageToTake;
 }

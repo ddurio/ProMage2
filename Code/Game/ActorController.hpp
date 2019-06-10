@@ -3,6 +3,7 @@
 
 
 class Actor;
+class Item;
 class StatsManager;
 
 
@@ -16,12 +17,14 @@ class ActorController {
 
     virtual void Update( float deltaSeconds ) = 0;
 
-    void SetMoveDir( const Vec2& moveDir ) const;
-    void ToggleInventory() const;
-
     protected:
     Actor* m_myActor = nullptr;
 
     const StatsManager* GetActorStats() const;
+
+    void SetMoveDir( const Vec2& moveDir ) const;
+    void ToggleInventory() const;
+    void PickupClosestItem() const;
+
     void UpdateActorPortrait() const;
 };

@@ -33,10 +33,13 @@ void PlayerController::Update( float deltaSeconds ) {
     SetMoveDir( moveDir );
 
     // Inventory
-    bool toggleInventory = m_gameInput->WasInvtoryToggled();
-
-    if( toggleInventory ) {
+    if( m_gameInput->WasInvtoryToggled() ) {
         ToggleInventory();
+    }
+
+    // Pickup Item
+    if( m_gameInput->ShouldPickupItem() ) {
+        PickupClosestItem();
     }
 
     UpdateHUD();

@@ -15,6 +15,7 @@ class StatsManager {
     float GetPercentHealth() const;
 
     float GetMoveSpeed() const;
+    float GetPickupRadius() const;
 
     void TakeDamage( float damageToTake );
 
@@ -24,4 +25,6 @@ class StatsManager {
 
     float m_moveSpeed = 3.f;
     float m_defensePower = 0.f;
+
+    float m_pickupRadius = 1.f;
 };

@@ -29,6 +29,7 @@ void GameInput::Update( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
     m_toggleInventory = false;
+    m_pickupItem = false;
 }
 
 
@@ -48,6 +49,12 @@ bool GameInput::HandleKeyPressed( unsigned char keyCode ) {
             return true;
         } case( KB_D ): { // Right
             m_rightPressed = true;
+            return true;
+        } case( KB_I ): { // Inventory
+            m_toggleInventory = true;
+            return true;
+        } case( KB_SPACE ): { // Loot
+            m_pickupItem = true;
             return true;
         }
     }
@@ -69,9 +76,6 @@ bool GameInput::HandleKeyReleased( unsigned char keyCode ) {
             return true;
         } case( KB_D ): { // Right
             m_rightPressed = false;
-            return true;
-        } case( KB_I ): { // Inventory
-            m_toggleInventory = true;
             return true;
         }
     }
@@ -115,6 +119,11 @@ Vec2 GameInput::GetMovementDirection() const {
 
 bool GameInput::WasInvtoryToggled() const {
     return m_toggleInventory;
+}
+
+
+bool GameInput::ShouldPickupItem() const {
+    return m_pickupItem;
 }
 
 
