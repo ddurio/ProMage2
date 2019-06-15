@@ -342,10 +342,9 @@ void Actor::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
     // Local Dims
     float halfWidth  = spriteWorldDimensions.x / 2.f;
     float halfHeight = spriteWorldDimensions.y / 2.f;
-    m_localBounds = OBB2( Vec2::ZERO, Vec2(halfWidth, halfHeight), Vec2::RIGHT );
-
-    m_physicsRadius = 0.4f;
-
+    m_physicsRadius = halfHeight * 0.5f;
+    
+    m_localBounds = OBB2( Vec2( 0.f, m_physicsRadius ), Vec2(halfWidth, halfHeight), Vec2::RIGHT );
     Entity::BuildMesh( tint );
 }
 
@@ -353,9 +352,6 @@ void Actor::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
 void Actor::BuildPortraitMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
     const SpriteDef sprite = m_animator->GetPortraitSpriteDef();
     sprite.GetUVs( m_spriteUVs.mins, m_spriteUVs.maxs );
-
-    Vec2 uvDimensions = m_spriteUVs.GetDimensions();
-    uvDimensions.y *= -1.f;
 
     Camera* uiCamera = g_theGame->GetUICamera();
     AABB2 cameraBounds = uiCamera->GetBounds();
