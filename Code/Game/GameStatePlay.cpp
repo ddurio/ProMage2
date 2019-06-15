@@ -61,11 +61,11 @@ void GameStatePlay::Startup() {
     m_gameInput = new GameInput();
     m_gameInput->Startup();
 
-    SpriteSheet::Initialize( DATA_PAPER_DOLL_SPRITES, "SpriteSheet" );
+    SpriteSheet::Initialize( DATA_PAPER_DOLL_SPRITES, "SpriteSheet", g_theRenderer );
     SpriteAnimDef::Initialize( DATA_PAPER_DOLL_ANIMS, "SpriteAnim" );
     IsoSpriteAnimDef::Initialize( DATA_PAPER_DOLL_ISO_ANIMS, "IsoSpriteAnim" );
 
-    SpriteSheet::Initialize( DATA_INVENTORY_SPRITES, "SpriteSheet" );
+    SpriteSheet::Initialize( DATA_INVENTORY_SPRITES, "SpriteSheet", g_theRenderer );
     SpriteAnimDef::Initialize( DATA_INVENTORY_SPRITES, "SpriteAnim" );
 
     Definition<Actor>::Initialize( DATA_ACTOR_DEFS, "ActorDef" );
