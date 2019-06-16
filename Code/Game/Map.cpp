@@ -3,6 +3,7 @@
 #include "Engine/Core/DebugDraw.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 
@@ -10,30 +11,31 @@
 #include "Game/Entity.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/MapDef.hpp"
+#include "Game/Metadata.hpp"
 #include "Game/Tile.hpp"
 #include "Game/TileDef.hpp"
 
 
-Map::Map( std::string mapName, std::string mapType ) :
+Map::Map( std::string mapName, std::string mapType, RNG* mapRNG ) :
     m_mapName(mapName),
-    m_mapType(mapType) {
+    m_mapType(mapType),
+    m_mapRNG(mapRNG) {
 }
 
 
 Map::~Map() {
     EngineCommon::ClearVector( m_entities );
     CLEAR_POINTER( m_inventory );
+
+    g_thePhysicsSystem->DestroyRigidBody( m_tilesRB );
 }
 
 
 void Map::Startup() {
-    m_inventory = new Inventory( this, false, true ); // Must be before Define, could be needed
+    m_inventory = new Inventory( m_self, false, true ); // Must be before Define, could be needed
 
     m_mapDef = MapDef::GetMapDef( m_mapType );
     m_mapDef->Define( *this );
-
-    //SpawnNewActor( "Boy",  Vec2( 5.5f, 5.5f ) );
-    SpawnNewActor( "Girl", Vec2( 2.5f, 3.5f ), 0 );
 
     m_inventory->SpawnNewItem( "Slippers", Vec2( 4.5f, 4.5f ) );
     m_inventory->SpawnNewItem( "Shoes", Vec2( 5.5f, 5.5f ) );
@@ -94,6 +96,23 @@ const IntVec2 Map::GetTileCoordsFromWorldCoords( const Vec2& worldCoords ) const
 }
 
 
+const IntVec2 Map::GetTileCoordsForStairs( bool getStairsDown ) const {
+    std::string stairTag = Stringf( "stairs%s", getStairsDown ? "Down" : "Up" );
+    int numTiles = (int)m_tiles.size();
+
+    for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
+        const Tile& tile = m_tiles[tileIndex];
+        const Metadata* metadata = tile.GetMetadata();
+
+        if( metadata->m_tagData.HasTags( stairTag ) ) {
+            return tile.GetTileCoords();
+        }
+    }
+
+    return IntVec2::NEGONE;
+}
+
+
 int Map::GetTileIndexFromTileCoords( const IntVec2& tileCoords ) const {
     int numTiles = (int)m_tiles.size();
     int tileIndex = (tileCoords.y * m_mapDimensions.x) + tileCoords.x;
@@ -135,12 +154,51 @@ const Tile& Map::GetTileFromWorldCoords( const Vec2& worldCoords ) const {
 }
 
 
+// Trailing return type (array of 8 Tile references)
+/*
+auto Map::GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const -> const Tile(&)[8] {
+    IntVec2 tileCoords = GetTileCoordsFromWorldCoords( worldCoords );
+}
+*/
+
+
+/*
+std::vector< const Tile& > Map::GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const {
+    IntVec2 centerCoords = GetTileCoordsFromWorldCoords( worldCoords );
+
+    static const int numTileOffsets = 8;
+    static const IntVec2 tileOffsets[numTileOffsets] = {
+        IntVec2(  0,  1 ),  // North
+        IntVec2(  0, -1 ),  // South
+        IntVec2( -1,  0 ),  // West
+        IntVec2(  1,  0 ),  // East
+        IntVec2( -1,  1 ),  // Northwest
+        IntVec2(  1,  1 ),  // Northeast
+        IntVec2( -1, -1 ),  // Southwest
+        IntVec2(  1, -1 )   // Southeast
+    };
+
+    std::vector< const Tile& > surroundingTiles;
+
+    for( int offsetIndex = 0; offsetIndex < numTileOffsets; offsetIndex++ ) {
+        IntVec2 offsetCoords = centerCoords + tileOffsets[offsetIndex];
+
+        if( IsValidTileCoords( offsetCoords) ) {
+            const Tile& tile = GetTileFromTileCoords( offsetCoords );
+            surroundingTiles.push_back( tile );
+        }
+    }
+
+    return surroundingTiles;
+}
+*/
+
 Inventory* Map::GetMapInventory() const {
     return m_inventory;
 }
 
 
-Entity* Map::GetPlayer( int playerID /*= 0 */ ) const {
+Actor* Map::GetPlayer( int playerID /*= 0 */ ) const {
     if( playerID >= 0 && playerID < 4 ) {
         return m_players[playerID];
     }
@@ -159,7 +217,7 @@ Actor* Map::SpawnNewActor( std::string actorType, const Vec2& worldPosition /*= 
     Actor* newActor = new Actor( this, actorType, playerID );
     newActor->SetWorldPosition( worldPosition );
 
-    AddEntityToMap( *newActor );
+    AddEntityToMap( newActor );
     newActor->Startup();
 
     if( playerID >= 0 && playerID < 4 ) {
@@ -170,45 +228,61 @@ Actor* Map::SpawnNewActor( std::string actorType, const Vec2& worldPosition /*= 
 }
 
 
-void Map::AddEntityToMap( Entity& entity ) {
-    entity.m_map = this;
+void Map::AddPlayerToMap( Actor* actor ) {
+    int playerID = actor->GetPlayerIndex();
+
+    if( playerID >= 0 ) {
+        m_players[playerID] = actor;
+    }
+
+    AddEntityToMap( actor );
+}
+
+
+void Map::AddEntityToMap( Entity* entity ) {
+    entity->m_map = this;
 
     AddEntityToList( entity, m_entities );
 }
 
 
-void Map::AddEntityToList( Entity& entity, EntityList& list ) {
+void Map::AddEntityToList( Entity* entity, EntityList& list ) {
     int numEntities = (int)list.size();
 
     for( int entityIndex = 0; entityIndex < numEntities; entityIndex++ ) {
         if( list[entityIndex] == nullptr ) {
-            list[entityIndex] = &entity;
+            list[entityIndex] = entity;
             return;
         }
     }
 
-    list.push_back( &entity );
+    list.push_back( entity );
 }
 
 
-void Map::RemoveEntityFromMap( Entity& entity ) {
-    RemoveEntityFromList( entity, m_entities );
+void Map::RemovePlayerFromMap( Actor* actor ) {
+    int playerID = actor->GetPlayerIndex();
 
-    /*
-    if( type == ENTITY_TYPE_PLAYER_PLACEHOLDER ) {
-        PlayerPlaceholder* player = (PlayerPlaceholder*)&entity;
-        int playerID = player->GetPlayerID();
-        m_entitiesByType[ENTITY_TYPE_PLAYER_PLACEHOLDER][playerID] = nullptr;
+    if( playerID >= 0 ) {
+        m_players[playerID] = nullptr;
     }
-    */
+
+    RemoveEntityFromMap( actor );
 }
 
 
-void Map::RemoveEntityFromList( Entity& entity, EntityList& list ) {
+void Map::RemoveEntityFromMap( Entity* entity ) {
+    entity->m_map = nullptr;
+
+    RemoveEntityFromList( entity, m_entities );
+}
+
+
+void Map::RemoveEntityFromList( Entity* entity, EntityList& list ) {
     int numEntities = (int)list.size();
 
     for( int entityIndex = 0; entityIndex < numEntities; entityIndex++ ) {
-        if( list[entityIndex] == &entity ) {
+        if( list[entityIndex] == entity ) {
             list[entityIndex] = nullptr;
             return;
         }

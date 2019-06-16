@@ -22,10 +22,10 @@ void MapGenStep_PerlinNoise::RunOnce( Map& map ) const {
     IntVec2 mapDimensions = map.GetMapDimensions();
     std::vector<int> tileIndexesToChange;
 
-    int octaves       = g_RNG->GetRandomIntInRange( m_numOctaves );
-    float persistence = g_RNG->GetRandomFloatInRange( m_octavePersistence );
-    float scale       = g_RNG->GetRandomFloatInRange( m_octaveScale );
-    int gridSize      = g_RNG->GetRandomIntInRange( m_gridSize );
+    int octaves       = m_mapRNG->GetRandomIntInRange( m_numOctaves );
+    float persistence = m_mapRNG->GetRandomFloatInRange( m_octavePersistence );
+    float scale       = m_mapRNG->GetRandomFloatInRange( m_octaveScale );
+    int gridSize      = m_mapRNG->GetRandomIntInRange( m_gridSize );
     
     // For each tile (by X and Y)
     for( int tileY = 0; tileY < mapDimensions.y; tileY++ ) {

@@ -48,8 +48,8 @@ bool MapGenStep_RoomsAndPaths::GenerateRooms( const Map& map, std::vector<IntVec
     IntVec2 mapDimensions = map.GetMapDimensions();
     AABB2 mapBounds = AABB2( Vec2::ZERO, Vec2( (float)mapDimensions.x, (float)mapDimensions.y ) );
 
-    int numRooms    = g_RNG->GetRandomIntInRange( m_numRooms );
-    int numOverlaps = g_RNG->GetRandomIntInRange( m_numOverlaps );
+    int numRooms    = m_mapRNG->GetRandomIntInRange( m_numRooms );
+    int numOverlaps = m_mapRNG->GetRandomIntInRange( m_numOverlaps );
 
     for( int roomIndex = 0; roomIndex < numRooms; roomIndex++ ) {
         bool roomIsValid = false;
@@ -57,13 +57,13 @@ bool MapGenStep_RoomsAndPaths::GenerateRooms( const Map& map, std::vector<IntVec
 
         do {
             // Generate room size (plus two to account for walls)
-            int width = g_RNG->GetRandomIntInRange( m_roomWidth ) + 2;
-            int height = g_RNG->GetRandomIntInRange( m_roomHeight ) + 2;
+            int width = m_mapRNG->GetRandomIntInRange( m_roomWidth ) + 2;
+            int height = m_mapRNG->GetRandomIntInRange( m_roomHeight ) + 2;
             Vec2 roomDimensions( (float)width, (float)height );
 
             // Get random alignment
-            float alignX = g_RNG->GetRandomFloatZeroToOne();
-            float alignY = g_RNG->GetRandomFloatZeroToOne();
+            float alignX = m_mapRNG->GetRandomFloatZeroToOne();
+            float alignY = m_mapRNG->GetRandomFloatZeroToOne();
             Vec2 alignment = Vec2( alignX, alignY );
 
             // Convert to tile coords
@@ -74,8 +74,8 @@ bool MapGenStep_RoomsAndPaths::GenerateRooms( const Map& map, std::vector<IntVec
             roomIsValid = AddRoomIfValid( roomPositions, roomSizes, numOverlaps, IntVec2( mapOffsetX, mapOffsetY ), IntVec2( width, height ) );
 
             if( !roomIsValid && --numAttempts < 0 ) {
-                g_theDevConsole->PrintString( "(MGS_RoomsAndPaths) ERROR: Failed to place rooms as requested", DevConsole::CHANNEL_ERROR );
-                return false;
+                g_theDevConsole->PrintString( "(MGS_RoomsAndPaths) WARNING: Failed to place rooms as requested", DevConsole::CHANNEL_WARNING );
+                return true;
             }
         } while( !roomIsValid );
     }
@@ -178,7 +178,7 @@ void MapGenStep_RoomsAndPaths::GetRoomCenters( const std::vector<IntVec2>& posit
 
 
 void MapGenStep_RoomsAndPaths::GeneratePaths( Map& map, std::vector<IntVec2>& roomCenters ) const {
-    float straightness = g_RNG->GetRandomFloatInRange( m_pathStraightChance );
+    float straightness = m_mapRNG->GetRandomFloatInRange( m_pathStraightChance );
 
     if( m_pathLoop ) {
         roomCenters.push_back( roomCenters[0] );
@@ -225,7 +225,7 @@ void MapGenStep_RoomsAndPaths::GeneratePaths( Map& map, std::vector<IntVec2>& ro
 
 
 void MapGenStep_RoomsAndPaths::ChangePathTiles( Map& map, const IntVec2& pathStart, const IntVec2& pathSize ) const {
-    bool xFirst = g_RNG->PercentChance( 0.5f );
+    bool xFirst = m_mapRNG->PercentChance( 0.5f );
     IntVec2 pathPosition = pathStart;
 
     if( xFirst ) {

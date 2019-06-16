@@ -11,7 +11,7 @@
 #include "Game/Map.hpp"
 
 
-Inventory::Inventory( Map* map, bool renderEquippedItems /*= false*/, bool renderUnequippedItems /*= false*/ ) :
+Inventory::Inventory( Map*& map, bool renderEquippedItems /*= false*/, bool renderUnequippedItems /*= false*/ ) :
     m_map(map) {
     SetRenderPreferences( renderEquippedItems, renderUnequippedItems );
 

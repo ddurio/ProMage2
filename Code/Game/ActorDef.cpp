@@ -88,6 +88,7 @@ void Definition<Actor>::Define( Actor& theObject ) const {
     const StatsManager* statsProto = m_properties.GetValue( "statsManager", (const StatsManager*)nullptr );
     GUARANTEE_OR_DIE( statsProto != nullptr, "(ActorDef) StatsManager prototype was nullptr!" );
     theObject.m_statsManager = new StatsManager( *statsProto );
+    theObject.m_statsManager->m_myActor = &theObject;
 
     // Body appearance
     Strings bodyOptions;

@@ -7,6 +7,7 @@
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/RNG.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
@@ -20,6 +21,8 @@
 #include "Engine/Renderer/TextureView2D.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
 
+#include "Game/Actor.hpp"
+#include "Game/ActorController.hpp"
 #include "Game/ActorDef.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
@@ -31,6 +34,12 @@
 #include "Game/UIButton.hpp"
 #include "Game/UILabel.hpp"
 #include "Game/UIWidget.hpp"
+
+
+enum StairType {
+    STAIRS_UP,
+    STAIRS_DOWN
+};
 
 
 GameStatePlay::GameStatePlay() {
@@ -73,11 +82,16 @@ void GameStatePlay::Startup() {
     TileDef::InitializeTileDefs();
     MapDef::InitializeMapDefs();
 
-    m_map = new Map( "DFS1FIXME", "Island" ); // DFS1FIXME: Set correct map name
+    m_floorZeroSeed = g_RNG->GetRandomSeed();
+    m_mapRNG = new RNG( m_floorZeroSeed );
+
+    m_map = new Map( "Floor0", "Island", m_mapRNG ); // DFS1FIXME: Set correct map name
     m_map->Startup();
 
-    Entity* player0 = m_map->GetPlayer();
+    const Actor* player0 = m_map->SpawnNewActor( "Girl", Vec2( 2.5f, 3.5f ), 0 );
     ((TopDownFollowCamera*)m_gameCamera)->SetFollowTarget( player0 );
+
+    g_theEventSystem->Subscribe( "playerDeath", this, &GameStatePlay::HandlePlayerDeath );
 
     BuildPauseUI();
     BuildLoadedMesh();
@@ -139,6 +153,12 @@ void GameStatePlay::Update() {
         }
     } else {
         CLEAR_POINTER( m_fadeTimer );
+    }
+
+
+    if( m_deathTimer->HasFinshed() ) {
+        EventArgs args;
+        HandlePlayerDeath( args );
     }
 
     m_map->Update( deltaSeconds );
@@ -220,6 +240,17 @@ bool GameStatePlay::HandleKeyPressed( unsigned char keyCode ) {
     if( keyCode == KB_F1 ) {
         m_isDebugging = !m_isDebugging;
         return true;
+    } else if( keyCode == KB_F ) { // Take the Stairs
+        Actor* player = m_map->GetPlayer();
+
+        if( player != nullptr && player->IsAlive() ) {
+            ActorController* controller = player->GetController();
+
+            if( controller != nullptr ) {
+                controller->TakeClosestStairs();
+                return true;
+            }
+        }
     }
 
     return m_gameInput->HandleKeyPressed( keyCode );
@@ -247,6 +278,18 @@ bool GameStatePlay::HandleQuitRequested() {
 
 GameInput* GameStatePlay::GetGameInput() const {
     return m_gameInput;
+}
+
+
+void GameStatePlay::ChangeFloorsDown() {
+    unsigned int floorIndex = m_currentFloor + 1;
+    GoToFloor( floorIndex, STAIRS_UP );
+}
+
+
+void GameStatePlay::ChangeFloorsUp() {
+    unsigned int floorIndex = m_currentFloor - 1;
+    GoToFloor( floorIndex, STAIRS_DOWN );
 }
 
 
@@ -298,4 +341,51 @@ void GameStatePlay::BuildPauseUI() {
     g_theRenderer->GetOrCreateMaterial( m_grayscaleMatName );
     g_theRenderer->GetOrCreateMaterial( m_pauseMatName );
     m_pauseUBO = new UniformBuffer( g_theRenderer );
+}
+
+
+void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType ) {
+    m_currentFloor = newFloorIndex;
+
+    m_mapRNG->SetSeed( m_floorZeroSeed + m_currentFloor );
+    m_mapRNG->SetPosition( 0 );
+
+    std::string floorType = (m_currentFloor == 0) ? "Island" : "Cave";
+    Map* nextMap = new Map( Stringf( "Map%d", m_currentFloor ), floorType, m_mapRNG );
+    nextMap->Startup();
+
+    Actor* player = m_map->GetPlayer();
+    m_map->RemovePlayerFromMap( player );
+    nextMap->AddPlayerToMap( player );
+
+    IntVec2 stairCoords = nextMap->GetTileCoordsForStairs( stairType );
+
+    if( stairCoords != IntVec2::NEGONE ) {
+        Vec2 stairsWorldCoords = Vec2( stairCoords ) + Vec2( 0.5f );
+        player->SetWorldPosition( stairsWorldCoords );
+    }
+
+    CLEAR_POINTER( m_map );
+    m_map = nextMap;
+}
+
+
+bool GameStatePlay::HandlePlayerDeath( EventArgs& args ) {
+    UNUSED( args );
+
+    if( m_deathTimer == nullptr ) {
+        m_deathTimer = new Timer( m_stateClock );
+        m_deathTimer->Start( 3.f );
+    } else {
+        CLEAR_POINTER( m_deathTimer );
+
+        Actor* player0 = m_map->GetPlayer();
+        player0->Revive();
+
+        if( m_currentFloor != 0 ) {
+            GoToFloor( 0, STAIRS_DOWN );
+        }
+    }
+
+    return false;
 }

@@ -27,4 +27,5 @@ class Animator {
     Timer* m_animTimer = nullptr;
 
     Vec2 m_prevMoveDir = Vec2::DOWN;
+    float m_prevElapsedTime = 0.f;
 };

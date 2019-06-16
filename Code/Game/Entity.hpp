@@ -87,11 +87,8 @@ class Entity {
     Vec2 m_velocity;
     RigidBody2D* m_rigidBody = nullptr;
 
-    float m_angularVelocity = 0;
-
     float m_physicsRadius = 0.f;
     float m_cosmeticRadius = 0.f;
-    float m_scale = 1.f;
 
     int m_health = 1;
     bool m_isKillable = true;

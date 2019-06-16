@@ -57,7 +57,7 @@ void MapGenStep_CellularAutomata::RunOnce( Map& map ) const {
 
     int numTilesToChange = (int)tileIndexesToChange.size();
     for( int tileIndex = 0; tileIndex < numTilesToChange; tileIndex++ ) {
-        if( g_RNG->PercentChance(m_chancePerTile) ) {
+        if( m_mapRNG->PercentChance(m_chancePerTile) ) {
             ChangeTile( map, tileIndexesToChange[tileIndex] );
         }
     }

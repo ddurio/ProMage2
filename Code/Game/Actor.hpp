@@ -45,7 +45,8 @@ class Actor : public Entity {
     void Startup();
     void Shutdown();
 
-    void Die();
+    void Die() override;
+    void Revive();
 
     void Update( float deltaSeconds );
     void Render() const;
@@ -55,6 +56,8 @@ class Actor : public Entity {
     //void OnCollisionTile( Tile* collidingTile );
 
     Vec2 GetMoveDir() const;
+    int GetPlayerIndex() const;
+    ActorController* GetController() const;
 
     private:
     const Definition<Actor>* m_actorDef = nullptr;
@@ -62,6 +65,7 @@ class Actor : public Entity {
     ActorController* m_controller = nullptr;
     StatsManager* m_statsManager = nullptr;
 
+    int m_playerIndex = -1;
     Vec2 m_moveDir = Vec2::ZERO;
 
     std::string m_paperDollSprites[NUM_PAPER_DOLL_SLOTS] = { "" };

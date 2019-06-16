@@ -24,7 +24,8 @@
 
 
 Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
-    Entity( theMap, ENTITY_TYPE_ACTOR ) {
+    Entity( theMap, ENTITY_TYPE_ACTOR ),
+    m_playerIndex( playerID ) {
     m_actorDef = Definition<Actor>::GetDefinition( actorType );
     GUARANTEE_OR_DIE( m_actorDef != nullptr, Stringf( "(Actor) Failed to find actorDef of name %s", actorType.c_str() ) );
     m_actorDef->Define( *this );
@@ -117,20 +118,26 @@ void Actor::Die() {
 }
 
 
+void Actor::Revive() {
+    m_statsManager->Revive();
+    m_isDead = false;
+}
+
+
 void Actor::Update( float deltaSeconds ) {
     UpdateFromController( deltaSeconds );
     m_animator->Update( deltaSeconds );
 
-    m_statsManager->TakeDamage( deltaSeconds );
+    m_statsManager->TakeDamage( 10.f * deltaSeconds );
 
     // Update Position
-    float moveSpeed = m_statsManager->GetMoveSpeed();
-    Vec2 frameMovement = m_moveDir * moveSpeed * deltaSeconds;
+    if( IsAlive() ) {
+        float moveSpeed = m_statsManager->GetMoveSpeed();
+        Vec2 frameMovement = m_moveDir * moveSpeed * deltaSeconds;
 
-    m_transform.position += frameMovement;
-    // DFS1FIXME: This shouldn't be needed anymore right?
-    //m_inventory->UpdateItemPositions( m_transform.position );
-    m_inventory->Update( deltaSeconds );
+        m_transform.position += frameMovement;
+        m_inventory->Update( deltaSeconds );
+    }
 
     m_inventory->UpdatePaperDoll( m_paperDollSprites );
     BuildMesh();
@@ -138,24 +145,6 @@ void Actor::Update( float deltaSeconds ) {
 
 
 void Actor::Render() const {
-    /* DFS1FIXME: Add physics debug drawing back in
-    if( g_theGame->IsDebugDrawingOn() ) {
-        g_theRenderer->BindTexture( nullptr );
-        g_theRenderer->DrawVertexArray( m_debugCosmeticVerts );
-    }
-
-    g_theRenderer->BindTexture( m_entityTexture );
-    g_theRenderer->DrawVertexArray( m_entityVerts );
-
-    m_inventory->Render();
-
-    if( g_theGame->IsDebugDrawingOn() ) {
-        g_theRenderer->BindTexture( nullptr );
-        g_theRenderer->DrawVertexArray( m_debugPhysicsVerts );
-    }
-    */
-
-
     for( int slotIndex = 0; slotIndex < NUM_PAPER_DOLL_SLOTS; slotIndex++ ) {
         PaperDollSlot slot = (PaperDollSlot)slotIndex;
 
@@ -195,130 +184,25 @@ void Actor::RenderPortrait() const {
 }
 
 
-/*
-void Actor::OnCollisionEntity( Entity* collidingEntity ) {
-    UNUSED( collidingEntity );
-}
-
-
-void Actor::OnCollisionTile( Tile* collidingTile ) {
-    if( !( (m_canWalk && collidingTile->AllowsWalking()  ) ||
-           (m_canFly  && collidingTile->AllowsFlying()   ) ||
-           (m_canSwim && collidingTile->AllowsSwimming() ) ) ) {
-        PushDiscOutOfAABB2( m_transform.position, m_physicsRadius, collidingTile->GetWorldBounds() );
-    }
-}
-*/
-
-
 Vec2 Actor::GetMoveDir() const {
     return m_moveDir;
 }
 
 
+int Actor::GetPlayerIndex() const {
+    return m_playerIndex;
+}
+
+
+ActorController* Actor::GetController() const {
+    return m_controller;
+}
+
+
 void Actor::UpdateFromController( float deltaSeconds ) {
-    if( m_controller != nullptr ) {
+    if( m_controller != nullptr && IsAlive() ) {
         m_controller->Update( deltaSeconds );
     }
-
-
-    /* DFS1FIXME: Update controller key mappings
-    UNUSED( deltaSeconds );
-
-    if( m_playerID < 0 ) {
-        return;
-    }
-
-    const XboxController& controller = g_theInput->GetController( m_playerID );
-
-    if( m_isDead ) {
-        const KeyButtonState yButton = controller.GetKeyButtonState( XBOX_BUTTON_ID_Y );
-
-        if( yButton.WasJustPressed() ) {
-            //Respawn();
-        } else {
-            return;
-        }
-    }
-
-    // PlayerTank Movement
-    const AnalogJoystick& leftStick = controller.GetLeftJoystick();
-    float leftMagnitude = leftStick.GetMagnitude();
-    m_movementFraction = leftMagnitude;
-
-    if( leftMagnitude > 0.f ) {
-        //m_orientationDegrees = leftStick.GetAngleDegrees();
-    }
-
-    const KeyButtonState aButton = controller.GetKeyButtonState( XBOX_BUTTON_ID_A );
-    const KeyButtonState bButton = controller.GetKeyButtonState( XBOX_BUTTON_ID_B );
-    const KeyButtonState xButton = controller.GetKeyButtonState( XBOX_BUTTON_ID_X );
-    const KeyButtonState yButton = controller.GetKeyButtonState( XBOX_BUTTON_ID_Y );
-
-    if( aButton.WasJustPressed() ) {
-        // Pick up item?
-        Inventory* mapInventory = m_map->GetMapInventory();
-        Item* itemToPickUp = mapInventory->GetItemAtPosition( m_transform.position );
-
-        if( itemToPickUp != nullptr ) {
-            mapInventory->RemoveItemFromInventory( itemToPickUp );
-            m_inventory->AddItemToInventory( itemToPickUp );
-        }
-    }
-
-    if( bButton.WasJustPressed() ) {
-        // Drop item?
-        Item* itemToDrop = m_inventory->GetItemInSlot( 0 );
-
-        if( itemToDrop != nullptr ) {
-            m_inventory->RemoveItemFromInventory( itemToDrop );
-            m_map->GetMapInventory()->AddItemToInventory( itemToDrop );
-            itemToDrop->SetWorldPosition( m_transform.position );
-        } else {
-            itemToDrop = m_inventory->GetItemInSlot( 1 );
-
-            if( itemToDrop != nullptr ) {
-                m_inventory->RemoveItemFromInventory( itemToDrop );
-                m_map->GetMapInventory()->AddItemToInventory( itemToDrop );
-                itemToDrop->SetWorldPosition( m_transform.position );
-            }
-        }
-    }
-
-    if( xButton.WasJustPressed() ) {
-        // Equip item?
-        Item* itemToEquip = m_inventory->GetItemInSlot( 0 );
-
-        if( itemToEquip != nullptr ) {
-            m_inventory->EquipItem( itemToEquip );
-        } else {
-            itemToEquip = m_inventory->GetItemInSlot( 1 );
-
-            if( itemToEquip != nullptr ) {
-                m_inventory->EquipItem( itemToEquip );
-            }
-        }
-
-    }
-
-
-    if( yButton.WasJustPressed() ) {
-        // Unequip item??
-        // DFS1FIXME: Updated from mainHand/offHand to Weapon
-        Item* itemToUnequip = m_inventory->GetItemInSlot( ITEM_SLOT_MAIN_HAND );
-
-        if( itemToUnequip != nullptr ) {
-            m_inventory->UnequipItem( itemToUnequip );
-            return;
-        } else {
-            itemToUnequip = m_inventory->GetItemInSlot( ITEM_SLOT_OFF_HAND );
-
-            if( itemToUnequip != nullptr ) {
-                m_inventory->UnequipItem( itemToUnequip );
-            }
-        }
-    }
-    */
 }
 
 

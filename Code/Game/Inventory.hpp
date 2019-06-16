@@ -18,7 +18,7 @@ struct ItemTilePayload;
 
 class Inventory {
     public:
-    explicit Inventory( Map* map, bool renderEquippedItems = true, bool renderUnequippedItems = false );
+    explicit Inventory( Map*& map, bool renderEquippedItems = true, bool renderUnequippedItems = false );
     ~Inventory();
 
     void Update( float deltaSeconds );
@@ -53,7 +53,7 @@ class Inventory {
     int GetItemIndex( Item* itemToFind, bool& outIsEquipped ) const;
 
     private:
-    Map* m_map = nullptr;
+    Map*& m_map;
 
     int m_numItemSlots = 50;
     std::vector<Item*> m_unequippedItems;

@@ -46,7 +46,7 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element ) {
         step = new MapGenStep_FromImage( element );
     } else if( stepType == "CellularAutomata" ) {
         step = new MapGenStep_CellularAutomata( element );
-    } else if( stepType == "GenerateDistanceField" ) {
+    } else if( stepType == "DistanceField" ) {
         step = new MapGenStep_DistanceField( element );
     } else if( stepType == "PerlinNoise" ) {
         step = new MapGenStep_PerlinNoise( element );
@@ -59,10 +59,11 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element ) {
 
 
 void MapGenStep::Run( Map& map ) const {
-    int iterations = g_RNG->GetRandomIntInRange( m_numIterations );
+    m_mapRNG = map.m_mapRNG;
+    int iterations = m_mapRNG->GetRandomIntInRange( m_numIterations );
 
     for( int iterationIndex = 0; iterationIndex < iterations; iterationIndex++ ) {
-        if( g_RNG->PercentChance( m_chanceToRun ) ) {
+        if( m_mapRNG->PercentChance( m_chanceToRun ) ) {
             RunOnce( map );
         }
     }
@@ -113,7 +114,7 @@ void MapGenStep::ChangeTile( Map& map, int tileIndex ) const {
     }
 
     if( m_setDistanceField != FloatRange::NEGONE ) {
-        float distance = g_RNG->GetRandomFloatInRange( m_setDistanceField );
+        float distance = m_mapRNG->GetRandomFloatInRange( m_setDistanceField );
         tile.SetDistanceField( distance );
     }
 

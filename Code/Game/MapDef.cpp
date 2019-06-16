@@ -70,8 +70,8 @@ const MapDef* MapDef::GetMapDef( std::string mapType ) {
 
 
 void MapDef::Define( Map& map ) const {
-    int mapWidth = g_RNG->GetRandomIntInRange( m_width );
-    int mapHeight = g_RNG->GetRandomIntInRange( m_height );
+    int mapWidth = map.m_mapRNG->GetRandomIntInRange( m_width );
+    int mapHeight = map.m_mapRNG->GetRandomIntInRange( m_height );
 
     map.m_mapDimensions = IntVec2( mapWidth, mapHeight );
     // Ensures no tile destructor gets called during creation

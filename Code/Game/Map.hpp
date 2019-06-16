@@ -19,7 +19,7 @@ class Map {
     friend class MapGenStep;
 
     public:
-    explicit Map( std::string mapName, std::string mapType );
+    explicit Map( std::string mapName, std::string mapType, RNG* mapRNG );
     ~Map();
 
     void Startup();
@@ -30,6 +30,8 @@ class Map {
 
     IntVec2 GetMapDimensions() const;
     const IntVec2 GetTileCoordsFromWorldCoords( const Vec2& worldCoords ) const;
+    const IntVec2 GetTileCoordsForStairs( bool getStairsDown ) const;
+
     int GetTileIndexFromTileCoords( const IntVec2& tileCoords ) const;
     int GetTileIndexFromTileCoords( int xIndex, int yIndex ) const;
     int GetTileIndexFromWorldCoords( const Vec2& worldCoords ) const;
@@ -37,22 +39,29 @@ class Map {
     const Tile& GetTileFromTileCoords( const IntVec2& tileCoords ) const;
     const Tile& GetTileFromTileCoords( int xIndex, int yIndex ) const;
     const Tile& GetTileFromWorldCoords( const Vec2& worldCoords ) const;
+    //std::vector< const Tile& > GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const;
+    //auto GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const -> const Tile(&)[8];
+
     Inventory* GetMapInventory() const;
-    Entity* GetPlayer( int playerIndex = 0 ) const;
+    Actor* GetPlayer( int playerIndex = 0 ) const;
 
     bool IsValidTileCoords( const IntVec2& tileCoords ) const;
 
     Actor* SpawnNewActor( std::string actorType, const Vec2& worldPosition, int playerID = -1 );
 
-    void AddEntityToMap( Entity& entity );
-    void AddEntityToList( Entity& entity, EntityList& list );
+    void AddPlayerToMap( Actor* actor );
+    void AddEntityToMap( Entity* entity );
+    void AddEntityToList( Entity* entity, EntityList& list );
 
-    void RemoveEntityFromMap( Entity& entity );
-    void RemoveEntityFromList( Entity& entity, EntityList& list );
+    void RemovePlayerFromMap( Actor* actor );
+    void RemoveEntityFromMap( Entity* entity );
+    void RemoveEntityFromList( Entity* entity, EntityList& list );
 
     private:
     std::string m_mapName = "";
     std::string m_mapType = "";
+    RNG* m_mapRNG = nullptr;
+
     IntVec2 m_mapDimensions = IntVec2( 0, 0 );
     const MapDef* m_mapDef = nullptr;
 
@@ -61,8 +70,9 @@ class Map {
     RigidBody2D* m_tilesRB = nullptr;
 
     EntityList m_entities;
-    Entity* m_players[4] = {};
+    Actor* m_players[4] = {};
 
+    Map* m_self = this; // Needed for inventory to work
     Inventory* m_inventory = nullptr;
 
     void UpdateMapVerts( float deltaSeconds );

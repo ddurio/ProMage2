@@ -33,8 +33,8 @@ void MapGenStep_FromImage::RunOnce( Map& map ) const {
     IntVec2 imageDimensions = m_image->GetDimensions();
     IntVec2 mapDimensions = map.GetMapDimensions();
 
-    float alignX = g_RNG->GetRandomFloatInRange( m_alignX );
-    float alignY = g_RNG->GetRandomFloatInRange( m_alignY );
+    float alignX = m_mapRNG->GetRandomFloatInRange( m_alignX );
+    float alignY = m_mapRNG->GetRandomFloatInRange( m_alignY );
     Vec2 alignment = Vec2( alignX, alignY );
 
     AABB2 mapBounds = AABB2( Vec2::ZERO, Vec2( (float)mapDimensions.x, (float)mapDimensions.y ) );
@@ -43,7 +43,7 @@ void MapGenStep_FromImage::RunOnce( Map& map ) const {
     int mapOffsetX = (int)imageBounds.mins.x;
     int mapOffsetY = (int)imageBounds.mins.y;
 
-    int rotations = g_RNG->GetRandomIntInRange( m_numRotations );
+    int rotations = m_mapRNG->GetRandomIntInRange( m_numRotations );
     DebuggerPrintf( Stringf( "NumRotations=%d\n", rotations ).c_str() );
     Image* rotatedImage = new Image( *m_image );
     m_image->GetRotated( rotations, *rotatedImage );
@@ -62,7 +62,7 @@ void MapGenStep_FromImage::RunOnce( Map& map ) const {
 
             GUARANTEE_OR_DIE( tileDef != nullptr, Stringf( "ERROR: TileDef not found with requested texelColor %s", texelColor.GetAsString().c_str() ) );
 
-            if( g_RNG->PercentChance( chanceToExist ) ) {
+            if( m_mapRNG->PercentChance( chanceToExist ) ) {
                 int tileIndex = mapY * mapDimensions.x + mapX;
                 Tile& tile = GetTile( map, tileIndex );
                 tile.SetTileType( tileDef );

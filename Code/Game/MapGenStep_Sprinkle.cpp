@@ -13,7 +13,7 @@ MapGenStep_Sprinkle::MapGenStep_Sprinkle( const XMLElement& element ) :
 
 
 void MapGenStep_Sprinkle::RunOnce( Map& map ) const {
-    int numSprinkles = g_RNG->GetRandomIntInRange( m_count );
+    int numSprinkles = m_mapRNG->GetRandomIntInRange( m_count );
 
     IntVec2 mapDimensions = map.GetMapDimensions();
     int numTiles = mapDimensions.x * mapDimensions.y;
@@ -23,7 +23,7 @@ void MapGenStep_Sprinkle::RunOnce( Map& map ) const {
         const Tile* tile = nullptr;
 
         do {
-            tileIndex = g_RNG->GetRandomIntLessThan( numTiles );
+            tileIndex = m_mapRNG->GetRandomIntLessThan( numTiles );
             tile = &(map.GetTileFromTileIndex( tileIndex ));
         } while( m_ifIsType != "" && m_ifIsType != tile->GetTileType() );
 

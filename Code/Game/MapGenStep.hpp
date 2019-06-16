@@ -28,6 +28,7 @@ class MapGenStep {
 
     protected:
     std::string m_stepType        = "";
+    mutable RNG* m_mapRNG         = nullptr;
 
     // Conditions
     std::string m_ifIsType        = "";

@@ -40,9 +40,40 @@ void Animator::Update( float deltaSeconds ) {
     if( m_currentAnim != newAnim ) {
         m_currentAnim = newAnim;
         m_animTimer->Restart();
+        m_prevElapsedTime = 0.f;
     }
 
     m_prevMoveDir = (moveDir == Vec2::ZERO) ? m_prevMoveDir : moveDir; // Keep last facing if you're not moving now
+
+
+    // Trigger Anim Events
+    float elapsedTime = m_animTimer->GetElapsedTime();
+
+    Strings events = m_currentAnim->GetEventsInTimeRangeAndDirection( m_prevElapsedTime, elapsedTime, m_prevMoveDir );
+    int numEvents = (int)events.size();
+
+    for( int eventIndex = 0; eventIndex < numEvents; eventIndex++ ) {
+        std::string& eventStr = events[eventIndex];
+        Strings eventSplitStr = SplitStringOnDelimeter( eventStr, ' ', false );
+
+        const std::string& command = StringToLower( eventSplitStr[0] );
+
+        /*
+        if( command == "dealdamage" ) {
+            m_myUnit->DealDamage( m_attackVictim );
+        } else */
+        if( command == "playsound" ) {
+            GUARANTEE_OR_DIE( (int)eventSplitStr.size() > 1, "(Animator) PlaySound anim event missing required sound name parameter" );
+
+            SoundID soundID = g_theAudio->GetOrCreateSound( eventSplitStr[1], true );
+            g_theAudio->PlaySoundAt( soundID, Vec3( m_myActor->GetPosition(), 0.f ) );
+        } else if( command == "playerdeath" ) {
+            g_theEventSystem->FireEvent( command );
+        }
+    }
+
+    m_prevElapsedTime = elapsedTime;
+
 }
 
 

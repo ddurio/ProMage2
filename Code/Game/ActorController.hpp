@@ -16,9 +16,11 @@ class ActorController {
     void Shutdown();
 
     virtual void Update( float deltaSeconds ) = 0;
+    void TakeClosestStairs() const;
 
     protected:
     Actor* m_myActor = nullptr;
+
 
     const StatsManager* GetActorStats() const;
 

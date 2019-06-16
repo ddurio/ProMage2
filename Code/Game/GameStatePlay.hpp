@@ -18,6 +18,9 @@ class UIWidget;
 class UniformBuffer;
 
 
+enum StairType : int;
+
+
 class GameStatePlay : public GameState {
     public:
     GameStatePlay();
@@ -36,15 +39,24 @@ class GameStatePlay : public GameState {
 
     GameInput* GetGameInput() const override;
 
+    void ChangeFloorsDown();
+    void ChangeFloorsUp();
+
     static bool Command_PauseGame( EventArgs& args );
 
 
     private:
     GameInput* m_gameInput = nullptr;
+    RNG* m_mapRNG = nullptr;
+    unsigned int m_floorZeroSeed = 0;
+    unsigned int m_currentFloor = 0;
+
     std::vector<Material*> m_materials;
 
-    bool m_isDebugging = true;
+    bool m_isDebugging = false;
     bool m_isPaused = false;
+
+    Timer* m_deathTimer = nullptr;
 
     Map* m_map = nullptr;
     UIWidget* m_pauseUI = nullptr;
@@ -58,4 +70,6 @@ class GameStatePlay : public GameState {
     std::string m_grayscaleMatName = "Data/Materials/GrayscaleEffect.xml";
 
     void BuildPauseUI();
+    void GoToFloor( unsigned int newFloorIndex, StairType stairType );
+    bool HandlePlayerDeath( EventArgs& args );
 };

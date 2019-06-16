@@ -30,6 +30,7 @@ void GameInput::Update( float deltaSeconds ) {
 
     m_toggleInventory = false;
     m_pickupItem = false;
+    //m_changeFloors = false;
 }
 
 
@@ -56,6 +57,11 @@ bool GameInput::HandleKeyPressed( unsigned char keyCode ) {
         } case( KB_SPACE ): { // Loot
             m_pickupItem = true;
             return true;
+            /*
+        } case( KB_F ): { // Take Stairs
+            m_changeFloors = true;
+            return true;
+            */
         }
     }
 
@@ -125,6 +131,13 @@ bool GameInput::WasInvtoryToggled() const {
 bool GameInput::ShouldPickupItem() const {
     return m_pickupItem;
 }
+
+
+/*
+bool GameInput::ShouldChangeFloors() const {
+    return m_changeFloors;
+}
+*/
 
 
 bool GameInput::IsPaused() const {

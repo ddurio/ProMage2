@@ -22,6 +22,7 @@ class GameInput {
     Vec2 GetMovementDirection() const;
     bool WasInvtoryToggled() const;
     bool ShouldPickupItem() const;
+    //bool ShouldChangeFloors() const;
 
     bool IsPaused() const;
 
@@ -30,6 +31,7 @@ class GameInput {
     bool m_pause = false;
     bool m_toggleInventory = false;
     bool m_pickupItem = false;
+    //bool m_changeFloors = false;
 
     bool m_upPressed = false;
     bool m_downPressed = false;

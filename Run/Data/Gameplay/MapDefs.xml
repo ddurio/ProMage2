@@ -2,13 +2,15 @@
     <MapDefinition name="Island" width="16~32" height="9~18" fillTile="Grass" edgeTile="Water">
         <GenerationSteps>
             <RoomsAndPaths>
-                <Rooms count="3" width="2~5" height="3~6" floor="HardWoodFloor" wall="Stone"/>
+                <Rooms count="3" width="2~5" height="3~6" floor="HardWoodFloor" wall="StoneWall"/>
                 <Paths floor="Sand" loop="false"/>
             </RoomsAndPaths>
+            <Sprinkle ifIsType="HardWoodFloor" changeToType="StairsDown" setTags="stairsDown" count="1"/>
+            <CellularAutomata ifNeighborType="StairsDown" setTags="stairDownAccess"/>
             <!--
             <Sprinkle ifIsType="Grass" changeToType="Stone" count="0~4"/>
             <CellularAutomata ifIsType="Grass" ifNeighborType="Stone" changeToType="Stone"/>
-            <GenerateDistanceField ifIsType="Water" movementType="Walk"/>
+            <DistanceField ifIsType="Water" movementType="Walk"/>
             <CellularAutomata ifDistanceField="4~5" changeToType="Stone"/>
             <FromImage imageFilePath="Data/Images/MGS_FromImage_Test.png" numRotations="0~3" alignX="0.9" alignY="0.9"/>
             <CellularAutomata ifDistanceField="4~5" spawnActor="Girl"/>
@@ -18,6 +20,21 @@
             <CellularAutomata ifIsType="Stone" ifNeighborType="Water" ifNumNeighbors="4" changeToType="Grass"/>
             <PerlinNoise ifIsType="Grass" ifNoise="-0.1~0.1" octaves="1" gridSize="20" changeToType="Stone"/>
             -->
+        </GenerationSteps>
+    </MapDefinition>
+    <MapDefinition name="Cave" width="50~100" height="50~100" fillTile="Stone">
+        <GenerationSteps>
+            <RoomsAndPaths>
+                <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWall"/>
+                <Paths floor="CaveDirtFloor" loop="true"/>
+            </RoomsAndPaths>
+            <CellularAutomata ifIsType="Stone" ifNeighborType="CaveDirtFloor" changeToType="CaveDirtFloor"/>
+            <CellularAutomata ifIstype="StoneWall" ifNeighborType="Stone" ifNumNeighbors="1" changeToType="CaveDirtFloor"/>
+            
+            <Sprinkle ifIsType="CaveDirtFloor" changeToType="StairsDown" setTags="stairsDown" count="1"/>
+            <CellularAutomata ifNeighborType="StairsDown" setTags="stairDownAccess"/>
+            <Sprinkle ifIsType="CaveDirtFloor" changeToType="StairsUp" setTags="stairsUp" count="1"/>
+            <CellularAutomata ifNeighborType="StairsUp" setTags="stairUpAccess"/>
         </GenerationSteps>
     </MapDefinition>
 </MapDefinitions>

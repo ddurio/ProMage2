@@ -1,5 +1,7 @@
 #include "Game/StatsManager.hpp"
 
+#include "Game/Actor.hpp"
+
 
 StatsManager::StatsManager( const XMLElement& element ) {
     const XMLElement* childEle = element.FirstChildElement();
@@ -52,4 +54,14 @@ float StatsManager::GetPickupRadius() const {
 
 void StatsManager::TakeDamage( float damageToTake ) {
     m_health -= damageToTake;
+
+    if( m_health <= 0.f ) {
+        m_myActor->Die();
+    }
+}
+
+
+void StatsManager::Revive() {
+    m_health = m_maxHealth;
+    // DFS1FIXME: Could have penalties here
 }

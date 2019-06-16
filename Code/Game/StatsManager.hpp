@@ -3,11 +3,18 @@
 
 #include "Engine/Core/XMLUtils.hpp"
 
+#include "Game/Definition.hpp"
+
+
+class Actor;
+
 
 class StatsManager {
+    friend class Definition<Actor>;
+
     public:
     StatsManager() {};
-    StatsManager( const XMLElement& element );
+    explicit StatsManager( const XMLElement& element );
     ~StatsManager() {};
 
     float GetHealth() const;
@@ -18,8 +25,11 @@ class StatsManager {
     float GetPickupRadius() const;
 
     void TakeDamage( float damageToTake );
+    void Revive();
 
     private:
+    Actor* m_myActor = nullptr;
+
     float m_maxHealth = 100.f;
     float m_health = m_maxHealth;
 
