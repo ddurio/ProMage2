@@ -18,6 +18,15 @@
         allowsSwimming="false"
     />
     <TileDefinition
+        name="FakeStone"
+        spriteCoords="20,2"
+        texelColor="71,71,71"
+        allowsSight="false"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
         name="Water"
         spriteCoords="0,18"
         texelColor="22,22,222"

@@ -70,11 +70,17 @@ void GameStatePlay::Startup() {
     m_gameInput = new GameInput();
     m_gameInput->Startup();
 
-    SpriteSheet::Initialize( DATA_PAPER_DOLL_SPRITES, "SpriteSheet", g_theRenderer );
+    RenderContext* renderer = g_theRenderer;
+
+#ifdef _DEBUG
+    renderer = nullptr;
+#endif
+
+    SpriteSheet::Initialize( DATA_PAPER_DOLL_SPRITES, "SpriteSheet", renderer );
     SpriteAnimDef::Initialize( DATA_PAPER_DOLL_ANIMS, "SpriteAnim" );
     IsoSpriteAnimDef::Initialize( DATA_PAPER_DOLL_ISO_ANIMS, "IsoSpriteAnim" );
 
-    SpriteSheet::Initialize( DATA_INVENTORY_SPRITES, "SpriteSheet", g_theRenderer );
+    SpriteSheet::Initialize( DATA_INVENTORY_SPRITES, "SpriteSheet", renderer );
     SpriteAnimDef::Initialize( DATA_INVENTORY_SPRITES, "SpriteAnim" );
 
     Definition<Actor>::Initialize( DATA_ACTOR_DEFS, "ActorDef" );
@@ -85,11 +91,11 @@ void GameStatePlay::Startup() {
     m_floorZeroSeed = g_RNG->GetRandomSeed();
     m_mapRNG = new RNG( m_floorZeroSeed );
 
-    m_map = new Map( "Floor0", "Island", m_mapRNG ); // DFS1FIXME: Set correct map name
+    m_map = new Map( "Floor0", "Island", m_mapRNG );
     m_map->Startup();
 
-    const Actor* player0 = m_map->SpawnNewActor( "Girl", Vec2( 2.5f, 3.5f ), 0 );
-    ((TopDownFollowCamera*)m_gameCamera)->SetFollowTarget( player0 );
+    //const Actor* player0 = m_map->SpawnNewActor( "Girl", "Player", Vec2( 2.5f, 3.5f ) );
+    //((TopDownFollowCamera*)m_gameCamera)->SetFollowTarget( player0 );
 
     g_theEventSystem->Subscribe( "playerDeath", this, &GameStatePlay::HandlePlayerDeath );
 
@@ -337,7 +343,7 @@ void GameStatePlay::BuildPauseUI() {
     quitButton->AddChild( quitLabel );
 
     // Pause Shader
-    g_theRenderer->GetNewRenderTarget( m_pauseViewName );
+    g_theRenderer->GetOrCreateRenderTarget( m_pauseViewName );
     g_theRenderer->GetOrCreateMaterial( m_grayscaleMatName );
     g_theRenderer->GetOrCreateMaterial( m_pauseMatName );
     m_pauseUBO = new UniformBuffer( g_theRenderer );

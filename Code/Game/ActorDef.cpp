@@ -23,6 +23,7 @@ Definition<Actor>::Definition( const XMLElement& element ) {
 
     const XMLElement* childEle = element.FirstChildElement();
 
+    Strings       parentOptions;
     Strings       bodyOptions;
     Strings       bodyItemSets;
     Strings       earOptions;
@@ -33,7 +34,11 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     while( childEle != nullptr ) {
         std::string tagName = childEle->Name();
 
-        if( tagName == "Body" ) {
+        if( tagName == "Parent" ) {
+            std::string parentName = ParseXMLAttribute( *childEle, "name", "" );
+            GUARANTEE_OR_DIE( parentName != "", "(ActorDef) Parent tag missing required attribute 'name'" );
+            parentOptions.push_back( parentName );
+        } else if( tagName == "Body" ) {
             std::string spriteName = ParseXMLAttribute( *childEle, "spriteSheet", "" );
             GUARANTEE_OR_DIE( spriteName != "", "(ActorDef) Body tag missing required attribute 'spriteSheet'" );
             bodyOptions.push_back( spriteName );
@@ -66,6 +71,7 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     m_properties.SetValue( "canWalk",       canWalk );
     m_properties.SetValue( "canFly",        canFly );
     m_properties.SetValue( "canSwim",       canSwim );
+    m_properties.SetValue( "parents",       parentOptions );
     m_properties.SetValue( "bodySprites",   bodyOptions );
     m_properties.SetValue( "bodyItemSets",  bodyItemSets );
     m_properties.SetValue( "earSprites",    earOptions );
@@ -83,12 +89,22 @@ Definition<Actor>::Definition( const XMLElement& element ) {
 
 template<>
 void Definition<Actor>::Define( Actor& theObject ) const {
-    theObject.m_inventory = new Inventory( theObject.m_map );
+    Strings parentOptions;
+    parentOptions = m_properties.GetValue( "parents", parentOptions );
+    int numParents = (int)parentOptions.size();
 
-    const StatsManager* statsProto = m_properties.GetValue( "statsManager", (const StatsManager*)nullptr );
-    GUARANTEE_OR_DIE( statsProto != nullptr, "(ActorDef) StatsManager prototype was nullptr!" );
-    theObject.m_statsManager = new StatsManager( *statsProto );
-    theObject.m_statsManager->m_myActor = &theObject;
+    if( numParents > 0 ) {
+        int parentIndex = g_RNG->GetRandomIntLessThan( numParents );
+        const Definition<Actor>* parentDef = Definition<Actor>::GetDefinition( parentOptions[parentIndex] );
+        parentDef->Define( theObject );
+    } else {
+        theObject.m_inventory = new Inventory( theObject.m_map );
+
+        const StatsManager* statsProto = m_properties.GetValue( "statsManager", (const StatsManager*)nullptr );
+        GUARANTEE_OR_DIE( statsProto != nullptr, "(ActorDef) StatsManager prototype was nullptr!" );
+        theObject.m_statsManager = new StatsManager( *statsProto );
+        theObject.m_statsManager->m_myActor = &theObject;
+    }
 
     // Body appearance
     Strings bodyOptions;
@@ -103,21 +119,29 @@ void Definition<Actor>::Define( Actor& theObject ) const {
     int numBody = (int)bodyOptions.size();
     int numEars = (int)earOptions.size();
     int numHair = (int)hairOptions.size();
+    std::string bodyItemSet = "";
 
-    int bodyIndex = g_RNG->GetRandomIntLessThan( numBody );
-    int earIndex  = g_RNG->GetRandomIntLessThan( numEars );
-    int hairIndex = g_RNG->GetRandomIntLessThan( numHair );
+    if( numBody > 0 ) {
+        int bodyIndex = g_RNG->GetRandomIntLessThan( numBody );
+        theObject.m_paperDollSprites[PAPER_DOLL_BODY] = bodyOptions[bodyIndex];
 
-    theObject.m_paperDollSprites[PAPER_DOLL_BODY] = bodyOptions[bodyIndex];
-    theObject.m_paperDollSprites[PAPER_DOLL_EARS] = earOptions[earIndex];
-    theObject.m_paperDollSprites[PAPER_DOLL_HAIR] = hairOptions[hairIndex];
+        bodyItemSet = bodyItemSets[bodyIndex];
+    }
+
+    if( numEars > 0 ) {
+        int earIndex = g_RNG->GetRandomIntLessThan( numEars );
+        theObject.m_paperDollSprites[PAPER_DOLL_EARS] = earOptions[earIndex];
+    }
+
+    if( numHair > 0 ) {
+        int hairIndex = g_RNG->GetRandomIntLessThan( numHair );
+        theObject.m_paperDollSprites[PAPER_DOLL_HAIR] = hairOptions[hairIndex];
+    }
 
 
     // Item Sets
     std::string itemSetsCSV = "";
     itemSetsCSV = m_properties.GetValue( "validItemSets", itemSetsCSV );
-
-    std::string bodyItemSet = bodyItemSets[bodyIndex];
 
     if( bodyItemSet != "" ) {
         itemSetsCSV = Stringf( "%s,%s", itemSetsCSV.c_str(), bodyItemSet.c_str() );

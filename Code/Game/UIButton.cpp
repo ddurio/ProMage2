@@ -2,7 +2,6 @@
 
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/WindowContext.hpp"
-#include "Engine/Renderer/ColorTargetView.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/Game.hpp"

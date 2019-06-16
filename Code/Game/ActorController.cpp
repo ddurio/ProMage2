@@ -45,6 +45,11 @@ void ActorController::TakeClosestStairs() const {
 
 
 // ----- Protected -----
+Map* ActorController::GetMap() const {
+    return m_myActor->m_map;
+}
+
+
 const StatsManager* ActorController::GetActorStats() const {
     return m_myActor->m_statsManager;
 }

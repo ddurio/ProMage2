@@ -41,6 +41,7 @@ class MapGenStep {
     std::string m_setTags         = "";
     FloatRange m_setDistanceField = FloatRange::NEGONE;
     std::string m_spawnActorType  = "";
+    std::string m_actorController = "";
     std::string m_spawnItemType   = "";
 
     float m_chanceToRun = 1.f;

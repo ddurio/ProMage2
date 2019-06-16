@@ -38,8 +38,7 @@ class Actor : public Entity {
     friend class ActorController;
 
     public:
-    explicit Actor( Map* theMap, std::string actorType, int playerID = -1 );
-    //explicit Actor( Map* theMap, const Definition<Actor>* actorDef, int playerID = -1 );
+    explicit Actor( Map* theMap, const std::string& actorType, const std::string& controllerType );
     ~Actor();
 
     void Startup();
@@ -52,11 +51,7 @@ class Actor : public Entity {
     void Render() const;
     void RenderPortrait() const;
 
-    //void OnCollisionEntity( Entity* collidingEntity );
-    //void OnCollisionTile( Tile* collidingTile );
-
     Vec2 GetMoveDir() const;
-    int GetPlayerIndex() const;
     ActorController* GetController() const;
 
     private:
@@ -65,14 +60,12 @@ class Actor : public Entity {
     ActorController* m_controller = nullptr;
     StatsManager* m_statsManager = nullptr;
 
-    int m_playerIndex = -1;
     Vec2 m_moveDir = Vec2::ZERO;
 
     std::string m_paperDollSprites[NUM_PAPER_DOLL_SLOTS] = { "" };
     Animator* m_animator = nullptr;
 
     GPUMesh* m_portraitMesh = nullptr;
-    //RigidBody2D* m_rigidBody = 
 
     void UpdateFromController( float deltaSeconds );
 

@@ -43,16 +43,18 @@ class Map {
     //auto GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const -> const Tile(&)[8];
 
     Inventory* GetMapInventory() const;
-    Actor* GetPlayer( int playerIndex = 0 ) const;
+    Actor* GetPlayer() const;
 
     bool IsValidTileCoords( const IntVec2& tileCoords ) const;
 
-    Actor* SpawnNewActor( std::string actorType, const Vec2& worldPosition, int playerID = -1 );
+    Actor* SpawnNewActor( std::string actorType, std::string controllerType, const Vec2& worldPosition );
 
+    void SetPlayer( Actor* player );
     void AddPlayerToMap( Actor* actor );
     void AddEntityToMap( Entity* entity );
     void AddEntityToList( Entity* entity, EntityList& list );
 
+    void ClearPlayer( Actor* player );
     void RemovePlayerFromMap( Actor* actor );
     void RemoveEntityFromMap( Entity* entity );
     void RemoveEntityFromList( Entity* entity, EntityList& list );
@@ -70,11 +72,11 @@ class Map {
     RigidBody2D* m_tilesRB = nullptr;
 
     EntityList m_entities;
-    Actor* m_players[4] = {};
+    Actor* m_player = nullptr;
 
     Map* m_self = this; // Needed for inventory to work
     Inventory* m_inventory = nullptr;
 
     void UpdateMapVerts( float deltaSeconds );
-    //void UpdateCollision();
+    void CollectGarbage();
 };

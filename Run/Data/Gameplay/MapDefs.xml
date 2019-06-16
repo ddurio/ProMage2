@@ -5,8 +5,11 @@
                 <Rooms count="3" width="2~5" height="3~6" floor="HardWoodFloor" wall="StoneWall"/>
                 <Paths floor="Sand" loop="false"/>
             </RoomsAndPaths>
+
             <Sprinkle ifIsType="HardWoodFloor" changeToType="StairsDown" setTags="stairsDown" count="1"/>
             <CellularAutomata ifNeighborType="StairsDown" setTags="stairDownAccess"/>
+
+            <Sprinkle ifIsType="HardWoodFloor" spawnActor="HumanFemale" controller="Player" count="1"/>
             <!--
             <Sprinkle ifIsType="Grass" changeToType="Stone" count="0~4"/>
             <CellularAutomata ifIsType="Grass" ifNeighborType="Stone" changeToType="Stone"/>
@@ -22,15 +25,16 @@
             -->
         </GenerationSteps>
     </MapDefinition>
-    <MapDefinition name="Cave" width="50~100" height="50~100" fillTile="Stone">
+    <MapDefinition name="Cave" width="50~100" height="50~100" fillTile="FakeStone">
         <GenerationSteps>
             <RoomsAndPaths>
                 <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWall"/>
                 <Paths floor="CaveDirtFloor" loop="true"/>
             </RoomsAndPaths>
-            <CellularAutomata ifIsType="Stone" ifNeighborType="CaveDirtFloor" changeToType="CaveDirtFloor"/>
-            <CellularAutomata ifIstype="StoneWall" ifNeighborType="Stone" ifNumNeighbors="1" changeToType="CaveDirtFloor"/>
-            
+            <CellularAutomata ifIsType="FakeStone" ifNeighborType="CaveDirtFloor" changeToType="CaveDirtFloor"/>
+            <CellularAutomata ifIsType="StoneWall" ifNeighborType="FakeStone" ifNumNeighbors="1" changeToType="CaveDirtFloor"/>
+            <CellularAutomata ifIsType="FakeStone" ifNeighborType="CaveDirtFloor" ifNumNeighbors="1~8" changeToType="StoneWall"/>
+            <!-- Stairs -->
             <Sprinkle ifIsType="CaveDirtFloor" changeToType="StairsDown" setTags="stairsDown" count="1"/>
             <CellularAutomata ifNeighborType="StairsDown" setTags="stairDownAccess"/>
             <Sprinkle ifIsType="CaveDirtFloor" changeToType="StairsUp" setTags="stairsUp" count="1"/>

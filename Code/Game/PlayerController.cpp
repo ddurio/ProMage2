@@ -8,20 +8,24 @@
 #include "Game/Actor.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
+#include "Game/Map.hpp"
 #include "Game/StatsManager.hpp"
 
 
-PlayerController::PlayerController( Actor* myActor, int playerID ) :
-    ActorController( myActor ),
-    m_playerIndex( playerID ) {
+PlayerController::PlayerController( Actor* myActor ) :
+    ActorController( myActor ) {
     m_gameInput = g_theGame->GetGameInput();
 
-    g_theRenderer->GetNewRenderTarget( m_portraitViewName );
+    g_theRenderer->GetOrCreateRenderTarget( m_portraitViewName );
+
+    Map* theMap = GetMap();
+    theMap->SetPlayer( myActor );
 }
 
 
 PlayerController::~PlayerController() {
-
+    Map* theMap = GetMap();
+    theMap->ClearPlayer( m_myActor );
 }
 
 

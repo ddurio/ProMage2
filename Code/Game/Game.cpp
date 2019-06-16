@@ -99,6 +99,11 @@ Camera* Game::GetUICamera() const {
 }
 
 
+Camera* Game::GetGameCamera() const {
+    return m_gameState->GetGameCamera();
+}
+
+
 GameInput* Game::GetGameInput() const {
     return m_gameState->GetGameInput();
 }

@@ -35,7 +35,10 @@ class Game {
 
     Clock* GetGameClock() const;
     GameState* GetGameState() const;
+
     Camera* GetUICamera() const;
+    Camera* GetGameCamera() const;
+
     GameInput* GetGameInput() const;
 
     private:

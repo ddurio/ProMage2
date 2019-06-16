@@ -4,6 +4,7 @@
 
 class Actor;
 class Item;
+class Map;
 class StatsManager;
 
 
@@ -22,6 +23,7 @@ class ActorController {
     Actor* m_myActor = nullptr;
 
 
+    Map* GetMap() const;
     const StatsManager* GetActorStats() const;
 
     void SetMoveDir( const Vec2& moveDir ) const;

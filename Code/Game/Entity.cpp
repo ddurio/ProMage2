@@ -3,6 +3,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/Capsule3.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -23,6 +24,8 @@ Entity::Entity( Map* theMap, EntityType type /*= ENTITY_TYPE_UNKNOWN*/, FactionI
 
 Entity::~Entity() {
     CLEAR_POINTER( m_mesh );
+
+    g_thePhysicsSystem->DestroyRigidBody( m_rigidBody );
 }
 
 

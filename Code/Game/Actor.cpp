@@ -23,9 +23,8 @@
 #include "Game/Tile.hpp"
 
 
-Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
-    Entity( theMap, ENTITY_TYPE_ACTOR ),
-    m_playerIndex( playerID ) {
+Actor::Actor( Map* theMap, const std::string& actorType, const std::string& controllerType ) :
+    Entity( theMap, ENTITY_TYPE_ACTOR ) {
     m_actorDef = Definition<Actor>::GetDefinition( actorType );
     GUARANTEE_OR_DIE( m_actorDef != nullptr, Stringf( "(Actor) Failed to find actorDef of name %s", actorType.c_str() ) );
     m_actorDef->Define( *this );
@@ -41,30 +40,19 @@ Actor::Actor( Map* theMap, std::string actorType, int playerID /*= -1*/ ) :
     m_material->SetShader( shader );
 
     // Player Controller
-    if( playerID >= 0 ) {
-        m_controller = new PlayerController( this, playerID );
+    std::string controllerLower = StringToLower( controllerType );
+
+    if( controllerLower == "player" ) {
+        m_controller = new PlayerController( this );
     }
 }
-
-
-// Missing code from above, but is this function necessary?
-//Actor::Actor( Map* theMap, const Definition<Actor>* actorDef, int playerID /*= -1*/ ) :
-/*
-    Entity( theMap, ENTITY_TYPE_ACTOR ),
-    m_actorDef(actorDef) {
-    m_actorDef->Define( *this );
-
-    if( playerID > 0 ) {
-        m_controller = new PlayerController( this, playerID );
-    }
-}
-*/
 
 
 Actor::~Actor() {
     CLEAR_POINTER( m_inventory );
     CLEAR_POINTER( m_animator );
     CLEAR_POINTER( m_portraitMesh );
+    CLEAR_POINTER( m_statsManager );
 }
 
 
@@ -128,7 +116,7 @@ void Actor::Update( float deltaSeconds ) {
     UpdateFromController( deltaSeconds );
     m_animator->Update( deltaSeconds );
 
-    m_statsManager->TakeDamage( 10.f * deltaSeconds );
+    //m_statsManager->TakeDamage( 10.f * deltaSeconds );
 
     // Update Position
     if( IsAlive() ) {
@@ -186,11 +174,6 @@ void Actor::RenderPortrait() const {
 
 Vec2 Actor::GetMoveDir() const {
     return m_moveDir;
-}
-
-
-int Actor::GetPlayerIndex() const {
-    return m_playerIndex;
 }
 
 

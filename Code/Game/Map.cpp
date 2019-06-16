@@ -1,6 +1,7 @@
 #include "Game/Map.hpp"
 
 #include "Engine/Core/DebugDraw.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
@@ -9,11 +10,13 @@
 
 #include "Game/Actor.hpp"
 #include "Game/Entity.hpp"
+#include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/MapDef.hpp"
 #include "Game/Metadata.hpp"
 #include "Game/Tile.hpp"
 #include "Game/TileDef.hpp"
+#include "Game/TopDownFollowCamera.hpp"
 
 
 Map::Map( std::string mapName, std::string mapType, RNG* mapRNG ) :
@@ -54,14 +57,16 @@ void Map::Update( float deltaSeconds ) {
     int numEntities = (int)m_entities.size();
 
     for( int entityIndex = 0; entityIndex < numEntities; entityIndex++ ) {
-        m_entities[entityIndex]->Update( deltaSeconds );
+        Entity* entity = m_entities[entityIndex];
+
+        if( entity != nullptr && !entity->IsGarbage() ) {
+            m_entities[entityIndex]->Update( deltaSeconds );
+        }
     }
 
     m_inventory->Update( deltaSeconds );
 
-    //UpdateCollision();
-
-    //CollectGarbage();
+    CollectGarbage();
 }
 
 
@@ -79,7 +84,11 @@ void Map::Render() const {
     int numEntities = (int)m_entities.size();
 
     for( int entityIndex = 0; entityIndex < numEntities; entityIndex++ ) {
-        m_entities[entityIndex]->Render();
+        const Entity* entity = m_entities[entityIndex];
+
+        if( entity != nullptr ) {
+            m_entities[entityIndex]->Render();
+        }
     }
 }
 
@@ -198,12 +207,8 @@ Inventory* Map::GetMapInventory() const {
 }
 
 
-Actor* Map::GetPlayer( int playerID /*= 0 */ ) const {
-    if( playerID >= 0 && playerID < 4 ) {
-        return m_players[playerID];
-    }
-
-    return nullptr;
+Actor* Map::GetPlayer() const {
+    return m_player;
 }
 
 
@@ -213,28 +218,31 @@ bool Map::IsValidTileCoords( const IntVec2& tileCoords ) const {
 }
 
 
-Actor* Map::SpawnNewActor( std::string actorType, const Vec2& worldPosition /*= Vec2::ZERO*/, int playerID /*= -1*/ ) {
-    Actor* newActor = new Actor( this, actorType, playerID );
+Actor* Map::SpawnNewActor( std::string actorType, std::string controllerType, const Vec2& worldPosition ) {
+    Actor* newActor = new Actor( this, actorType, controllerType );
     newActor->SetWorldPosition( worldPosition );
 
     AddEntityToMap( newActor );
     newActor->Startup();
 
-    if( playerID >= 0 && playerID < 4 ) {
-        m_players[playerID] = newActor;
-    }
-
     return newActor;
 }
 
 
-void Map::AddPlayerToMap( Actor* actor ) {
-    int playerID = actor->GetPlayerIndex();
+void Map::SetPlayer( Actor* player ) {
+    m_player = player;
 
-    if( playerID >= 0 ) {
-        m_players[playerID] = actor;
+    TopDownFollowCamera* followCam = (TopDownFollowCamera*)g_theGame->GetGameCamera();
+    followCam->SetFollowTarget( player );
+}
+
+
+void Map::AddPlayerToMap( Actor* actor ) {
+    if( m_player != nullptr ) {
+        m_player->m_isGarbage = true;
     }
 
+    SetPlayer( actor );
     AddEntityToMap( actor );
 }
 
@@ -260,11 +268,18 @@ void Map::AddEntityToList( Entity* entity, EntityList& list ) {
 }
 
 
-void Map::RemovePlayerFromMap( Actor* actor ) {
-    int playerID = actor->GetPlayerIndex();
+void Map::ClearPlayer( Actor* player ) {
+    if( m_player == player ) {
+        m_player = nullptr;
+    }
+}
 
-    if( playerID >= 0 ) {
-        m_players[playerID] = nullptr;
+
+void Map::RemovePlayerFromMap( Actor* actor ) {
+    if( m_player == actor ) {
+        m_player = nullptr;
+    } else {
+        g_theDevConsole->PrintString( "(Map) WARNING: Actor argument does not match current player" );
     }
 
     RemoveEntityFromMap( actor );
@@ -316,41 +331,14 @@ void Map::UpdateMapVerts( float deltaSeconds ) {
     */
 }
 
-
-/*
-void Map::UpdateCollision() {
-    //---------------------------------
-    // Update Entity v Tile Collision
-    //---------------------------------
-    static const int numTileOffsets = 8;
-    static const IntVec2 tileOffsets[numTileOffsets] = {
-        IntVec2( 0,  1 ), // North
-        IntVec2( 0, -1 ), // South
-        IntVec2( -1,  0 ), // West
-        IntVec2( 1,  0 ), // East
-        IntVec2( -1,  1 ), // Northwest
-        IntVec2( 1,  1 ), // Northeast
-        IntVec2( -1, -1 ), // Southwest
-        IntVec2( 1, -1 )  // Southeast
-    };
-
-    Entity* entity1 = nullptr;
-    Tile* tile = nullptr;
+void Map::CollectGarbage() {
     int numEntities = (int)m_entities.size();
 
-    for( int entityIter = 0; entityIter < numEntities; entityIter++ ) {
-        entity1 = m_entities[entityIter];
-
-        if( entity1 != nullptr && entity1->IsAlive() && !entity1->IsGarbage() ) {
-            IntVec2 currentTileCoords = GetTileCoordsFromWorldCoords( entity1->GetPosition() );
-
-            for( int tileIter = 0; tileIter < numTileOffsets; tileIter++ ) {
-                int tileIndex = GetTileIndexFromTileCoords( currentTileCoords + tileOffsets[tileIter] );
-                tile = &m_tiles[tileIndex];
-                //entity1->OnCollisionTile( tile );
-                // DFS1FIXME: Replace old collision handling with RigidBodies
-            }
+    for( int entIndex = 0; entIndex < numEntities; entIndex++ ) {
+        Entity*& entity = m_entities[entIndex];
+        
+        if( entity != nullptr && entity->IsGarbage() ) {
+            CLEAR_POINTER( entity );
         }
     }
 }
-*/

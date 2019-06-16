@@ -1,7 +1,8 @@
 <ActorDefinitions>
-    <ActorDef name="Girl" strength="2~5"  intelligence="7~10" agility="5~9">
+    <ActorDef name="HumanFemale" strength="2~5"  intelligence="7~10" agility="5~9">
         <!-- Female item set added via Body -->
         <ItemSet name="Light"/>
+        <ItemSet name="Melee"/>
 
         <Stats>
             <Health value="150"/>
@@ -24,11 +25,9 @@
         <Hair spriteSheet="PaperDoll.Hair.F6"/>
         <Hair spriteSheet="PaperDoll.Hair.F7"/>
     </ActorDef>
-    <ActorDef name="Boy" strength="7~10" intelligence="3~6"  agility="5~9">
+    <ActorDef name="HumanMale" strength="7~10" intelligence="3~6"  agility="5~9">
         <!-- Male item set added via Body -->
-        <ItemSet name="Medium"/>
-        <ItemSet name="Heavy"/>
-        <ItemSet name="Ranged"/>
+        <ItemSet name="Light"/>
         <ItemSet name="Melee"/>
 
         <Stats>
@@ -49,5 +48,9 @@
         <Hair spriteSheet="PaperDoll.Hair.M3"/>
         <Hair spriteSheet="PaperDoll.Hair.M4"/>
         <Hair spriteSheet="PaperDoll.Hair.M5"/>
+    </ActorDef>
+    <ActorDef name="Merchant">
+        <Parent name="HumanFemale"/>
+        <Parent name="HumanMale"/>
     </ActorDef>
 </ActorDefinitions>

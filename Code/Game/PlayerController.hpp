@@ -8,14 +8,13 @@ class GameInput;
 
 class PlayerController : public ActorController {
     public:
-    PlayerController( Actor* myActor, int playerID );
+    PlayerController( Actor* myActor );
     ~PlayerController();
 
     void Update( float deltaSeconds ) override;
 
     private:
     GameInput* m_gameInput = nullptr;
-    int m_playerIndex = -1;
 
     std::string m_portraitViewName = "playerController/portraitView";
 

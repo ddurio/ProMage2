@@ -29,6 +29,7 @@ MapGenStep::MapGenStep( const XMLElement& element ) {
     m_setTags          = ParseXMLAttribute( element, "setTags",          m_setTags );
     m_setDistanceField = ParseXMLAttribute( element, "setDistanceField", m_setDistanceField );
     m_spawnActorType   = ParseXMLAttribute( element, "spawnActor",       m_spawnActorType );
+    m_actorController  = ParseXMLAttribute( element, "controller",       m_actorController );
     m_spawnItemType    = ParseXMLAttribute( element, "spawnItem",        m_spawnItemType );
 
     m_chanceToRun      = ParseXMLAttribute( element, "chanceToRun",      m_chanceToRun );
@@ -121,7 +122,8 @@ void MapGenStep::ChangeTile( Map& map, int tileIndex ) const {
     if( m_spawnActorType != "" ) {
         IntVec2 tileCoords = tile.GetTileCoords();
         Vec2 worldCoords = Vec2( (float)tileCoords.x + 0.5f, (float)tileCoords.y + 0.5f );
-        map.SpawnNewActor( m_spawnActorType, worldCoords );
+
+        map.SpawnNewActor( m_spawnActorType, m_actorController, worldCoords );
     }
 
     if( m_spawnItemType != "" ) {

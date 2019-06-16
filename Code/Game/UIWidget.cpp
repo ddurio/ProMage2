@@ -2,7 +2,6 @@
 
 #include "Engine/Core/DebugDraw.hpp"
 #include "Engine/Core/WindowContext.hpp"
-#include "Engine/Renderer/ColorTargetView.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
