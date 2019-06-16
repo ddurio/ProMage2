@@ -1,5 +1,5 @@
 <ActorDefinitions>
-    <ActorDef name="HumanFemale" strength="2~5"  intelligence="7~10" agility="5~9">
+    <ActorDef name="HumanFemale">
         <!-- Female item set added via Body -->
         <ItemSet name="Light"/>
         <ItemSet name="Melee"/>
@@ -25,7 +25,7 @@
         <Hair spriteSheet="PaperDoll.Hair.F6"/>
         <Hair spriteSheet="PaperDoll.Hair.F7"/>
     </ActorDef>
-    <ActorDef name="HumanMale" strength="7~10" intelligence="3~6"  agility="5~9">
+    <ActorDef name="HumanMale">
         <!-- Male item set added via Body -->
         <ItemSet name="Light"/>
         <ItemSet name="Melee"/>
@@ -49,7 +49,7 @@
         <Hair spriteSheet="PaperDoll.Hair.M4"/>
         <Hair spriteSheet="PaperDoll.Hair.M5"/>
     </ActorDef>
-    <ActorDef name="Merchant">
+    <ActorDef name="Merchant" canDie="false" canWalk="false">
         <Parent name="HumanFemale"/>
         <Parent name="HumanMale"/>
     </ActorDef>

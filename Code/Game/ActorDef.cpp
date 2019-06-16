@@ -20,6 +20,7 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     bool canWalk                = ParseXMLAttribute( element, "canWalk", true );
     bool canFly                 = ParseXMLAttribute( element, "canFly",  false );
     bool canSwim                = ParseXMLAttribute( element, "canSwim", false );
+    bool canDie                 = ParseXMLAttribute( element, "canDie",  true );
 
     const XMLElement* childEle = element.FirstChildElement();
 
@@ -71,6 +72,7 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     m_properties.SetValue( "canWalk",       canWalk );
     m_properties.SetValue( "canFly",        canFly );
     m_properties.SetValue( "canSwim",       canSwim );
+    m_properties.SetValue( "canDie",        canDie );
     m_properties.SetValue( "parents",       parentOptions );
     m_properties.SetValue( "bodySprites",   bodyOptions );
     m_properties.SetValue( "bodyItemSets",  bodyItemSets );
@@ -137,6 +139,14 @@ void Definition<Actor>::Define( Actor& theObject ) const {
         int hairIndex = g_RNG->GetRandomIntLessThan( numHair );
         theObject.m_paperDollSprites[PAPER_DOLL_HAIR] = hairOptions[hairIndex];
     }
+
+
+    // Entity Attributes
+    theObject.m_canSee  = m_properties.GetValue( "canSee",  theObject.m_canSee  );
+    theObject.m_canWalk = m_properties.GetValue( "canWalk", theObject.m_canWalk );
+    theObject.m_canFly  = m_properties.GetValue( "canFly",  theObject.m_canFly  );
+    theObject.m_canSwim = m_properties.GetValue( "canSwim", theObject.m_canSwim );
+    theObject.m_canDie  = m_properties.GetValue( "canDie",  theObject.m_canDie  );
 
 
     // Item Sets

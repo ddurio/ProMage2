@@ -25,7 +25,7 @@ void MapGenStep_Sprinkle::RunOnce( Map& map ) const {
         do {
             tileIndex = m_mapRNG->GetRandomIntLessThan( numTiles );
             tile = &(map.GetTileFromTileIndex( tileIndex ));
-        } while( m_ifIsType != "" && m_ifIsType != tile->GetTileType() );
+        } while( !IsTileValid( *tile ) );
 
         ChangeTile( map, tileIndex );
     }

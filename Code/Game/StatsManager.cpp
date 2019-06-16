@@ -53,6 +53,10 @@ float StatsManager::GetPickupRadius() const {
 
 
 void StatsManager::TakeDamage( float damageToTake ) {
+    if( !m_myActor->IsKillable() ) {
+        return;
+    }
+
     m_health -= damageToTake;
 
     if( m_health <= 0.f ) {

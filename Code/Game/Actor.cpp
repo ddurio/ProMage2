@@ -25,6 +25,7 @@
 
 Actor::Actor( Map* theMap, const std::string& actorType, const std::string& controllerType ) :
     Entity( theMap, ENTITY_TYPE_ACTOR ) {
+
     m_actorDef = Definition<Actor>::GetDefinition( actorType );
     GUARANTEE_OR_DIE( m_actorDef != nullptr, Stringf( "(Actor) Failed to find actorDef of name %s", actorType.c_str() ) );
     m_actorDef->Define( *this );
@@ -89,7 +90,11 @@ void Actor::Startup() {
 
     // Setup physics objects
     m_rigidBody = g_thePhysicsSystem->CreateNewRigidBody( 1.f, Rgba::GREEN );
-    m_rigidBody->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
+
+    if( IsMovable() ) {
+        m_rigidBody->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
+    }
+
     m_rigidBody->SetGameObject( this, &m_transform );
     m_rigidBody->AddCollider( Vec2::ZERO, m_physicsRadius );
 
@@ -116,10 +121,10 @@ void Actor::Update( float deltaSeconds ) {
     UpdateFromController( deltaSeconds );
     m_animator->Update( deltaSeconds );
 
-    //m_statsManager->TakeDamage( 10.f * deltaSeconds );
-
     // Update Position
     if( IsAlive() ) {
+        //m_statsManager->TakeDamage( 10.f * deltaSeconds );
+
         float moveSpeed = m_statsManager->GetMoveSpeed();
         Vec2 frameMovement = m_moveDir * moveSpeed * deltaSeconds;
 

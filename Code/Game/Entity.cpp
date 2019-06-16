@@ -65,17 +65,12 @@ bool Entity::IsGarbage() const {
 
 
 bool Entity::IsKillable() const {
-    return m_isKillable;
-}
-
-
-bool Entity::IsSolid() const {
-    return m_isSolid;
+    return m_canDie;
 }
 
 
 bool Entity::IsMovable() const {
-    return m_isMovable;
+    return m_canWalk || m_canFly || m_canSwim;
 }
 
 

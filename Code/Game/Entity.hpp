@@ -61,7 +61,6 @@ class Entity {
     bool IsAlive() const;
     virtual bool IsGarbage() const;
     bool IsKillable() const;
-    bool IsSolid() const;
     bool IsMovable() const;
 
     const Vec2 GetPosition() const;
@@ -91,14 +90,12 @@ class Entity {
     float m_cosmeticRadius = 0.f;
 
     int m_health = 1;
-    bool m_isKillable = true;
-    bool m_isSolid = true;
-    bool m_isMovable = true;
 
-    bool m_canSee = true;
+    bool m_canSee  = true;
     bool m_canWalk = true;
-    bool m_canFly = false;
+    bool m_canFly  = false;
     bool m_canSwim = true;
+    bool m_canDie  = false;
 
     bool m_isDead = false;
     bool m_isGarbage = false;
