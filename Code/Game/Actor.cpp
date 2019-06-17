@@ -65,15 +65,15 @@ void Actor::Startup() {
 
     Strings items = {
         "dress",
-        "PlateChestM",
+        "PlateChestF",
         "tunic",
         "PlateHelm",
         "Bandana",
-        "LeatherLegsM",
+        "LeatherLegsF",
         "RecurveBow",
         //"LongSword",
-        "BootsM",
-        "PlateShoulderM"
+        "BootsF",
+        "PlateShoulderF"
     };
 
     // DFS1FIXME: Weapon sprite sheets are messed up

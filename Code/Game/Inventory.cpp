@@ -434,7 +434,6 @@ void Inventory::CreateUIWindow() {
 
 
 void Inventory::AddUnequippedItemTile( int itemIndex ) {
-    float columnWidth = ImGui::GetColumnWidth();
     ImGuiStyle& style = ImGui::GetStyle();
 
     float tileWidth = (ImGui::GetColumnWidth() - (11.f * style.ItemSpacing.x)) * 0.1f; // Assumed 10 tiles per row
@@ -444,10 +443,7 @@ void Inventory::AddUnequippedItemTile( int itemIndex ) {
     CreateItemTile( itemIndex, false, tileSize );
 
     // Add New Line
-    float thisButtonMaxX = ImGui::GetItemRectMax().x;
-    float nextButtonMaxX = thisButtonMaxX + style.ItemSpacing.x + tileWidth; // Expected position if next button was on same line
-
-    if( itemIndex + 1 < m_numItemSlots && ((itemIndex + 1) % 10) != 0 ) {
+    if( itemIndex + 1 < m_numItemSlots && (itemIndex % 10) != 9 ) {
         ImGui::SameLine();
     }
 }
@@ -485,8 +481,14 @@ void Inventory::AddEquippedItemTile( ItemSlot itemSlot, const ImVec2& tileSize )
 struct ItemTilePayload {
     int itemIndex = -1;
     bool isEquipped = false;
+    Inventory* myInventory = nullptr;
 
-    ItemTilePayload( int index, bool equipped ) : itemIndex( index ), isEquipped( equipped ) {};
+
+    ItemTilePayload( int index, bool equipped, Inventory* inventory ) :
+        itemIndex( index ),
+        isEquipped( equipped ),
+        myInventory( inventory ) {
+    };
 };
 
 
@@ -521,8 +523,7 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
 
     // Setup Drag
     if( (item != nullptr ) && ImGui::BeginDragDropSource( ImGuiDragDropFlags_None ) ) {
-        // DFS1FIXME: Update drag&drop payload to new struct
-        ItemTilePayload sourcePayload = ItemTilePayload( itemIndex, isEquipped );
+        ItemTilePayload sourcePayload = ItemTilePayload( itemIndex, isEquipped, this );
 
         ImGui::SetDragDropPayload( "ItemTile", &sourcePayload, sizeof( ItemTilePayload ) );
         ImGui::Image( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ) );
@@ -536,7 +537,7 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
             IM_ASSERT( payload->DataSize == sizeof( ItemTilePayload ) );
 
             ItemTilePayload sourcePayload = *(const ItemTilePayload*)payload->Data;
-            ItemTilePayload targetPayload = ItemTilePayload( itemIndex, isEquipped );
+            ItemTilePayload targetPayload = ItemTilePayload( itemIndex, isEquipped, this );
 
             SwapItems( sourcePayload, targetPayload );
         }
@@ -547,45 +548,87 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
 
 
 void Inventory::SwapItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload ) {
+    Inventory* sourceInv = sourcePayload.myInventory;
+    Inventory* targetInv = targetPayload.myInventory;
+
     Item* sourceItem = nullptr;
     Item* targetItem = nullptr;
 
-    if( sourcePayload.itemIndex >= 0 ) {
-        sourceItem = sourcePayload.isEquipped ? m_equippedItems[sourcePayload.itemIndex] : m_unequippedItems[sourcePayload.itemIndex];
+    int sourceIndex = sourcePayload.itemIndex;
+    int targetIndex = targetPayload.itemIndex;
+
+    bool sourceIsEquipped = sourcePayload.isEquipped;
+    bool targetIsEquipped = targetPayload.isEquipped;
+
+
+    if( sourceIndex >= 0 ) {
+        if( sourceIsEquipped ) {
+            sourceItem = sourceInv->m_equippedItems[sourceIndex];
+        } else {
+            sourceItem = sourceInv->m_unequippedItems[sourceIndex];
+        }
     }
 
-    if( targetPayload.itemIndex >= 0 ) {
-        targetItem = targetPayload.isEquipped ? m_equippedItems[targetPayload.itemIndex] : m_unequippedItems[targetPayload.itemIndex];
+    if( targetIndex >= 0 ) {
+        if( targetIsEquipped ) {
+            targetItem = targetInv->m_equippedItems[targetIndex];
+        } else {
+            targetItem = targetInv->m_unequippedItems[targetIndex];
+        }
     }
 
 
-    if( sourcePayload.isEquipped ) {
-        if( !targetPayload.isEquipped ) {
-            if( targetItem == nullptr ) {
+    if( sourceIsEquipped ) {
+        if( !targetIsEquipped ) {
+            if( targetItem == nullptr ) { // Unequip source
                 ItemSlot sourceSlot = sourceItem->GetItemSlot();
 
-                m_equippedItems[sourceSlot] = nullptr;
-                m_unequippedItems[targetPayload.itemIndex] = sourceItem;
+                sourceInv->m_equippedItems[sourceSlot] = nullptr;
+                targetInv->m_unequippedItems[targetIndex] = sourceItem;
             } else {
                 ItemSlot sourceSlot = sourceItem->GetItemSlot();
                 ItemSlot targetSlot = targetItem->GetItemSlot();
 
-                if( sourceSlot == targetSlot ) {
-                    EquipItem( targetItem, true, targetPayload.itemIndex );
+                if( sourceSlot == targetSlot ) { // Slots match
+                    if( sourceInv == targetInv ) { // Equip from same inventory
+                        sourceInv->EquipItem( targetItem, true, targetIndex );
+                    } else {    // Equip from different inventory
+                        sourceInv->m_equippedItems[sourceSlot] = nullptr;
+
+                        sourceInv->EquipItem( targetItem, false );
+                        targetInv->m_unequippedItems[targetIndex] = sourceItem;
+                    }
                 }
+            }
+        } else if( sourceInv != targetInv ) { // Both equipped
+            ItemSlot sourceSlot = sourceItem->GetItemSlot();
+            ItemSlot targetSlot = targetItem->GetItemSlot();
+
+            if( sourceSlot == targetSlot ) { // Both equip from different inventories
+                sourceInv->m_equippedItems[sourceSlot] = nullptr;
+                targetInv->m_equippedItems[targetSlot] = nullptr; // don't let the items unequip into wrong backpack
+
+                sourceInv->EquipItem( targetItem, false );
+                targetInv->EquipItem( sourceItem, false );
             }
         }
     } else {
-        if( targetPayload.isEquipped ) {
+        if( targetIsEquipped ) {
             ItemSlot sourceSlot = sourceItem->GetItemSlot();
-            ItemSlot targetSlot = (ItemSlot)targetPayload.itemIndex; // only true because it's equipped
+            ItemSlot targetSlot = (ItemSlot)targetIndex; // only true because it's equipped
 
             if( sourceSlot == targetSlot ) {
-                EquipItem( sourceItem, true, sourcePayload.itemIndex );
+                if( sourceInv == targetInv ) {
+                    sourceInv->EquipItem( sourceItem, true, sourceIndex );
+                } else {
+                    targetInv->m_equippedItems[targetSlot] = nullptr;
+                    targetInv->EquipItem( sourceItem, false );
+                    sourceInv->m_unequippedItems[sourceIndex] = targetItem;
+                }
             }
         } else {
-            m_unequippedItems[sourcePayload.itemIndex] = targetItem;
-            m_unequippedItems[targetPayload.itemIndex] = sourceItem;
+            sourceInv->m_unequippedItems[sourceIndex] = targetItem;
+            targetInv->m_unequippedItems[targetIndex] = sourceItem;
         }
     }
 }

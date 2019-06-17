@@ -121,8 +121,6 @@ float4 FragmentFunction( VertexToFragment input ) : SV_Target0 {
 
     float weaponFactor        = weaponColor.w * remainingAlpha;
     remainingAlpha           -= weaponFactor;
-    float feetFactor          = feetColor.w * remainingAlpha;
-    remainingAlpha           -= feetFactor;
     float helmFactor          = helmColor.w * remainingAlpha;
     remainingAlpha           -= helmFactor;
     float hairFactor          = hairColor.w * remainingAlpha;
@@ -133,6 +131,8 @@ float4 FragmentFunction( VertexToFragment input ) : SV_Target0 {
     remainingAlpha           -= chestFactor;
     float legsFactor          = legsColor.w * remainingAlpha;
     remainingAlpha           -= legsFactor;
+    float feetFactor          = feetColor.w * remainingAlpha;
+    remainingAlpha           -= feetFactor;
     float earsFactor          = earsColor.w * remainingAlpha;
     remainingAlpha           -= earsFactor;
     float bodyFactor          = bodyColor.w * remainingAlpha;
