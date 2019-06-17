@@ -51,6 +51,9 @@ class Actor : public Entity {
     void Render() const;
     void RenderPortrait() const;
 
+    bool InteractWithActor( Actor* instigator );
+
+    std::string GetActorType() const;
     Vec2 GetMoveDir() const;
     ActorController* GetController() const;
 

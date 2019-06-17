@@ -356,34 +356,7 @@ int Inventory::GetItemIndex( Item* itemToFind, bool& outIsEquipped ) const {
 }
 
 
-void Inventory::UpdateUI() {
-    // Setup Window
-    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
-
-    AABB2 clientBounds = g_theWindow->GetClientBounds();
-    Vec2 clientDimensions = clientBounds.GetDimensions();
-    clientDimensions.y = -clientDimensions.y;
-
-    Vec2 clientCenter = clientBounds.GetCenter();
-
-    Vec2 windowSize = 0.75f * clientDimensions;
-    Vec2 windowOrigin = clientCenter - (0.5f * windowSize);
-
-    ImGui::SetNextWindowPos( ImVec2( windowOrigin.x, windowOrigin.y ), ImGuiCond_Always );
-    ImGui::SetNextWindowSize( ImVec2( windowSize.x, windowSize.y ), ImGuiCond_Always );
-    ImGui::Begin( "Inventory", nullptr, windowFlags );
-
-
-    // Setup Columns
-    ImGui::Columns( 4, nullptr, false );
-    ImGui::SetColumnWidth( 0, 0.75f * windowSize.x );
-
-    float equipmentSize = 0.25f * windowSize.x;
-    float equipmentColSize = 0.333f * equipmentSize;
-    ImGui::SetColumnWidth( 1, equipmentColSize );
-    ImGui::SetColumnWidth( 2, equipmentColSize );
-    ImGui::SetColumnWidth( 3, equipmentColSize );
-
+void Inventory::AddUIContent() {
     // Setup backpack view
     for( int itemIndex = 0; itemIndex < m_numItemSlots; itemIndex++ ) {
         ImGui::PushID( itemIndex );
@@ -395,6 +368,7 @@ void Inventory::UpdateUI() {
 
     ImGui::NextColumn();
     ImGui::Separator(); // Column separator
+
 
     // Setup equipment view
     ImGuiStyle& style = ImGui::GetStyle();
@@ -418,12 +392,49 @@ void Inventory::UpdateUI() {
     AddEquippedItemTile( ITEM_SLOT_WEAPON, tileSize );
 
     style.ItemSpacing.y *= 0.25f;
+}
+
+
+void Inventory::UpdateUI() {
+    // Separated to enable the trade window where someone else sets up the window
+    // but inventory can still easily add the backpack/equipment items
+    CreateUIWindow();
+    AddUIContent();
     ImGui::End();
 }
 
 
+void Inventory::CreateUIWindow() {
+    // Setup Window
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
+
+    AABB2 clientBounds = g_theWindow->GetClientBounds();
+    Vec2 clientDimensions = clientBounds.GetDimensions();
+    clientDimensions.y = -clientDimensions.y;
+
+    Vec2 clientCenter = clientBounds.GetCenter();
+
+    Vec2 windowSize = 0.75f * clientDimensions;
+    Vec2 windowOrigin = clientCenter - (0.5f * windowSize);
+
+    ImGui::SetNextWindowPos( ImVec2( windowOrigin.x, windowOrigin.y ), ImGuiCond_Always );
+    ImGui::SetNextWindowSize( ImVec2( windowSize.x, windowSize.y ), ImGuiCond_Always );
+    ImGui::Begin( "Inventory", nullptr, windowFlags );
+
+    // Setup Columns
+    ImGui::Columns( 4, nullptr, false );
+    ImGui::SetColumnWidth( 0, 0.75f * windowSize.x );
+
+    float equipmentSize = 0.25f * windowSize.x;
+    float equipmentColSize = 0.333f * equipmentSize;
+    ImGui::SetColumnWidth( 1, equipmentColSize );
+    ImGui::SetColumnWidth( 2, equipmentColSize );
+    ImGui::SetColumnWidth( 3, equipmentColSize );
+}
+
+
 void Inventory::AddUnequippedItemTile( int itemIndex ) {
-    float windowMaxX = ImGui::GetWindowPos().x + ImGui::GetColumnWidth();
+    float columnWidth = ImGui::GetColumnWidth();
     ImGuiStyle& style = ImGui::GetStyle();
 
     float tileWidth = (ImGui::GetColumnWidth() - (11.f * style.ItemSpacing.x)) * 0.1f; // Assumed 10 tiles per row
@@ -436,7 +447,7 @@ void Inventory::AddUnequippedItemTile( int itemIndex ) {
     float thisButtonMaxX = ImGui::GetItemRectMax().x;
     float nextButtonMaxX = thisButtonMaxX + style.ItemSpacing.x + tileWidth; // Expected position if next button was on same line
 
-    if( itemIndex + 1 < m_numItemSlots && nextButtonMaxX < windowMaxX ) {
+    if( itemIndex + 1 < m_numItemSlots && ((itemIndex + 1) % 10) != 0 ) {
         ImGui::SameLine();
     }
 }

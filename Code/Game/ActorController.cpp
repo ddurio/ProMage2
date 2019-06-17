@@ -1,5 +1,7 @@
 #include "Game/ActorController.hpp"
 
+#include "Engine/Math/RNG.hpp"
+
 #include "Game/Actor.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameStatePlay.hpp"
@@ -30,17 +32,29 @@ void ActorController::Shutdown() {
 }
 
 
-void ActorController::TakeClosestStairs() const {
+bool ActorController::TakeClosestStairs() const {
     const Tile& tile = m_myActor->m_map->GetTileFromWorldCoords( m_myActor->GetPosition() );
     const Metadata* metadata = tile.GetMetadata();
 
-    if( metadata->m_tagData.HasTags( "stairDownAccess" ) ) {
+    if( metadata->m_tagData.HasTags( TAG_STAIRS_DOWN ) ) {
         GameStatePlay* state = (GameStatePlay*)g_theGame->GetGameState();
         state->ChangeFloorsDown();
-    } else if( metadata->m_tagData.HasTags( "stairUpAccess" ) ) {
+
+        return true;
+    } else if( metadata->m_tagData.HasTags( TAG_STAIRS_UP ) ) {
         GameStatePlay* state = (GameStatePlay*)g_theGame->GetGameState();
         state->ChangeFloorsUp();
+
+        return true;
     }
+
+    return false;
+}
+
+
+bool ActorController::InteractWithActor( Actor* instigator ) {
+    UNUSED( instigator );
+    return false;
 }
 
 
@@ -55,6 +69,15 @@ const StatsManager* ActorController::GetActorStats() const {
 }
 
 
+Inventory* ActorController::GetActorInventory( const Actor* actor /*= nullptr */ ) const {
+    if( actor == nullptr ) {
+        actor = m_myActor;
+    }
+
+    return actor->m_inventory;
+}
+
+
 void ActorController::SetMoveDir( const Vec2& moveDir ) const {
     m_myActor->m_moveDir = moveDir;
 }
@@ -65,11 +88,44 @@ void ActorController::ToggleInventory() const {
 }
 
 
-void ActorController::PickupClosestItem() const {
+void ActorController::InteractFromInput() const {
+    Strings actions;
+
+    // Look for item in range
     Inventory* mapInventory = m_myActor->m_map->GetMapInventory();
     const StatsManager* actorStats = GetActorStats();
-
     Item* itemToPickUp = mapInventory->GetClosestItemInRange( m_myActor->GetPosition(), actorStats->GetPickupRadius() );
+
+    if( itemToPickUp != nullptr ) {
+        actions.push_back( "item" );
+    }
+
+    
+    // Look for tile tags
+    const Tile& tile = m_myActor->m_map->GetTileFromWorldCoords( m_myActor->GetPosition() );
+    const Tags& tags = tile.GetMetadata()->m_tagData;
+
+    if( tags.HasTags( TAG_MERCHANT ) ) {
+        actions.push_back( TAG_MERCHANT );
+    }
+
+
+    // Pick an action
+    int numActions = (int)actions.size();
+    int actionIndex = g_RNG->GetRandomIntLessThan( numActions );
+    std::string& chosenAction = actions[actionIndex];
+
+    if( chosenAction == "item" ) {
+        PickupItem( itemToPickUp );
+    } else if( chosenAction == TAG_MERCHANT ) {
+        Actor* merchant = m_myActor->m_map->GetActorInRange( "merchant", m_myActor->GetPosition(), actorStats->GetInteractRadius() );
+        merchant->InteractWithActor( m_myActor );
+    }
+}
+
+
+void ActorController::PickupItem( Item* itemToPickUp ) const {
+    Inventory* mapInventory = m_myActor->m_map->GetMapInventory();
 
     if( itemToPickUp != nullptr ) {
         mapInventory->RemoveItemFromInventory( itemToPickUp );

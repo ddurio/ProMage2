@@ -4,16 +4,18 @@
 #include "Engine/Math/RNG.hpp"
 
 #include "Game/Map.hpp"
+#include "Game/Metadata.hpp"
 #include "Game/Tile.hpp"
 
 
 MapGenStep_CellularAutomata::MapGenStep_CellularAutomata( const XMLElement& element ) :
     MapGenStep(element) {
-    m_ifNeighborType = ParseXMLAttribute( element, "ifNeighborType", m_ifNeighborType );
-    m_ifNumNeighbors = ParseXMLAttribute( element, "ifNumNeighbors", m_ifNumNeighbors );
-    m_radius         = ParseXMLAttribute( element, "radius",         m_radius );
+    m_ifNeighborType    = ParseXMLAttribute( element, "ifNeighborType",    m_ifNeighborType );
+    m_ifNeighborHasTags = ParseXMLAttribute( element, "ifNeighborHasTags", m_ifNeighborHasTags );
+    m_ifNumNeighbors    = ParseXMLAttribute( element, "ifNumNeighbors",    m_ifNumNeighbors );
 
-    m_chancePerTile  = ParseXMLAttribute( element, "chancePerTile",  m_chancePerTile );
+    m_radius            = ParseXMLAttribute( element, "radius",            m_radius );
+    m_chancePerTile     = ParseXMLAttribute( element, "chancePerTile",     m_chancePerTile );
 }
 
 
@@ -39,8 +41,7 @@ void MapGenStep_CellularAutomata::RunOnce( Map& map ) const {
                                 !(neighborX == tileX && neighborY == tileY ) ) {
                                 const Tile& neighbor = map.GetTileFromTileCoords( neighborX, neighborY );
 
-                                // neighborType matches or neighborType not set in XML
-                                if( neighbor.GetTileType() == m_ifNeighborType || m_ifNeighborType == "" ) {
+                                if( IsNeighborTileValid( neighbor ) ) {
                                     numMatchingNeighbors++;
                                 }
                             }
@@ -48,7 +49,7 @@ void MapGenStep_CellularAutomata::RunOnce( Map& map ) const {
                     }
                 }
 
-                if( numMatchingNeighbors >= m_ifNumNeighbors.min && numMatchingNeighbors <= m_ifNumNeighbors.max ) {
+                if( m_ifNumNeighbors.IsIntInRange( numMatchingNeighbors ) ) {
                     tileIndexesToChange.push_back( map.GetTileIndexFromTileCoords( tileX, tileY ) );
                 }
             }
@@ -61,4 +62,23 @@ void MapGenStep_CellularAutomata::RunOnce( Map& map ) const {
             ChangeTile( map, tileIndexesToChange[tileIndex] );
         }
     }
+}
+
+
+bool MapGenStep_CellularAutomata::IsNeighborTileValid( const Tile& neighbor ) const {
+    bool isValid = true;
+
+    std::string tileType     = neighbor.GetTileType();
+    const Metadata* metadata = neighbor.GetMetadata();
+    const Tags& tileTags     = metadata->m_tagData;
+
+    if( m_ifNeighborType != "" && tileType != m_ifNeighborType ) {
+        isValid = false;
+    }
+
+    if( m_ifNeighborHasTags != "" && !tileTags.HasTags(m_ifNeighborHasTags)) {
+        isValid = false;
+    }
+
+    return isValid;
 }

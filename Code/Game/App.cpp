@@ -108,18 +108,9 @@ bool App::HandleKeyPressed( unsigned char keyCode ) {
     }
 
     switch( keyCode ) {
-        case(0x1B): {  // Escape Key
-            HandleQuitRequested();
-            break;
-        } case(0x77): { // F8 Key
+        case(0x77): { // F8 Key
             Shutdown();
             Startup();
-            return true;
-        } case('T'): {
-            m_isSlowMo = true;
-            return true;
-        } case('Y'): {
-            m_isFastMo = true;
             return true;
         } case(0xC0): { // ~ Key
             g_theDevConsole->Toggle();
@@ -134,16 +125,6 @@ bool App::HandleKeyPressed( unsigned char keyCode ) {
 bool App::HandleKeyReleased( unsigned char keyCode ) {
     if( g_theDevConsole->IsTakingInput() ) {
         return g_theDevConsole->HandleKeyReleased( keyCode );
-    }
-
-    switch( keyCode ) {
-        case('T'): {
-            m_isSlowMo = false;
-            return 0;
-        } case('Y'): {
-            m_isFastMo = false;
-            return 0;
-        }
     }
 
     return g_theGame->HandleKeyReleased( keyCode );

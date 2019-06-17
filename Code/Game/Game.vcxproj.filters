@@ -82,9 +82,6 @@
     <ClCompile Include="Metadata.cpp">
       <Filter>Map</Filter>
     </ClCompile>
-    <ClCompile Include="Inventory.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
@@ -121,10 +118,16 @@
     <ClCompile Include="Animator.cpp">
       <Filter>ActorComponents</Filter>
     </ClCompile>
-    <ClCompile Include="Main_Windows.cpp">
+    <ClCompile Include="StatsManager.cpp">
       <Filter>ActorComponents</Filter>
     </ClCompile>
-    <ClCompile Include="StatsManager.cpp">
+    <ClCompile Include="Main_Windows.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="MerchantController.cpp">
+      <Filter>ActorComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp">
       <Filter>ActorComponents</Filter>
     </ClCompile>
   </ItemGroup>
@@ -192,9 +195,6 @@
     <ClInclude Include="Metadata.hpp">
       <Filter>Map</Filter>
     </ClInclude>
-    <ClInclude Include="Inventory.hpp">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="Item.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
@@ -235,6 +235,12 @@
       <Filter>ActorComponents</Filter>
     </ClInclude>
     <ClInclude Include="StatsManager.hpp">
+      <Filter>ActorComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="MerchantController.hpp">
+      <Filter>ActorComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.hpp">
       <Filter>ActorComponents</Filter>
     </ClInclude>
   </ItemGroup>

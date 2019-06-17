@@ -68,3 +68,7 @@ constexpr char  ANIM_PAPER_DOLL_WALK[]      = "PaperDoll.Walk";
 
 constexpr float CLIENT_ASPECT = (16.f / 9.f);
 constexpr float CLIENT_MAX_SCREEN_PERCENT = 0.9f;
+
+constexpr char  TAG_STAIRS_UP[]             = "stairUpAccess";
+constexpr char  TAG_STAIRS_DOWN[]           = "stairDownAccess";
+constexpr char  TAG_MERCHANT[]              = "merchantAccess";

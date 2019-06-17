@@ -52,6 +52,8 @@ class Inventory {
 
     int GetItemIndex( Item* itemToFind, bool& outIsEquipped ) const;
 
+    void AddUIContent();
+
     private:
     Map*& m_map;
 
@@ -67,9 +69,11 @@ class Inventory {
 
 
     void UpdateUI();
+    void CreateUIWindow();
+
     void AddUnequippedItemTile( int itemIndex );
     void AddEquippedItemTile( ItemSlot itemSlot, const ImVec2& tileSize );
-    void CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& tileSize, const std::string& emptyTileName = ANIM_INVENTORY_EMPTY  );
+    void CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& tileSize, const std::string& emptyTileName = ANIM_INVENTORY_EMPTY );
 
     void SwapItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );
 

@@ -44,6 +44,7 @@ class Map {
 
     Inventory* GetMapInventory() const;
     Actor* GetPlayer() const;
+    Actor* GetActorInRange( const std::string& typeToFind, const Vec2& worldCoords, float radius ) const;
 
     bool IsValidTileCoords( const IntVec2& tileCoords ) const;
 
@@ -51,13 +52,13 @@ class Map {
 
     void SetPlayer( Actor* player );
     void AddPlayerToMap( Actor* actor );
-    void AddEntityToMap( Entity* entity );
-    void AddEntityToList( Entity* entity, EntityList& list );
+    void AddActorToMap( Actor* entity );
+    void AddActorToList( Actor* entity, std::vector< Actor* >& list );
 
     void ClearPlayer( Actor* player );
     void RemovePlayerFromMap( Actor* actor );
-    void RemoveEntityFromMap( Entity* entity );
-    void RemoveEntityFromList( Entity* entity, EntityList& list );
+    void RemoveActorFromMap( Actor* entity );
+    void RemoveActorFromList( Actor* entity, std::vector< Actor* >& list );
 
     private:
     std::string m_mapName = "";
@@ -71,7 +72,7 @@ class Map {
     VertexList m_mapVerts;
     RigidBody2D* m_tilesRB = nullptr;
 
-    EntityList m_entities;
+    std::vector< Actor* > m_actors;
     Actor* m_player = nullptr;
 
     Map* m_self = this; // Needed for inventory to work

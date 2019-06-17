@@ -23,6 +23,7 @@ class StatsManager {
 
     float GetMoveSpeed() const;
     float GetPickupRadius() const;
+    float GetInteractRadius() const;
 
     void TakeDamage( float damageToTake );
     void Revive();
@@ -37,4 +38,5 @@ class StatsManager {
     float m_defensePower = 0.f;
 
     float m_pickupRadius = 1.f;
+    float m_interactRadius = 2.f;
 };

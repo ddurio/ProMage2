@@ -31,9 +31,10 @@
                 <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWall"/>
                 <Paths floor="CaveDirtFloor" loop="true"/>
             </RoomsAndPaths>
+            <!-- Walls -->
             <CellularAutomata ifIsType="FakeStone" ifNeighborType="CaveDirtFloor" changeToType="CaveDirtFloor"/>
             <CellularAutomata ifIsType="StoneWall" ifNeighborType="FakeStone" ifNumNeighbors="1" changeToType="CaveDirtFloor"/>
-            <CellularAutomata ifIsType="FakeStone" ifNeighborType="CaveDirtFloor" ifNumNeighbors="1~8" changeToType="StoneWall"/>
+            <CellularAutomata ifIsType="FakeStone" ifNeighborType="CaveDirtFloor" changeToType="StoneWall"/>
             <!-- Stairs -->
             <Sprinkle ifIsType="CaveDirtFloor" changeToType="StairsDown" setTags="stairsDown" count="1"/>
             <CellularAutomata ifNeighborType="StairsDown" setTags="stairDownAccess"/>
@@ -41,7 +42,8 @@
             <CellularAutomata ifNeighborType="StairsUp" setTags="stairUpAccess"/>
             <!-- Merchant -->
             <!--Sprinkle ifHasTags="stairDownAccess" spawnActor="Merchant" count="1"/>-->
-            <Sprinkle ifHasTags="stairUpAccess" spawnActor="Merchant" count="1"/>
+            <Sprinkle ifHasTags="stairUpAccess" spawnActor="Merchant" controller="Merchant" setTags="merchant" count="1"/>
+            <CellularAutomata ifNeighborHasTags="merchant" setTags="merchantAccess"/>
         </GenerationSteps>
     </MapDefinition>
 </MapDefinitions>

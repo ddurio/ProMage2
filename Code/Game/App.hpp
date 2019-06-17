@@ -9,6 +9,7 @@ class App {
     public:
     App( void* appWinProc );
     ~App();
+
     void Startup();
     void Shutdown();
     void RunFrame();
@@ -23,15 +24,11 @@ class App {
     bool IsQuitting() const;
 
     private:
+    bool m_isQuitting = false;
+
+
     void BeginFrame();
     void Update();
     void Render() const;
     void EndFrame();
-
-    private:
-    double m_timeLastFrame = 0.0;
-
-    bool m_isQuitting = false;
-    bool m_isSlowMo = false;
-    bool m_isFastMo = false;
 };

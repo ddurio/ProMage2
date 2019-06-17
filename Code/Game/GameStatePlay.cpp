@@ -246,14 +246,13 @@ bool GameStatePlay::HandleKeyPressed( unsigned char keyCode ) {
     if( keyCode == KB_F1 ) {
         m_isDebugging = !m_isDebugging;
         return true;
-    } else if( keyCode == KB_F ) { // Take the Stairs
+    } else if( keyCode == KB_F || keyCode == KB_SPACE ) { // Take the Stairs
         Actor* player = m_map->GetPlayer();
 
         if( player != nullptr && player->IsAlive() ) {
             ActorController* controller = player->GetController();
 
-            if( controller != nullptr ) {
-                controller->TakeClosestStairs();
+            if( controller != nullptr && controller->TakeClosestStairs() ) {
                 return true;
             }
         }

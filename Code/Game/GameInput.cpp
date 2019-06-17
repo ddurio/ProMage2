@@ -28,15 +28,16 @@ void GameInput::Shutdown() {
 void GameInput::Update( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
-    m_toggleInventory = false;
-    m_pickupItem = false;
-    //m_changeFloors = false;
+    m_toggleInventory   = false;
+    m_interact          = false;
+    m_escapePressed     = false;
 }
 
 
 bool GameInput::HandleKeyPressed( unsigned char keyCode ) {
     switch( keyCode ) {
         case( KB_ESCAPE ): { //  Escape
+            m_escapePressed = true;
             //m_pause = !m_pause; // DFS1FIXME: Causing problems.. just disable until it can be fixed
             return true;
         } case( KB_W ): { // Up
@@ -54,14 +55,10 @@ bool GameInput::HandleKeyPressed( unsigned char keyCode ) {
         } case( KB_I ): { // Inventory
             m_toggleInventory = true;
             return true;
-        } case( KB_SPACE ): { // Loot
-            m_pickupItem = true;
+        } case( KB_F ): {     // Interact (intentional fall-through)
+        } case( KB_SPACE ): { // Interact
+            m_interact = true;
             return true;
-            /*
-        } case( KB_F ): { // Take Stairs
-            m_changeFloors = true;
-            return true;
-            */
         }
     }
 
@@ -123,21 +120,19 @@ Vec2 GameInput::GetMovementDirection() const {
 }
 
 
-bool GameInput::WasInvtoryToggled() const {
+bool GameInput::WasInventoryToggled() const {
     return m_toggleInventory;
 }
 
 
-bool GameInput::ShouldPickupItem() const {
-    return m_pickupItem;
+bool GameInput::ShouldInteract() const {
+    return m_interact;
 }
 
 
-/*
-bool GameInput::ShouldChangeFloors() const {
-    return m_changeFloors;
+bool GameInput::ShouldExitMenu() const {
+    return m_escapePressed;
 }
-*/
 
 
 bool GameInput::IsPaused() const {

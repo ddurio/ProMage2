@@ -52,6 +52,11 @@ float StatsManager::GetPickupRadius() const {
 }
 
 
+float StatsManager::GetInteractRadius() const {
+    return m_interactRadius;
+}
+
+
 void StatsManager::TakeDamage( float damageToTake ) {
     if( !m_myActor->IsKillable() ) {
         return;

@@ -18,6 +18,7 @@
 #include "Game/Inventory.hpp"
 #include "Game/Item.hpp"
 #include "Game/Map.hpp"
+#include "Game/MerchantController.hpp"
 #include "Game/PlayerController.hpp"
 #include "Game/StatsManager.hpp"
 #include "Game/Tile.hpp"
@@ -45,6 +46,8 @@ Actor::Actor( Map* theMap, const std::string& actorType, const std::string& cont
 
     if( controllerLower == "player" ) {
         m_controller = new PlayerController( this );
+    } else if( controllerLower == "merchant" ) {
+        m_controller = new MerchantController( this );
     }
 }
 
@@ -174,6 +177,20 @@ void Actor::RenderPortrait() const {
 
     g_theRenderer->BindMaterial( m_material );
     g_theRenderer->DrawMesh( m_portraitMesh, Matrix44::IDENTITY );
+}
+
+
+bool Actor::InteractWithActor( Actor* instigator ) {
+    if( m_controller == nullptr ) {
+        return false;
+    }
+
+    return m_controller->InteractWithActor( instigator );
+}
+
+
+std::string Actor::GetActorType() const {
+    return m_actorDef->GetDefintionType();
 }
 
 

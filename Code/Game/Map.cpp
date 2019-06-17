@@ -9,7 +9,6 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 
 #include "Game/Actor.hpp"
-#include "Game/Entity.hpp"
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/MapDef.hpp"
@@ -27,7 +26,7 @@ Map::Map( std::string mapName, std::string mapType, RNG* mapRNG ) :
 
 
 Map::~Map() {
-    EngineCommon::ClearVector( m_entities );
+    EngineCommon::ClearVector( m_actors );
     CLEAR_POINTER( m_inventory );
 
     g_thePhysicsSystem->DestroyRigidBody( m_tilesRB );
@@ -54,13 +53,13 @@ void Map::Update( float deltaSeconds ) {
     UpdateMapVerts( deltaSeconds );
 
     // Update entities
-    int numEntities = (int)m_entities.size();
+    int numActor = (int)m_actors.size();
 
-    for( int entityIndex = 0; entityIndex < numEntities; entityIndex++ ) {
-        Entity* entity = m_entities[entityIndex];
+    for( int actorIndex = 0; actorIndex < numActor; actorIndex++ ) {
+        Actor* actor = m_actors[actorIndex];
 
-        if( entity != nullptr && !entity->IsGarbage() ) {
-            m_entities[entityIndex]->Update( deltaSeconds );
+        if( actor != nullptr && !actor->IsGarbage() ) {
+            m_actors[actorIndex]->Update( deltaSeconds );
         }
     }
 
@@ -81,13 +80,13 @@ void Map::Render() const {
     m_inventory->Render();
 
     // Render actors/entities
-    int numEntities = (int)m_entities.size();
+    int numActor = (int)m_actors.size();
 
-    for( int entityIndex = 0; entityIndex < numEntities; entityIndex++ ) {
-        const Entity* entity = m_entities[entityIndex];
+    for( int actorIndex = 0; actorIndex < numActor; actorIndex++ ) {
+        const Actor* actor = m_actors[actorIndex];
 
-        if( entity != nullptr ) {
-            m_entities[entityIndex]->Render();
+        if( actor != nullptr ) {
+            m_actors[actorIndex]->Render();
         }
     }
 }
@@ -212,6 +211,39 @@ Actor* Map::GetPlayer() const {
 }
 
 
+Actor* Map::GetActorInRange( const std::string& typeToFind, const Vec2& worldCoords, float radius ) const {
+    int numActor = (int)m_actors.size();
+
+    float bestDistSqr = radius * radius;
+    int bestIndex = -1;
+
+    for( int actorIndex = 0; actorIndex < numActor; actorIndex++ ) {
+        Actor* actor = m_actors[actorIndex];
+
+        if( actor != nullptr ) {
+            std::string actorType = actor->GetActorType();
+
+            if( actorType == typeToFind ) {
+                Vec2 actorPos = actor->GetPosition();
+                Vec2 displacement = actorPos - worldCoords;
+                float distSqr = displacement.GetLengthSquared();
+
+                if( distSqr <= bestDistSqr ) {
+                    bestIndex = actorIndex;
+                    bestDistSqr = distSqr;
+                }
+            }
+        }
+    }
+
+    if( bestIndex < 0 ) {
+        return nullptr;
+    }
+
+    return m_actors[bestIndex];
+}
+
+
 bool Map::IsValidTileCoords( const IntVec2& tileCoords ) const {
     return (tileCoords.x >= 0 && tileCoords.x < m_mapDimensions.x &&
             tileCoords.y >= 0 && tileCoords.y < m_mapDimensions.y);
@@ -222,7 +254,7 @@ Actor* Map::SpawnNewActor( std::string actorType, std::string controllerType, co
     Actor* newActor = new Actor( this, actorType, controllerType );
     newActor->SetWorldPosition( worldPosition );
 
-    AddEntityToMap( newActor );
+    AddActorToMap( newActor );
     newActor->Startup();
 
     return newActor;
@@ -243,28 +275,28 @@ void Map::AddPlayerToMap( Actor* actor ) {
     }
 
     SetPlayer( actor );
-    AddEntityToMap( actor );
+    AddActorToMap( actor );
 }
 
 
-void Map::AddEntityToMap( Entity* entity ) {
-    entity->m_map = this;
+void Map::AddActorToMap( Actor* actor ) {
+    actor->m_map = this;
 
-    AddEntityToList( entity, m_entities );
+    AddActorToList( actor, m_actors );
 }
 
 
-void Map::AddEntityToList( Entity* entity, EntityList& list ) {
-    int numEntities = (int)list.size();
+void Map::AddActorToList( Actor* actor, std::vector< Actor* >& list ) {
+    int numActor = (int)list.size();
 
-    for( int entityIndex = 0; entityIndex < numEntities; entityIndex++ ) {
-        if( list[entityIndex] == nullptr ) {
-            list[entityIndex] = entity;
+    for( int actorIndex = 0; actorIndex < numActor; actorIndex++ ) {
+        if( list[actorIndex] == nullptr ) {
+            list[actorIndex] = actor;
             return;
         }
     }
 
-    list.push_back( entity );
+    list.push_back( actor );
 }
 
 
@@ -282,23 +314,23 @@ void Map::RemovePlayerFromMap( Actor* actor ) {
         g_theDevConsole->PrintString( "(Map) WARNING: Actor argument does not match current player" );
     }
 
-    RemoveEntityFromMap( actor );
+    RemoveActorFromMap( actor );
 }
 
 
-void Map::RemoveEntityFromMap( Entity* entity ) {
-    entity->m_map = nullptr;
+void Map::RemoveActorFromMap( Actor* actor ) {
+    actor->m_map = nullptr;
 
-    RemoveEntityFromList( entity, m_entities );
+    RemoveActorFromList( actor, m_actors );
 }
 
 
-void Map::RemoveEntityFromList( Entity* entity, EntityList& list ) {
-    int numEntities = (int)list.size();
+void Map::RemoveActorFromList( Actor* actor, std::vector< Actor* >& list ) {
+    int numActor = (int)list.size();
 
-    for( int entityIndex = 0; entityIndex < numEntities; entityIndex++ ) {
-        if( list[entityIndex] == entity ) {
-            list[entityIndex] = nullptr;
+    for( int actorIndex = 0; actorIndex < numActor; actorIndex++ ) {
+        if( list[actorIndex] == actor ) {
+            list[actorIndex] = nullptr;
             return;
         }
     }
@@ -332,13 +364,13 @@ void Map::UpdateMapVerts( float deltaSeconds ) {
 }
 
 void Map::CollectGarbage() {
-    int numEntities = (int)m_entities.size();
+    int numActors = (int)m_actors.size();
 
-    for( int entIndex = 0; entIndex < numEntities; entIndex++ ) {
-        Entity*& entity = m_entities[entIndex];
+    for( int actorIndex = 0; actorIndex < numActors; actorIndex++ ) {
+        Actor*& actor = m_actors[actorIndex];
         
-        if( entity != nullptr && entity->IsGarbage() ) {
-            CLEAR_POINTER( entity );
+        if( actor != nullptr && actor->IsGarbage() ) {
+            CLEAR_POINTER( actor );
         }
     }
 }
