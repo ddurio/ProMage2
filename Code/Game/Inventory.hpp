@@ -75,7 +75,9 @@ class Inventory {
     void AddEquippedItemTile( ItemSlot itemSlot, const ImVec2& tileSize );
     void CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& tileSize, const std::string& emptyTileName = ANIM_INVENTORY_EMPTY );
 
+    static void HandleDragAndDrop( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );
     void SwapItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );
+    static void TradeItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );
 
     bool IsItemEquipable( const Item* itemToEquip ) const;
 };

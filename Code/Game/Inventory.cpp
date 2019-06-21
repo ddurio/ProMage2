@@ -1,5 +1,7 @@
 #include "Game/Inventory.hpp"
 
+#include "Engine/Core/DebugDraw.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -126,12 +128,9 @@ Item* Inventory::SpawnNewItem( std::string itemType, const Vec2& worldPosition /
 void Inventory::AddItemToInventory( Item* itemToAdd, int indexToAdd /*= -1 */ ) {
     // DFS1FIXME: Check for empty equipped slot of the same type and auto equip instead
     if( indexToAdd >= 0 ) {
-        Item* item = m_unequippedItems[indexToAdd];
-
-        if( item == nullptr ) {
-            m_unequippedItems[indexToAdd] = itemToAdd;
-            return;
-        }
+        // Could potentially overwrite an item.. good if intentional
+        m_unequippedItems[indexToAdd] = itemToAdd;
+        return;
     }
 
 
@@ -195,6 +194,10 @@ void Inventory::EquipItem( Item* itemToEquip, bool removeFromInventory /*= true*
 
     // This item is not equipable
     if( !IsItemEquipable(itemToEquip) ) {
+        if( !removeFromInventory ) {
+            AddItemToInventory( itemToEquip, currentItemDestinationIndex );
+        }
+
         return;
     }
 
@@ -359,11 +362,7 @@ int Inventory::GetItemIndex( Item* itemToFind, bool& outIsEquipped ) const {
 void Inventory::AddUIContent() {
     // Setup backpack view
     for( int itemIndex = 0; itemIndex < m_numItemSlots; itemIndex++ ) {
-        ImGui::PushID( itemIndex );
-
         AddUnequippedItemTile( itemIndex );
-
-        ImGui::PopID();
     }
 
     ImGui::NextColumn();
@@ -390,6 +389,7 @@ void Inventory::AddUIContent() {
     ImGui::Image( nullptr, tileSize );
     ImGui::Image( nullptr, tileSize );
     AddEquippedItemTile( ITEM_SLOT_WEAPON, tileSize );
+    ImGui::Image( nullptr, tileSize );
 
     style.ItemSpacing.y *= 0.25f;
 }
@@ -500,6 +500,7 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
     Item* item = isEquipped ? m_equippedItems[itemIndex] : m_unequippedItems[itemIndex];
 
     if( item != nullptr ) {
+        ImGui::PushID( item );
         const SpriteDef* portrait = item->GetPortrait();
 
         TextureView2D* textureView = g_theRenderer->GetOrCreateTextureView2D( portrait->GetTexturePath() );
@@ -517,7 +518,6 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
 
         sprite.GetUVs( uvs.mins, uvs.maxs );
 
-        //ImGui::Button( Stringf( "%s%d", "Box", itemIndex ).c_str(), tileSize );
         ImGui::ImageButton( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ), 0 );
     }
 
@@ -527,29 +527,116 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
 
         ImGui::SetDragDropPayload( "ItemTile", &sourcePayload, sizeof( ItemTilePayload ) );
         ImGui::Image( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ) );
+        ImGui::Text( "%x", this );
 
         ImGui::EndDragDropSource();
     }
 
     // Setup Drop
     if( ImGui::BeginDragDropTarget() ) {
-        if( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "ItemTile" ) ) {
+        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "ItemTile" );
+
+        if( payload != nullptr ) {
             IM_ASSERT( payload->DataSize == sizeof( ItemTilePayload ) );
 
             ItemTilePayload sourcePayload = *(const ItemTilePayload*)payload->Data;
             ItemTilePayload targetPayload = ItemTilePayload( itemIndex, isEquipped, this );
 
-            SwapItems( sourcePayload, targetPayload );
+            HandleDragAndDrop( sourcePayload, targetPayload );
         }
 
         ImGui::EndDragDropTarget();
     }
+
+    if( item != nullptr ) {
+        ImGui::PopID();
+    }
 }
 
 
+void Inventory::HandleDragAndDrop( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload ) {
+    Inventory* sourceInv = sourcePayload.myInventory;
+    Inventory* targetInv = targetPayload.myInventory;
+
+    //std::string sourceStr = Stringf( "(%d, %sequipped)", sourcePayload.itemIndex, sourcePayload.isEquipped ? "" : "un" );
+    //std::string targetStr = Stringf( "(%d, %sequipped)", targetPayload.itemIndex, targetPayload.isEquipped ? "" : "un" );
+
+    if( sourceInv == targetInv ) {
+        //std::string msg = Stringf( "Swap Items: %s, %s", sourceStr.c_str(), targetStr.c_str() );
+        //g_theDebugger->DrawDebugMessage( msg, 10.f );
+        sourceInv->SwapItems( sourcePayload, targetPayload );
+    } else {
+        //std::string msg = Stringf( "Trade Items: %s, %s", sourceStr.c_str(), targetStr.c_str() );
+        //g_theDebugger->DrawDebugMessage( msg, 10.f );
+        TradeItems( sourcePayload, targetPayload );
+    }
+}
+
+
+// Only for swapping items within the same inventory
 void Inventory::SwapItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload ) {
     Inventory* sourceInv = sourcePayload.myInventory;
     Inventory* targetInv = targetPayload.myInventory;
+
+    if( sourceInv != targetInv && this == sourceInv ) {
+        g_theDevConsole->PrintString( "(Inventory) WARNING: Inventory pointers must match to swap items", DevConsole::CHANNEL_WARNING );
+        return;
+    }
+
+
+    Item* sourceItem = nullptr;
+    Item* targetItem = nullptr;
+
+    if( sourcePayload.itemIndex >= 0 ) {
+        sourceItem = sourcePayload.isEquipped ? m_equippedItems[sourcePayload.itemIndex] : m_unequippedItems[sourcePayload.itemIndex];
+    }
+
+    if( targetPayload.itemIndex >= 0 ) {
+        targetItem = targetPayload.isEquipped ? m_equippedItems[targetPayload.itemIndex] : m_unequippedItems[targetPayload.itemIndex];
+    }
+
+
+    if( sourcePayload.isEquipped ) {
+        if( !targetPayload.isEquipped ) {
+            if( targetItem == nullptr ) {
+                ItemSlot sourceSlot = sourceItem->GetItemSlot();
+
+                m_equippedItems[sourceSlot] = nullptr;
+                m_unequippedItems[targetPayload.itemIndex] = sourceItem;
+            } else {
+                ItemSlot sourceSlot = sourceItem->GetItemSlot();
+                ItemSlot targetSlot = targetItem->GetItemSlot();
+
+                if( sourceSlot == targetSlot ) {
+                    EquipItem( targetItem, true, targetPayload.itemIndex );
+                }
+            }
+        }
+    } else {
+        if( targetPayload.isEquipped ) {
+            ItemSlot sourceSlot = sourceItem->GetItemSlot();
+            ItemSlot targetSlot = (ItemSlot)targetPayload.itemIndex; // only true because it's equipped
+
+            if( sourceSlot == targetSlot ) {
+                EquipItem( sourceItem, true, sourcePayload.itemIndex );
+            }
+        } else {
+            m_unequippedItems[sourcePayload.itemIndex] = targetItem;
+            m_unequippedItems[targetPayload.itemIndex] = sourceItem;
+        }
+    }
+}
+
+
+void Inventory::TradeItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload ) {
+    Inventory* sourceInv = sourcePayload.myInventory;
+    Inventory* targetInv = targetPayload.myInventory;
+
+    if( sourceInv == targetInv ) {
+        g_theDevConsole->PrintString( "(Inventory) WARNING: Inventory pointers must differ to trade items", DevConsole::CHANNEL_WARNING );
+        return;
+    }
+
 
     Item* sourceItem = nullptr;
     Item* targetItem = nullptr;
@@ -580,7 +667,7 @@ void Inventory::SwapItems( const ItemTilePayload& sourcePayload, const ItemTileP
 
     if( sourceIsEquipped ) {
         if( !targetIsEquipped ) {
-            if( targetItem == nullptr ) { // Unequip source
+            if( targetItem == nullptr ) { // Unequip source, move to target
                 ItemSlot sourceSlot = sourceItem->GetItemSlot();
 
                 sourceInv->m_equippedItems[sourceSlot] = nullptr;
@@ -590,26 +677,26 @@ void Inventory::SwapItems( const ItemTilePayload& sourcePayload, const ItemTileP
                 ItemSlot targetSlot = targetItem->GetItemSlot();
 
                 if( sourceSlot == targetSlot ) { // Slots match
-                    if( sourceInv == targetInv ) { // Equip from same inventory
-                        sourceInv->EquipItem( targetItem, true, targetIndex );
-                    } else {    // Equip from different inventory
-                        sourceInv->m_equippedItems[sourceSlot] = nullptr;
+                    // Equip from different inventory
+                    sourceInv->m_equippedItems[sourceSlot] = nullptr;
 
-                        sourceInv->EquipItem( targetItem, false );
-                        targetInv->m_unequippedItems[targetIndex] = sourceItem;
-                    }
+                    sourceInv->EquipItem( targetItem, false );
+                    targetInv->m_unequippedItems[targetIndex] = sourceItem;
                 }
             }
-        } else if( sourceInv != targetInv ) { // Both equipped
-            ItemSlot sourceSlot = sourceItem->GetItemSlot();
-            ItemSlot targetSlot = targetItem->GetItemSlot();
+        } else { // Both equipped
+            ItemSlot sourceSlot = (ItemSlot)sourceIndex;
+            ItemSlot targetSlot = (ItemSlot)targetIndex;
 
             if( sourceSlot == targetSlot ) { // Both equip from different inventories
                 sourceInv->m_equippedItems[sourceSlot] = nullptr;
                 targetInv->m_equippedItems[targetSlot] = nullptr; // don't let the items unequip into wrong backpack
 
-                sourceInv->EquipItem( targetItem, false );
                 targetInv->EquipItem( sourceItem, false );
+
+                if( targetItem != nullptr ) {
+                    sourceInv->EquipItem( targetItem, false );
+                }
             }
         }
     } else {
@@ -618,13 +705,9 @@ void Inventory::SwapItems( const ItemTilePayload& sourcePayload, const ItemTileP
             ItemSlot targetSlot = (ItemSlot)targetIndex; // only true because it's equipped
 
             if( sourceSlot == targetSlot ) {
-                if( sourceInv == targetInv ) {
-                    sourceInv->EquipItem( sourceItem, true, sourceIndex );
-                } else {
-                    targetInv->m_equippedItems[targetSlot] = nullptr;
-                    targetInv->EquipItem( sourceItem, false );
-                    sourceInv->m_unequippedItems[sourceIndex] = targetItem;
-                }
+                targetInv->m_equippedItems[targetSlot] = nullptr;
+                targetInv->EquipItem( sourceItem, false );
+                sourceInv->m_unequippedItems[sourceIndex] = targetItem;
             }
         } else {
             sourceInv->m_unequippedItems[sourceIndex] = targetItem;

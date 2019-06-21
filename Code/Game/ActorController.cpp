@@ -100,7 +100,7 @@ void ActorController::InteractFromInput() const {
         actions.push_back( "item" );
     }
 
-    
+
     // Look for tile tags
     const Tile& tile = m_myActor->m_map->GetTileFromWorldCoords( m_myActor->GetPosition() );
     const Tags& tags = tile.GetMetadata()->m_tagData;
@@ -112,14 +112,17 @@ void ActorController::InteractFromInput() const {
 
     // Pick an action
     int numActions = (int)actions.size();
-    int actionIndex = g_RNG->GetRandomIntLessThan( numActions );
-    std::string& chosenAction = actions[actionIndex];
 
-    if( chosenAction == "item" ) {
-        PickupItem( itemToPickUp );
-    } else if( chosenAction == TAG_MERCHANT ) {
-        Actor* merchant = m_myActor->m_map->GetActorInRange( "merchant", m_myActor->GetPosition(), actorStats->GetInteractRadius() );
-        merchant->InteractWithActor( m_myActor );
+    if( numActions > 0 ) {
+        int actionIndex = g_RNG->GetRandomIntLessThan( numActions );
+        std::string& chosenAction = actions[actionIndex];
+
+        if( chosenAction == "item" ) {
+            PickupItem( itemToPickUp );
+        } else if( chosenAction == TAG_MERCHANT ) {
+            Actor* merchant = m_myActor->m_map->GetActorInRange( "merchant", m_myActor->GetPosition(), actorStats->GetInteractRadius() );
+            merchant->InteractWithActor( m_myActor );
+        }
     }
 }
 

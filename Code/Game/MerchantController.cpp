@@ -47,11 +47,13 @@ void MerchantController::UpdateTradeUI() const {
     // Player(?) inventory on left
     Inventory* otherInventory = GetActorInventory( m_interactingWith );
     otherInventory->AddUIContent();
+    //ImGui::Text( "%x", otherInventory );
     ImGui::NextColumn();
 
     // Merchant inventory on right
     Inventory* myInventory = GetActorInventory();
     myInventory->AddUIContent();
+    //ImGui::Text( "%x", myInventory );
 
     ImGui::End();
 }
