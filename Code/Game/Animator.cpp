@@ -4,6 +4,7 @@
 #include "Engine/Renderer/IsoSpriteAnimDef.hpp"
 
 #include "Game/Actor.hpp"
+#include "Game/ActorController.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameState.hpp"
 
@@ -56,19 +57,22 @@ void Animator::Update( float deltaSeconds ) {
         std::string& eventStr = events[eventIndex];
         Strings eventSplitStr = SplitStringOnDelimeter( eventStr, ' ', false );
 
-        const std::string& command = StringToLower( eventSplitStr[0] );
+        const std::string& command = eventSplitStr[0];
 
         /*
-        if( command == "dealdamage" ) {
+        if( StringICmp( command, "dealDamage" ) ) {
             m_myUnit->DealDamage( m_attackVictim );
         } else */
-        if( command == "playsound" ) {
+        if( StringICmp( command, "playSound" ) ) {
             GUARANTEE_OR_DIE( (int)eventSplitStr.size() > 1, "(Animator) PlaySound anim event missing required sound name parameter" );
 
             SoundID soundID = g_theAudio->GetOrCreateSound( eventSplitStr[1], true );
             g_theAudio->PlaySoundAt( soundID, Vec3( m_myActor->GetPosition(), 0.f ) );
-        } else if( command == "playerdeath" ) {
-            g_theEventSystem->FireEvent( command );
+        } else if( StringICmp( command, "death" ) ) {
+            const ActorController* controller = m_myActor->GetController();
+            std::string deathEvent = controller->GetDeathEvent();
+
+            g_theEventSystem->FireEvent( deathEvent );
         }
     }
 

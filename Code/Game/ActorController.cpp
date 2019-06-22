@@ -32,6 +32,11 @@ void ActorController::Shutdown() {
 }
 
 
+std::string ActorController::GetDeathEvent() const {
+    return "actorDeath";
+}
+
+
 bool ActorController::TakeClosestStairs() const {
     const Tile& tile = m_myActor->m_map->GetTileFromWorldCoords( m_myActor->GetPosition() );
     const Metadata* metadata = tile.GetMetadata();

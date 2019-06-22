@@ -51,6 +51,57 @@
         <Hair spriteSheet="PaperDoll.Hair.M4"/>
         <Hair spriteSheet="PaperDoll.Hair.M5"/>
     </ActorDef>
+    <ActorDef name="OrcFemale">
+        <!-- Female item set added via Body -->
+        <ItemSet name="Light"/>
+        <ItemSet name="Medium"/>
+        <ItemSet name="Heavy"/>
+        <ItemSet name="Melee"/>
+
+        <Stats>
+            <Health value="150"/>
+            <MoveSpeed value="3"/>
+        </Stats>
+
+        <Body spriteSheet="PaperDoll.Body.Orc.F1" itemSet="Orc,Female"/>
+
+        <Hair spriteSheet="PaperDoll.Hair.F1"/>
+        <Hair spriteSheet="PaperDoll.Hair.F2"/>
+        <Hair spriteSheet="PaperDoll.Hair.F3"/>
+        <Hair spriteSheet="PaperDoll.Hair.F4"/>
+        <Hair spriteSheet="PaperDoll.Hair.F5"/>
+        <Hair spriteSheet="PaperDoll.Hair.F6"/>
+        <Hair spriteSheet="PaperDoll.Hair.F7"/>
+    </ActorDef>
+    <ActorDef name="OrcMale">
+        <!-- Male item set added via Body -->
+        <ItemSet name="Light"/>
+        <ItemSet name="Melee"/>
+
+        <Stats>
+            <Health value="150"/>
+            <MoveSpeed value="3"/>
+        </Stats>
+
+        <Body spriteSheet="PaperDoll.Body.Orc.M1" itemSet="Orc,Male"/>
+
+        <Hair spriteSheet="PaperDoll.Hair.M1"/>
+        <Hair spriteSheet="PaperDoll.Hair.M2"/>
+        <Hair spriteSheet="PaperDoll.Hair.M3"/>
+        <Hair spriteSheet="PaperDoll.Hair.M4"/>
+        <Hair spriteSheet="PaperDoll.Hair.M5"/>
+    </ActorDef>
+    <ActorDef name="SkeletonMale">
+        <!-- Male item set added via Body -->
+        <ItemSet name="Melee"/>
+
+        <Stats>
+            <Health value="150"/>
+            <MoveSpeed value="3"/>
+        </Stats>
+
+        <Body spriteSheet="PaperDoll.Body.Skeleton.M1" itemSet="Skeleton,Male"/>
+    </ActorDef>
     <ActorDef name="Merchant" canDie="false" canWalk="false">
         <Parent name="HumanFemale"/>
         <Parent name="HumanMale"/>

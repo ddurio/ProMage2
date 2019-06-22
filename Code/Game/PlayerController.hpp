@@ -13,6 +13,8 @@ class PlayerController : public ActorController {
 
     void Update( float deltaSeconds ) override;
 
+    std::string GetDeathEvent() const override;
+
     private:
     GameInput* m_gameInput = nullptr;
 

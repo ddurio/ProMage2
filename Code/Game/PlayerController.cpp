@@ -49,6 +49,12 @@ void PlayerController::Update( float deltaSeconds ) {
     UpdateHUD();
 }
 
+
+std::string PlayerController::GetDeathEvent() const {
+    return EVENT_DEATH_PLAYER;
+}
+
+
 void PlayerController::UpdateHUD() {
     // Setup Window
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;

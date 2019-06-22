@@ -63,6 +63,7 @@ Actor::~Actor() {
 void Actor::Startup() {
     m_animator = new Animator( this );
 
+    /*
     Strings items = {
         "dress",
         "PlateChestF",
@@ -74,6 +75,20 @@ void Actor::Startup() {
         //"LongSword",
         "BootsF",
         "PlateShoulderF"
+    };
+    */
+
+    Strings items = {
+        "dress",
+        "PlateChestM",
+        "tunic",
+        "PlateHelm",
+        "Bandana",
+        "LeatherLegsM",
+        "RecurveBow",
+        //"LongSword",
+        "BootsF",
+        "PlateShoulderM"
     };
 
     // DFS1FIXME: Weapon sprite sheets are messed up

@@ -34,6 +34,11 @@ void MerchantController::Update( float deltaSeconds ) {
 }
 
 
+std::string MerchantController::GetDeathEvent() const {
+    return EVENT_DEATH_MERCHANT;
+}
+
+
 bool MerchantController::InteractWithActor( Actor* instigator ) {
     m_interactingWith = instigator;
     return true;

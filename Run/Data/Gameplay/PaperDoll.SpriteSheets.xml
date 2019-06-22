@@ -11,6 +11,8 @@
     <SpriteSheet name="PaperDoll.Body.Orc.F1"       texturePath="Data/Images/Humanoids/Doll/body_orc_f_1.png"        gridLayout="13,21"/>
     <SpriteSheet name="PaperDoll.Body.Orc.M1"       texturePath="Data/Images/Humanoids/Doll/body_orc_m_1.png"        gridLayout="13,21"/>
 
+    <SpriteSheet name="PaperDoll.Body.Skeleton.M1"  texturePath="Data/Images/Humanoids/Doll/body_skeleton_m_1.png"   gridLayout="13,21"/>
+
     <!-- Head -->
     <SpriteSheet name="PaperDoll.Ears.1"            texturePath="Data/Images/Humanoids/Head/Ears/ears_human_1.png"    gridLayout="13,21"/>
     <SpriteSheet name="PaperDoll.Ears.2"            texturePath="Data/Images/Humanoids/Head/Ears/ears_human_2.png"    gridLayout="13,21"/>

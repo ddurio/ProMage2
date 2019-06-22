@@ -13,6 +13,8 @@ class MerchantController : public ActorController {
     ~MerchantController();
 
     void Update( float deltaSeconds ) override;
+    
+    std::string GetDeathEvent() const override;
 
     bool InteractWithActor( Actor* instigator ) override;
 

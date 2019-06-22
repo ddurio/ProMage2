@@ -1,7 +1,7 @@
 <SpriteAnims>
     <!-- Die -->
     <SpriteAnim name="PaperDoll.Die"          spriteSheet="PaperDoll.Body.Human.M1"   startIndex="260" endIndex="265" duration="1.f" playbackType="Once">
-        <Event command="playerDeath" time="0.9999f"/>
+        <Event command="Death" time="0.9999f"/>
     </SpriteAnim>
 
     <!-- Idle -->

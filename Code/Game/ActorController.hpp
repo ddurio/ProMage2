@@ -18,8 +18,10 @@ class ActorController {
     void Shutdown();
 
     virtual void Update( float deltaSeconds ) = 0;
-    bool TakeClosestStairs() const;
 
+    virtual std::string GetDeathEvent() const;
+
+    bool TakeClosestStairs() const;
     virtual bool InteractWithActor( Actor* instigator );
 
     protected:
