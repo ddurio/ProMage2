@@ -14,9 +14,11 @@ template<>
 Definition<Item>::Definition( const XMLElement& element ) {
     // Parse Values
     m_defType                   = ParseXMLAttribute( element, "name",         "" );
+    int moneyValue              = ParseXMLAttribute( element, "value",        100 );
     ItemSlot itemSlot           = ParseXMLAttribute( element, "slot",         ITEM_SLOT_NONE );
     std::string spriteName      = ParseXMLAttribute( element, "spriteSheet",  "" );
     GUARANTEE_OR_DIE( spriteName != "", "(ItemDef) Missing required attribute 'spriteSheet'" );
+
 
     const XMLElement* childEle = element.FirstChildElement();
     std::vector< Tags > itemSets;
@@ -44,6 +46,7 @@ Definition<Item>::Definition( const XMLElement& element ) {
 
     // Set Properties
     m_properties.SetValue( "slot",          itemSlot );
+    m_properties.SetValue( "value",         moneyValue );
     m_properties.SetValue( "spriteSheet",   spriteName );
     m_properties.SetValue( "itemSets",      itemSets );
 

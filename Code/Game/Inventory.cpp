@@ -125,6 +125,12 @@ Item* Inventory::SpawnNewItem( std::string itemType, const Vec2& worldPosition /
 }
 
 
+void Inventory::TransferMoney( int moneyToTransfer ) {
+    // moneyToTransfer could be negative to remove money
+    m_money += moneyToTransfer;
+}
+
+
 void Inventory::AddItemToInventory( Item* itemToAdd, int indexToAdd /*= -1 */ ) {
     // DFS1FIXME: Check for empty equipped slot of the same type and auto equip instead
     if( indexToAdd >= 0 ) {
@@ -359,6 +365,11 @@ int Inventory::GetItemIndex( Item* itemToFind, bool& outIsEquipped ) const {
 }
 
 
+int Inventory::GetMoney() const {
+    return m_money;
+}
+
+
 void Inventory::AddUIContent() {
     // Setup backpack view
     for( int itemIndex = 0; itemIndex < m_numItemSlots; itemIndex++ ) {
@@ -386,7 +397,7 @@ void Inventory::AddUIContent() {
     AddEquippedItemTile( ITEM_SLOT_FEET, tileSize );
 
     ImGui::NextColumn();
-    ImGui::Image( nullptr, tileSize );
+    CreateMoneyTile( tileSize );
     ImGui::Image( nullptr, tileSize );
     AddEquippedItemTile( ITEM_SLOT_WEAPON, tileSize );
     ImGui::Image( nullptr, tileSize );
@@ -453,25 +464,12 @@ void Inventory::AddEquippedItemTile( ItemSlot itemSlot, const ImVec2& tileSize )
     std::string emptyTileName = ANIM_INVENTORY_EMPTY;
 
     switch( itemSlot ) {
-        case( ITEM_SLOT_CHEST ): {
-            emptyTileName = ANIM_INVENTORY_CHEST;
-            break;
-        } case( ITEM_SLOT_FEET ): {
-            emptyTileName = ANIM_INVENTORY_FEET;
-            break;
-        } case( ITEM_SLOT_HELM ): {
-            emptyTileName = ANIM_INVENTORY_HELM;
-            break;
-        } case( ITEM_SLOT_LEGS ): {
-            emptyTileName = ANIM_INVENTORY_LEGS;
-            break;
-        } case( ITEM_SLOT_SHOULDER ): {
-            emptyTileName = ANIM_INVENTORY_SHOULDER;
-            break;
-        } case( ITEM_SLOT_WEAPON ): {
-            emptyTileName = ANIM_INVENTORY_WEAPON;
-            break;
-        }
+        case( ITEM_SLOT_CHEST ):    { emptyTileName = ANIM_INVENTORY_CHEST;     break; }
+        case( ITEM_SLOT_FEET ):     { emptyTileName = ANIM_INVENTORY_FEET;      break; }
+        case( ITEM_SLOT_HELM ):     { emptyTileName = ANIM_INVENTORY_HELM;      break; }
+        case( ITEM_SLOT_LEGS ):     { emptyTileName = ANIM_INVENTORY_LEGS;      break; }
+        case( ITEM_SLOT_SHOULDER ): { emptyTileName = ANIM_INVENTORY_SHOULDER;  break; }
+        case( ITEM_SLOT_WEAPON ):   { emptyTileName = ANIM_INVENTORY_WEAPON;    break; }
     }
 
     CreateItemTile( itemSlot, true, tileSize, emptyTileName );
@@ -551,6 +549,36 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
     if( item != nullptr ) {
         ImGui::PopID();
     }
+}
+
+
+void Inventory::CreateMoneyTile( const ImVec2& tileSize ) {
+    TextureView2D* textureView = g_theRenderer->GetOrCreateTextureView2D( TEXTURE_GOLD_PILE );
+    void* shaderResourceView = textureView->GetShaderView();
+
+    // Center the text (and calc size in the process)
+    ImGuiStyle& style = ImGui::GetStyle();
+    //style.ItemSpacing.y *= 4.f;
+
+    std::string moneyStr = Stringf( "%d", m_money );
+    ImVec2 textSize = ImGui::CalcTextSize( moneyStr.c_str() );
+    float columnWidth = ImGui::GetColumnWidth();
+
+    float centeredTextStart = (columnWidth - textSize.x) * 0.5f - style.ItemSpacing.x;
+    float currentPosX = ImGui::GetCursorPosX();
+
+    // Scale tile down by text size
+    ImVec2 scaledTileSize;
+    scaledTileSize.x = tileSize.x - (2.f * textSize.y); // scale evenly by height of text
+    scaledTileSize.y = tileSize.y - (2.f * textSize.y);
+
+    // Draw it all
+    float centeredImageStart = (columnWidth - scaledTileSize.x) * 0.5f - style.ItemSpacing.x;
+    ImGui::SetCursorPosX( currentPosX + centeredImageStart );
+    ImGui::Image( shaderResourceView, scaledTileSize );
+
+    ImGui::SetCursorPosX( currentPosX + centeredTextStart );
+    ImGui::Text( moneyStr.c_str() );
 }
 
 
@@ -638,6 +666,7 @@ void Inventory::TradeItems( const ItemTilePayload& sourcePayload, const ItemTile
     }
 
 
+    // Setup Inventory & Item pointers
     Item* sourceItem = nullptr;
     Item* targetItem = nullptr;
 
@@ -665,6 +694,13 @@ void Inventory::TradeItems( const ItemTilePayload& sourcePayload, const ItemTile
     }
 
 
+    // Check Gold Value of Trade
+    if( !IsTradeValid(sourceItem, sourceInv, targetItem, targetInv) ) {
+        return;
+    }
+
+
+    // Actually trade the items (and gold if needed)
     if( sourceIsEquipped ) {
         if( !targetIsEquipped ) {
             if( targetItem == nullptr ) { // Unequip source, move to target
@@ -672,6 +708,8 @@ void Inventory::TradeItems( const ItemTilePayload& sourcePayload, const ItemTile
 
                 sourceInv->m_equippedItems[sourceSlot] = nullptr;
                 targetInv->m_unequippedItems[targetIndex] = sourceItem;
+
+                TradeMoney( sourceItem, sourceInv, targetItem, targetInv );
             } else {
                 ItemSlot sourceSlot = sourceItem->GetItemSlot();
                 ItemSlot targetSlot = targetItem->GetItemSlot();
@@ -682,10 +720,12 @@ void Inventory::TradeItems( const ItemTilePayload& sourcePayload, const ItemTile
 
                     sourceInv->EquipItem( targetItem, false );
                     targetInv->m_unequippedItems[targetIndex] = sourceItem;
+
+                    TradeMoney( sourceItem, sourceInv, targetItem, targetInv );
                 }
             }
         } else { // Both equipped
-            ItemSlot sourceSlot = (ItemSlot)sourceIndex;
+            ItemSlot sourceSlot = (ItemSlot)sourceIndex; // only true because it's equipped
             ItemSlot targetSlot = (ItemSlot)targetIndex;
 
             if( sourceSlot == targetSlot ) { // Both equip from different inventories
@@ -697,23 +737,40 @@ void Inventory::TradeItems( const ItemTilePayload& sourcePayload, const ItemTile
                 if( targetItem != nullptr ) {
                     sourceInv->EquipItem( targetItem, false );
                 }
+
+                TradeMoney( sourceItem, sourceInv, targetItem, targetInv );
             }
         }
-    } else {
+    } else { // Source unequipped
         if( targetIsEquipped ) {
             ItemSlot sourceSlot = sourceItem->GetItemSlot();
-            ItemSlot targetSlot = (ItemSlot)targetIndex; // only true because it's equipped
+            ItemSlot targetSlot = (ItemSlot)targetIndex;
 
             if( sourceSlot == targetSlot ) {
                 targetInv->m_equippedItems[targetSlot] = nullptr;
                 targetInv->EquipItem( sourceItem, false );
                 sourceInv->m_unequippedItems[sourceIndex] = targetItem;
+
+                TradeMoney( sourceItem, sourceInv, targetItem, targetInv );
             }
         } else {
             sourceInv->m_unequippedItems[sourceIndex] = targetItem;
             targetInv->m_unequippedItems[targetIndex] = sourceItem;
+
+            TradeMoney( sourceItem, sourceInv, targetItem, targetInv );
         }
     }
+}
+
+
+void Inventory::TradeMoney( const Item* sourceItem, Inventory* sourceInv, const Item* targetItem, Inventory* targetInv ) {
+    int sourceValue = sourceItem->GetValue();
+    int targetValue = (targetItem != nullptr) ? targetItem->GetValue() : 0;
+
+    int moneyAmount = sourceValue - targetValue;
+
+    sourceInv->TransferMoney(  moneyAmount );
+    targetInv->TransferMoney( -moneyAmount );
 }
 
 
@@ -736,4 +793,20 @@ bool Inventory::IsItemEquipable( const Item* itemToEquip ) const {
     }
 
     return true;
+}
+
+
+bool Inventory::IsTradeValid( const Item* sourceItem, const Inventory* sourceInv, const Item* targetItem, const Inventory* targetInv ) {
+    int sourceValue = sourceItem->GetValue();
+    int sourceMoney = sourceInv->GetMoney();
+    int sourceTotal = sourceValue + sourceMoney;
+
+    int targetValue = (targetItem != nullptr) ? targetItem->GetValue() : 0;
+    int targetMoney = targetInv->GetMoney();
+    int targetTotal = targetValue + targetMoney;
+
+    bool sourceCanTrade = (targetTotal >= sourceValue);
+    bool targetCanTrade = (sourceTotal >= targetValue);
+
+    return sourceCanTrade && targetCanTrade;
 }

@@ -27,15 +27,12 @@ extern WindowContext*   g_theWindow;
 typedef std::vector<Entity*> EntityList;
 
 
-constexpr int APP_MIN_FPS = 10;
+constexpr int   APP_MIN_FPS = 10;
 constexpr char  APP_TITLE[] = "Adventure (ddurio)";
 constexpr float APP_MAX_DELTA_SECONDS = 1.f / (float)APP_MIN_FPS;
 
-constexpr float GAME_ATTRACT_AUDIO_DELAY = 3.f;
-constexpr float GAME_END_SCREEN_TIME_SECONDS = 3.f;
-constexpr int GAME_NUM_MAPS = 3;
-
-constexpr char  TEXTURE_TERRAIN[] = "Data/Images/Terrain_32x32.png";
+constexpr char  TEXTURE_GOLD_PILE[]         = "Data/Images/GoldPile.png";
+constexpr char  TEXTURE_TERRAIN[]           = "Data/Images/Terrain_32x32.png";
 
 constexpr char  FONT_NAME_SQUIRREL[]        = "SquirrelFixedFont";
 constexpr char  MAT_NAME_PAPER_DOLL[]       = "PaperDoll";

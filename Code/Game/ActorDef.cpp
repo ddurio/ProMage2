@@ -31,6 +31,7 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     Strings       hairOptions;
     std::string   itemSetsCSV;
     StatsManager* statsManager = new StatsManager();
+    int money = 0;
 
     while( childEle != nullptr ) {
         std::string tagName = childEle->Name();
@@ -61,6 +62,8 @@ Definition<Actor>::Definition( const XMLElement& element ) {
         } else if( tagName == "Stats" ) {
             CLEAR_POINTER( statsManager );
             statsManager = new StatsManager( *childEle );
+        } else if( tagName == "Money" ) {
+            money = ParseXMLAttribute( *childEle, "value", money );
         }
 
         childEle = childEle->NextSiblingElement();
@@ -80,6 +83,7 @@ Definition<Actor>::Definition( const XMLElement& element ) {
     m_properties.SetValue( "hairSprites",   hairOptions );
     m_properties.SetValue( "validItemSets", itemSetsCSV );
     m_properties.SetValue( "statsManager",  (const StatsManager*)statsManager );
+    m_properties.SetValue( "money",         money );
 
 
     g_theDevConsole->PrintString( Stringf( "(ActorDef) Loaded new ActorDef (%s)", m_defType.c_str() ) );
@@ -95,11 +99,12 @@ void Definition<Actor>::Define( Actor& theObject ) const {
     parentOptions = m_properties.GetValue( "parents", parentOptions );
     int numParents = (int)parentOptions.size();
 
+    // Select parent actor type
     if( numParents > 0 ) {
         int parentIndex = g_RNG->GetRandomIntLessThan( numParents );
         const Definition<Actor>* parentDef = Definition<Actor>::GetDefinition( parentOptions[parentIndex] );
         parentDef->Define( theObject );
-    } else {
+    } else { // No parents
         theObject.m_inventory = new Inventory( theObject.m_map );
 
         const StatsManager* statsProto = m_properties.GetValue( "statsManager", (const StatsManager*)nullptr );
@@ -107,6 +112,12 @@ void Definition<Actor>::Define( Actor& theObject ) const {
         theObject.m_statsManager = new StatsManager( *statsProto );
         theObject.m_statsManager->m_myActor = &theObject;
     }
+
+    int parentMoney = theObject.m_inventory->GetMoney();
+    int childMoney = m_properties.GetValue( "money", 0 );
+
+    int transferMoney = childMoney - parentMoney;
+    theObject.m_inventory->TransferMoney( transferMoney );
 
     // Body appearance
     Strings bodyOptions;

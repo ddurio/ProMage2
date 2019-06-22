@@ -8,7 +8,7 @@
         <ItemSet name="Heavy"/>
     </ItemDef>
     <!-- Chest -->
-    <ItemDef name="Dress" slot="Chest" spriteSheet="PaperDoll.Chest.F1">
+    <ItemDef name="Dress" slot="Chest" spriteSheet="PaperDoll.Chest.F1" value="200">
         <ItemSet name="Female"/>
     </ItemDef>
     <ItemDef name="ShortDress" slot="Chest" spriteSheet="PaperDoll.Chest.F2">

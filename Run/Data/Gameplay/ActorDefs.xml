@@ -54,5 +54,6 @@
     <ActorDef name="Merchant" canDie="false" canWalk="false">
         <Parent name="HumanFemale"/>
         <Parent name="HumanMale"/>
+        <Money value="1000"/>
     </ActorDef>
 </ActorDefinitions>

@@ -141,6 +141,11 @@ std::string Item::GetItemType() const {
 }
 
 
+int Item::GetValue() const {
+    return m_itemDef->GetProperty( "value", 0 );
+}
+
+
 void Item::SetWorldPosition( const Vec2& worldPosition ) {
     m_transform.position = worldPosition;
 }

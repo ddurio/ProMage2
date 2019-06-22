@@ -29,6 +29,7 @@ class Inventory {
 
     Item* SpawnNewItem( std::string itemType, const Vec2& worldPosition = Vec2::ZERO );
 
+    void TransferMoney( int moneyToTransfer );
     void AddItemToInventory( Item* itemToAdd, int indexToAdd = -1 );
     void RemoveItemFromInventory( Item* itemToRemove );
     void DropItem( Item* itemToDrop );
@@ -51,6 +52,7 @@ class Inventory {
     Item* GetItemInSlot( ItemSlot equippedItemSlot ) const;
 
     int GetItemIndex( Item* itemToFind, bool& outIsEquipped ) const;
+    int GetMoney() const;
 
     void AddUIContent();
 
@@ -60,6 +62,7 @@ class Inventory {
     int m_numItemSlots = 50;
     std::vector<Item*> m_unequippedItems;
     Item* m_equippedItems[NUM_ITEM_SLOTS] = { nullptr };
+    int m_money = 0;
 
     bool m_renderEquippedItems = true;
     bool m_renderUnequippedItems = false;
@@ -74,10 +77,13 @@ class Inventory {
     void AddUnequippedItemTile( int itemIndex );
     void AddEquippedItemTile( ItemSlot itemSlot, const ImVec2& tileSize );
     void CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& tileSize, const std::string& emptyTileName = ANIM_INVENTORY_EMPTY );
+    void CreateMoneyTile( const ImVec2& tileSize );
 
     static void HandleDragAndDrop( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );
     void SwapItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );
     static void TradeItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );
+    static void TradeMoney( const Item* sourceItem, Inventory* sourceInv, const Item* targetItem, Inventory* targetInv );
 
     bool IsItemEquipable( const Item* itemToEquip ) const;
+    static bool IsTradeValid( const Item* sourceItem, const Inventory* sourceInv, const Item* targetItem, const Inventory* targetInv );
 };
