@@ -54,6 +54,7 @@ void EnemyController::Update( float deltaSeconds ) {
         if( targetDisplacement.GetLengthSquared() < 0.01f ) {
             m_chaseTarget = nullptr;
             m_chaseLastKnownPos = false;
+            SetMoveDir( Vec2::ZERO );
         }
     }
 }
