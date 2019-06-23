@@ -146,6 +146,16 @@ int Item::GetValue() const {
 }
 
 
+std::string Item::GetAttackAnim() const {
+    return m_itemDef->GetProperty<std::string>( "attackAnim", ANIM_PAPER_DOLL_IDLE );
+}
+
+
+float Item::GetAttackRange() const {
+    return m_itemDef->GetProperty( "attackRange", -1.f );
+}
+
+
 void Item::SetWorldPosition( const Vec2& worldPosition ) {
     m_transform.position = worldPosition;
 }

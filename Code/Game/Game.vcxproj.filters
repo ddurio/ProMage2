@@ -130,6 +130,9 @@
     <ClCompile Include="Inventory.cpp">
       <Filter>ActorComponents</Filter>
     </ClCompile>
+    <ClCompile Include="EnemyController.cpp">
+      <Filter>ActorComponents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -241,6 +244,9 @@
       <Filter>ActorComponents</Filter>
     </ClInclude>
     <ClInclude Include="Inventory.hpp">
+      <Filter>ActorComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyController.hpp">
       <Filter>ActorComponents</Filter>
     </ClInclude>
   </ItemGroup>

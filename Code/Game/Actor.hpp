@@ -52,10 +52,14 @@ class Actor : public Entity {
     void RenderPortrait() const;
 
     bool InteractWithActor( Actor* instigator );
+    void SetAttackTarget( Actor* target );
 
     std::string GetActorType() const;
     Vec2 GetMoveDir() const;
     ActorController* GetController() const;
+    Inventory* GetInventory() const;
+    Actor* GetAttackTarget() const;
+    float GetAttackRange() const;
 
     private:
     const Definition<Actor>* m_actorDef = nullptr;
@@ -67,6 +71,7 @@ class Actor : public Entity {
 
     std::string m_paperDollSprites[NUM_PAPER_DOLL_SLOTS] = { "" };
     Animator* m_animator = nullptr;
+    Actor* m_attackTarget = nullptr;
 
     GPUMesh* m_portraitMesh = nullptr;
 

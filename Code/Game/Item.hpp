@@ -35,6 +35,8 @@ class Item : public Entity {
     std::string GetSpriteTexture() const;
     std::string GetItemType() const;
     int GetValue() const;
+    std::string GetAttackAnim() const;
+    float GetAttackRange() const;
 
     void SetWorldPosition( const Vec2& worldPosition );
 

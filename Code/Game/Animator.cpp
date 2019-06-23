@@ -5,6 +5,8 @@
 
 #include "Game/Actor.hpp"
 #include "Game/ActorController.hpp"
+#include "Game/Inventory.hpp"
+#include "Game/Item.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameState.hpp"
 
@@ -34,6 +36,11 @@ void Animator::Update( float deltaSeconds ) {
         animName = ANIM_PAPER_DOLL_DIE;
     } else if( moveDir != Vec2::ZERO ) {
         animName = ANIM_PAPER_DOLL_WALK;
+    } else if( m_myActor->GetAttackTarget() != nullptr ) {
+        Inventory* myInventory = m_myActor->GetInventory();
+        Item* weapon = myInventory->GetItemInSlot( ITEM_SLOT_WEAPON );
+
+        animName = weapon->GetAttackAnim();
     }
 
     const IsoSpriteAnimDef* newAnim = IsoSpriteAnimDef::GetDefinition( animName );
@@ -45,9 +52,25 @@ void Animator::Update( float deltaSeconds ) {
     }
 
     m_prevMoveDir = (moveDir == Vec2::ZERO) ? m_prevMoveDir : moveDir; // Keep last facing if you're not moving now
+    TriggerAnimEvents();
+}
 
 
-    // Trigger Anim Events
+const SpriteDef& Animator::GetCurrentSpriteDef() const {
+    float elapsedTime = m_animTimer->GetElapsedTime();
+
+    return m_currentAnim->GetSpriteDefAtTimeAndDirection( elapsedTime, m_prevMoveDir );
+}
+
+
+const SpriteDef& Animator::GetPortraitSpriteDef() const {
+    const IsoSpriteAnimDef* idleAnim = IsoSpriteAnimDef::GetDefinition( ANIM_PAPER_DOLL_IDLE );
+
+    return idleAnim->GetSpriteDefAtTimeAndDirection( 0.f, Vec2::DOWN );
+}
+
+
+void Animator::TriggerAnimEvents() {
     float elapsedTime = m_animTimer->GetElapsedTime();
 
     Strings events = m_currentAnim->GetEventsInTimeRangeAndDirection( m_prevElapsedTime, elapsedTime, m_prevMoveDir );
@@ -77,19 +100,4 @@ void Animator::Update( float deltaSeconds ) {
     }
 
     m_prevElapsedTime = elapsedTime;
-
-}
-
-
-const SpriteDef& Animator::GetCurrentSpriteDef() const {
-    float elapsedTime = m_animTimer->GetElapsedTime();
-
-    return m_currentAnim->GetSpriteDefAtTimeAndDirection( elapsedTime, m_prevMoveDir );
-}
-
-
-const SpriteDef& Animator::GetPortraitSpriteDef() const {
-    const IsoSpriteAnimDef* idleAnim = IsoSpriteAnimDef::GetDefinition( ANIM_PAPER_DOLL_IDLE );
-
-    return idleAnim->GetSpriteDefAtTimeAndDirection( 0.f, Vec2::DOWN );
 }

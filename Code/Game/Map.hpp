@@ -45,6 +45,8 @@ class Map {
     Inventory* GetMapInventory() const;
     Actor* GetPlayer() const;
     Actor* GetActorInRange( const std::string& typeToFind, const Vec2& worldCoords, float radius ) const;
+    Actor* GetActorInSight( const Actor* fromActor ) const;
+    bool HasLineOfSight( const Actor* fromActor, const Actor* toActor ) const;
 
     bool IsValidTileCoords( const IntVec2& tileCoords ) const;
 

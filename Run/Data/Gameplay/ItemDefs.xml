@@ -123,17 +123,19 @@
         <ItemSet name="Male"/>
     </ItemDef>
     <!-- Weapons -->
-    <!-- Weapon sprite sheets are messed up for now -->
     <ItemDef name="Bow" slot="Weapon" spriteSheet="PaperDoll.Weapon.Bow">
         <ItemSet name="Ranged"/>
+        <Attack anim="PaperDol.Shoot.Right"/>
+        <Portrait anim="PaperDoll.Shoot.Right" frame="3"/>
     </ItemDef>
     <ItemDef name="RecurveBow" slot="Weapon" spriteSheet="PaperDoll.Weapon.RecurveBow">
         <ItemSet name="Ranged"/>
+        <Attack anim="PaperDol.Shoot.Right"/>
+        <Portrait anim="PaperDoll.Shoot.Right" frame="3"/>
     </ItemDef>
     <ItemDef name="Dagger" slot="Weapon" spriteSheet="PaperDoll.Weapon.Dagger">
         <ItemSet name="Melee"/>
-    </ItemDef>
-    <ItemDef name="Longsword" slot="Weapon" spriteSheet="PaperDoll.Weapon.Longsword">
-        <ItemSet name="Melee"/>
+        <Attack anim="PaperDoll.Slash.Right"/>
+        <Portrait anim="PaperDoll.Walk.Left" frame="4"/>
     </ItemDef>
 </ItemDefinitions>

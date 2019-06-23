@@ -4,6 +4,8 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Ray2.hpp"
+#include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
@@ -241,6 +243,54 @@ Actor* Map::GetActorInRange( const std::string& typeToFind, const Vec2& worldCoo
     }
 
     return m_actors[bestIndex];
+}
+
+
+Actor* Map::GetActorInSight( const Actor* fromActor ) const {
+    int numActors = (int)m_actors.size();
+
+    for( int actorIndex = 0; actorIndex < numActors; actorIndex++ ) {
+        Actor* toActor = m_actors[actorIndex];
+
+        if( toActor != nullptr && toActor->IsAlive() && toActor != fromActor &&
+            HasLineOfSight( fromActor, toActor ) ) {
+            // DFS1FIXME: Can add faction comparison here if desired
+            return toActor;
+        }
+    }
+
+    return nullptr;
+}
+
+
+bool Map::HasLineOfSight( const Actor* fromActor, const Actor* toActor ) const {
+    Ray2 sightRay = Ray2::MakeFromPoints( fromActor->GetPosition(), toActor->GetPosition() );
+
+    for( int yIndex = 0; yIndex < m_mapDimensions.y; yIndex++ ) {
+        for( int xIndex = 0; xIndex < m_mapDimensions.x; xIndex++ ) {
+            // Check if tile blocks sight
+            const Tile& tile = GetTileFromTileCoords( xIndex, yIndex );
+
+            if( tile.AllowsSight() ) {
+                continue;
+            }
+
+            // Get tile AABB
+            Vec2 mins = Vec2( (float)xIndex, (float)yIndex );
+            Vec2 maxs = mins + Vec2::ONE;
+            AABB2 tileBounds = AABB2( mins, maxs );
+
+            // Raycast
+            float inters[2] = { 0.f };
+            int numHits = sightRay.Raycast( tileBounds, inters );
+
+            if( numHits > 0 ) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 

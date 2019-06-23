@@ -14,6 +14,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/Animator.hpp"
+#include "Game/EnemyController.hpp"
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/Item.hpp"
@@ -42,12 +43,12 @@ Actor::Actor( Map* theMap, const std::string& actorType, const std::string& cont
     m_material->SetShader( shader );
 
     // Player Controller
-    std::string controllerLower = StringToLower( controllerType );
-
-    if( controllerLower == "player" ) {
+    if( StringICmp(controllerType, "Player" ) ) {
         m_controller = new PlayerController( this );
-    } else if( controllerLower == "merchant" ) {
+    } else if( StringICmp(controllerType, "Merchant" ) ) {
         m_controller = new MerchantController( this );
+    } else if( StringICmp(controllerType, "Enemy" ) ) {
+        m_controller = new EnemyController( this );
     }
 }
 
@@ -86,7 +87,8 @@ void Actor::Startup() {
         "Bandana",
         "LeatherLegsM",
         "RecurveBow",
-        //"LongSword",
+        "Bow",
+        "Dagger",
         "BootsF",
         "PlateShoulderM"
     };
@@ -204,6 +206,11 @@ bool Actor::InteractWithActor( Actor* instigator ) {
 }
 
 
+void Actor::SetAttackTarget( Actor* target ) {
+    m_attackTarget = target;
+}
+
+
 std::string Actor::GetActorType() const {
     return m_actorDef->GetDefintionType();
 }
@@ -216,6 +223,22 @@ Vec2 Actor::GetMoveDir() const {
 
 ActorController* Actor::GetController() const {
     return m_controller;
+}
+
+
+Inventory* Actor::GetInventory() const {
+    return m_inventory;
+}
+
+
+Actor* Actor::GetAttackTarget() const {
+    return m_attackTarget;
+}
+
+
+float Actor::GetAttackRange() const {
+    const Item* weapon = m_inventory->GetItemInSlot( ITEM_SLOT_WEAPON );
+    return weapon->GetAttackRange();
 }
 
 
