@@ -59,7 +59,7 @@
         <ItemSet name="Melee"/>
 
         <Stats>
-            <Health value="150"/>
+            <Health value="200"/>
             <MoveSpeed value="3"/>
         </Stats>
 
@@ -79,7 +79,7 @@
         <ItemSet name="Melee"/>
 
         <Stats>
-            <Health value="150"/>
+            <Health value="200"/>
             <MoveSpeed value="3"/>
         </Stats>
 
@@ -96,8 +96,8 @@
         <ItemSet name="Melee"/>
 
         <Stats>
-            <Health value="150"/>
-            <MoveSpeed value="3"/>
+            <Health value="100"/>
+            <MoveSpeed value="2"/>
         </Stats>
 
         <Body spriteSheet="PaperDoll.Body.Skeleton.M1" itemSet="Skeleton,Male"/>

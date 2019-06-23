@@ -264,7 +264,12 @@ Actor* Map::GetActorInSight( const Actor* fromActor ) const {
 
 
 bool Map::HasLineOfSight( const Actor* fromActor, const Actor* toActor ) const {
+    Vec2 fromPos  = fromActor->GetPosition();
+    Vec2 toPos    = toActor->GetPosition();
     Ray2 sightRay = Ray2::MakeFromPoints( fromActor->GetPosition(), toActor->GetPosition() );
+
+    Vec2 displacement = toPos - fromPos;
+    float maxDistSqr = DotProduct( displacement, displacement );
 
     for( int yIndex = 0; yIndex < m_mapDimensions.y; yIndex++ ) {
         for( int xIndex = 0; xIndex < m_mapDimensions.x; xIndex++ ) {
@@ -284,7 +289,7 @@ bool Map::HasLineOfSight( const Actor* fromActor, const Actor* toActor ) const {
             float inters[2] = { 0.f };
             int numHits = sightRay.Raycast( tileBounds, inters );
 
-            if( numHits > 0 ) {
+            if( numHits > 0 && maxDistSqr >= inters[0] * inters[0] ) {
                 return false;
             }
         }
