@@ -10,6 +10,20 @@ class Tags;
 class Tile;
 
 
+enum AttackType {
+    ATTACK_NONE = -1,
+    ATTACK_MELEE,
+    ATTACK_RANGED
+};
+
+struct WeaponInfo {
+    AttackType type = ATTACK_NONE;
+    float range = -1.f;
+    float damage = 0.f;
+    float coneWidthDegrees = 0.f;
+};
+
+
 class Item : public Entity {
     friend class ItemDef;
 
@@ -38,6 +52,8 @@ class Item : public Entity {
     std::string GetAttackAnim() const;
     float GetAttackRange() const;
     float GetAttackDamage() const;
+    float GetAttackConeWidth() const;
+    WeaponInfo GetWeaponInfo() const;
 
     void SetWorldPosition( const Vec2& worldPosition );
 

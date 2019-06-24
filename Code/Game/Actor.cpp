@@ -89,6 +89,7 @@ void Actor::Startup() {
         "RecurveBow",
         "Bow",
         "Dagger",
+        "Spear",
         "BootsF",
         "PlateShoulderM"
     };
@@ -212,9 +213,13 @@ void Actor::SetAttackTarget( Actor* target ) {
 
 
 void Actor::Attack() {
-    float damage = GetAttackDamage();
+    // Get weapon parameters
+    WeaponInfo weaponInfo = GetWeaponInfo();
 
-    m_attackTarget->TakeDamage( damage );
+    if( weaponInfo.type == ATTACK_MELEE ) {
+        Vec2 facing = m_animator->GetCurrentFacing();
+        m_attackTarget->TakeDamage( weaponInfo.damage );
+    }
 }
 
 
@@ -252,6 +257,12 @@ float Actor::GetAttackRange() const {
 float Actor::GetAttackDamage() const {
     const Item* weapon = m_inventory->GetItemInSlot( ITEM_SLOT_WEAPON );
     return weapon->GetAttackDamage();
+}
+
+
+WeaponInfo Actor::GetWeaponInfo() const {
+    const Item* weapon = m_inventory->GetItemInSlot( ITEM_SLOT_WEAPON );
+    return weapon->GetWeaponInfo();
 }
 
 

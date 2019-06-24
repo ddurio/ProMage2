@@ -19,6 +19,7 @@ class Animator {
 
     const SpriteDef& GetCurrentSpriteDef() const;
     const SpriteDef& GetPortraitSpriteDef() const;
+    Vec2 GetCurrentFacing() const;
 
     private:
     Actor* m_myActor = nullptr;

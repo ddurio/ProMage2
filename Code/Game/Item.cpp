@@ -161,6 +161,44 @@ float Item::GetAttackDamage() const {
 }
 
 
+float Item::GetAttackConeWidth() const {
+    return m_itemDef->GetProperty( "attackConeWidth", 0.f );
+}
+
+
+WeaponInfo Item::GetWeaponInfo() const {
+    WeaponInfo info;
+
+    if( GetItemSlot() != ITEM_SLOT_WEAPON ) {
+        return info;
+    }
+
+
+    // Get attack type
+    const std::vector< Tags >& itemSets = GetItemSets();
+    int numItemSets = (int)itemSets.size();
+
+    for( int setIndex = 0; setIndex < numItemSets; setIndex++ ) {
+        const Tags& itemSet = itemSets[setIndex];
+
+        if( itemSet.HasTags( "melee" ) ) {
+            info.type = ATTACK_MELEE;
+            break;
+        } else if( itemSet.HasTags( "ranged" ) ) {
+            info.type = ATTACK_RANGED;
+            break;
+        }
+    }
+
+    // Get range/damage/coneWidth
+    info.range = GetAttackRange();
+    info.damage = GetAttackDamage();
+    info.coneWidthDegrees = GetAttackConeWidth();
+
+    return info;
+}
+
+
 void Item::SetWorldPosition( const Vec2& worldPosition ) {
     m_transform.position = worldPosition;
 }

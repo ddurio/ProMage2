@@ -252,8 +252,8 @@ Actor* Map::GetActorInSight( const Actor* fromActor ) const {
     for( int actorIndex = 0; actorIndex < numActors; actorIndex++ ) {
         Actor* toActor = m_actors[actorIndex];
 
-        if( toActor != nullptr && toActor->IsAlive() && toActor != fromActor &&
-            HasLineOfSight( fromActor, toActor ) ) {
+        if( toActor != nullptr && toActor->IsAlive() && toActor->IsKillable()
+            && toActor != fromActor && HasLineOfSight( fromActor, toActor ) ) {
             // DFS1FIXME: Can add faction comparison here if desired
             return toActor;
         }

@@ -94,6 +94,7 @@
     <ActorDef name="SkeletonMale">
         <!-- Male item set added via Body -->
         <ItemSet name="Melee"/>
+        <ItemSet name="Ranged"/>
 
         <Stats>
             <Health value="100"/>

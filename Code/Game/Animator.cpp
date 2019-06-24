@@ -13,11 +13,11 @@
 
 Animator::Animator( Actor* myActor ) :
     m_myActor( myActor ) {
+    m_currentAnim = IsoSpriteAnimDef::GetDefinition( ANIM_PAPER_DOLL_IDLE );
+
     GameState* state = g_theGame->GetGameState();
     m_animTimer = new Timer( state->GetStateClock() );
-    m_animTimer->Start( 1.f );
-
-    m_currentAnim = IsoSpriteAnimDef::GetDefinition( ANIM_PAPER_DOLL_IDLE );
+    m_animTimer->Start( m_currentAnim->GetDuration() );
 }
 
 
@@ -47,7 +47,8 @@ void Animator::Update( float deltaSeconds ) {
 
     if( m_currentAnim != newAnim ) {
         m_currentAnim = newAnim;
-        m_animTimer->Restart();
+        //m_animTimer->Restart();
+        m_animTimer->Start( m_currentAnim->GetDuration() );
         m_prevElapsedTime = 0.f;
     }
 
@@ -70,8 +71,13 @@ const SpriteDef& Animator::GetPortraitSpriteDef() const {
 }
 
 
+Vec2 Animator::GetCurrentFacing() const {
+    return m_prevMoveDir;
+}
+
+
 void Animator::TriggerAnimEvents() {
-    float elapsedTime = m_animTimer->GetElapsedTime();
+    float elapsedTime = m_animTimer->GetNormalizedElapsedTime();
 
     Strings events = m_currentAnim->GetEventsInTimeRangeAndDirection( m_prevElapsedTime, elapsedTime, m_prevMoveDir );
     int numEvents = (int)events.size();

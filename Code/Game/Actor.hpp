@@ -12,6 +12,8 @@ class StatsManager;
 class Tile;
 class Timer;
 
+struct WeaponInfo;
+
 
 // ORDER MUST MATCH PaperDoll.hlsl FOR ALL
 enum PaperDollSlot {
@@ -62,12 +64,12 @@ class Actor : public Entity {
     Actor* GetAttackTarget() const;
     float GetAttackRange() const;
     float GetAttackDamage() const;
+    WeaponInfo GetWeaponInfo() const;
 
     private:
     const Definition<Actor>* m_actorDef = nullptr;
     Inventory* m_inventory = nullptr;
     ActorController* m_controller = nullptr;
-    //StatsManager* m_statsManager = nullptr;
 
     Vec2 m_moveDir = Vec2::ZERO;
 

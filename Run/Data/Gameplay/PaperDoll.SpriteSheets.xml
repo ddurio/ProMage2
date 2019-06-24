@@ -1,91 +1,91 @@
 <SpriteSheets>
     <!-- Body -->
-    <SpriteSheet name="PaperDoll.Body.Human.F1"     texturePath="Data/Images/Humanoids/Doll/body_human_f_1.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Body.Human.F2"     texturePath="Data/Images/Humanoids/Doll/body_human_f_2.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Body.Human.F3"     texturePath="Data/Images/Humanoids/Doll/body_human_f_3.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Body.Human.F1"     texturePath="Data/Images/Humanoids/Doll/body_human_f_1.png"                     gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Body.Human.F2"     texturePath="Data/Images/Humanoids/Doll/body_human_f_2.png"                     gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Body.Human.F3"     texturePath="Data/Images/Humanoids/Doll/body_human_f_3.png"                     gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Body.Human.M1"     texturePath="Data/Images/Humanoids/Doll/body_human_m_1.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Body.Human.M2"     texturePath="Data/Images/Humanoids/Doll/body_human_m_2.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Body.Human.M3"     texturePath="Data/Images/Humanoids/Doll/body_human_m_3.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Body.Human.M1"     texturePath="Data/Images/Humanoids/Doll/body_human_m_1.png"                     gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Body.Human.M2"     texturePath="Data/Images/Humanoids/Doll/body_human_m_2.png"                     gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Body.Human.M3"     texturePath="Data/Images/Humanoids/Doll/body_human_m_3.png"                     gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Body.Orc.F1"       texturePath="Data/Images/Humanoids/Doll/body_orc_f_1.png"        gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Body.Orc.M1"       texturePath="Data/Images/Humanoids/Doll/body_orc_m_1.png"        gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Body.Orc.F1"       texturePath="Data/Images/Humanoids/Doll/body_orc_f_1.png"                       gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Body.Orc.M1"       texturePath="Data/Images/Humanoids/Doll/body_orc_m_1.png"                       gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Body.Skeleton.M1"  texturePath="Data/Images/Humanoids/Doll/body_skeleton_m_1.png"   gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Body.Skeleton.M1"  texturePath="Data/Images/Humanoids/Doll/body_skeleton_m_1.png"                  gridLayout="13,21"/>
 
     <!-- Head -->
-    <SpriteSheet name="PaperDoll.Ears.1"            texturePath="Data/Images/Humanoids/Head/Ears/ears_human_1.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Ears.2"            texturePath="Data/Images/Humanoids/Head/Ears/ears_human_2.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Ears.3"            texturePath="Data/Images/Humanoids/Head/Ears/ears_human_3.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Ears.1"            texturePath="Data/Images/Humanoids/Head/Ears/ears_human_1.png"                  gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Ears.2"            texturePath="Data/Images/Humanoids/Head/Ears/ears_human_2.png"                  gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Ears.3"            texturePath="Data/Images/Humanoids/Head/Ears/ears_human_3.png"                  gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Hair.F1"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_bangs_long_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.F2"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_bangs_short_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.F3"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_long_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.F4"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_loose_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.F5"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_ponytail_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.F6"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_shoulder_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.F7"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_unkempt_f.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.F1"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_bangs_long_f.png"      gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.F2"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_bangs_short_f.png"     gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.F3"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_long_f.png"            gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.F4"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_loose_f.png"           gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.F5"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_ponytail_f.png"        gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.F6"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_shoulder_f.png"        gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.F7"           texturePath="Data/Images/Humanoids/Head/Hair/Female/hair_unkempt_f.png"         gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Hair.M1"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_bedhead_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.M2"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_long_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.M3"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_messy_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.M4"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_parted_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hair.M5"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_shorthawk_m.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.M1"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_bedhead_m.png"           gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.M2"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_long_m.png"              gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.M3"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_messy_m.png"             gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.M4"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_parted_m.png"            gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hair.M5"           texturePath="Data/Images/Humanoids/Head/Hair/Male/hair_shorthawk_m.png"         gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Hat.1"             texturePath="Data/Images/Humanoids/Head/Hats/head_bandana.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hat.2"             texturePath="Data/Images/Humanoids/Head/Hats/head_leather_cap.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Hat.3"             texturePath="Data/Images/Humanoids/Head/Hats/head_plate_helmet.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hat.1"             texturePath="Data/Images/Humanoids/Head/Hats/head_bandana.png"                  gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hat.2"             texturePath="Data/Images/Humanoids/Head/Hats/head_leather_cap.png"              gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Hat.3"             texturePath="Data/Images/Humanoids/Head/Hats/head_plate_helmet.png"             gridLayout="13,21"/>
 
     <!-- Chest -->
-    <SpriteSheet name="PaperDoll.Chest.F1"          texturePath="Data/Images/Humanoids/Chest/Female/chest_dress_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.F2"          texturePath="Data/Images/Humanoids/Chest/Female/chest_dress_short_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.F3"          texturePath="Data/Images/Humanoids/Chest/Female/chest_f_1.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.F4"          texturePath="Data/Images/Humanoids/Chest/Female/chest_f_2.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.F5"          texturePath="Data/Images/Humanoids/Chest/Female/chest_leather_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.F6"          texturePath="Data/Images/Humanoids/Chest/Female/chest_plate_f.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.F1"          texturePath="Data/Images/Humanoids/Chest/Female/chest_dress_f.png"              gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.F2"          texturePath="Data/Images/Humanoids/Chest/Female/chest_dress_short_f.png"        gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.F3"          texturePath="Data/Images/Humanoids/Chest/Female/chest_f_1.png"                  gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.F4"          texturePath="Data/Images/Humanoids/Chest/Female/chest_f_2.png"                  gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.F5"          texturePath="Data/Images/Humanoids/Chest/Female/chest_leather_f.png"            gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.F6"          texturePath="Data/Images/Humanoids/Chest/Female/chest_plate_f.png"              gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Chest.M1"          texturePath="Data/Images/Humanoids/Chest/Male/chest_leather_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.M2"          texturePath="Data/Images/Humanoids/Chest/Male/chest_leather_sleeveless_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.M3"          texturePath="Data/Images/Humanoids/Chest/Male/chest_plate_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.M4"          texturePath="Data/Images/Humanoids/Chest/Male/chest_plate_sleeveless_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.M5"          texturePath="Data/Images/Humanoids/Chest/Male/chest_shirt_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.M6"          texturePath="Data/Images/Humanoids/Chest/Male/chest_shirtbelt_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Chest.M7"          texturePath="Data/Images/Humanoids/Chest/Male/chest_tunic_m.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.M1"          texturePath="Data/Images/Humanoids/Chest/Male/chest_leather_m.png"              gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.M2"          texturePath="Data/Images/Humanoids/Chest/Male/chest_leather_sleeveless_m.png"   gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.M3"          texturePath="Data/Images/Humanoids/Chest/Male/chest_plate_m.png"                gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.M4"          texturePath="Data/Images/Humanoids/Chest/Male/chest_plate_sleeveless_m.png"     gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.M5"          texturePath="Data/Images/Humanoids/Chest/Male/chest_shirt_m.png"                gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.M6"          texturePath="Data/Images/Humanoids/Chest/Male/chest_shirtbelt_m.png"            gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Chest.M7"          texturePath="Data/Images/Humanoids/Chest/Male/chest_tunic_m.png"                gridLayout="13,21"/>
 
     <!-- Shoulder -->
-    <SpriteSheet name="PaperDoll.Shoulder.F1"       texturePath="Data/Images/Humanoids/Shoulder/Female/shoulder_leather_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Shoulder.F2"       texturePath="Data/Images/Humanoids/Shoulder/Female/shoulder_plate_f.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Shoulder.F1"       texturePath="Data/Images/Humanoids/Shoulder/Female/shoulder_leather_f.png"      gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Shoulder.F2"       texturePath="Data/Images/Humanoids/Shoulder/Female/shoulder_plate_f.png"        gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Shoulder.M1"       texturePath="Data/Images/Humanoids/Shoulder/Male/shoulder_leather_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Shoulder.M2"       texturePath="Data/Images/Humanoids/Shoulder/Male/shoulder_plate_m.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Shoulder.M1"       texturePath="Data/Images/Humanoids/Shoulder/Male/shoulder_leather_m.png"        gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Shoulder.M2"       texturePath="Data/Images/Humanoids/Shoulder/Male/shoulder_plate_m.png"          gridLayout="13,21"/>
 
     <!-- Legs -->
-    <SpriteSheet name="PaperDoll.Legs.F1"           texturePath="Data/Images/Humanoids/Legs/Female/legs_f_1.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Legs.F2"           texturePath="Data/Images/Humanoids/Legs/Female/legs_leather_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Legs.F3"           texturePath="Data/Images/Humanoids/Legs/Female/legs_plate_f.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Legs.F1"           texturePath="Data/Images/Humanoids/Legs/Female/legs_f_1.png"                    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Legs.F2"           texturePath="Data/Images/Humanoids/Legs/Female/legs_leather_f.png"              gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Legs.F3"           texturePath="Data/Images/Humanoids/Legs/Female/legs_plate_f.png"                gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Legs.M1"           texturePath="Data/Images/Humanoids/Legs/Male/legs_jeans_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Legs.M2"           texturePath="Data/Images/Humanoids/Legs/Male/legs_leather_brown_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Legs.M3"           texturePath="Data/Images/Humanoids/Legs/Male/legs_leather_white_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Legs.M4"           texturePath="Data/Images/Humanoids/Legs/Male/legs_pants_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Legs.M5"           texturePath="Data/Images/Humanoids/Legs/Male/legs_plain_white_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Legs.M6"           texturePath="Data/Images/Humanoids/Legs/Male/legs_plate_m.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Legs.M1"           texturePath="Data/Images/Humanoids/Legs/Male/legs_jeans_m.png"                  gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Legs.M2"           texturePath="Data/Images/Humanoids/Legs/Male/legs_leather_brown_m.png"          gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Legs.M3"           texturePath="Data/Images/Humanoids/Legs/Male/legs_leather_white_m.png"          gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Legs.M4"           texturePath="Data/Images/Humanoids/Legs/Male/legs_pants_m.png"                  gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Legs.M5"           texturePath="Data/Images/Humanoids/Legs/Male/legs_plain_white_m.png"            gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Legs.M6"           texturePath="Data/Images/Humanoids/Legs/Male/legs_plate_m.png"                  gridLayout="13,21"/>
 
     <!-- Feet -->
-    <SpriteSheet name="PaperDoll.Feet.F1"           texturePath="Data/Images/Humanoids/Feet/Female/feet_boots_brown_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.F2"           texturePath="Data/Images/Humanoids/Feet/Female/feet_shoes_brown_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.F3"           texturePath="Data/Images/Humanoids/Feet/Female/feet_boots_plate_f.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.F4"           texturePath="Data/Images/Humanoids/Feet/Female/feet_slippers_brown_f.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.F1"           texturePath="Data/Images/Humanoids/Feet/Female/feet_boots_brown_f.png"          gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.F2"           texturePath="Data/Images/Humanoids/Feet/Female/feet_shoes_brown_f.png"          gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.F3"           texturePath="Data/Images/Humanoids/Feet/Female/feet_boots_plate_f.png"          gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.F4"           texturePath="Data/Images/Humanoids/Feet/Female/feet_slippers_brown_f.png"       gridLayout="13,21"/>
 
-    <SpriteSheet name="PaperDoll.Feet.M1"           texturePath="Data/Images/Humanoids/Feet/Male/feet_boots_brown_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.M2"           texturePath="Data/Images/Humanoids/Feet/Male/feet_shoes_black_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.M3"           texturePath="Data/Images/Humanoids/Feet/Male/feet_boots_plate_m.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Feet.M4"           texturePath="Data/Images/Humanoids/Feet/Male/feet_shoes_brown_m.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.M1"           texturePath="Data/Images/Humanoids/Feet/Male/feet_boots_brown_m.png"            gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.M2"           texturePath="Data/Images/Humanoids/Feet/Male/feet_shoes_black_m.png"            gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.M3"           texturePath="Data/Images/Humanoids/Feet/Male/feet_boots_plate_m.png"            gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Feet.M4"           texturePath="Data/Images/Humanoids/Feet/Male/feet_shoes_brown_m.png"            gridLayout="13,21"/>
 
     <!-- Weapons -->
-    <SpriteSheet name="PaperDoll.Weapon.Bow"        texturePath="Data/Images/Humanoids/Weapons/bow.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Weapon.RecurveBow" texturePath="Data/Images/Humanoids/Weapons/recurvebow.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Weapon.Dagger"     texturePath="Data/Images/Humanoids/Weapons/dagger.png"    gridLayout="13,21"/>
-    <SpriteSheet name="PaperDoll.Weapon.Longsword"  texturePath="Data/Images/Humanoids/Weapons/longsword.png"    gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Weapon.Bow"        texturePath="Data/Images/Humanoids/Weapons/bow.png"                             gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Weapon.RecurveBow" texturePath="Data/Images/Humanoids/Weapons/recurvebow.png"                      gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Weapon.Dagger"     texturePath="Data/Images/Humanoids/Weapons/dagger.png"                          gridLayout="13,21"/>
+    <SpriteSheet name="PaperDoll.Weapon.Spear"      texturePath="Data/Images/Humanoids/Weapons/spear.png"                           gridLayout="13,21"/>
 
 </SpriteSheets>
