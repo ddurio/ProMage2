@@ -24,6 +24,7 @@ void EnemyController::Update( float deltaSeconds ) {
         m_chaseTarget = theMap->GetActorInSight( m_myActor );
 
         if( m_chaseTarget == nullptr ) {
+            m_myActor->SetAttackTarget( nullptr );
             return; // DFS1FIXME: Just wait for now
         }
     }
@@ -51,7 +52,7 @@ void EnemyController::Update( float deltaSeconds ) {
         targetDisplacement = m_targetLastKnownPos - myPos;
         SetMoveDir( targetDisplacement.GetNormalized() );
 
-        if( targetDisplacement.GetLengthSquared() < 0.01f ) {
+        if( targetDisplacement.GetLengthSquared() < 0.01f ) { // Out of sight, out of mind
             m_chaseTarget = nullptr;
             m_chaseLastKnownPos = false;
             SetMoveDir( Vec2::ZERO );

@@ -37,6 +37,7 @@ class Item : public Entity {
     int GetValue() const;
     std::string GetAttackAnim() const;
     float GetAttackRange() const;
+    float GetAttackDamage() const;
 
     void SetWorldPosition( const Vec2& worldPosition );
 

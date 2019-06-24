@@ -125,17 +125,17 @@
     <!-- Weapons -->
     <ItemDef name="Bow" slot="Weapon" spriteSheet="PaperDoll.Weapon.Bow">
         <ItemSet name="Ranged"/>
-        <Attack anim="PaperDol.Shoot.Right"/>
+        <Attack anim="PaperDol.Shoot"/>
         <Portrait anim="PaperDoll.Shoot.Right" frame="3"/>
     </ItemDef>
     <ItemDef name="RecurveBow" slot="Weapon" spriteSheet="PaperDoll.Weapon.RecurveBow">
         <ItemSet name="Ranged"/>
-        <Attack anim="PaperDol.Shoot.Right"/>
+        <Attack anim="PaperDol.Shoot"/>
         <Portrait anim="PaperDoll.Shoot.Right" frame="3"/>
     </ItemDef>
     <ItemDef name="Dagger" slot="Weapon" spriteSheet="PaperDoll.Weapon.Dagger">
         <ItemSet name="Melee"/>
-        <Attack anim="PaperDoll.Slash.Right"/>
+        <Attack range="0.9" damage="10" anim="PaperDoll.Slash"/>
         <Portrait anim="PaperDoll.Walk.Left" frame="4"/>
     </ItemDef>
 </ItemDefinitions>

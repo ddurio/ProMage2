@@ -53,6 +53,7 @@ class Actor : public Entity {
 
     bool InteractWithActor( Actor* instigator );
     void SetAttackTarget( Actor* target );
+    void Attack();
 
     std::string GetActorType() const;
     Vec2 GetMoveDir() const;
@@ -60,12 +61,13 @@ class Actor : public Entity {
     Inventory* GetInventory() const;
     Actor* GetAttackTarget() const;
     float GetAttackRange() const;
+    float GetAttackDamage() const;
 
     private:
     const Definition<Actor>* m_actorDef = nullptr;
     Inventory* m_inventory = nullptr;
     ActorController* m_controller = nullptr;
-    StatsManager* m_statsManager = nullptr;
+    //StatsManager* m_statsManager = nullptr;
 
     Vec2 m_moveDir = Vec2::ZERO;
 

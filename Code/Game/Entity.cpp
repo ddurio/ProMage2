@@ -10,6 +10,7 @@
 
 #include "Game/Game.hpp"
 #include "Game/Map.hpp"
+#include "Game/StatsManager.hpp"
 
 
 class RigidBody2D;
@@ -74,8 +75,12 @@ bool Entity::IsMovable() const {
 }
 
 
-int Entity::GetHealth() const {
-    return m_health;
+float Entity::GetHealth() const {
+    if( m_statsManager != nullptr ) {
+        return m_statsManager->GetHealth();
+    }
+
+    return 1.f;
 }
 
 
@@ -110,12 +115,11 @@ void Entity::Die() {
 }
 
 
-void Entity::TakeDamage( int damageToTake ) {
+void Entity::TakeDamage( float damageToTake ) {
     g_theAudio->PlaySound( m_hitSound );
-    m_health -= damageToTake;
 
-    if( m_health <= 0 ) {
-        Die();
+    if( m_statsManager != nullptr ) {
+        m_statsManager->TakeDamage( damageToTake );
     }
 }
 

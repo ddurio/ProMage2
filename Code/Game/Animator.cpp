@@ -82,11 +82,10 @@ void Animator::TriggerAnimEvents() {
 
         const std::string& command = eventSplitStr[0];
 
-        /*
         if( StringICmp( command, "dealDamage" ) ) {
-            m_myUnit->DealDamage( m_attackVictim );
-        } else */
-        if( StringICmp( command, "playSound" ) ) {
+            //m_myUnit->DealDamage( m_attackVictim );
+            m_myActor->Attack();
+        } else if( StringICmp( command, "playSound" ) ) {
             GUARANTEE_OR_DIE( (int)eventSplitStr.size() > 1, "(Animator) PlaySound anim event missing required sound name parameter" );
 
             SoundID soundID = g_theAudio->GetOrCreateSound( eventSplitStr[1], true );

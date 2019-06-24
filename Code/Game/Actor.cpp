@@ -143,7 +143,7 @@ void Actor::Update( float deltaSeconds ) {
 
     // Update Position
     if( IsAlive() ) {
-        //m_statsManager->TakeDamage( 10.f * deltaSeconds );
+        //TakeDamage( 10.f * deltaSeconds );
 
         float moveSpeed = m_statsManager->GetMoveSpeed();
         Vec2 frameMovement = m_moveDir * moveSpeed * deltaSeconds;
@@ -211,6 +211,13 @@ void Actor::SetAttackTarget( Actor* target ) {
 }
 
 
+void Actor::Attack() {
+    float damage = GetAttackDamage();
+
+    m_attackTarget->TakeDamage( damage );
+}
+
+
 std::string Actor::GetActorType() const {
     return m_actorDef->GetDefintionType();
 }
@@ -239,6 +246,12 @@ Actor* Actor::GetAttackTarget() const {
 float Actor::GetAttackRange() const {
     const Item* weapon = m_inventory->GetItemInSlot( ITEM_SLOT_WEAPON );
     return weapon->GetAttackRange();
+}
+
+
+float Actor::GetAttackDamage() const {
+    const Item* weapon = m_inventory->GetItemInSlot( ITEM_SLOT_WEAPON );
+    return weapon->GetAttackDamage();
 }
 
 

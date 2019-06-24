@@ -39,6 +39,7 @@ enum FactionID {
 class GPUMesh;
 class Map;
 class Material;
+class StatsManager;
 class Texture;
 
 
@@ -56,7 +57,7 @@ class Entity {
     virtual void Render() const = 0;
 
     virtual void Die();
-    void TakeDamage( int damageToTake );
+    void TakeDamage( float damageToTake );
 
     bool IsAlive() const;
     virtual bool IsGarbage() const;
@@ -69,7 +70,7 @@ class Entity {
     const FactionID GetFaction() const;
     const EntityType GetEntityType() const;
     RigidBody2D* GetRigidBody() const;
-    int GetHealth() const;
+    float GetHealth() const;
 
     void SetFaction( FactionID faction );
     void SetWorldPosition( const Vec2& worldPosition );
@@ -89,8 +90,6 @@ class Entity {
     float m_physicsRadius = 0.f;
     float m_cosmeticRadius = 0.f;
 
-    int m_health = 1;
-
     bool m_canSee  = true;
     bool m_canWalk = true;
     bool m_canFly  = false;
@@ -105,6 +104,8 @@ class Entity {
 
     GPUMesh* m_mesh = nullptr;
     Material* m_material = nullptr;
+
+    StatsManager* m_statsManager = nullptr;
 
     OBB2 m_localBounds = OBB2();
     AABB2 m_spriteUVs = AABB2::ZEROTOONE;

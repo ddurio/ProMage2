@@ -23,7 +23,10 @@ Definition<Item>::Definition( const XMLElement& element ) {
 
     const XMLElement* childEle = element.FirstChildElement();
     std::vector< Tags > itemSets;
+
     std::string attackAnim = ANIM_PAPER_DOLL_IDLE;
+    float attackRange = -1.f;
+    float attackDamage = 0.f;
 
     float portraitTime = 0.f;
     std::string portraitAnim = Stringf( "%s.%s", ANIM_PAPER_DOLL_IDLE, "Down" );
@@ -51,20 +54,24 @@ Definition<Item>::Definition( const XMLElement& element ) {
                 portraitTime = anim->GetTimeFromFrame( frame );
             }
         } else if( tagName == "Attack" ) {
-            std::string animShortName = ParseXMLAttribute( *childEle, "anim", "" );
-            GUARANTEE_OR_DIE( animShortName != "", "(ItemDef) Attack tag missing required attribute 'anim'" );
+            attackRange  = ParseXMLAttribute( *childEle, "range",  attackRange );
+            attackDamage = ParseXMLAttribute( *childEle, "damage", attackDamage );
+            attackAnim   = ParseXMLAttribute( *childEle, "anim",   attackAnim );
         }
 
         childEle = childEle->NextSiblingElement();
     }
 
     // Set Properties
-    m_properties.SetValue( "slot",          itemSlot );
-    m_properties.SetValue( "value",         moneyValue );
-    m_properties.SetValue( "spriteSheet",   spriteName );
-    m_properties.SetValue( "itemSets",      itemSets );
+    m_properties.SetValue( "slot",          itemSlot     );
+    m_properties.SetValue( "value",         moneyValue   );
+    m_properties.SetValue( "spriteSheet",   spriteName   );
+    m_properties.SetValue( "itemSets",      itemSets     );
 
-    m_properties.SetValue( "attackAnim",    attackAnim );
+    m_properties.SetValue( "attackAnim",    attackAnim   );
+    m_properties.SetValue( "attackRange",   attackRange  );
+    m_properties.SetValue( "attackDamage",  attackDamage );
+
     m_properties.SetValue( "portraitAnim",  portraitAnim );
     m_properties.SetValue( "portraitTime",  portraitTime );
 

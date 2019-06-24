@@ -156,6 +156,11 @@ float Item::GetAttackRange() const {
 }
 
 
+float Item::GetAttackDamage() const {
+    return m_itemDef->GetProperty( "attackDamage", 0.f );
+}
+
+
 void Item::SetWorldPosition( const Vec2& worldPosition ) {
     m_transform.position = worldPosition;
 }

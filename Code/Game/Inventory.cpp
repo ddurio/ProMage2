@@ -525,7 +525,7 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
 
         ImGui::SetDragDropPayload( "ItemTile", &sourcePayload, sizeof( ItemTilePayload ) );
         ImGui::Image( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ) );
-        ImGui::Text( "%x", this );
+        //ImGui::Text( "%x", this );
 
         ImGui::EndDragDropSource();
     }
@@ -558,7 +558,6 @@ void Inventory::CreateMoneyTile( const ImVec2& tileSize ) {
 
     // Center the text (and calc size in the process)
     ImGuiStyle& style = ImGui::GetStyle();
-    //style.ItemSpacing.y *= 4.f;
 
     std::string moneyStr = Stringf( "%d", m_money );
     ImVec2 textSize = ImGui::CalcTextSize( moneyStr.c_str() );
