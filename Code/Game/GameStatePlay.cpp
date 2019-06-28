@@ -94,9 +94,6 @@ void GameStatePlay::Startup() {
     m_map = new Map( "Floor0", "Island", m_mapRNG );
     m_map->Startup();
 
-    //const Actor* player0 = m_map->SpawnNewActor( "Girl", "Player", Vec2( 2.5f, 3.5f ) );
-    //((TopDownFollowCamera*)m_gameCamera)->SetFollowTarget( player0 );
-
     g_theEventSystem->Subscribe( "playerDeath", this, &GameStatePlay::HandlePlayerDeath );
 
     BuildPauseUI();

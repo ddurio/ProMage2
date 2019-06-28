@@ -135,12 +135,12 @@
     </ItemDef>
     <ItemDef name="Dagger" slot="Weapon" spriteSheet="PaperDoll.Weapon.Dagger">
         <ItemSet name="Melee"/>
-        <Attack range="0.9" damage="10" anim="PaperDoll.Slash"/>
+        <Attack range="0.9" damage="10" coneWidth="90" anim="PaperDoll.Slash"/>
         <Portrait anim="PaperDoll.Walk.Left" frame="4"/>
     </ItemDef>
     <ItemDef name="Spear" slot="Weapon" spriteSheet="PaperDoll.Weapon.Spear">
         <ItemSet name="Melee"/>
-        <Attack range="1" damage="10" anim="PaperDoll.Thrust"/>
+        <Attack range="1" damage="10" coneWidth="90" anim="PaperDoll.Thrust"/>
         <Portrait anim="PaperDoll.Walk.Left" frame="1"/>
     </ItemDef>
 </ItemDefinitions>

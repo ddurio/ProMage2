@@ -24,7 +24,8 @@ void EnemyController::Update( float deltaSeconds ) {
         m_chaseTarget = theMap->GetActorInSight( m_myActor );
 
         if( m_chaseTarget == nullptr ) {
-            m_myActor->SetAttackTarget( nullptr );
+            m_myActor->StartAttack( false );
+            //m_myActor->SetAttackTarget( nullptr );
             return; // DFS1FIXME: Just wait for now
         }
     }
@@ -41,10 +42,12 @@ void EnemyController::Update( float deltaSeconds ) {
         m_targetLastKnownPos = targetPos;
 
         if( targetDisplacement.GetLengthSquared() < attackRange * attackRange ) {
-            m_myActor->SetAttackTarget( m_chaseTarget );
+            m_myActor->StartAttack();
+            //m_myActor->SetAttackTarget( m_chaseTarget );
             SetMoveDir( Vec2::ZERO ); // Stop while attacking
         } else {
-            m_myActor->SetAttackTarget( nullptr );
+            m_myActor->StartAttack( false );
+            //m_myActor->SetAttackTarget( nullptr );
             SetMoveDir( targetDisplacement.GetNormalized() );
         }
     } else { // No LoS, Chase last known position

@@ -31,6 +31,7 @@ void GameInput::Update( float deltaSeconds ) {
     m_toggleInventory   = false;
     m_interact          = false;
     m_escapePressed     = false;
+    m_attack            = false;
 }
 
 
@@ -88,10 +89,13 @@ bool GameInput::HandleKeyReleased( unsigned char keyCode ) {
 
 
 bool GameInput::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f */ ) {
-    /*
+    UNUSED( scrollAmount );
+
     switch( event ) {
         case(MOUSE_EVENT_LBUTTON_DOWN): {
+            m_attack = true;
             return true;
+            /*
         } case(MOUSE_EVENT_LBUTTON_UP): {
             return true;
         } case(MOUSE_EVENT_RBUTTON_DOWN): {
@@ -101,11 +105,9 @@ bool GameInput::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f 
         } case(MOUSE_EVENT_SCROLL): {
             m_zoomAmount = scrollAmount;
             return true;
+            */
         }
     }
-    */
-    UNUSED( event );
-    UNUSED( scrollAmount );
 
     return false;
 }
@@ -127,6 +129,11 @@ bool GameInput::WasInventoryToggled() const {
 
 bool GameInput::ShouldInteract() const {
     return m_interact;
+}
+
+
+bool GameInput::ShouldAttack() const {
+    return m_attack;
 }
 
 

@@ -207,8 +207,8 @@ bool Actor::InteractWithActor( Actor* instigator ) {
 }
 
 
-void Actor::SetAttackTarget( Actor* target ) {
-    m_attackTarget = target;
+void Actor::StartAttack( bool isAttacking /*= true*/ ) {
+    m_isAttacking = isAttacking;
 }
 
 
@@ -218,7 +218,12 @@ void Actor::Attack() {
 
     if( weaponInfo.type == ATTACK_MELEE ) {
         Vec2 facing = m_animator->GetCurrentFacing();
-        m_attackTarget->TakeDamage( weaponInfo.damage );
+
+        Actor* attackTarget = m_map->GetActorInCone( GetPosition(), facing, weaponInfo.coneDotProduct, weaponInfo.range, this );
+
+        if( attackTarget != nullptr ) {
+            attackTarget->TakeDamage( weaponInfo.damage );
+        }
     }
 }
 
@@ -243,8 +248,8 @@ Inventory* Actor::GetInventory() const {
 }
 
 
-Actor* Actor::GetAttackTarget() const {
-    return m_attackTarget;
+bool Actor::IsAttacking() const {
+    return m_isAttacking;
 }
 
 

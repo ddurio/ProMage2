@@ -36,7 +36,7 @@ void Animator::Update( float deltaSeconds ) {
         animName = ANIM_PAPER_DOLL_DIE;
     } else if( moveDir != Vec2::ZERO ) {
         animName = ANIM_PAPER_DOLL_WALK;
-    } else if( m_myActor->GetAttackTarget() != nullptr ) {
+    } else if( m_myActor->IsAttacking() ) {
         Inventory* myInventory = m_myActor->GetInventory();
         Item* weapon = myInventory->GetItemInSlot( ITEM_SLOT_WEAPON );
 
@@ -47,7 +47,6 @@ void Animator::Update( float deltaSeconds ) {
 
     if( m_currentAnim != newAnim ) {
         m_currentAnim = newAnim;
-        //m_animTimer->Restart();
         m_animTimer->Start( m_currentAnim->GetDuration() );
         m_prevElapsedTime = 0.f;
     }
@@ -76,6 +75,11 @@ Vec2 Animator::GetCurrentFacing() const {
 }
 
 
+bool Animator::AnimHasFinished() const {
+    return m_animTimer->HasFinshed();
+}
+
+
 void Animator::TriggerAnimEvents() {
     float elapsedTime = m_animTimer->GetNormalizedElapsedTime();
 
@@ -89,7 +93,6 @@ void Animator::TriggerAnimEvents() {
         const std::string& command = eventSplitStr[0];
 
         if( StringICmp( command, "dealDamage" ) ) {
-            //m_myUnit->DealDamage( m_attackVictim );
             m_myActor->Attack();
         } else if( StringICmp( command, "playSound" ) ) {
             GUARANTEE_OR_DIE( (int)eventSplitStr.size() > 1, "(Animator) PlaySound anim event missing required sound name parameter" );

@@ -20,6 +20,7 @@ class Animator {
     const SpriteDef& GetCurrentSpriteDef() const;
     const SpriteDef& GetPortraitSpriteDef() const;
     Vec2 GetCurrentFacing() const;
+    bool AnimHasFinished() const;
 
     private:
     Actor* m_myActor = nullptr;

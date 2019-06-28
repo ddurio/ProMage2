@@ -3,6 +3,7 @@
 
 
 class Actor;
+class Animator;
 class Inventory;
 class Item;
 class Map;
@@ -31,12 +32,12 @@ class ActorController {
     Map* GetMap() const;
     const StatsManager* GetActorStats() const;
     Inventory* GetActorInventory( const Actor* actor = nullptr ) const;
+    Animator* GetActorAnimator() const;
 
     void SetMoveDir( const Vec2& moveDir ) const;
     void ToggleInventory() const;
 
     void InteractFromInput() const;
-
     void PickupItem( Item* itemToPickup ) const;
 
     void UpdateActorPortrait() const;

@@ -166,6 +166,11 @@ float Item::GetAttackConeWidth() const {
 }
 
 
+float Item::GetAttackConeDotProduct() const {
+    return m_itemDef->GetProperty( "attackConeDot", 1.f );
+}
+
+
 WeaponInfo Item::GetWeaponInfo() const {
     WeaponInfo info;
 
@@ -193,7 +198,7 @@ WeaponInfo Item::GetWeaponInfo() const {
     // Get range/damage/coneWidth
     info.range = GetAttackRange();
     info.damage = GetAttackDamage();
-    info.coneWidthDegrees = GetAttackConeWidth();
+    info.coneDotProduct = GetAttackConeDotProduct();
 
     return info;
 }

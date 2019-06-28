@@ -20,7 +20,7 @@ struct WeaponInfo {
     AttackType type = ATTACK_NONE;
     float range = -1.f;
     float damage = 0.f;
-    float coneWidthDegrees = 0.f;
+    float coneDotProduct = -1.f;
 };
 
 
@@ -53,6 +53,7 @@ class Item : public Entity {
     float GetAttackRange() const;
     float GetAttackDamage() const;
     float GetAttackConeWidth() const;
+    float GetAttackConeDotProduct() const;
     WeaponInfo GetWeaponInfo() const;
 
     void SetWorldPosition( const Vec2& worldPosition );

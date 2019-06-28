@@ -3,6 +3,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Tags.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteAnimDef.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
@@ -28,6 +29,7 @@ Definition<Item>::Definition( const XMLElement& element ) {
     float attackRange = -1.f;
     float attackDamage = 0.f;
     float attackConeWidth = 0.f;
+    float attackConeDot = 1.f;
 
     float portraitTime = 0.f;
     std::string portraitAnim = Stringf( "%s.%s", ANIM_PAPER_DOLL_IDLE, "Down" );
@@ -59,6 +61,7 @@ Definition<Item>::Definition( const XMLElement& element ) {
             attackRange  = ParseXMLAttribute( *childEle, "range",           attackRange );
             attackDamage = ParseXMLAttribute( *childEle, "damage",          attackDamage );
             attackConeWidth = ParseXMLAttribute( *childEle, "coneWidth",    attackConeWidth );
+            attackConeDot = CosDegrees( attackConeWidth * 0.5f );
         }
 
         childEle = childEle->NextSiblingElement();
@@ -74,6 +77,7 @@ Definition<Item>::Definition( const XMLElement& element ) {
     m_properties.SetValue( "attackRange",       attackRange     );
     m_properties.SetValue( "attackDamage",      attackDamage    );
     m_properties.SetValue( "attackConeWidth",   attackConeWidth );
+    m_properties.SetValue( "attackConeDot",     attackConeDot   );
 
     m_properties.SetValue( "portraitAnim",      portraitAnim    );
     m_properties.SetValue( "portraitTime",      portraitTime    );

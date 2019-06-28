@@ -22,6 +22,7 @@ class GameInput {
     Vec2 GetMovementDirection() const;
     bool WasInventoryToggled() const;
     bool ShouldInteract() const;
+    bool ShouldAttack() const;
 
     bool ShouldExitMenu() const;
     bool IsPaused() const;
@@ -31,10 +32,10 @@ class GameInput {
     bool m_pause = false;
     bool m_toggleInventory = false;
     bool m_interact = false;
-    //bool m_changeFloors = false;
+    bool m_attack = false;
 
+    // Key presses
     bool m_escapePressed = false;
-
     bool m_upPressed = false;
     bool m_downPressed = false;
     bool m_leftPressed = false;

@@ -46,6 +46,7 @@ class Map {
     Actor* GetPlayer() const;
     Actor* GetActorInRange( const std::string& typeToFind, const Vec2& worldCoords, float radius ) const;
     Actor* GetActorInSight( const Actor* fromActor ) const;
+    Actor* GetActorInCone( const Vec2& coneCenter, const Vec2& coneDirection, float coneMinDot, float coneRadius, Actor* excludeActor = nullptr ) const;
     bool HasLineOfSight( const Actor* fromActor, const Actor* toActor ) const;
 
     bool IsValidTileCoords( const IntVec2& tileCoords ) const;

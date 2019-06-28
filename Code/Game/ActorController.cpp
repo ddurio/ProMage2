@@ -83,6 +83,11 @@ Inventory* ActorController::GetActorInventory( const Actor* actor /*= nullptr */
 }
 
 
+Animator* ActorController::GetActorAnimator() const {
+    return m_myActor->m_animator;
+}
+
+
 void ActorController::SetMoveDir( const Vec2& moveDir ) const {
     m_myActor->m_moveDir = moveDir;
 }

@@ -263,6 +263,57 @@ Actor* Map::GetActorInSight( const Actor* fromActor ) const {
 }
 
 
+Actor* Map::GetActorInCone( const Vec2& coneCenter, const Vec2& coneDirection, float coneMinDot, float coneRadius, Actor* excludeActor /*= nullptr */ ) const {
+    Vec2 coneDirNorm = coneDirection.GetNormalized();
+    float coneRadiusSqr = coneRadius * coneRadius;
+    int numActors = (int)m_actors.size();
+
+    int bestIndex = -1;
+    float bestFactor = -1.f;
+
+    for( int actorIndex = 0; actorIndex < numActors; actorIndex++ ) {
+        Actor* actor = m_actors[actorIndex];
+
+        if( actor != nullptr && actor->IsAlive() && actor->IsKillable() ) {
+            if( actor == excludeActor ) {
+                continue;
+            }
+
+            Vec2 actorPos = actor->GetPosition();
+            Vec2 displacement = (actorPos - coneCenter).GetNormalized();
+
+            // Is actor within cone radius
+            float dispLengthSqr = displacement.GetLengthSquared();
+            bool actorWithinRadius = (dispLengthSqr <= coneRadiusSqr);
+
+            // Is actor within cone angle
+            float dispDotCone = DotProduct( displacement, coneDirNorm );
+            bool actorWithinAngle = (dispDotCone >= coneMinDot);
+
+            // Valid hit actor, but is it the best so far?
+            if( actorWithinRadius && actorWithinAngle ) {
+                float radiusFactor = RangeMapFloat( dispLengthSqr, 0.f, coneRadiusSqr, 1.f, 0.f );
+                float angleFactor = RangeMapFloat( dispDotCone, coneMinDot, 1.f, 0.f, 1.f );
+
+                float actorFactor = radiusFactor * angleFactor;
+
+                if( bestIndex < 0 || actorFactor > bestFactor ) {
+                    bestIndex = actorIndex;
+                    bestFactor = actorFactor;
+                }
+            }
+        }
+    }
+
+
+    if( bestIndex < 0 ) {
+        return nullptr;
+    }
+
+    return m_actors[bestIndex];
+}
+
+
 bool Map::HasLineOfSight( const Actor* fromActor, const Actor* toActor ) const {
     Vec2 fromPos  = fromActor->GetPosition();
     Vec2 toPos    = toActor->GetPosition();

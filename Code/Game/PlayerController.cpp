@@ -6,6 +6,7 @@
 #include "Engine/Renderer/TextureView2D.hpp"
 
 #include "Game/Actor.hpp"
+#include "Game/Animator.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
 #include "Game/Map.hpp"
@@ -44,6 +45,17 @@ void PlayerController::Update( float deltaSeconds ) {
     // Pickup Item
     if( m_gameInput->ShouldInteract() ) {
         InteractFromInput();
+    }
+
+    // Attack
+    if( m_gameInput->ShouldAttack() ) {
+        m_myActor->StartAttack();
+    } else if( m_myActor->IsAttacking() ) {
+        Animator* myAnimator = GetActorAnimator();
+
+        if( myAnimator->AnimHasFinished() ) {
+            m_myActor->StartAttack( false );
+        }
     }
 
     UpdateHUD();
