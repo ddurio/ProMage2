@@ -8,6 +8,7 @@ class AudioSystem;
 class DevConsole;
 class Entity;
 class Game;
+class ImGuiSystem;
 class InputSystem;
 class PhysicsSystem;
 class RenderContext;
@@ -18,6 +19,7 @@ extern App*             g_theApp;
 extern AudioSystem*     g_theAudio;
 extern DevConsole*      g_theDevConsole;
 extern Game*            g_theGame;
+extern ImGuiSystem*     g_theGui;
 extern InputSystem*     g_theInput;
 extern PhysicsSystem*   g_thePhysicsSystem;
 extern RenderContext*   g_theRenderer;
@@ -54,9 +56,9 @@ constexpr char  DATA_ACTOR_DEFS[]           = "Data/Gameplay/ActorDefs.xml";
 constexpr char  DATA_INVENTORY_SPRITES[]    = "Data/Gameplay/Inventory.xml";
 constexpr char  DATA_ITEM_DEFS[]            = "Data/Gameplay/ItemDefs.xml";
 constexpr char  DATA_MAP_DEFS[]             = "Data/Gameplay/MapDefs.xml";
-constexpr char  DATA_PAPER_DOLL_ANIMS[]     = "Data/Gameplay/PaperDoll.SpriteAnims.xml";
-constexpr char  DATA_PAPER_DOLL_ISO_ANIMS[] = "Data/Gameplay/PaperDoll.IsoAnims.xml";
-constexpr char  DATA_PAPER_DOLL_SPRITES[]   = "Data/Gameplay/PaperDoll.SpriteSheets.xml";
+constexpr char  DATA_PAPER_DOLL_ANIMS[]     = "Data/Gameplay/SpriteAnims.xml";
+constexpr char  DATA_PAPER_DOLL_ISO_ANIMS[] = "Data/Gameplay/IsoAnims.xml";
+constexpr char  DATA_PAPER_DOLL_SPRITES[]   = "Data/Gameplay/SpriteSheets.xml";
 constexpr char  DATA_PROJECT_CONFIG[]       = "Data/ProjectConfig.xml";
 constexpr char  DATA_TILE_DEFS[]            = "Data/Gameplay/TileDefs.xml";
 
@@ -72,5 +74,4 @@ constexpr char  TAG_STAIRS_DOWN[]           = "stairDownAccess";
 constexpr char  TAG_MERCHANT[]              = "merchantAccess";
 
 constexpr char  TEXTURE_GOLD_PILE[]         = "Data/Images/GoldPile.png";
-constexpr char  TEXTURE_TERRAIN[]           = "Data/Images/Terrain_32x32.png";
 

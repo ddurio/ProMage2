@@ -10,6 +10,7 @@
 #include "Engine/Renderer/TextureView2D.hpp"
 
 #include "Game/Game.hpp"
+#include "Game/Inventory.hpp"
 #include "Game/ItemDef.hpp"
 
 
@@ -45,7 +46,6 @@ Item::Item( Map* theMap, const Definition<Item>* itemDef ) :
 void Item::Startup() {
     m_cosmeticRadius = 0.4f; //FIXME: Hard coded value, should be calculated / defined from XML?
     // DFS1FIXME: set physicsRadius?
-    BuildPortrait();
     BuildMesh();
 }
 
@@ -87,7 +87,8 @@ void Item::Render() const {
     }
     */
 
-    m_material->SetTexture( m_portraitSprite->GetTexturePath() );
+    SpriteDef portrait = GetPortrait();
+    m_material->SetTexture( portrait.GetTexturePath() );
 
     g_theRenderer->BindMaterial( m_material );
     g_theRenderer->DrawMesh( m_mesh, Matrix44::MakeTranslation2D( m_transform.position ) );
@@ -106,8 +107,8 @@ void Item::OnCollisionTile( Tile* collidingTile ) {
 }
 
 
-const SpriteDef* Item::GetPortrait() const {
-    return m_portraitSprite;
+const SpriteDef Item::GetPortrait() const {
+    return m_itemDef->GetProperty( "portrait", SpriteDef( Vec2::ZERO, Vec2::ONE, "" ) );
 }
 
 
@@ -204,42 +205,38 @@ WeaponInfo Item::GetWeaponInfo() const {
 }
 
 
+bool Item::IsConsumable() const {
+    return m_itemDef->GetProperty( "isConsumable", false );
+}
+
+
 void Item::SetWorldPosition( const Vec2& worldPosition ) {
     m_transform.position = worldPosition;
 }
 
 
-void Item::BuildPortrait() {
-    std::string animName = m_itemDef->GetProperty( "portraitAnim", std::string() );
-    GUARANTEE_OR_DIE( animName != "", "(Item) Portrait anim name not set." );
+void Item::Consume( Actor* consumer ) const {
+    if( !IsConsumable() ) {
+        return;
+    }
 
-    float animTime = m_itemDef->GetProperty( "portraitTime", 0.f );
-
-    const SpriteAnimDef* anim = SpriteAnimDef::GetDefinition( animName );
-    SpriteDef animSprite = anim->GetSpriteDefAtTime( animTime );
-
-    AABB2 uvs = AABB2::ZEROTOONE;
-    animSprite.GetUVs( uvs.mins, uvs.maxs );
-
-    std::string spriteSheet = m_itemDef->GetProperty( "spriteSheet", std::string() );
-    GUARANTEE_OR_DIE( spriteSheet != "", "(Item) Portrait spriteSheet not set." );
-
-    SpriteSheet sheet = SpriteSheet::GetSpriteSheet( spriteSheet );
-    std::string sheetTexture = sheet.GetTexturePath();
-
-    m_portraitSprite = new SpriteDef( uvs.mins, uvs.maxs, sheetTexture );
+    std::string itemSetToAdd = m_itemDef->GetProperty( "onConsumeItemSet", std::string() );
+    
+    Inventory* consumerInv = consumer->GetInventory();
+    consumerInv->AddItemSets( itemSetToAdd );
 }
 
 
 void Item::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
     // UV Dims
-    m_portraitSprite->GetUVs( m_spriteUVs.mins, m_spriteUVs.maxs );
+    SpriteDef portrait = GetPortrait();
+    portrait.GetUVs( m_spriteUVs.mins, m_spriteUVs.maxs );
 
     Vec2 uvDimensions = m_spriteUVs.GetDimensions();
     uvDimensions.y *= -1.f;
 
     // Texture Dims
-    std::string texturePath = m_portraitSprite->GetTexturePath();
+    std::string texturePath = portrait.GetTexturePath();
     TextureView2D* texture = g_theRenderer->GetOrCreateTextureView2D( texturePath );
     IntVec2 textureDimensions = texture->GetDimensions();
 

@@ -7,7 +7,7 @@
 
 
 std::map<std::string, TileDef*> TileDef::s_tileDefs;
-SpriteSheet* TileDef::s_terrainSprites = nullptr;
+const SpriteSheet* TileDef::s_terrainSprites = nullptr;
 
 TileDef::TileDef( const XMLElement& element ) {
     m_tileType = ParseXMLAttribute( element, "name", "UNKNOWN" );
@@ -30,7 +30,7 @@ TileDef::TileDef( const XMLElement& element ) {
 
 
 void TileDef::InitializeTileDefs() {
-    s_terrainSprites = new SpriteSheet( TEXTURE_TERRAIN, IntVec2( 32, 32 ) );
+    s_terrainSprites = &(SpriteSheet::GetSpriteSheet( "Terrain" ));
 
     XmlDocument document = new XmlDocument();
     const XMLElement& root = ParseXMLRootElement( DATA_TILE_DEFS, document );
@@ -81,7 +81,7 @@ std::string TileDef::GetTileTypeFromTexelColor( const Rgba& texelColor ) {
 
 
 std::string TileDef::GetSpriteTexture() {
-    return TEXTURE_TERRAIN;
+    return s_terrainSprites->GetTexturePath();
 }
 
 

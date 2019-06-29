@@ -3,7 +3,6 @@
         <!-- Female item set added via Body -->
         <ItemSet name="Light"/>
         <ItemSet name="Medium"/>
-        <ItemSet name="Heavy"/>
         <ItemSet name="Melee"/>
 
         <Stats>

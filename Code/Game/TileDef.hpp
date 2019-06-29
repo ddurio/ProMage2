@@ -34,7 +34,7 @@ class TileDef {
 
     private:
     static std::map<std::string, TileDef*> s_tileDefs;
-    static SpriteSheet* s_terrainSprites;
+    static const SpriteSheet* s_terrainSprites;
 
     std::string m_tileType = "";
     AABB2 m_uvCoords = AABB2();

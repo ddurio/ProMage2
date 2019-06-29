@@ -36,7 +36,7 @@ Map::~Map() {
 
 
 void Map::Startup() {
-    m_inventory = new Inventory( m_self, false, true ); // Must be before Define, could be needed
+    m_inventory = new Inventory( nullptr, m_self, false, true ); // Must be before Define, could be needed
 
     m_mapDef = MapDef::GetMapDef( m_mapType );
     m_mapDef->Define( *this );

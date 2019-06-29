@@ -5,6 +5,7 @@
 #include "Game/ItemDef.hpp"
 
 
+class Actor;
 class SpriteDef;
 class Tags;
 class Tile;
@@ -42,7 +43,7 @@ class Item : public Entity {
     void OnCollisionEntity( Entity* collidingEntity );
     void OnCollisionTile( Tile* collidingTile );
 
-    const SpriteDef* GetPortrait() const;
+    const SpriteDef GetPortrait() const;
     ItemSlot GetItemSlot() const;
     std::vector< Tags > GetItemSets() const;
     std::string GetSprites() const;
@@ -55,14 +56,13 @@ class Item : public Entity {
     float GetAttackConeWidth() const;
     float GetAttackConeDotProduct() const;
     WeaponInfo GetWeaponInfo() const;
+    bool IsConsumable() const;
 
     void SetWorldPosition( const Vec2& worldPosition );
+    void Consume( Actor* consumer ) const;
 
     private:
     const Definition<Item>* m_itemDef = nullptr;
 
-    SpriteDef* m_portraitSprite = nullptr;
-
-    void BuildPortrait();
     void BuildMesh( const Rgba& tint = Rgba::WHITE ) override;
 };

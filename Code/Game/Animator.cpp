@@ -40,7 +40,9 @@ void Animator::Update( float deltaSeconds ) {
         Inventory* myInventory = m_myActor->GetInventory();
         Item* weapon = myInventory->GetItemInSlot( ITEM_SLOT_WEAPON );
 
-        animName = weapon->GetAttackAnim();
+        if( weapon != nullptr ) {
+            animName = weapon->GetAttackAnim();
+        }
     }
 
     const IsoSpriteAnimDef* newAnim = IsoSpriteAnimDef::GetDefinition( animName );

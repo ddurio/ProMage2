@@ -18,7 +18,7 @@ struct ItemTilePayload;
 
 class Inventory {
     public:
-    explicit Inventory( Map*& map, bool renderEquippedItems = true, bool renderUnequippedItems = false );
+    explicit Inventory( Actor* owner, Map*& theMap, bool renderEquippedItems = true, bool renderUnequippedItems = false );
     ~Inventory();
 
     void Update( float deltaSeconds );
@@ -57,6 +57,7 @@ class Inventory {
     void AddUIContent();
 
     private:
+    Actor* m_owner = nullptr;
     Map*& m_map;
 
     int m_numItemSlots = 50;

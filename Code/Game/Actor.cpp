@@ -66,7 +66,6 @@ Actor::~Actor() {
 void Actor::Startup() {
     m_animator = new Animator( this );
 
-    /*
     Strings items = {
         "dress",
         "PlateChestF",
@@ -75,12 +74,15 @@ void Actor::Startup() {
         "Bandana",
         "LeatherLegsF",
         "RecurveBow",
-        //"LongSword",
+        "Bow",
+        "Dagger",
+        "Spear",
         "BootsF",
-        "PlateShoulderF"
+        "PlateShoulderF",
+        "HeavyArmorSkillbook"
     };
-    */
 
+    /*
     Strings items = {
         "dress",
         "PlateChestM",
@@ -95,6 +97,7 @@ void Actor::Startup() {
         "BootsF",
         "PlateShoulderM"
     };
+    */
 
     // DFS1FIXME: Weapon sprite sheets are messed up
     //            Portraits are all blank (no idle)

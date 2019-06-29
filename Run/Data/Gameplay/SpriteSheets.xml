@@ -1,4 +1,7 @@
 <SpriteSheets>
+    <!-- Terrain -->
+    <SpriteSheet name="Terrain"                     texturePath="Data/Images/Terrain_32x32.png"                                     gridLayout="32,32"/>
+    
     <!-- Body -->
     <SpriteSheet name="PaperDoll.Body.Human.F1"     texturePath="Data/Images/Humanoids/Doll/body_human_f_1.png"                     gridLayout="13,21"/>
     <SpriteSheet name="PaperDoll.Body.Human.F2"     texturePath="Data/Images/Humanoids/Doll/body_human_f_2.png"                     gridLayout="13,21"/>

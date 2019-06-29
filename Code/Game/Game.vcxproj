@@ -276,9 +276,9 @@
     <Xml Include="..\..\Run\Data\Gameplay\Inventory.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\PaperDoll.IsoAnims.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\PaperDoll.SpriteAnims.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\PaperDoll.SpriteSheets.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\IsoAnims.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\SpriteAnims.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\SpriteSheets.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />
     <Xml Include="..\..\Run\Data\ProjectConfig.xml" />
   </ItemGroup>

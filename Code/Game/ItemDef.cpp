@@ -18,8 +18,8 @@ Definition<Item>::Definition( const XMLElement& element ) {
     m_defType                   = ParseXMLAttribute( element, "name",         "" );
     int moneyValue              = ParseXMLAttribute( element, "value",        100 );
     ItemSlot itemSlot           = ParseXMLAttribute( element, "slot",         ITEM_SLOT_NONE );
-    std::string spriteName      = ParseXMLAttribute( element, "spriteSheet",  "" );
-    GUARANTEE_OR_DIE( spriteName != "", "(ItemDef) Missing required attribute 'spriteSheet'" );
+    std::string sheetName      = ParseXMLAttribute( element, "spriteSheet",  "" );
+    GUARANTEE_OR_DIE( sheetName != "", "(ItemDef) Missing required attribute 'spriteSheet'" );
 
 
     const XMLElement* childEle = element.FirstChildElement();
@@ -31,8 +31,19 @@ Definition<Item>::Definition( const XMLElement& element ) {
     float attackConeWidth = 0.f;
     float attackConeDot = 1.f;
 
-    float portraitTime = 0.f;
-    std::string portraitAnim = Stringf( "%s.%s", ANIM_PAPER_DOLL_IDLE, "Down" );
+    // Setup default portrait
+    std::string defaultAnimName = Stringf( "%s.%s", ANIM_PAPER_DOLL_IDLE, "Down" );
+    const SpriteAnimDef* defaultAnim = SpriteAnimDef::GetDefinition( defaultAnimName );
+    SpriteDef defaultSprite = defaultAnim->GetSpriteDefAtTime( 0.f );
+
+    AABB2 defaultUVs;
+    defaultSprite.GetUVs( defaultUVs.mins, defaultUVs.maxs );
+
+    const SpriteSheet& itemSheet = SpriteSheet::GetSpriteSheet( sheetName );
+    std::string itemTexture = itemSheet.GetTexturePath();
+
+    SpriteDef portrait = SpriteDef( defaultUVs.mins, defaultUVs.maxs, itemTexture );
+
 
     // Loop through child tags
     while( childEle != nullptr ) {
@@ -46,15 +57,28 @@ Definition<Item>::Definition( const XMLElement& element ) {
             itemTag.SetTags( setName );
             itemSets.push_back( itemTag );
         } else if( tagName == "Portrait" ) {
-            portraitAnim  = ParseXMLAttribute( *childEle, "anim", portraitAnim );
-            float time  = ParseXMLAttribute( *childEle, "time", -1.f );
-            int frame = ParseXMLAttribute( *childEle, "frame", -1 );
+            IntVec2 spriteCoords = ParseXMLAttribute( *childEle, "spriteCoords", IntVec2::NEGONE );
 
-            if( time >= 0.f ) {
-                portraitTime = time;
-            } else if( frame >= 0 ) {
+            if( spriteCoords != IntVec2::NEGONE ) {
+                portrait = itemSheet.GetSpriteDef( spriteCoords );
+            } else {
+                std::string portraitAnim = ParseXMLAttribute( *childEle, "anim", "" );
                 const SpriteAnimDef* anim = SpriteAnimDef::GetDefinition( portraitAnim );
-                portraitTime = anim->GetTimeFromFrame( frame );
+                GUARANTEE_OR_DIE( anim != nullptr, Stringf( "(ItemDef) Portrait tag invalid attribute value: 'anim' = '%s'", portraitAnim.c_str() ) );
+
+                float time = ParseXMLAttribute( *childEle, "time", -1.f );
+                int frame = ParseXMLAttribute( *childEle, "frame", -1 );
+                GUARANTEE_OR_DIE( time >= 0.f || frame >= 0, "(ItemDef) Portrait tag missing required attribute 'time' OR 'frame'" );
+
+                if( time < 0.f ) {
+                    time = anim->GetTimeFromFrame( frame );
+                }
+
+                SpriteDef sprite = anim->GetSpriteDefAtTime( time ); // Has the wrong texturePath.. replace with item texture
+                AABB2 portraitUVs;
+                sprite.GetUVs( portraitUVs.mins, portraitUVs.maxs );
+
+                portrait = SpriteDef( portraitUVs.mins, portraitUVs.maxs, itemTexture );
             }
         } else if( tagName == "Attack" ) {
             attackAnim   = ParseXMLAttribute( *childEle, "anim",            attackAnim );
@@ -62,6 +86,11 @@ Definition<Item>::Definition( const XMLElement& element ) {
             attackDamage = ParseXMLAttribute( *childEle, "damage",          attackDamage );
             attackConeWidth = ParseXMLAttribute( *childEle, "coneWidth",    attackConeWidth );
             attackConeDot = CosDegrees( attackConeWidth * 0.5f );
+        } else if( tagName == "Consumable" ) {
+            m_properties.SetValue( "isConsumable", true );
+
+            std::string addItemSet = ParseXMLAttribute( *childEle, "itemSet", std::string() );
+            m_properties.SetValue( "onConsumeItemSet", addItemSet );
         }
 
         childEle = childEle->NextSiblingElement();
@@ -70,7 +99,7 @@ Definition<Item>::Definition( const XMLElement& element ) {
     // Set Properties
     m_properties.SetValue( "slot",              itemSlot        );
     m_properties.SetValue( "value",             moneyValue      );
-    m_properties.SetValue( "spriteSheet",       spriteName      );
+    m_properties.SetValue( "spriteSheet",       sheetName      );
     m_properties.SetValue( "itemSets",          itemSets        );
 
     m_properties.SetValue( "attackAnim",        attackAnim      );
@@ -79,8 +108,7 @@ Definition<Item>::Definition( const XMLElement& element ) {
     m_properties.SetValue( "attackConeWidth",   attackConeWidth );
     m_properties.SetValue( "attackConeDot",     attackConeDot   );
 
-    m_properties.SetValue( "portraitAnim",      portraitAnim    );
-    m_properties.SetValue( "portraitTime",      portraitTime    );
+    m_properties.SetValue( "portrait",          portrait        );
 
 
     g_theDevConsole->PrintString( Stringf( "(ItemDef) Loaded new ItemDef (%s)", m_defType.c_str() ) );

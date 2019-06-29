@@ -13,8 +13,9 @@
 #include "Game/Map.hpp"
 
 
-Inventory::Inventory( Map*& map, bool renderEquippedItems /*= false*/, bool renderUnequippedItems /*= false*/ ) :
-    m_map(map) {
+Inventory::Inventory( Actor* owner, Map*& theMap, bool renderEquippedItems /*= true*/, bool renderUnequippedItems /*= false */ ) :
+    m_owner( owner ),
+    m_map( theMap ) {
     SetRenderPreferences( renderEquippedItems, renderUnequippedItems );
 
     m_unequippedItems.resize( m_numItemSlots );
@@ -496,17 +497,28 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
     AABB2 uvs;
 
     Item* item = isEquipped ? m_equippedItems[itemIndex] : m_unequippedItems[itemIndex];
+    bool itemWasConsumed = false;
 
     if( item != nullptr ) {
         ImGui::PushID( item );
-        const SpriteDef* portrait = item->GetPortrait();
+        const SpriteDef& portrait = item->GetPortrait();
 
-        TextureView2D* textureView = g_theRenderer->GetOrCreateTextureView2D( portrait->GetTexturePath() );
+        TextureView2D* textureView = g_theRenderer->GetOrCreateTextureView2D( portrait.GetTexturePath() );
         shaderResourceView = textureView->GetShaderView();
 
-        portrait->GetUVs( uvs.mins, uvs.maxs );
+        portrait.GetUVs( uvs.mins, uvs.maxs );
 
         ImGui::ImageButton( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ), 0 );
+
+        if( ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( 0 ) ) {
+            if( item->IsConsumable() ) {
+                item->Consume( m_owner );
+
+                RemoveItemFromInventory( item );
+                CLEAR_POINTER( item );
+                itemWasConsumed = true;
+            }
+        }
     } else {
         const SpriteAnimDef* slotAnim = SpriteAnimDef::GetDefinition( emptyTileName );
         const SpriteDef sprite = slotAnim->GetSpriteDefAtTime( 0.f );
@@ -546,7 +558,7 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
         ImGui::EndDragDropTarget();
     }
 
-    if( item != nullptr ) {
+    if( item != nullptr || itemWasConsumed ) {
         ImGui::PopID();
     }
 }

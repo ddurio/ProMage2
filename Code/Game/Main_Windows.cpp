@@ -18,8 +18,34 @@ bool GameWinProc( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM l
     UNUSED( lParam );
     unsigned char asKey = (unsigned char)wParam;
 
-    if( ImGui_ImplWin32_WndProcHandler( windowHandle, wmMessageCode, wParam, lParam ) ) {
-        return true;
+    if( g_theGui != nullptr ) {
+        bool handled = ImGui_ImplWin32_WndProcHandler( windowHandle, wmMessageCode, wParam, lParam );
+        UNUSED( handled ); // FIXME: What does this variable mean???
+        const ImGuiIO& io = ImGui::GetIO();
+
+        switch( wmMessageCode ) {
+            case( WM_KEYDOWN ): {
+            } case( WM_KEYUP ): {
+            } case( WM_CHAR ): {
+                if( io.WantCaptureKeyboard ) {
+                    return false; // ImGui WILL handle it later.. maybe during NewFrame???
+                }
+
+                break;
+            } case(WM_LBUTTONDOWN): {
+            } case(WM_LBUTTONUP): {
+            } case(WM_RBUTTONDOWN): {
+            } case(WM_RBUTTONUP): {
+            } case(WM_MBUTTONDOWN): {
+            } case(WM_MBUTTONUP): {
+            } case(WM_MOUSEWHEEL): {
+                if( io.WantCaptureMouse ) {
+                    return false; // ImGui WILL handle it later.. maybe during NewFrame???
+                }
+
+                break;
+            }
+        }
     }
 
     switch( wmMessageCode ) {

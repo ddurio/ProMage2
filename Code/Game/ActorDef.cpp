@@ -105,7 +105,7 @@ void Definition<Actor>::Define( Actor& theObject ) const {
         const Definition<Actor>* parentDef = Definition<Actor>::GetDefinition( parentOptions[parentIndex] );
         parentDef->Define( theObject );
     } else { // No parents
-        theObject.m_inventory = new Inventory( theObject.m_map );
+        theObject.m_inventory = new Inventory( &theObject, theObject.m_map );
 
         const StatsManager* statsProto = m_properties.GetValue( "statsManager", (const StatsManager*)nullptr );
         GUARANTEE_OR_DIE( statsProto != nullptr, "(ActorDef) StatsManager prototype was nullptr!" );

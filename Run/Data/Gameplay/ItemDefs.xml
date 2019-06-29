@@ -143,4 +143,24 @@
         <Attack range="1" damage="10" coneWidth="90" anim="PaperDoll.Thrust"/>
         <Portrait anim="PaperDoll.Walk.Left" frame="1"/>
     </ItemDef>
+    <ItemDef name="LightArmorSkillbook" slot="None" spriteSheet="Terrain">
+        <Portrait spriteCoords="1,14"/>
+        <Consumable itemSet="Light"/>
+    </ItemDef>
+    <ItemDef name="MediumArmorSkillbook" slot="None" spriteSheet="Terrain">
+        <Portrait spriteCoords="1,14"/>
+        <Consumable itemSet="Medium"/>
+    </ItemDef>
+    <ItemDef name="HeavyArmorSkillbook" slot="None" spriteSheet="Terrain">
+        <Portrait spriteCoords="1,14"/>
+        <Consumable itemSet="Heavy"/>
+    </ItemDef>
+    <ItemDef name="MeleeSkillbook" slot="None" spriteSheet="Terrain">
+        <Portrait spriteCoords="8,14"/>
+        <Consumable itemSet="Melee"/>
+    </ItemDef>
+    <ItemDef name="RangedSkillbook" slot="None" spriteSheet="Terrain">
+        <Portrait spriteCoords="8,14"/>
+        <Consumable itemSet="Ranged"/>
+    </ItemDef>
 </ItemDefinitions>
