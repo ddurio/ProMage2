@@ -71,11 +71,14 @@ class Entity {
     const EntityType GetEntityType() const;
     RigidBody2D* GetRigidBody() const;
     float GetHealth() const;
+    float GetMaxHealth() const;
+    float GetPercentHealth() const;
 
     void SetFaction( FactionID faction );
     void SetWorldPosition( const Vec2& worldPosition );
 
     protected:
+    const int m_entityIndex = -1;
     Map* m_map = nullptr;
     const EntityType m_entityType = ENTITY_TYPE_UNKNOWN;
     FactionID m_faction = FACTION_UNKNOWN;
@@ -112,4 +115,8 @@ class Entity {
 
     Vec2 GetForwardVector() const;
     virtual void BuildMesh( const Rgba& tint = Rgba::WHITE );
+
+
+    private:
+    static int s_numEntities;
 };

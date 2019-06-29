@@ -20,6 +20,7 @@ class StatsManager {
     float GetHealth() const;
     float GetMaxHealth() const;
     float GetPercentHealth() const;
+    float GetHealthRegen() const;
 
     float GetMoveSpeed() const;
     float GetPickupRadius() const;
@@ -33,6 +34,7 @@ class StatsManager {
 
     float m_maxHealth = 100.f;
     float m_health = m_maxHealth;
+    float m_healthRegen = 0.f;
 
     float m_moveSpeed = 3.f;
     float m_defensePower = 0.f;

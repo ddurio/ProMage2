@@ -31,11 +31,14 @@ PlayerController::~PlayerController() {
 
 
 void PlayerController::Update( float deltaSeconds ) {
-    UNUSED( deltaSeconds );
-
     // Movement
     Vec2 moveDir = m_gameInput->GetMovementDirection();
     SetMoveDir( moveDir );
+
+    // Health Regen
+    const StatsManager* statsManager = GetActorStats();
+    float regenPerSecond = statsManager->GetHealthRegen();
+    m_myActor->TakeDamage( -regenPerSecond * deltaSeconds ); // Negative damage == healing
 
     // Inventory
     if( m_gameInput->WasInventoryToggled() ) {

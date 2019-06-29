@@ -1,6 +1,8 @@
 #include "Game/Actor.hpp" 
 
+#include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/Timer.hpp"
+#include "Engine/Core/WindowContext.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
@@ -151,6 +153,9 @@ void Actor::Update( float deltaSeconds ) {
 
         m_transform.position += frameMovement;
         m_inventory->Update( deltaSeconds );
+
+        // Show health bar
+        UpdateHealthBar();
     }
 
     m_inventory->UpdatePaperDoll( m_paperDollSprites );
@@ -275,6 +280,51 @@ void Actor::UpdateFromController( float deltaSeconds ) {
     if( m_controller != nullptr && IsAlive() ) {
         m_controller->Update( deltaSeconds );
     }
+}
+
+
+void Actor::UpdateHealthBar() const {
+    // Only show if damaged
+    float percentHealth = GetPercentHealth();
+
+    if( percentHealth >= 1.f ) {
+        return;
+    }
+
+    // Setup Window
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing;
+
+    ImGuiStyle& healthStyle = ImGui::GetStyle();
+    ImGuiStyle origHealthStyle = healthStyle;
+    healthStyle.WindowMinSize = ImVec2( 1.f, 1.f );
+    healthStyle.WindowPadding = ImVec2( 1.f, 1.f );
+
+    // Window size & pos
+    Camera* gameCamera       = g_theGame->GetGameCamera();
+    IntVec2 clientDimensions = g_theWindow->GetClientDimensions();
+    Vec2    actorPos         = GetPosition();
+    IntVec2 clientPos        = gameCamera->WorldToClientPoint( Vec3( actorPos, 0.f ), clientDimensions );
+
+    Vec2 windowSize = Vec2( 100.f, 10.f );
+    Vec2 windowOrigin = Vec2( clientPos ) - (0.5f * windowSize) - (100.f * Vec2::UP);
+
+    ImGui::SetNextWindowPos( ImVec2( windowOrigin.x, windowOrigin.y ), ImGuiCond_Always );
+    ImGui::SetNextWindowSize( ImVec2( windowSize.x, windowSize.y ), ImGuiCond_Always );
+
+    std::string windowName = Stringf( "HealthBar_%d", m_entityIndex );
+    ImGui::Begin( windowName.c_str(), nullptr, windowFlags );
+
+    // Window Style
+    ImGui::SetWindowFontScale( 0.001f );
+
+    healthStyle.Colors[ImGuiCol_PlotHistogram] = ImVec4( Rgba::RED.r, Rgba::RED.g, Rgba::RED.b, Rgba::RED.a );
+
+    // Window content
+    ImGui::ProgressBar( percentHealth, ImVec2( -1.f, -1.f ), "" );
+
+    // Shutdown Window
+    healthStyle = origHealthStyle;
+    ImGui::End();
 }
 
 

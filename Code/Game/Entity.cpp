@@ -18,7 +18,8 @@ class RigidBody2D;
 
 Entity::Entity( Map* theMap, EntityType type /*= ENTITY_TYPE_UNKNOWN*/, FactionID faction /*= FACTION_UNKNOWN */ ) :
     m_map( theMap ),
-    m_entityType( type ) {
+    m_entityType( type ),
+    m_entityIndex( s_numEntities++ ) {
     SetFaction( faction );
 }
 
@@ -84,6 +85,23 @@ float Entity::GetHealth() const {
 }
 
 
+float Entity::GetMaxHealth() const {
+    if( m_statsManager != nullptr ) {
+        return m_statsManager->GetMaxHealth();
+    }
+
+    return 1.f;
+}
+
+
+float Entity::GetPercentHealth() const {
+    if( m_statsManager != nullptr ) {
+        return m_statsManager->GetPercentHealth();
+    }
+
+    return 1.f;
+}
+
 void Entity::SetFaction( FactionID faction ) {
     m_faction = faction;
 
@@ -138,3 +156,6 @@ void Entity::BuildMesh( const Rgba& tint /*= Rgba::WHITE*/ ) {
     m_mesh = new GPUMesh( g_theRenderer );
     m_mesh->CopyVertsFromCPUMesh( &builder );
 }
+
+
+int Entity::s_numEntities = 0;

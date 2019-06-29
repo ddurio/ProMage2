@@ -7,7 +7,7 @@
         <ItemSet name="Melee"/>
 
         <Stats>
-            <Health value="150"/>
+            <Health max="150" regenPerSecond="5"/>
             <MoveSpeed value="3"/>
         </Stats>
 
@@ -33,7 +33,7 @@
         <ItemSet name="Melee"/>
 
         <Stats>
-            <Health value="150"/>
+            <Health max="150" regenPerSecond="5"/>
             <MoveSpeed value="3"/>
         </Stats>
 
@@ -59,7 +59,7 @@
         <ItemSet name="Melee"/>
 
         <Stats>
-            <Health value="200"/>
+            <Health max="200" regenPerSecond="5"/>
             <MoveSpeed value="3"/>
         </Stats>
 
@@ -79,7 +79,7 @@
         <ItemSet name="Melee"/>
 
         <Stats>
-            <Health value="200"/>
+            <Health max="200" regenPerSecond="5"/>
             <MoveSpeed value="3"/>
         </Stats>
 
@@ -97,7 +97,7 @@
         <ItemSet name="Ranged"/>
 
         <Stats>
-            <Health value="100"/>
+            <Health max="100" regenPerSecond="5"/>
             <MoveSpeed value="2"/>
         </Stats>
 
@@ -106,6 +106,8 @@
     <ActorDef name="Merchant" canDie="false" canWalk="false">
         <Parent name="HumanFemale"/>
         <Parent name="HumanMale"/>
+        <Parent name="OrcFemale"/>
+        <Parent name="OrgMale"/>
         <Money value="1000"/>
     </ActorDef>
 </ActorDefinitions>

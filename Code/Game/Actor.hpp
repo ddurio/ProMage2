@@ -80,6 +80,7 @@ class Actor : public Entity {
     GPUMesh* m_portraitMesh = nullptr;
 
     void UpdateFromController( float deltaSeconds );
+    void UpdateHealthBar() const;
 
     void BuildMesh( const Rgba& tint = Rgba::WHITE ) override;
     void BuildPortraitMesh( const Rgba& ting = Rgba::WHITE );

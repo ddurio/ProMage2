@@ -1,5 +1,7 @@
 #include "Game/StatsManager.hpp"
 
+#include "Engine/Math/MathUtils.hpp"
+
 #include "Game/Actor.hpp"
 
 
@@ -10,8 +12,10 @@ StatsManager::StatsManager( const XMLElement& element ) {
         std::string tagName = childEle->Name();
 
         if( tagName == "Health" ) {
-            m_maxHealth = ParseXMLAttribute( *childEle, "value", m_maxHealth );
+            m_maxHealth = ParseXMLAttribute( *childEle, "max", m_maxHealth );
             m_health = m_maxHealth;
+
+            m_healthRegen = ParseXMLAttribute( *childEle, "regenPerSecond", m_healthRegen );
         } else if( tagName == "MoveSpeed" ) {
             m_moveSpeed = ParseXMLAttribute( *childEle, "value", m_moveSpeed );
         } else if( tagName == "Defense" ) {
@@ -42,6 +46,11 @@ float StatsManager::GetPercentHealth() const {
 }
 
 
+float StatsManager::GetHealthRegen() const {
+    return m_healthRegen;
+}
+
+
 float StatsManager::GetMoveSpeed() const {
     return m_moveSpeed;
 }
@@ -62,7 +71,7 @@ void StatsManager::TakeDamage( float damageToTake ) {
         return;
     }
 
-    m_health -= damageToTake;
+    m_health = ClampFloat( m_health - damageToTake, 0.f, m_maxHealth );
 
     if( m_health <= 0.f ) {
         m_myActor->Die();
