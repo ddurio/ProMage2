@@ -2,6 +2,7 @@
 
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Tags.hpp"
+#include "Engine/Math/IntRange.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
@@ -60,6 +61,7 @@ Definition<Item>::Definition( const XMLElement& element ) {
             Tags itemTag;
             itemTag.SetTags( setName );
             itemSets.push_back( itemTag );
+
         } else if( tagName == "Portrait" ) {
             IntVec2 spriteCoords = ParseXMLAttribute( *childEle, "spriteCoords", IntVec2::NEGONE );
 
@@ -84,17 +86,26 @@ Definition<Item>::Definition( const XMLElement& element ) {
 
                 portrait = SpriteDef( portraitUVs.mins, portraitUVs.maxs, itemTexture );
             }
+
         } else if( tagName == "Attack" ) {
             attackAnim   = ParseXMLAttribute( *childEle, "anim",            attackAnim );
             attackRange  = ParseXMLAttribute( *childEle, "range",           attackRange );
             attackDamage = ParseXMLAttribute( *childEle, "damage",          attackDamage );
             attackConeWidth = ParseXMLAttribute( *childEle, "coneWidth",    attackConeWidth );
             attackConeDot = CosDegrees( attackConeWidth * 0.5f );
+
         } else if( tagName == "Consumable" ) {
             m_properties.SetValue( "isConsumable", true );
 
             std::string addItemSet = ParseXMLAttribute( *childEle, "itemSet", std::string() );
             m_properties.SetValue( "onConsumeItemSet", addItemSet );
+            
+        } else if( tagName == "Drop" ) {
+            IntRange floorRange = ParseXMLAttribute( *childEle, "floor", IntRange::NEGONE );
+            std::string bias = ParseXMLAttribute( *childEle, "bias", "early" );
+
+            m_properties.SetValue( "dropFloors",    floorRange );
+            m_properties.SetValue( "dropBias",      bias );
         }
 
         childEle = childEle->NextSiblingElement();
@@ -166,10 +177,8 @@ void Definition<Item>::Define( Item& theObject ) const {
         return;
     }
 
-    RNG* mapRNG = theObject.m_map->GetMapRNG();
-
     // Quality
-    float qualityRoll = mapRNG->GetRandomFloatZeroToOne();
+    float qualityRoll = g_RNG->GetRandomFloatZeroToOne();
 
     if( qualityRoll >= s_qualityChances[0] ) {
         theObject.m_quality = 5.f; // Legendary

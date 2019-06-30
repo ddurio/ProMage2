@@ -72,7 +72,7 @@ class Map {
     std::string m_mapName = "";
     std::string m_mapType = "";
     RNG* m_mapRNG = nullptr;
-    int m_level = 0;
+    int m_floorIndex = 0;
 
     IntVec2 m_mapDimensions = IntVec2( 0, 0 );
     const MapDef* m_mapDef = nullptr;
@@ -87,9 +87,14 @@ class Map {
     Map* m_self = this; // Needed for inventory to work
     Inventory* m_inventory = nullptr;
 
+    std::vector< float >        m_lootPercents;
+    std::vector< std::string >  m_lootTypes;
+
 
     bool HandleEnemyDeath( EventArgs& args );
+    void SpawnLootDrop( const Vec2& worldPosition ) const;
 
     void CreateTerrainMesh();
+    void CreateLootTable();
     void CollectGarbage();
 };

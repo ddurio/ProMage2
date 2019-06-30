@@ -6,6 +6,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Ray2.hpp"
+#include "Engine/Math/RNG.hpp"
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
@@ -29,7 +30,7 @@ Map::Map( std::string mapName, std::string mapType, RNG* mapRNG, int level /*= 0
     m_mapName(mapName),
     m_mapType(mapType),
     m_mapRNG(mapRNG),
-    m_level(level) {
+    m_floorIndex(level) {
 }
 
 
@@ -39,6 +40,7 @@ Map::~Map() {
     CLEAR_POINTER( m_model );
 
     g_thePhysicsSystem->DestroyRigidBody( m_tilesRB );
+    g_theEventSystem->Unsubscribe( "enemyDeath", this, &Map::HandleEnemyDeath );
 }
 
 
@@ -48,6 +50,7 @@ void Map::Startup() {
     m_mapDef = MapDef::GetMapDef( m_mapType );
     m_mapDef->Define( *this );
     CreateTerrainMesh();
+    CreateLootTable();
 
     m_inventory->SpawnNewItem( "Slippers", Vec2( 4.5f, 4.5f ) );
     m_inventory->SpawnNewItem( "Shoes", Vec2( 5.5f, 5.5f ) );
@@ -468,12 +471,28 @@ bool Map::HandleEnemyDeath( EventArgs& args ) {
         deadActor->m_deathTimer->Start( 3.f );
     } else {
         CLEAR_POINTER( deadActor->m_deathTimer );
-        // DFS1FIXME: Need to spawn loot
-
         deadActor->m_isGarbage = true;
+
+        SpawnLootDrop( deadActor->GetPosition() );
     }
 
     return false;
+}
+
+
+void Map::SpawnLootDrop( const Vec2& worldPosition ) const {
+    float diceRoll = g_RNG->GetRandomFloatZeroToOne();
+    int numItems = (int)m_lootTypes.size();
+
+    for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
+        const float& requiredRoll = m_lootPercents[itemIndex];
+
+        if( diceRoll >= requiredRoll ) {
+            std::string itemType = m_lootTypes[itemIndex];
+            m_inventory->SpawnNewItem( itemType, worldPosition );
+            return;
+        }
+    }
 }
 
 
@@ -575,6 +594,57 @@ void Map::CreateTerrainMesh() {
     m_model->SetMesh( mesh );
     m_model->SetMaterial( "Terrain" );
     m_model->SetModelMatrix( Matrix44::IDENTITY );
+}
+
+
+void Map::CreateLootTable() {
+    const std::map< std::string, Definition<Item>*, StringCmpCaseI >& itemDefs = Definition<Item>::GetAllDefinitions();
+    auto itemDefIter = itemDefs.begin();
+
+    float totalUnscaledPercents = 0.f;
+    std::vector< float > itemPercents;
+
+    for( itemDefIter; itemDefIter != itemDefs.end(); itemDefIter++ ) {
+        const Definition<Item>* itemDef = itemDefIter->second;
+        IntRange floorRange = itemDef->GetProperty( "dropFloors", IntRange::NEGONE );
+
+        if( !floorRange.IsIntInRange( m_floorIndex ) ) {
+            continue;
+        }
+
+        // Valid item.. scale to find percent chance
+        const std::string& itemType = itemDefIter->first;
+        std::string bias = itemDef->GetProperty( "dropBias", std::string() );
+        float itemPercent = 0.f;
+
+        // Map floor range into 0 -> 1 based on bias
+        if( StringICmp( bias, "early" ) ) {
+            itemPercent = RangeMapFloat( (float)m_floorIndex, (float)floorRange.min, (float)floorRange.max, 1.f, 0.001f );
+        } else if( StringICmp( bias, "late" ) ) {
+            itemPercent = RangeMapFloat( (float)m_floorIndex, (float)floorRange.min, (float)floorRange.max, 0.001f, 1.f );
+        } else if( StringICmp( bias, "middle" ) ) {
+            itemPercent = RangeMapFloat( (float)m_floorIndex, (float)floorRange.min, (float)floorRange.max, -1.f, 1.f );
+            itemPercent = abs( itemPercent ); // Valley at middle
+            itemPercent = 1.f - itemPercent;  // Peak at middle
+        } else {
+            ERROR_AND_DIE( Stringf( "(Map) Unrecognized drop bias '%s' during loot table constructions", bias.c_str() ) );
+        }
+
+        totalUnscaledPercents += itemPercent;
+        itemPercents.push_back( itemPercent );
+        m_lootTypes.push_back( itemType );
+    }
+
+    // Scale by total percent and accumulate to get percent breakdown
+    int numItems = (int)m_lootTypes.size();
+    float cumulativePercent = 1.f;
+
+    for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
+        float itemPercent = itemPercents[itemIndex] / totalUnscaledPercents;
+        cumulativePercent = ClampFloat( cumulativePercent - itemPercent, 0.f, 1.f );
+
+        m_lootPercents.push_back( cumulativePercent );
+    }
 }
 
 

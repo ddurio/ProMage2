@@ -20,6 +20,8 @@ class Definition : public BaseDefinition {
     static void Initialize( const std::string& filePath, const char* tagName );
     static void DestroyDefs();
     static const Definition<T>* GetDefinition( std::string defType );
+    static const std::map< std::string, Definition<T>*, StringCmpCaseI >& GetAllDefinitions(); // DFS1FIXME: Used by Map for ItemDefs when spawning loot (should be on ItemDef class)
+    // I don't like this because the pointer and the object it points to are non-const... dangerous
 
     void Define( T& theObject ) const;
     const std::string& GetDefintionType() const;
@@ -66,6 +68,12 @@ const Definition<T>* Definition<T>::GetDefinition( std::string defType ) {
     } else {
         return nullptr;
     }
+}
+
+
+template< typename T >
+const std::map< std::string, Definition<T>*, StringCmpCaseI >& Definition<T>::GetAllDefinitions() {
+    return s_definitions;
 }
 
 

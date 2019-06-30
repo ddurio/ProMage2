@@ -114,9 +114,14 @@ void ActorController::InteractFromInput() const {
     // Look for tile tags
     const Tile& tile = m_myActor->m_map->GetTileFromWorldCoords( m_myActor->GetPosition() );
     const Tags& tags = tile.GetMetadata()->m_tagData;
+    Actor* merchant = nullptr;
 
     if( tags.HasTags( TAG_MERCHANT ) ) {
-        actions.push_back( TAG_MERCHANT );
+        merchant = m_myActor->m_map->GetActorInRange( "merchant", m_myActor->GetPosition(), actorStats->GetInteractRadius() );
+
+        if( merchant != nullptr ) {
+            actions.push_back( TAG_MERCHANT );
+        }
     }
 
 
@@ -130,7 +135,6 @@ void ActorController::InteractFromInput() const {
         if( chosenAction == "item" ) {
             PickupItem( itemToPickUp );
         } else if( chosenAction == TAG_MERCHANT ) {
-            Actor* merchant = m_myActor->m_map->GetActorInRange( "merchant", m_myActor->GetPosition(), actorStats->GetInteractRadius() );
             merchant->InteractWithActor( m_myActor );
         }
     }
