@@ -72,6 +72,7 @@ class Item : public Entity {
     const std::string m_itemType = "";
     const Definition<Item>* m_itemDef = nullptr;
 
+    int   m_moneyValue = 0;
     float m_quality = 1.f;
     float m_defense = 0.f;
 

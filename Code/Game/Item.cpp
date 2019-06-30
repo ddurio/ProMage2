@@ -162,7 +162,7 @@ std::string Item::GetItemType() const {
 
 
 int Item::GetValue() const {
-    return m_itemDef->GetProperty( "value", 0 );
+    return m_moneyValue;
 }
 
 

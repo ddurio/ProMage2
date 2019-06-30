@@ -102,21 +102,26 @@ Definition<Item>::Definition( const XMLElement& element ) {
     float proficiency = -1.f;
     int numTags = (int)itemSets.size();
 
-    for( int tagIndex = 0; tagIndex < numTags; tagIndex++ ) {
-        const Tags& tag = itemSets[tagIndex];
+    if( itemSlot == ITEM_SLOT_WEAPON ) {
+        proficiency = 1.f; // Affects money value for weapons
+    } else if( itemSlot != ITEM_SLOT_NONE ) {
+        // Affects defense and money value for armor
+        for( int tagIndex = 0; tagIndex < numTags; tagIndex++ ) {
+            const Tags& tag = itemSets[tagIndex];
 
-        if( tag.HasTags( "Light" ) ) {
-            proficiency = Max( 0.f, proficiency );
-        } else if( tag.HasTags( "Medium" ) ) {
-            proficiency = Max( 1.f, proficiency );
-        } else if( tag.HasTags( "Heavy" ) ) {
-            proficiency = Max( 2.f, proficiency );
+            if( tag.HasTags( "Light" ) ) {
+                proficiency = Max( 0.f, proficiency );
+            } else if( tag.HasTags( "Medium" ) ) {
+                proficiency = Max( 1.f, proficiency );
+            } else if( tag.HasTags( "Heavy" ) ) {
+                proficiency = Max( 2.f, proficiency );
+            }
         }
     }
 
     // Set Properties
     m_properties.SetValue( "slot",              itemSlot        );
-    m_properties.SetValue( "value",             moneyValue      );
+    m_properties.SetValue( "baseValue",         moneyValue      );
     m_properties.SetValue( "spriteSheet",       sheetName       );
     m_properties.SetValue( "itemSets",          itemSets        );
     m_properties.SetValue( "proficiency",       proficiency     );
@@ -163,7 +168,7 @@ void Definition<Item>::Define( Item& theObject ) const {
 
     RNG* mapRNG = theObject.m_map->GetMapRNG();
 
-    // Quality Factor
+    // Quality
     float qualityRoll = mapRNG->GetRandomFloatZeroToOne();
 
     if( qualityRoll >= s_qualityChances[0] ) {
@@ -178,10 +183,12 @@ void Definition<Item>::Define( Item& theObject ) const {
         theObject.m_quality = 1.f; // Common
     }
 
+    // Money Value
+    float proficiency = GetProperty( "proficiency", 0.f );
+    theObject.m_moneyValue = 10 * (int)theObject.m_quality * (int)theObject.m_quality * ((int)proficiency + 2);
 
     // Defense
     if( slot != ITEM_SLOT_WEAPON ) {
-        float proficiency = GetProperty( "proficiency", 0.f );
 
         if( proficiency >= 0.f ) {
             theObject.m_defense = s_slotBaseDefense[slot] + theObject.m_quality + (2.f * proficiency);

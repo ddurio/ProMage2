@@ -603,6 +603,11 @@ void Inventory::CreateItemTooltip( Item* item ) const {
     std::string qualityDesc = item->GetQualityDescription();
     ImGui::Text( "%s", qualityDesc.c_str() );
 
+    // Money Value
+    tooltipStyle.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
+    std::string moneyStr = Stringf( "Sells for: %d", item->GetValue() );
+    ImGui::Text( moneyStr.c_str() );
+
     ImGui::EndTooltip();
     tooltipStyle = origStyle;
 }
