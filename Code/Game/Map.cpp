@@ -2,6 +2,7 @@
 
 #include "Engine/Core/DebugDraw.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/Timer.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Ray2.hpp"
@@ -455,6 +456,22 @@ void Map::RemoveActorFromList( Actor* actor, std::vector< Actor* >& list ) {
 bool Map::HandleEnemyDeath( EventArgs& args ) {
     Actor* deadActor = nullptr;
     deadActor = args.GetValue<Actor>( "actor", deadActor );
+
+    if( deadActor == nullptr ) {
+        return true;
+    }
+
+    // Run deathTimer first
+    if( deadActor->m_deathTimer == nullptr ) {
+        Clock* gameClock = g_theGame->GetGameClock();
+        deadActor->m_deathTimer = new Timer( gameClock );
+        deadActor->m_deathTimer->Start( 3.f );
+    } else {
+        CLEAR_POINTER( deadActor->m_deathTimer );
+        // DFS1FIXME: Need to spawn loot
+
+        deadActor->m_isGarbage = true;
+    }
 
     return false;
 }

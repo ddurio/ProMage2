@@ -1,5 +1,6 @@
 #include "Game/Entity.hpp"
 
+#include "Engine/Core/Timer.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/Capsule3.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -26,6 +27,7 @@ Entity::Entity( Map* theMap, EntityType type /*= ENTITY_TYPE_UNKNOWN*/, FactionI
 
 Entity::~Entity() {
     CLEAR_POINTER( m_mesh );
+    CLEAR_POINTER( m_deathTimer );
 
     g_thePhysicsSystem->DestroyRigidBody( m_rigidBody );
 }

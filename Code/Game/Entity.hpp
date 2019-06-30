@@ -41,6 +41,7 @@ class Map;
 class Material;
 class StatsManager;
 class Texture;
+class Timer;
 
 
 class Entity {
@@ -101,6 +102,7 @@ class Entity {
 
     bool m_isDead = false;
     bool m_isGarbage = false;
+    Timer* m_deathTimer = nullptr;
 
     const Rgba m_debugCosmeticColor = Rgba::MAGENTA;
     const Rgba m_debugPhysicsColor = Rgba::CYAN;

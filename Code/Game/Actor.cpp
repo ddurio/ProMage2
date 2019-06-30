@@ -171,6 +171,15 @@ void Actor::Update( float deltaSeconds ) {
 
         // Show health bar
         UpdateHealthBar();
+    } else if( m_deathTimer != nullptr && m_deathTimer->HasFinshed() ) {
+        if( m_controller != nullptr ) {
+            std::string deathEvent = m_controller->GetDeathEvent();
+
+            EventArgs args;
+            args.SetValue( "actor", this );
+
+            g_theEventSystem->FireEvent( deathEvent, args );
+        }
     }
 
     m_inventory->UpdatePaperDoll( m_paperDollSprites );
