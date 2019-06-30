@@ -99,15 +99,17 @@ Definition<Item>::Definition( const XMLElement& element ) {
     }
 
     // Proficiency Factor
-    float proficiency = 0.f;
+    float proficiency = -1.f;
     int numTags = (int)itemSets.size();
 
     for( int tagIndex = 0; tagIndex < numTags; tagIndex++ ) {
         const Tags& tag = itemSets[tagIndex];
 
-        if( tag.HasTags( "Medium" ) ) {
-            proficiency = Max( 1.f, proficiency );
+        if( tag.HasTags( "Light" ) ) {
+            proficiency = Max( 0.f, proficiency );
         } else if( tag.HasTags( "Medium" ) ) {
+            proficiency = Max( 1.f, proficiency );
+        } else if( tag.HasTags( "Heavy" ) ) {
             proficiency = Max( 2.f, proficiency );
         }
     }
@@ -181,7 +183,7 @@ void Definition<Item>::Define( Item& theObject ) const {
     if( slot != ITEM_SLOT_WEAPON ) {
         float proficiency = GetProperty( "proficiency", 0.f );
 
-        if( proficiency > 0.f ) {
+        if( proficiency >= 0.f ) {
             theObject.m_defense = s_slotBaseDefense[slot] + theObject.m_quality + (2.f * proficiency);
         }
     }
