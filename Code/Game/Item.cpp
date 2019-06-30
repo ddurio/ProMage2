@@ -15,8 +15,7 @@
 
 
 Item::Item( Map* theMap, std::string itemType ) :
-    Entity( theMap ),
-    m_itemType( itemType ) {
+    Entity( theMap ) {
     m_itemDef = Definition<Item>::GetDefinition( itemType );
     GUARANTEE_OR_DIE( m_itemDef != nullptr, Stringf( "(Item) Failed to find itemDef of name %s", itemType.c_str() ) );
     m_itemDef->Define( *this );
@@ -156,8 +155,7 @@ std::string Item::GetSpriteTexture() const {
 
 
 std::string Item::GetItemType() const {
-    return m_itemType;
-    //return m_itemDef->GetDefintionType();
+    return m_itemDef->GetDefintionType();
 }
 
 

@@ -16,11 +16,13 @@
 
 template<>
 Definition<Item>::Definition( const XMLElement& element ) {
-    // Parse Values
+    // Base Values
     m_defType                   = ParseXMLAttribute( element, "name",         "" );
+    GUARANTEE_OR_DIE( m_defType != "", "(ItemDef) Missing required attribute 'name'" );
+
     int moneyValue              = ParseXMLAttribute( element, "value",        100 );
     ItemSlot itemSlot           = ParseXMLAttribute( element, "slot",         ITEM_SLOT_NONE );
-    std::string sheetName      = ParseXMLAttribute( element, "spriteSheet",  "" );
+    std::string sheetName       = ParseXMLAttribute( element, "spriteSheet",  "" );
     GUARANTEE_OR_DIE( sheetName != "", "(ItemDef) Missing required attribute 'spriteSheet'" );
 
 
@@ -136,8 +138,6 @@ Definition<Item>::Definition( const XMLElement& element ) {
 
 
     g_theDevConsole->PrintString( Stringf( "(ItemDef) Loaded new ItemDef (%s)", m_defType.c_str() ) );
-
-    m_defType = StringToLower( m_defType );
     s_definitions[m_defType] = this;
 }
 

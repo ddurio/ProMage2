@@ -1,6 +1,7 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 
@@ -11,6 +12,7 @@
 class Actor;
 class Inventory;
 class MapDef;
+class Model;
 class RigidBody2D;
 
 
@@ -19,7 +21,7 @@ class Map {
     friend class MapGenStep;
 
     public:
-    explicit Map( std::string mapName, std::string mapType, RNG* mapRNG );
+    explicit Map( std::string mapName, std::string mapType, RNG* mapRNG, int level = 0 );
     ~Map();
 
     void Startup();
@@ -65,15 +67,18 @@ class Map {
     void RemoveActorFromList( Actor* entity, std::vector< Actor* >& list );
 
     private:
+    static bool s_materialCreated;
+
     std::string m_mapName = "";
     std::string m_mapType = "";
     RNG* m_mapRNG = nullptr;
+    int m_level = 0;
 
     IntVec2 m_mapDimensions = IntVec2( 0, 0 );
     const MapDef* m_mapDef = nullptr;
 
     std::vector<Tile> m_tiles;
-    VertexList m_mapVerts;
+    Model* m_model = nullptr;
     RigidBody2D* m_tilesRB = nullptr;
 
     std::vector< Actor* > m_actors;
@@ -82,6 +87,9 @@ class Map {
     Map* m_self = this; // Needed for inventory to work
     Inventory* m_inventory = nullptr;
 
-    void UpdateMapVerts( float deltaSeconds );
+
+    bool HandleEnemyDeath( EventArgs& args );
+
+    void CreateTerrainMesh();
     void CollectGarbage();
 };

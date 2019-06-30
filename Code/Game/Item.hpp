@@ -69,7 +69,6 @@ class Item : public Entity {
     void Consume( Actor* consumer ) const;
 
     private:
-    const std::string m_itemType = "";
     const Definition<Item>* m_itemDef = nullptr;
 
     int   m_moneyValue = 0;

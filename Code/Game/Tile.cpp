@@ -33,14 +33,16 @@ const std::string& Tile::GetTileType() const {
 }
 
 
-VertexList Tile::GetVerts() const {
-    VertexList tileVerts;
-    Vec2 uvMins;
-    Vec2 uvMaxs;
-    m_tileDef->GetUVs( uvMins, uvMaxs );
+AABB2 Tile::GetUVs() const {
+    AABB2 uvs;
+    m_tileDef->GetUVs( uvs.mins, uvs.maxs );
 
-    AddVertsForAABB2D( tileVerts, GetWorldBounds(), m_tileDef->GetSpriteTint(), uvMins, uvMaxs );
-    return tileVerts;
+    return uvs;
+}
+
+
+Rgba Tile::GetTint() const {
+    return m_tileDef->GetSpriteTint();
 }
 
 

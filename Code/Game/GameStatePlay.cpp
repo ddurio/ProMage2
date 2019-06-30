@@ -353,7 +353,7 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
     m_mapRNG->SetPosition( 0 );
 
     std::string floorType = (m_currentFloor == 0) ? "Island" : "Cave";
-    Map* nextMap = new Map( Stringf( "Map%d", m_currentFloor ), floorType, m_mapRNG );
+    Map* nextMap = new Map( Stringf( "Floor%d", m_currentFloor ), floorType, m_mapRNG, newFloorIndex );
     nextMap->Startup();
 
     Actor* player = m_map->GetPlayer();

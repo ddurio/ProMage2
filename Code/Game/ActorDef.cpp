@@ -15,6 +15,7 @@ template<>
 Definition<Actor>::Definition( const XMLElement& element ) {
     // Parse Values
     m_defType                   = ParseXMLAttribute( element, "name",         m_defType );
+    GUARANTEE_OR_DIE( m_defType != "", "(ActorDef) Missing required attribute 'name'" );
 
     bool canSee                 = ParseXMLAttribute( element, "canSee",  true );
     bool canWalk                = ParseXMLAttribute( element, "canWalk", true );
@@ -87,8 +88,6 @@ Definition<Actor>::Definition( const XMLElement& element ) {
 
 
     g_theDevConsole->PrintString( Stringf( "(ActorDef) Loaded new ActorDef (%s)", m_defType.c_str() ) );
-
-    m_defType = StringToLower( m_defType );
     s_definitions[m_defType] = this;
 }
 

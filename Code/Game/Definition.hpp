@@ -30,12 +30,12 @@ class Definition : public BaseDefinition {
     protected:
     explicit Definition<T>( const XMLElement& element );
 
-    static std::map< std::string, Definition<T>* > s_definitions;
+    static std::map< std::string, Definition<T>*, StringCmpCaseI > s_definitions;
 };
 
 
 template< typename T >
-std::map< std::string, Definition<T>* > Definition<T>::s_definitions;
+std::map< std::string, Definition<T>*, StringCmpCaseI > Definition<T>::s_definitions;
 
 
 template< typename T >
@@ -58,7 +58,7 @@ void Definition<T>::DestroyDefs() {
 
 template< typename T >
 const Definition<T>* Definition<T>::GetDefinition( std::string defType ) {
-    defType = StringToLower( defType );
+    //defType = StringToLower( defType );
      auto defIter = s_definitions.find( defType );
 
     if( defIter != s_definitions.end() ) {

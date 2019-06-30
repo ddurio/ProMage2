@@ -111,7 +111,9 @@ void Animator::TriggerAnimEvents() {
             const ActorController* controller = m_myActor->GetController();
             std::string deathEvent = controller->GetDeathEvent();
 
-            g_theEventSystem->FireEvent( deathEvent );
+            EventArgs args;
+            args.SetValue( "actor", m_myActor );
+            g_theEventSystem->FireEvent( deathEvent, args );
         }
     }
 

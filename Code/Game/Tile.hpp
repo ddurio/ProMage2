@@ -16,7 +16,8 @@ class Tile {
 
     AABB2 GetWorldBounds() const;
     const std::string& GetTileType() const;
-    VertexList GetVerts() const;
+    AABB2 GetUVs() const;
+    Rgba GetTint() const;
 
     IntVec2 GetTileCoords() const;
     Metadata* GetMetadata() const;

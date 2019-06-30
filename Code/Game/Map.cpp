@@ -7,6 +7,10 @@
 #include "Engine/Math/Ray2.hpp"
 #include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
+#include "Engine/Renderer/CPUMesh.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/Material.hpp"
+#include "Engine/Renderer/Model.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 
@@ -20,16 +24,18 @@
 #include "Game/TopDownFollowCamera.hpp"
 
 
-Map::Map( std::string mapName, std::string mapType, RNG* mapRNG ) :
+Map::Map( std::string mapName, std::string mapType, RNG* mapRNG, int level /*= 0 */ ) :
     m_mapName(mapName),
     m_mapType(mapType),
-    m_mapRNG(mapRNG) {
+    m_mapRNG(mapRNG),
+    m_level(level) {
 }
 
 
 Map::~Map() {
     EngineCommon::ClearVector( m_actors );
     CLEAR_POINTER( m_inventory );
+    CLEAR_POINTER( m_model );
 
     g_thePhysicsSystem->DestroyRigidBody( m_tilesRB );
 }
@@ -40,20 +46,21 @@ void Map::Startup() {
 
     m_mapDef = MapDef::GetMapDef( m_mapType );
     m_mapDef->Define( *this );
+    CreateTerrainMesh();
 
     m_inventory->SpawnNewItem( "Slippers", Vec2( 4.5f, 4.5f ) );
     m_inventory->SpawnNewItem( "Shoes", Vec2( 5.5f, 5.5f ) );
+
+    g_theEventSystem->Subscribe( "enemyDeath", this, &Map::HandleEnemyDeath );
 }
 
 
 void Map::Shutdown() {
-
+    CLEAR_POINTER( m_model );
 }
 
 
 void Map::Update( float deltaSeconds ) {
-    UpdateMapVerts( deltaSeconds );
-
     // Update entities
     int numActor = (int)m_actors.size();
 
@@ -72,11 +79,8 @@ void Map::Update( float deltaSeconds ) {
 
 
 void Map::Render() const {
-    std::string terrainTexture = TileDef::GetSpriteTexture();
-
-    // Render the map itself
-    g_theRenderer->BindTexture( terrainTexture );
-    g_theRenderer->DrawVertexArray( m_mapVerts );
+    // Render the terrain
+    g_theRenderer->DrawModel( m_model );
 
     // Render items on the map
     m_inventory->Render();
@@ -448,31 +452,114 @@ void Map::RemoveActorFromList( Actor* actor, std::vector< Actor* >& list ) {
 }
 
 
-void Map::UpdateMapVerts( float deltaSeconds ) {
-    UNUSED( deltaSeconds );
+bool Map::HandleEnemyDeath( EventArgs& args ) {
+    Actor* deadActor = nullptr;
+    deadActor = args.GetValue<Actor>( "actor", deadActor );
 
-    m_mapVerts.clear();
-
-    // Tile Verts
-    for( int i = 0; i < (int)m_tiles.size(); i++ ) {
-        Tile& tile = m_tiles[i];
-        //FIXME: Change to AddVerts passing by ref
-        VertexList tileVerts = tile.GetVerts();
-        m_mapVerts.insert( m_mapVerts.end(), tileVerts.begin(), tileVerts.end() );
-    }
-
-    /*
-    // Vertical Grid Lines
-    for( int i = 1; i < m_mapDimensions.x; i++ ) {
-        AddVertsForLine2D( m_mapVerts, Vec2( (float)i, 0.f ), Vec2( (float)i, (float)m_mapDimensions.y ), .05f, Rgba::BLACK );
-    }
-
-    // Horizontal Grid Lines
-    for( int i = 1; i < m_mapDimensions.y; i++ ) {
-        AddVertsForLine2D( m_mapVerts, Vec2( 0.f, (float)i ), Vec2( (float)m_mapDimensions.x, (float)i ), .05f, Rgba::BLACK );
-    }
-    */
+    return false;
 }
+
+
+bool Map::s_materialCreated = false;
+
+
+void Map::CreateTerrainMesh() {
+    int numTilesX = m_mapDimensions.x;
+    int numTilesY = m_mapDimensions.y;
+
+    CPUMesh builder;
+
+    Vec3 vertOffsets[9] = {
+        Vec3(  0.f,     0.f,    0.f ),  // Bottom Left
+        Vec3(  0.5f,    0.f,    0.f ),  // Bottom Center
+        Vec3(  1.f,     0.f,    0.f ),  // Bottom Right
+        Vec3(  0.f,     0.5f,   0.f ),  // Center Left
+        Vec3(  0.5f,    0.5f,   0.f ),  // Center Center
+        Vec3(  1.f,     0.5f,   0.f ),  // Center Right
+        Vec3(  0.f,     1.f,    0.f ),  // Top Left
+        Vec3(  0.5f,    1.f,    0.f ),  // Top Center
+        Vec3(  1.f,     1.f,    0.f ),  // Top Right
+    };
+
+    Vec2 uvValues[9] = {
+        ALIGN_BOTTOM_LEFT,
+        ALIGN_BOTTOM_CENTER,
+        ALIGN_BOTTOM_RIGHT,
+        ALIGN_CENTER_LEFT,
+        ALIGN_CENTER,
+        ALIGN_CENTER_RIGHT,
+        ALIGN_TOP_LEFT,
+        ALIGN_TOP_CENTER,
+        ALIGN_TOP_RIGHT
+    };
+
+
+    for( int tileY = 0; tileY < numTilesY; tileY++ ) {
+        for( int tileX = 0; tileX < numTilesX; tileX++ ) {
+            int tileIndex = tileY * numTilesX + tileX;
+            const Tile& tile = m_tiles[tileIndex];
+
+            Vec3 center = Vec3( (float)tileX, (float)tileY, 0.f );
+            int indexList[9] = {};
+
+            // Construct all the verts
+            for( int offsetIndex = 0; offsetIndex < 9; offsetIndex++ ) {
+                // Position
+                const Vec3& offset = vertOffsets[offsetIndex];
+                Vec3 vertPos = center + offset;
+
+                // Color
+                Rgba tint = tile.GetTint();
+
+                // UV - invert min/max
+                AABB2 uvs = tile.GetUVs();
+                Vec2 alignment = uvValues[offsetIndex];
+                const Vec2 vertUV = uvs.GetPointWithin( alignment );
+
+                // Add Vert
+                builder.SetColor( tint );
+                builder.SetUV( vertUV );
+                indexList[offsetIndex] = builder.AddVertex( vertPos );
+            }
+
+            int indexBL = indexList[0];
+            int indexBC = indexList[1];
+            int indexBR = indexList[2];
+            int indexCL = indexList[3];     // TL---TC---TR
+            int indexCC = indexList[4];     // CL   CC   CR
+            int indexCR = indexList[5];     // BL---BC---BR
+            int indexTL = indexList[6];
+            int indexTC = indexList[7];
+            int indexTR = indexList[8];
+
+            builder.AddIndexedQuad( indexCL, indexCC, indexBL, indexBC );
+            builder.AddIndexedQuad( indexCC, indexCR, indexBC, indexBR );
+            builder.AddIndexedQuad( indexTL, indexTC, indexCL, indexCC );
+            builder.AddIndexedQuad( indexTC, indexTR, indexCC, indexCR );
+        }
+    }
+
+    // Mesh
+    GPUMesh* mesh = new GPUMesh( g_theRenderer );
+    mesh->CopyVertsFromCPUMesh( &builder, "BuiltIn/Unlit" );
+
+    // Material
+    Material* material = g_theRenderer->GetOrCreateMaterial( "Terrain" );
+
+    if( !s_materialCreated ) {
+        std::string terrainTexture = TileDef::GetSpriteTexture();
+        material->SetTexture( terrainTexture );
+        material->SetShader( "BuiltIn/Unlit" );
+
+        s_materialCreated = true;
+    }
+
+    m_model = new Model();
+    m_model->SetMesh( mesh );
+    m_model->SetMaterial( "Terrain" );
+    m_model->SetModelMatrix( Matrix44::IDENTITY );
+}
+
 
 void Map::CollectGarbage() {
     int numActors = (int)m_actors.size();
