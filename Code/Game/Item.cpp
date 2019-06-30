@@ -15,7 +15,8 @@
 
 
 Item::Item( Map* theMap, std::string itemType ) :
-    Entity( theMap ) {
+    Entity( theMap ),
+    m_itemType( itemType ) {
     m_itemDef = Definition<Item>::GetDefinition( itemType );
     GUARANTEE_OR_DIE( m_itemDef != nullptr, Stringf( "(Item) Failed to find itemDef of name %s", itemType.c_str() ) );
     m_itemDef->Define( *this );
@@ -118,6 +119,23 @@ ItemSlot Item::GetItemSlot() const {
 }
 
 
+std::string Item::GetItemSlotText() const {
+    ItemSlot slot = GetItemSlot();
+
+    switch( slot ) {
+        case(ITEM_SLOT_CHEST):      { return "Chest";       }
+        case(ITEM_SLOT_NONE):       { return "None";        }
+        case(ITEM_SLOT_HELM):       { return "Helm";        }
+        case(ITEM_SLOT_SHOULDER):   { return "Shoulder";    }
+        case(ITEM_SLOT_LEGS):       { return "Legs";        }
+        case(ITEM_SLOT_FEET):       { return "Feet";        }
+        case(ITEM_SLOT_WEAPON):     { return "Weapon";      }
+    }
+
+    return "Unknown";
+}
+
+
 std::vector< Tags > Item::GetItemSets() const {
     std::vector< Tags > emptySet;
     return m_itemDef->GetProperty( "itemSets", emptySet );
@@ -138,7 +156,8 @@ std::string Item::GetSpriteTexture() const {
 
 
 std::string Item::GetItemType() const {
-    return m_itemDef->GetDefintionType();
+    return m_itemType;
+    //return m_itemDef->GetDefintionType();
 }
 
 
@@ -207,6 +226,20 @@ WeaponInfo Item::GetWeaponInfo() const {
 
 bool Item::IsConsumable() const {
     return m_itemDef->GetProperty( "isConsumable", false );
+}
+
+
+std::string Item::GetConsumptionDescription() const {
+    if( !IsConsumable() ) {
+        return "";
+    }
+
+    std::string setsToAddStr = m_itemDef->GetProperty( "onConsumeItemSet", std::string() );
+    Strings setsToAddArray = SplitStringOnDelimeter( setsToAddStr, ',', false );
+    std::string formattedSets = JoinStrings( setsToAddArray, " AND " );
+    std::string description = Stringf( "Provides: %s", formattedSets.c_str() );
+
+    return description;
 }
 
 

@@ -45,6 +45,7 @@ class Item : public Entity {
 
     const SpriteDef GetPortrait() const;
     ItemSlot GetItemSlot() const;
+    std::string GetItemSlotText() const;
     std::vector< Tags > GetItemSets() const;
     std::string GetSprites() const;
     std::string GetSpriteTexture() const;
@@ -57,11 +58,13 @@ class Item : public Entity {
     float GetAttackConeDotProduct() const;
     WeaponInfo GetWeaponInfo() const;
     bool IsConsumable() const;
+    std::string GetConsumptionDescription() const;
 
     void SetWorldPosition( const Vec2& worldPosition );
     void Consume( Actor* consumer ) const;
 
     private:
+    const std::string m_itemType = "";
     const Definition<Item>* m_itemDef = nullptr;
 
     void BuildMesh( const Rgba& tint = Rgba::WHITE ) override;

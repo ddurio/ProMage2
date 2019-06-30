@@ -510,8 +510,42 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
 
         ImGui::ImageButton( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ), 0 );
 
-        if( ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( 0 ) ) {
+        if( ImGui::IsItemHovered() ) {
+            // Draw item tooltip
+            ImGui::BeginTooltip();
+
+            ImGui::Text( "Name: %s", item->GetItemType().c_str() );
+
+            if( item->GetItemSlot() != ITEM_SLOT_NONE ) {
+                ImGui::Text( "Slot: %s", item->GetItemSlotText().c_str() );
+            }
+
+            std::vector< Tags > requiredSets = item->GetItemSets();
+            int numSets = (int)requiredSets.size();
+
+            ImGuiStyle& tooltipStyle = ImGui::GetStyle();
+            ImGuiStyle origStyle = tooltipStyle;
+
+            for( int setIndex = 0; setIndex < numSets; setIndex++ ) {
+                Tags& set = requiredSets[setIndex];
+                Strings tags = set.GetTags();
+
+                tooltipStyle.Colors[ImGuiCol_Text] = (m_itemSets.HasAtLeastOneTag( set )) ? Rgba::GREEN.GetAsImGui() : Rgba::RED.GetAsImGui();
+                ImGui::Text( "Requires: %s", JoinStrings( tags, " OR " ).c_str() );
+            }
+
             if( item->IsConsumable() ) {
+                std::string description = item->GetConsumptionDescription();
+
+                ImGui::Text( "%s", description.c_str() );
+                ImGui::Text( "Consumable (double click)" );
+            }
+
+            ImGui::EndTooltip();
+            tooltipStyle = origStyle;
+
+            // Consumable
+            if( item->IsConsumable() && ImGui::IsMouseDoubleClicked( 0 ) ) {
                 item->Consume( m_owner );
 
                 RemoveItemFromInventory( item );
