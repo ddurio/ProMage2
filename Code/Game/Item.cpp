@@ -177,7 +177,10 @@ float Item::GetAttackRange() const {
 
 
 float Item::GetAttackDamage() const {
-    return m_itemDef->GetProperty( "attackDamage", 0.f );
+    float baseDamage = m_itemDef->GetProperty( "attackDamage", 0.f );
+    float scaledDamage = baseDamage * m_quality;
+
+    return scaledDamage;
 }
 
 
@@ -224,6 +227,46 @@ WeaponInfo Item::GetWeaponInfo() const {
 }
 
 
+float Item::GetDefense() const {
+    return m_defense;
+}
+
+
+Rgba Item::GetQualityColor() const {
+    if( m_quality >= 5.f ) {
+        return Rgba::ORANGE;
+    } else if( m_quality >= 4.f ) {
+        return Rgba::PURPLE;
+    } else if( m_quality >= 3.f ) {
+        return Rgba::BLUE;
+    } else if( m_quality >= 2.f ) {
+        return Rgba::GREEN;
+    } else {
+        return Rgba::WHITE;
+    }
+}
+
+
+std::string Item::GetQualityDescription() const {
+    std::string qualityStr = "";
+
+    if( m_quality >= 5.f ) {
+        qualityStr = "Legendary";
+    } else if( m_quality >= 4.f ) {
+        qualityStr = "Epic";
+    } else if( m_quality >= 3.f ) {
+        qualityStr = "Rare";
+    } else if( m_quality >= 2.f ) {
+        qualityStr = "Uncommon";
+    } else {
+        qualityStr = "Common";
+    }
+
+    std::string description = Stringf( "Quality: %s", qualityStr.c_str() );
+    return description;
+}
+
+
 bool Item::IsConsumable() const {
     return m_itemDef->GetProperty( "isConsumable", false );
 }
@@ -240,11 +283,6 @@ std::string Item::GetConsumptionDescription() const {
     std::string description = Stringf( "Provides: %s", formattedSets.c_str() );
 
     return description;
-}
-
-
-void Item::SetWorldPosition( const Vec2& worldPosition ) {
-    m_transform.position = worldPosition;
 }
 
 

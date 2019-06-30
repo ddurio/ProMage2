@@ -10,8 +10,9 @@
             <CellularAutomata ifNeighborType="StairsDown" setTags="stairDownAccess"/>
 
             <Sprinkle ifIsType="HardWoodFloor" spawnActor="HumanFemale" controller="Player" count="1"/>
-            <Sprinkle ifIsType="HardWoodFloor" spawnActor="SkeletonMale" controller="Enemy" count="1"/>
             <!--
+            <Sprinkle ifIsType="HardWoodFloor" spawnActor="SkeletonMale" controller="Enemy" count="1"/>
+
             <Sprinkle ifIsType="Grass" changeToType="Stone" count="0~4"/>
             <CellularAutomata ifIsType="Grass" ifNeighborType="Stone" changeToType="Stone"/>
             <DistanceField ifIsType="Water" movementType="Walk"/>

@@ -1,6 +1,8 @@
 <ItemDefinitions>
     <!-- Helm -->
-    <ItemDef name="Bandana" slot="Helm" spriteSheet="PaperDoll.Hat.1"/>
+    <ItemDef name="Bandana" slot="Helm" spriteSheet="PaperDoll.Hat.1">
+        <ItemSet name="Light"/>
+    </ItemDef>
     <ItemDef name="LeatherHelm" slot="Helm" spriteSheet="PaperDoll.Hat.2">
         <ItemSet name="Medium"/>
     </ItemDef>
@@ -16,9 +18,11 @@
     </ItemDef>
     <ItemDef name="Blouse" slot="Chest" spriteSheet="PaperDoll.Chest.F3">
         <ItemSet name="Female"/>
+        <ItemSet name="Light"/>
     </ItemDef>
     <ItemDef name="TankTop" slot="Chest" spriteSheet="PaperDoll.Chest.F4">
         <ItemSet name="Female"/>
+        <ItemSet name="Light"/>
     </ItemDef>
     <ItemDef name="LeatherChestF" slot="Chest" spriteSheet="PaperDoll.Chest.F5">
         <ItemSet name="Female"/>
@@ -46,9 +50,11 @@
     </ItemDef>
     <ItemDef name="Shirt" slot="Chest" spriteSheet="PaperDoll.Chest.M5">
         <ItemSet name="Male"/>
+        <ItemSet name="Light"/>
     </ItemDef>
     <ItemDef name="ShirtBelt" slot="Chest" spriteSheet="PaperDoll.Chest.M6">
         <ItemSet name="Male"/>
+        <ItemSet name="Light"/>
     </ItemDef>
     <ItemDef name="Tunic" slot="Chest" spriteSheet="PaperDoll.Chest.M7">
         <ItemSet name="Male"/>
@@ -73,6 +79,7 @@
     <!-- Legs -->
     <ItemDef name="PantsF" slot="Legs" spriteSheet="PaperDoll.Legs.F1">
         <ItemSet name="Female"/>
+        <ItemSet name="Light"/>
     </ItemDef>
     <ItemDef name="LeatherLegsF" slot="Legs" spriteSheet="PaperDoll.Legs.F2">
         <ItemSet name="Female"/>
@@ -84,6 +91,7 @@
     </ItemDef>
     <ItemDef name="PantsM" slot="Legs" spriteSheet="PaperDoll.Legs.M1">
         <ItemSet name="Male"/>
+        <ItemSet name="Light"/>
     </ItemDef>
     <ItemDef name="LeatherLegsM" slot="Legs" spriteSheet="PaperDoll.Legs.M2">
         <ItemSet name="Male"/>
@@ -96,6 +104,7 @@
     <!-- Feet -->
     <ItemDef name="BootsF" slot="Feet" spriteSheet="PaperDoll.Feet.F1">
         <ItemSet name="Female"/>
+        <ItemSet name="Light"/>
     </ItemDef>
     <ItemDef name="LeatherBootsF" slot="Feet" spriteSheet="PaperDoll.Feet.F2">
         <ItemSet name="Female"/>
@@ -110,6 +119,7 @@
     </ItemDef>
     <ItemDef name="BootsM" slot="Feet" spriteSheet="PaperDoll.Feet.M1">
         <ItemSet name="Male"/>
+        <ItemSet name="Light"/>
     </ItemDef>
     <ItemDef name="LeatherBootsM" slot="Feet" spriteSheet="PaperDoll.Feet.M2">
         <ItemSet name="Male"/>
@@ -140,7 +150,7 @@
     </ItemDef>
     <ItemDef name="Spear" slot="Weapon" spriteSheet="PaperDoll.Weapon.Spear">
         <ItemSet name="Melee"/>
-        <Attack range="1" damage="10" coneWidth="90" anim="PaperDoll.Thrust"/>
+        <Attack range="1" damage="15" coneWidth="90" anim="PaperDoll.Thrust"/>
         <Portrait anim="PaperDoll.Walk.Left" frame="1"/>
     </ItemDef>
     <ItemDef name="LightArmorSkillbook" slot="None" spriteSheet="Terrain">

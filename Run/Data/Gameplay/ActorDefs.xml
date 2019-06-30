@@ -106,7 +106,7 @@
         <Parent name="HumanFemale"/>
         <Parent name="HumanMale"/>
         <Parent name="OrcFemale"/>
-        <Parent name="OrgMale"/>
+        <Parent name="OrcMale"/>
         <Money value="1000"/>
     </ActorDef>
 </ActorDefinitions>

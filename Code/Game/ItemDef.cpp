@@ -4,11 +4,13 @@
 #include "Engine/Core/Tags.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/RNG.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteAnimDef.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 
 #include "Game/Item.hpp"
+#include "Game/Map.hpp"
 #include "Game/XMLUtils.hpp"
 
 
@@ -96,11 +98,26 @@ Definition<Item>::Definition( const XMLElement& element ) {
         childEle = childEle->NextSiblingElement();
     }
 
+    // Proficiency Factor
+    float proficiency = 0.f;
+    int numTags = (int)itemSets.size();
+
+    for( int tagIndex = 0; tagIndex < numTags; tagIndex++ ) {
+        const Tags& tag = itemSets[tagIndex];
+
+        if( tag.HasTags( "Medium" ) ) {
+            proficiency = Max( 1.f, proficiency );
+        } else if( tag.HasTags( "Medium" ) ) {
+            proficiency = Max( 2.f, proficiency );
+        }
+    }
+
     // Set Properties
     m_properties.SetValue( "slot",              itemSlot        );
     m_properties.SetValue( "value",             moneyValue      );
-    m_properties.SetValue( "spriteSheet",       sheetName      );
+    m_properties.SetValue( "spriteSheet",       sheetName       );
     m_properties.SetValue( "itemSets",          itemSets        );
+    m_properties.SetValue( "proficiency",       proficiency     );
 
     m_properties.SetValue( "attackAnim",        attackAnim      );
     m_properties.SetValue( "attackRange",       attackRange     );
@@ -118,10 +135,54 @@ Definition<Item>::Definition( const XMLElement& element ) {
 }
 
 
+float s_qualityChances[4] = {
+    0.995f,
+    0.95f,
+    0.9f,
+    0.8f
+};
+
+
+float s_slotBaseDefense[NUM_ITEM_SLOTS - 1] = {
+    2.f, // Helm
+    4.f, // Chest
+    0.f, // Shoulder
+    3.f, // Legs
+    1.f  // Feet
+};
+
 template<>
 void Definition<Item>::Define( Item& theObject ) const {
-    UNUSED( theObject );
-    // Define item specific things here.. roll the dice, etc
+    ItemSlot slot = theObject.GetItemSlot();
 
-    //theObject.m_strength     = g_RNG->GetRandomFloatInRange( strRange );
+    if( slot == ITEM_SLOT_NONE ) {
+        return;
+    }
+
+    RNG* mapRNG = theObject.m_map->GetMapRNG();
+
+    // Quality Factor
+    float qualityRoll = mapRNG->GetRandomFloatZeroToOne();
+
+    if( qualityRoll >= s_qualityChances[0] ) {
+        theObject.m_quality = 5.f; // Legendary
+    } else if( qualityRoll >= s_qualityChances[1] ) {
+        theObject.m_quality = 4.f; // Epic
+    } else if( qualityRoll >= s_qualityChances[2] ) {
+        theObject.m_quality = 3.f; // Rare
+    } else if( qualityRoll >= s_qualityChances[3] ) {
+        theObject.m_quality = 2.f; // Uncommon
+    } else {
+        theObject.m_quality = 1.f; // Common
+    }
+
+
+    // Defense
+    if( slot != ITEM_SLOT_WEAPON ) {
+        float proficiency = GetProperty( "proficiency", 0.f );
+
+        if( proficiency > 0.f ) {
+            theObject.m_defense = s_slotBaseDefense[slot] + theObject.m_quality + (2.f * proficiency);
+        }
+    }
 }

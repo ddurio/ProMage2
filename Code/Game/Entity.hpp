@@ -57,7 +57,7 @@ class Entity {
     virtual void Render() const = 0;
 
     virtual void Die();
-    void TakeDamage( float damageToTake );
+    virtual void TakeDamage( float damageToTake );
 
     bool IsAlive() const;
     virtual bool IsGarbage() const;

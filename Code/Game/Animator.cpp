@@ -48,6 +48,7 @@ void Animator::Update( float deltaSeconds ) {
     const IsoSpriteAnimDef* newAnim = IsoSpriteAnimDef::GetDefinition( animName );
 
     if( m_currentAnim != newAnim ) {
+        m_currentAnimName = animName;
         m_currentAnim = newAnim;
         m_animTimer->Start( m_currentAnim->GetDuration() );
         m_prevElapsedTime = 0.f;
@@ -55,6 +56,11 @@ void Animator::Update( float deltaSeconds ) {
 
     m_prevMoveDir = (moveDir == Vec2::ZERO) ? m_prevMoveDir : moveDir; // Keep last facing if you're not moving now
     TriggerAnimEvents();
+}
+
+
+std::string Animator::GetCurrentAnimName() const {
+    return m_currentAnimName;
 }
 
 

@@ -55,8 +55,14 @@ void PlayerController::Update( float deltaSeconds ) {
         m_myActor->StartAttack();
     } else if( m_myActor->IsAttacking() ) {
         Animator* myAnimator = GetActorAnimator();
+        std::string currentAnim = myAnimator->GetCurrentAnimName();
 
-        if( myAnimator->AnimHasFinished() ) {
+        if( myAnimator->AnimHasFinished() ||
+            (currentAnim != ANIM_PAPER_DOLL_SHOOT &&
+             currentAnim != ANIM_PAPER_DOLL_SLASH &&
+             currentAnim != ANIM_PAPER_DOLL_SPELL &&
+             currentAnim != ANIM_PAPER_DOLL_THRUST ) ) {
+
             m_myActor->StartAttack( false );
         }
     }

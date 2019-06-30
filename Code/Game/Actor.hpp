@@ -47,6 +47,7 @@ class Actor : public Entity {
     void Shutdown();
 
     void Die() override;
+    void TakeDamage( float damageToTake ) override;
     void Revive();
 
     void Update( float deltaSeconds );

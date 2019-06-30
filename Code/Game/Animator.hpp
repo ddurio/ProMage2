@@ -17,6 +17,7 @@ class Animator {
 
     void Update( float deltaSeconds );
 
+    std::string GetCurrentAnimName() const;
     const SpriteDef& GetCurrentSpriteDef() const;
     const SpriteDef& GetPortraitSpriteDef() const;
     Vec2 GetCurrentFacing() const;
@@ -25,6 +26,7 @@ class Animator {
     private:
     Actor* m_myActor = nullptr;
 
+    std::string m_currentAnimName = "";
     const IsoSpriteAnimDef* m_currentAnim = nullptr;
     Timer* m_animTimer = nullptr;
 

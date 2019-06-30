@@ -371,6 +371,21 @@ int Inventory::GetMoney() const {
 }
 
 
+float Inventory::GetDefense() const {
+    float defense = 0.f;
+
+    for( int itemIndex = 0; itemIndex < NUM_ITEM_SLOTS - 1; itemIndex++ ) {
+        Item* item = m_equippedItems[itemIndex];
+
+        if( item != nullptr ) {
+            defense += item->GetDefense();
+        }
+    }
+
+    return defense;
+}
+
+
 void Inventory::AddUIContent() {
     // Setup backpack view
     for( int itemIndex = 0; itemIndex < m_numItemSlots; itemIndex++ ) {
@@ -501,39 +516,49 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
 
     if( item != nullptr ) {
         ImGui::PushID( item );
+        ImGuiStyle& tileStyle = ImGui::GetStyle();
+        ImGuiStyle origStyle = tileStyle;
+
         const SpriteDef& portrait = item->GetPortrait();
 
         TextureView2D* textureView = g_theRenderer->GetOrCreateTextureView2D( portrait.GetTexturePath() );
         shaderResourceView = textureView->GetShaderView();
 
         portrait.GetUVs( uvs.mins, uvs.maxs );
-
-        ImGui::ImageButton( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ), 0 );
+        
+        ImVec4 qualityColor = item->GetQualityColor().GetAsImGui();
+        ImGui::ImageButton( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ), 0, qualityColor );
 
         if( ImGui::IsItemHovered() ) {
-            // Draw item tooltip
+            // Item tooltip: name, slot, etc
             ImGui::BeginTooltip();
 
             ImGui::Text( "Name: %s", item->GetItemType().c_str() );
 
-            if( item->GetItemSlot() != ITEM_SLOT_NONE ) {
+            ItemSlot slot = item->GetItemSlot();
+            if( slot != ITEM_SLOT_NONE ) {
                 ImGui::Text( "Slot: %s", item->GetItemSlotText().c_str() );
+
+                if( slot == ITEM_SLOT_WEAPON ) {
+                    ImGui::Text( "Damage: %.0f", item->GetAttackDamage() );
+                } else {
+                    ImGui::Text( "Defense: %.0f", item->GetDefense() );
+                }
             }
 
+            // Required item sets
             std::vector< Tags > requiredSets = item->GetItemSets();
             int numSets = (int)requiredSets.size();
-
-            ImGuiStyle& tooltipStyle = ImGui::GetStyle();
-            ImGuiStyle origStyle = tooltipStyle;
 
             for( int setIndex = 0; setIndex < numSets; setIndex++ ) {
                 Tags& set = requiredSets[setIndex];
                 Strings tags = set.GetTags();
 
-                tooltipStyle.Colors[ImGuiCol_Text] = (m_itemSets.HasAtLeastOneTag( set )) ? Rgba::GREEN.GetAsImGui() : Rgba::RED.GetAsImGui();
+                tileStyle.Colors[ImGuiCol_Text] = (m_itemSets.HasAtLeastOneTag( set )) ? Rgba::GREEN.GetAsImGui() : Rgba::RED.GetAsImGui();
                 ImGui::Text( "Requires: %s", JoinStrings( tags, " OR " ).c_str() );
             }
 
+            // Consumable description
             if( item->IsConsumable() ) {
                 std::string description = item->GetConsumptionDescription();
 
@@ -541,8 +566,13 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
                 ImGui::Text( "Consumable (double click)" );
             }
 
+            // Quality
+            tileStyle.Colors[ImGuiCol_Text] = qualityColor;
+            std::string qualityDesc = item->GetQualityDescription();
+            ImGui::Text( "%s", qualityDesc.c_str() );
+
             ImGui::EndTooltip();
-            tooltipStyle = origStyle;
+            tileStyle = origStyle;
 
             // Consumable
             if( item->IsConsumable() && ImGui::IsMouseDoubleClicked( 0 ) ) {
@@ -552,6 +582,8 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
                 CLEAR_POINTER( item );
                 itemWasConsumed = true;
             }
+
+            tileStyle = origStyle;
         }
     } else {
         const SpriteAnimDef* slotAnim = SpriteAnimDef::GetDefinition( emptyTileName );

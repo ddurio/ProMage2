@@ -94,6 +94,11 @@ void Map::Render() const {
 }
 
 
+RNG* Map::GetMapRNG() const {
+    return m_mapRNG;
+}
+
+
 IntVec2 Map::GetMapDimensions() const {
     return m_mapDimensions;
 }

@@ -28,6 +28,7 @@ class Map {
     void Update( float deltaSeconds );
     void Render() const;
 
+    RNG* GetMapRNG() const;
     IntVec2 GetMapDimensions() const;
     const IntVec2 GetTileCoordsFromWorldCoords( const Vec2& worldCoords ) const;
     const IntVec2 GetTileCoordsForStairs( bool getStairsDown ) const;

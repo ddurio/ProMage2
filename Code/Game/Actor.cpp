@@ -137,6 +137,18 @@ void Actor::Die() {
 }
 
 
+void Actor::TakeDamage( float damageToTake ) {
+    if( damageToTake > 0 ) {
+        float defense = m_inventory->GetDefense();
+        float damageAfterDefense = Max( damageToTake - defense, 0.f );
+
+        m_statsManager->TakeDamage( damageAfterDefense );
+    } else {
+        m_statsManager->TakeDamage( damageToTake );
+    }
+}
+
+
 void Actor::Revive() {
     m_statsManager->Revive();
     m_isDead = false;

@@ -26,7 +26,7 @@ struct WeaponInfo {
 
 
 class Item : public Entity {
-    friend class ItemDef;
+    friend class Definition<Item>;
 
     public:
     explicit Item( Map* theMap, std::string itemType );
@@ -51,21 +51,29 @@ class Item : public Entity {
     std::string GetSpriteTexture() const;
     std::string GetItemType() const;
     int GetValue() const;
+
     std::string GetAttackAnim() const;
     float GetAttackRange() const;
     float GetAttackDamage() const;
     float GetAttackConeWidth() const;
     float GetAttackConeDotProduct() const;
     WeaponInfo GetWeaponInfo() const;
+
+    float GetDefense() const;
+    Rgba GetQualityColor() const;
+    std::string GetQualityDescription() const;
+
     bool IsConsumable() const;
     std::string GetConsumptionDescription() const;
 
-    void SetWorldPosition( const Vec2& worldPosition );
     void Consume( Actor* consumer ) const;
 
     private:
     const std::string m_itemType = "";
     const Definition<Item>* m_itemDef = nullptr;
+
+    float m_quality = 1.f;
+    float m_defense = 0.f;
 
     void BuildMesh( const Rgba& tint = Rgba::WHITE ) override;
 };

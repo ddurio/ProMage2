@@ -37,16 +37,16 @@
     <SpriteAnim name="PaperDoll.Spell.Right"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="39"  endIndex="45"  duration="1.f" playbackType="Loop"/>
 
     <!-- Thrust -->
-    <SpriteAnim name="PaperDoll.Thrust.Up"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="53"  endIndex="59"  duration="1.f" playbackType="Loop">
+    <SpriteAnim name="PaperDoll.Thrust.Up"    spriteSheet="PaperDoll.Body.Human.M1"   startIndex="53"  endIndex="59"  duration=".8f" playbackType="Loop">
         <Event frame="3" command="dealDamage"/>
     </SpriteAnim>
-    <SpriteAnim name="PaperDoll.Thrust.Left"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="66"  endIndex="72"  duration="1.f" playbackType="Loop">
+    <SpriteAnim name="PaperDoll.Thrust.Left"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="66"  endIndex="72"  duration=".8f" playbackType="Loop">
         <Event frame="3" command="dealDamage"/>
     </SpriteAnim>
-    <SpriteAnim name="PaperDoll.Thrust.Down"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="79"  endIndex="84"  duration="1.f" playbackType="Loop">
+    <SpriteAnim name="PaperDoll.Thrust.Down"  spriteSheet="PaperDoll.Body.Human.M1"   startIndex="79"  endIndex="84"  duration=".8f" playbackType="Loop">
         <Event frame="3" command="dealDamage"/>
     </SpriteAnim>
-    <SpriteAnim name="PaperDoll.Thrust.Right" spriteSheet="PaperDoll.Body.Human.M1"   startIndex="92"  endIndex="98"  duration="1.f" playbackType="Loop">
+    <SpriteAnim name="PaperDoll.Thrust.Right" spriteSheet="PaperDoll.Body.Human.M1"   startIndex="92"  endIndex="98"  duration=".8f" playbackType="Loop">
         <Event frame="3" command="dealDamage"/>
     </SpriteAnim>
 

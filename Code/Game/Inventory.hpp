@@ -53,6 +53,7 @@ class Inventory {
 
     int GetItemIndex( Item* itemToFind, bool& outIsEquipped ) const;
     int GetMoney() const;
+    float GetDefense() const;
 
     void AddUIContent();
 
