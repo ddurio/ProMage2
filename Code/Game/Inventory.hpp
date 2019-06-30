@@ -79,7 +79,9 @@ class Inventory {
     void AddUnequippedItemTile( int itemIndex );
     void AddEquippedItemTile( ItemSlot itemSlot, const ImVec2& tileSize );
     void CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& tileSize, const std::string& emptyTileName = ANIM_INVENTORY_EMPTY );
+    void CreateItemTooltip( Item* item ) const;
     void CreateMoneyTile( const ImVec2& tileSize );
+    void SetupDragAndDrop( Item* item, int itemIndex, bool isEquipped, void* shaderResourceView, const ImVec2& tileSize, const AABB2& uvs );
 
     static void HandleDragAndDrop( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );
     void SwapItems( const ItemTilePayload& sourcePayload, const ItemTilePayload& targetPayload );

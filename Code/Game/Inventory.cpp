@@ -507,18 +507,15 @@ struct ItemTilePayload {
 
 
 void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& tileSize, const std::string& emptyTileName /*= ANIM_INVENTORY_EMPTY */ ) {
-    // Create Button
     void* shaderResourceView = nullptr;
     AABB2 uvs;
 
     Item* item = isEquipped ? m_equippedItems[itemIndex] : m_unequippedItems[itemIndex];
     bool itemWasConsumed = false;
 
+    // Create tile based on Item
     if( item != nullptr ) {
         ImGui::PushID( item );
-        ImGuiStyle& tileStyle = ImGui::GetStyle();
-        ImGuiStyle origStyle = tileStyle;
-
         const SpriteDef& portrait = item->GetPortrait();
 
         TextureView2D* textureView = g_theRenderer->GetOrCreateTextureView2D( portrait.GetTexturePath() );
@@ -530,49 +527,7 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
         ImGui::ImageButton( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ), 0, qualityColor );
 
         if( ImGui::IsItemHovered() ) {
-            // Item tooltip: name, slot, etc
-            ImGui::BeginTooltip();
-
-            ImGui::Text( "Name: %s", item->GetItemType().c_str() );
-
-            ItemSlot slot = item->GetItemSlot();
-            if( slot != ITEM_SLOT_NONE ) {
-                ImGui::Text( "Slot: %s", item->GetItemSlotText().c_str() );
-
-                if( slot == ITEM_SLOT_WEAPON ) {
-                    ImGui::Text( "Damage: %.0f", item->GetAttackDamage() );
-                } else {
-                    ImGui::Text( "Defense: %.0f", item->GetDefense() );
-                }
-            }
-
-            // Required item sets
-            std::vector< Tags > requiredSets = item->GetItemSets();
-            int numSets = (int)requiredSets.size();
-
-            for( int setIndex = 0; setIndex < numSets; setIndex++ ) {
-                Tags& set = requiredSets[setIndex];
-                Strings tags = set.GetTags();
-
-                tileStyle.Colors[ImGuiCol_Text] = (m_itemSets.HasAtLeastOneTag( set )) ? Rgba::GREEN.GetAsImGui() : Rgba::RED.GetAsImGui();
-                ImGui::Text( "Requires: %s", JoinStrings( tags, " OR " ).c_str() );
-            }
-
-            // Consumable description
-            if( item->IsConsumable() ) {
-                std::string description = item->GetConsumptionDescription();
-
-                ImGui::Text( "%s", description.c_str() );
-                ImGui::Text( "Consumable (double click)" );
-            }
-
-            // Quality
-            tileStyle.Colors[ImGuiCol_Text] = qualityColor;
-            std::string qualityDesc = item->GetQualityDescription();
-            ImGui::Text( "%s", qualityDesc.c_str() );
-
-            ImGui::EndTooltip();
-            tileStyle = origStyle;
+            CreateItemTooltip( item ); // Tooltip on hover
 
             // Consumable
             if( item->IsConsumable() && ImGui::IsMouseDoubleClicked( 0 ) ) {
@@ -582,10 +537,8 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
                 CLEAR_POINTER( item );
                 itemWasConsumed = true;
             }
-
-            tileStyle = origStyle;
         }
-    } else {
+    } else { // Create empty tile
         const SpriteAnimDef* slotAnim = SpriteAnimDef::GetDefinition( emptyTileName );
         const SpriteDef sprite = slotAnim->GetSpriteDefAtTime( 0.f );
 
@@ -597,36 +550,61 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
         ImGui::ImageButton( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ), 0 );
     }
 
-    // Setup Drag
-    if( (item != nullptr ) && ImGui::BeginDragDropSource( ImGuiDragDropFlags_None ) ) {
-        ItemTilePayload sourcePayload = ItemTilePayload( itemIndex, isEquipped, this );
-
-        ImGui::SetDragDropPayload( "ItemTile", &sourcePayload, sizeof( ItemTilePayload ) );
-        ImGui::Image( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ) );
-        //ImGui::Text( "%x", this );
-
-        ImGui::EndDragDropSource();
-    }
-
-    // Setup Drop
-    if( ImGui::BeginDragDropTarget() ) {
-        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "ItemTile" );
-
-        if( payload != nullptr ) {
-            IM_ASSERT( payload->DataSize == sizeof( ItemTilePayload ) );
-
-            ItemTilePayload sourcePayload = *(const ItemTilePayload*)payload->Data;
-            ItemTilePayload targetPayload = ItemTilePayload( itemIndex, isEquipped, this );
-
-            HandleDragAndDrop( sourcePayload, targetPayload );
-        }
-
-        ImGui::EndDragDropTarget();
-    }
+    SetupDragAndDrop( item, itemIndex, isEquipped, shaderResourceView, tileSize, uvs );
 
     if( item != nullptr || itemWasConsumed ) {
         ImGui::PopID();
     }
+}
+
+
+void Inventory::CreateItemTooltip( Item* item ) const {
+    ImGuiStyle& tooltipStyle = ImGui::GetStyle();
+    ImGuiStyle origStyle = tooltipStyle;
+
+    // Item tooltip: name, slot, etc
+    ImGui::BeginTooltip();
+
+    ImGui::Text( "Name: %s", item->GetItemType().c_str() );
+
+    ItemSlot slot = item->GetItemSlot();
+    if( slot != ITEM_SLOT_NONE ) {
+        ImGui::Text( "Slot: %s", item->GetItemSlotText().c_str() );
+
+        if( slot == ITEM_SLOT_WEAPON ) {
+            ImGui::Text( "Damage: %.0f", item->GetAttackDamage() );
+        } else {
+            ImGui::Text( "Defense: %.0f", item->GetDefense() );
+        }
+    }
+
+    // Required item sets
+    std::vector< Tags > requiredSets = item->GetItemSets();
+    int numSets = (int)requiredSets.size();
+
+    for( int setIndex = 0; setIndex < numSets; setIndex++ ) {
+        Tags& set = requiredSets[setIndex];
+        Strings tags = set.GetTags();
+
+        tooltipStyle.Colors[ImGuiCol_Text] = (m_itemSets.HasAtLeastOneTag( set )) ? Rgba::GREEN.GetAsImGui() : Rgba::RED.GetAsImGui();
+        ImGui::Text( "Requires: %s", JoinStrings( tags, " OR " ).c_str() );
+    }
+
+    // Consumable description
+    if( item->IsConsumable() ) {
+        std::string description = item->GetConsumptionDescription();
+
+        ImGui::Text( "%s", description.c_str() );
+        ImGui::Text( "Consumable (double click)" );
+    }
+
+    // Quality
+    tooltipStyle.Colors[ImGuiCol_Text] = item->GetQualityColor().GetAsImGui();
+    std::string qualityDesc = item->GetQualityDescription();
+    ImGui::Text( "%s", qualityDesc.c_str() );
+
+    ImGui::EndTooltip();
+    tooltipStyle = origStyle;
 }
 
 
@@ -656,6 +634,36 @@ void Inventory::CreateMoneyTile( const ImVec2& tileSize ) {
 
     ImGui::SetCursorPosX( currentPosX + centeredTextStart );
     ImGui::Text( moneyStr.c_str() );
+}
+
+
+void Inventory::SetupDragAndDrop( Item* item, int itemIndex, bool isEquipped, void* shaderResourceView, const ImVec2& tileSize, const AABB2& uvs ) {
+    // Setup Drag
+    if( (item != nullptr ) && ImGui::BeginDragDropSource( ImGuiDragDropFlags_None ) ) {
+        ItemTilePayload sourcePayload = ItemTilePayload( itemIndex, isEquipped, this );
+
+        ImGui::SetDragDropPayload( "ItemTile", &sourcePayload, sizeof( ItemTilePayload ) );
+        ImGui::Image( shaderResourceView, tileSize, ImVec2( uvs.mins.x, uvs.maxs.y ), ImVec2( uvs.maxs.x, uvs.mins.y ) );
+        //ImGui::Text( "%x", this );
+
+        ImGui::EndDragDropSource();
+    }
+
+    // Setup Drop
+    if( ImGui::BeginDragDropTarget() ) {
+        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "ItemTile" );
+
+        if( payload != nullptr ) {
+            IM_ASSERT( payload->DataSize == sizeof( ItemTilePayload ) );
+
+            ItemTilePayload sourcePayload = *(const ItemTilePayload*)payload->Data;
+            ItemTilePayload targetPayload = ItemTilePayload( itemIndex, isEquipped, this );
+
+            HandleDragAndDrop( sourcePayload, targetPayload );
+        }
+
+        ImGui::EndDragDropTarget();
+    }
 }
 
 
