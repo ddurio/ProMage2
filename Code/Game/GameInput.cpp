@@ -31,7 +31,6 @@ void GameInput::Update( float deltaSeconds ) {
     m_toggleInventory   = false;
     m_interact          = false;
     m_escapePressed     = false;
-    m_attack            = false;
 }
 
 
@@ -95,9 +94,10 @@ bool GameInput::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f 
         case(MOUSE_EVENT_LBUTTON_DOWN): {
             m_attack = true;
             return true;
-            /*
         } case(MOUSE_EVENT_LBUTTON_UP): {
+            m_attack = false;
             return true;
+            /*
         } case(MOUSE_EVENT_RBUTTON_DOWN): {
             return true;
         } case(MOUSE_EVENT_RBUTTON_UP): {
