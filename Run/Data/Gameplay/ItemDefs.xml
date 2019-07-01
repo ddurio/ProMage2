@@ -179,6 +179,13 @@
         <Portrait anim="PaperDoll.Shoot.Right" frame="3"/>
         <Drop floor="10~100" bias="middle"/>
     </ItemDef>
+    <ItemDef name="StarterDagger" slot="Weapon" spriteSheet="PaperDoll.Weapon.Dagger">
+        <ItemSet name="Melee"/>
+        <Attack range="1" damage="8" coneWidth="90" anim="PaperDoll.Slash"/>
+        <Portrait anim="PaperDoll.Walk.Left" frame="4"/>
+        <Drop floor="-1"/>
+        <Quality value="1"/>
+    </ItemDef>
     <ItemDef name="Dagger" slot="Weapon" spriteSheet="PaperDoll.Weapon.Dagger">
         <ItemSet name="Melee"/>
         <Attack range="0.9" damage="10" coneWidth="90" anim="PaperDoll.Slash"/>

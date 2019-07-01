@@ -106,6 +106,10 @@ Definition<Item>::Definition( const XMLElement& element ) {
 
             m_properties.SetValue( "dropFloors",    floorRange );
             m_properties.SetValue( "dropBias",      bias );
+            
+        } else if( tagName == "Quality" ) {
+            float qualityOverride = ParseXMLAttribute( *childEle, "value", 1.f );
+            m_properties.SetValue( "quality", qualityOverride );
         }
 
         childEle = childEle->NextSiblingElement();
@@ -178,18 +182,24 @@ void Definition<Item>::Define( Item& theObject ) const {
     }
 
     // Quality
-    float qualityRoll = g_RNG->GetRandomFloatZeroToOne();
+    float qualityOverride = m_properties.GetValue( "quality", -1.f );
 
-    if( qualityRoll >= s_qualityChances[0] ) {
-        theObject.m_quality = 5.f; // Legendary
-    } else if( qualityRoll >= s_qualityChances[1] ) {
-        theObject.m_quality = 4.f; // Epic
-    } else if( qualityRoll >= s_qualityChances[2] ) {
-        theObject.m_quality = 3.f; // Rare
-    } else if( qualityRoll >= s_qualityChances[3] ) {
-        theObject.m_quality = 2.f; // Uncommon
+    if( qualityOverride > 0.f ) {
+        theObject.m_quality = qualityOverride;
     } else {
-        theObject.m_quality = 1.f; // Common
+        float qualityRoll = g_RNG->GetRandomFloatZeroToOne();
+
+        if( qualityRoll >= s_qualityChances[0] ) {
+            theObject.m_quality = 5.f; // Legendary
+        } else if( qualityRoll >= s_qualityChances[1] ) {
+            theObject.m_quality = 4.f; // Epic
+        } else if( qualityRoll >= s_qualityChances[2] ) {
+            theObject.m_quality = 3.f; // Rare
+        } else if( qualityRoll >= s_qualityChances[3] ) {
+            theObject.m_quality = 2.f; // Uncommon
+        } else {
+            theObject.m_quality = 1.f; // Common
+        }
     }
 
     // Money Value
@@ -197,10 +207,7 @@ void Definition<Item>::Define( Item& theObject ) const {
     theObject.m_moneyValue = 10 * (int)theObject.m_quality * (int)theObject.m_quality * ((int)proficiency + 2);
 
     // Defense
-    if( slot != ITEM_SLOT_WEAPON ) {
-
-        if( proficiency >= 0.f ) {
-            theObject.m_defense = s_slotBaseDefense[slot] + theObject.m_quality + (2.f * proficiency);
-        }
+    if( slot != ITEM_SLOT_WEAPON && proficiency >= 0.f ) {
+        theObject.m_defense = s_slotBaseDefense[slot] + theObject.m_quality + (2.f * proficiency);
     }
 }

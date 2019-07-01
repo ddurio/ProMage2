@@ -1,8 +1,6 @@
 <ActorDefinitions>
     <ActorDef name="HumanFemale">
         <!-- Female item set added via Body -->
-        <ItemSet name="Light"/>
-        <ItemSet name="Medium"/>
         <ItemSet name="Melee"/>
 
         <Stats>
@@ -28,7 +26,6 @@
     </ActorDef>
     <ActorDef name="HumanMale">
         <!-- Male item set added via Body -->
-        <ItemSet name="Light"/>
         <ItemSet name="Melee"/>
 
         <Stats>
@@ -75,6 +72,8 @@
     <ActorDef name="OrcMale">
         <!-- Male item set added via Body -->
         <ItemSet name="Light"/>
+        <ItemSet name="Medium"/>
+        <ItemSet name="Heavy"/>
         <ItemSet name="Melee"/>
 
         <Stats>

@@ -1,11 +1,35 @@
 #include "Game/EnemyController.hpp"
 
+#include "Engine/Math/RNG.hpp"
+
 #include "Game/Actor.hpp"
+#include "Game/Inventory.hpp"
 #include "Game/Map.hpp"
 
 
 EnemyController::EnemyController( Actor* myActor ) :
     ActorController( myActor ) {
+    Inventory* inventory = m_myActor->GetInventory();
+
+    // Weapon
+    bool getSpear = g_RNG->PercentChance( 0.5f );
+    std::string weaponType = getSpear ? "Spear" : "Dagger";
+    Item* weapon = inventory->SpawnNewItem( weaponType );
+    inventory->EquipItem( weapon );
+
+    // Armor
+    Map* theMap = GetMap();
+    int numNewItems = g_RNG->GetRandomIntInRange( 1, 5 );
+
+    for( int itemIndex = 0; itemIndex < numNewItems; itemIndex++ ) {
+        Item* newItem = theMap->SpawnLootDrop( inventory );
+
+        if( newItem == nullptr ) {
+            break;
+        }
+
+        inventory->EquipItem( newItem );
+    }
 }
 
 

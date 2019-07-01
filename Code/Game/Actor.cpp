@@ -66,49 +66,12 @@ Actor::~Actor() {
 void Actor::Startup() {
     m_animator = new Animator( this );
 
-    Strings items = {
-        "dress",
-        "PlateChestF",
-        "tunic",
-        "PlateHelm",
-        "Bandana",
-        "LeatherLegsF",
-        "RecurveBow",
-        "Bow",
-        "Dagger",
-        "Spear",
-        "BootsF",
-        "PlateShoulderF",
-        "HeavyArmorSkillbook"
-    };
+    // Clothe people
+    Item* dress = m_inventory->SpawnNewItem( "Dress" );
+    m_inventory->EquipItem( dress );
 
-    /*
-    Strings items = {
-        "dress",
-        "PlateChestM",
-        "tunic",
-        "PlateHelm",
-        "Bandana",
-        "LeatherLegsM",
-        "RecurveBow",
-        "Bow",
-        "Dagger",
-        "Spear",
-        "BootsF",
-        "PlateShoulderM"
-    };
-    */
-
-    // DFS1FIXME: Weapon sprite sheets are messed up
-    //            Portraits are all blank (no idle)
-    //            Longsword is completely unusable (wrong UVs)
-    int numItems = (int)items.size();
-
-    for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
-        Item* item = m_inventory->SpawnNewItem( items[itemIndex] );
-        m_inventory->EquipItem( item );
-    }
-
+    Item* tunic = m_inventory->SpawnNewItem( "Tunic" );
+    m_inventory->EquipItem( tunic );
 
     // Create meshes
     BuildMesh();
@@ -123,7 +86,6 @@ void Actor::Startup() {
 
     m_rigidBody->SetGameObject( this, &m_transform );
     m_rigidBody->AddCollider( Vec2::ZERO, m_physicsRadius );
-
 }
 
 

@@ -2,16 +2,27 @@
 
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/WindowContext.hpp"
+#include "Engine/Math/RNG.hpp"
 
 #include "Game/Actor.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
+#include "Game/Map.hpp"
 #include "Game/Inventory.hpp"
 
 
 MerchantController::MerchantController( Actor* myActor ) :
     ActorController( myActor ) {
     m_gameInput = g_theGame->GetGameInput();
+
+    // Add items to inventory for sale
+    Map* theMap = GetMap();
+    Inventory* inventory = m_myActor->GetInventory();
+    int numItems = g_RNG->GetRandomIntInRange( 10, 30 );
+
+    for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
+        theMap->SpawnLootDrop( inventory );
+    }
 }
 
 

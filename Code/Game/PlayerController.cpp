@@ -9,6 +9,7 @@
 #include "Game/Animator.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
+#include "Game/Inventory.hpp"
 #include "Game/Map.hpp"
 #include "Game/StatsManager.hpp"
 
@@ -19,6 +20,12 @@ PlayerController::PlayerController( Actor* myActor ) :
 
     g_theRenderer->GetOrCreateRenderTarget( m_portraitViewName );
 
+    // Give starter weapon
+    Inventory* inventory = m_myActor->GetInventory();
+    Item* dagger = inventory->SpawnNewItem( "StarterDagger" );
+    inventory->EquipItem( dagger );
+
+    // Mark actor as player
     Map* theMap = GetMap();
     theMap->SetPlayer( myActor );
 }

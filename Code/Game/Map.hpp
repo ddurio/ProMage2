@@ -11,6 +11,7 @@
 
 class Actor;
 class Inventory;
+class Item;
 class MapDef;
 class Model;
 class RigidBody2D;
@@ -55,6 +56,7 @@ class Map {
     bool IsValidTileCoords( const IntVec2& tileCoords ) const;
 
     Actor* SpawnNewActor( std::string actorType, std::string controllerType, const Vec2& worldPosition );
+    Item* SpawnLootDrop( Inventory* inventory, const Vec2& worldPosition = Vec2::ZERO ) const;
 
     void SetPlayer( Actor* player );
     void AddPlayerToMap( Actor* actor );
@@ -92,7 +94,6 @@ class Map {
 
 
     bool HandleEnemyDeath( EventArgs& args );
-    void SpawnLootDrop( const Vec2& worldPosition ) const;
 
     void CreateTerrainMesh();
     void CreateLootTable();

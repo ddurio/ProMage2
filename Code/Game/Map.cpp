@@ -47,10 +47,11 @@ Map::~Map() {
 void Map::Startup() {
     m_inventory = new Inventory( nullptr, m_self, false, true ); // Must be before Define, could be needed
 
+    CreateLootTable(); // Must be before define (actors spawned will refer to this)
+
     m_mapDef = MapDef::GetMapDef( m_mapType );
     m_mapDef->Define( *this );
     CreateTerrainMesh();
-    CreateLootTable();
 
     m_inventory->SpawnNewItem( "Slippers", Vec2( 4.5f, 4.5f ) );
     m_inventory->SpawnNewItem( "Shoes", Vec2( 5.5f, 5.5f ) );
@@ -238,7 +239,7 @@ Actor* Map::GetActorInRange( const std::string& typeToFind, const Vec2& worldCoo
         if( actor != nullptr ) {
             std::string actorType = actor->GetActorType();
 
-            if( actorType == typeToFind ) {
+            if( StringICmp( actorType, typeToFind ) ) {
                 Vec2 actorPos = actor->GetPosition();
                 Vec2 displacement = actorPos - worldCoords;
                 float distSqr = displacement.GetLengthSquared();
@@ -380,6 +381,24 @@ Actor* Map::SpawnNewActor( std::string actorType, std::string controllerType, co
 }
 
 
+Item* Map::SpawnLootDrop( Inventory* inventory, const Vec2& worldPosition /*= Vec2::ZERO */ ) const {
+    float diceRoll = g_RNG->GetRandomFloatZeroToOne();
+    int numItems = (int)m_lootTypes.size();
+
+    for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
+        const float& requiredRoll = m_lootPercents[itemIndex];
+
+        if( diceRoll >= requiredRoll ) {
+            std::string itemType = m_lootTypes[itemIndex];
+            Item* item = inventory->SpawnNewItem( itemType, worldPosition );
+            return item;
+        }
+    }
+
+    return nullptr;
+}
+
+
 void Map::SetPlayer( Actor* player ) {
     m_player = player;
 
@@ -473,26 +492,10 @@ bool Map::HandleEnemyDeath( EventArgs& args ) {
         CLEAR_POINTER( deadActor->m_deathTimer );
         deadActor->m_isGarbage = true;
 
-        SpawnLootDrop( deadActor->GetPosition() );
+        SpawnLootDrop( m_inventory, deadActor->GetPosition() );
     }
 
     return false;
-}
-
-
-void Map::SpawnLootDrop( const Vec2& worldPosition ) const {
-    float diceRoll = g_RNG->GetRandomFloatZeroToOne();
-    int numItems = (int)m_lootTypes.size();
-
-    for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
-        const float& requiredRoll = m_lootPercents[itemIndex];
-
-        if( diceRoll >= requiredRoll ) {
-            std::string itemType = m_lootTypes[itemIndex];
-            m_inventory->SpawnNewItem( itemType, worldPosition );
-            return;
-        }
-    }
 }
 
 
