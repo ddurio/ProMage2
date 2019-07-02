@@ -47,7 +47,8 @@
             <Sprinkle ifHasTags="stairUpAccess" spawnActor="Merchant" controller="Merchant" setTags="merchant" count="1"/>
             <CellularAutomata ifNeighborHasTags="merchant" setTags="merchantAccess"/>
             <!--<Sprinkle ifHasTags="stairUpAccess" spawnActor="SkeletonMale" controller="Enemy" count="1"/>-->
-            <Sprinkle ifHasTags="stairUpAccess" spawnActor="SkeletonMale" controller="Enemy" count="1"/>
+            <Sprinkle ifIsType="CaveDirtFloor" spawnActor="SkeletonMale" controller="Enemy" count="20"/>
+            <!--<Sprinkle ifHasTags="stairUpAccess" spawnActor="SkeletonMale" controller="Enemy" count="1"/>-->
         </GenerationSteps>
     </MapDefinition>
 </MapDefinitions>

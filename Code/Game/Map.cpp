@@ -267,7 +267,8 @@ Actor* Map::GetActorInSight( const Actor* fromActor ) const {
         Actor* toActor = m_actors[actorIndex];
 
         if( toActor != nullptr && toActor->IsAlive() && toActor->IsKillable()
-            && toActor != fromActor && HasLineOfSight( fromActor, toActor ) ) {
+            && toActor != fromActor && HasLineOfSight( fromActor, toActor )
+            && toActor->GetFaction() != fromActor->GetFaction() ) {
             // DFS1FIXME: Can add faction comparison here if desired
             return toActor;
         }
@@ -472,6 +473,11 @@ void Map::RemoveActorFromList( Actor* actor, std::vector< Actor* >& list ) {
             return;
         }
     }
+}
+
+
+void Map::ResetMaterialCreated() {
+    s_materialCreated = false;
 }
 
 

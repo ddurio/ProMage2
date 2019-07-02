@@ -16,6 +16,7 @@
 
 PlayerController::PlayerController( Actor* myActor ) :
     ActorController( myActor ) {
+    m_myActor->SetFaction( FACTION_PLAYER0 );
     m_gameInput = g_theGame->GetGameInput();
 
     g_theRenderer->GetOrCreateRenderTarget( m_portraitViewName );
@@ -52,7 +53,7 @@ void PlayerController::Update( float deltaSeconds ) {
         ToggleInventory();
     }
 
-    // Pickup Item
+    // Pickup Item or Merchant
     if( m_gameInput->ShouldInteract() ) {
         InteractFromInput();
     }
@@ -101,6 +102,7 @@ void PlayerController::UpdateHUD() {
     ImGui::SetNextWindowPos( ImVec2( portraitOrigin.x, portraitOrigin.y ), ImGuiCond_Always );
     ImGui::SetNextWindowSize( ImVec2( portraitWidth, portraitWidth ), ImGuiCond_Always );
     ImGui::Begin( "Portrait", nullptr, windowFlags );
+
 
     // Setup Portrait
     TextureView2D* portraitView = g_theRenderer->GetOrCreateTextureView2D( m_portraitViewName );

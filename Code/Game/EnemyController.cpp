@@ -9,6 +9,7 @@
 
 EnemyController::EnemyController( Actor* myActor ) :
     ActorController( myActor ) {
+    m_myActor->SetFaction( FACTION_ENEMY1 );
     Inventory* inventory = m_myActor->GetInventory();
 
     // Weapon

@@ -25,5 +25,6 @@ class MerchantController : public ActorController {
 
 
     void UpdateTradeUI() const;
-    void CreateUIWindow() const;
+    Vec2 CreateUIWindow() const;
+    void CreateUIColumns( const Vec2& windowSize ) const;
 };

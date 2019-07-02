@@ -95,7 +95,7 @@
         <ItemSet name="Ranged"/>
 
         <Stats>
-            <Health max="100" regenPerSecond="5"/>
+            <Health max="80" regenPerSecond="5"/>
             <MoveSpeed value="2"/>
         </Stats>
 

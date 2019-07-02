@@ -68,6 +68,8 @@ class Map {
     void RemoveActorFromMap( Actor* entity );
     void RemoveActorFromList( Actor* entity, std::vector< Actor* >& list );
 
+    static void ResetMaterialCreated();
+
     private:
     static bool s_materialCreated;
 

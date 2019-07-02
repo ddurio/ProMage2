@@ -267,6 +267,16 @@ void Inventory::AddItemSets( const std::string& validSetCSV ) {
 }
 
 
+bool Inventory::HasAllItemSets( const Tags& itemSetTags ) const {
+    return m_itemSets.HasTags( itemSetTags );
+}
+
+
+bool Inventory::HasOneItemSet( const Tags& itemSetTags ) const {
+    return m_itemSets.HasAtLeastOneTag( itemSetTags );
+}
+
+
 Item* Inventory::GetItemAtPosition( const Vec2& worldPosition ) const {
      int requestedTileIndex = m_map->GetTileIndexFromWorldCoords( worldPosition );
 
@@ -559,6 +569,9 @@ void Inventory::CreateItemTile( int itemIndex, bool isEquipped, const ImVec2& ti
 
 
 void Inventory::CreateItemTooltip( Item* item ) const {
+    Actor* player = m_map->GetPlayer();
+    Inventory* playerInventory = player->GetInventory();
+
     ImGuiStyle& tooltipStyle = ImGui::GetStyle();
     ImGuiStyle origStyle = tooltipStyle;
 
@@ -586,7 +599,8 @@ void Inventory::CreateItemTooltip( Item* item ) const {
         Tags& set = requiredSets[setIndex];
         Strings tags = set.GetTags();
 
-        tooltipStyle.Colors[ImGuiCol_Text] = (m_itemSets.HasAtLeastOneTag( set )) ? Rgba::GREEN.GetAsImGui() : Rgba::RED.GetAsImGui();
+        
+        tooltipStyle.Colors[ImGuiCol_Text] = (playerInventory->HasOneItemSet( set )) ? Rgba::GREEN.GetAsImGui() : Rgba::RED.GetAsImGui();
         ImGui::Text( "Requires: %s", JoinStrings( tags, " OR " ).c_str() );
     }
 

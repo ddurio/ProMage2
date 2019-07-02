@@ -44,6 +44,8 @@ class Inventory {
 
     void AddItemSets( const Strings& validSetsVec );
     void AddItemSets( const std::string& validSetCSV );
+    bool HasAllItemSets( const Tags& itemSetTags ) const;
+    bool HasOneItemSet( const Tags& itemSetTags ) const;
 
     Item* GetItemAtPosition( const Vec2& worldPosition ) const;
     Item* GetClosestItemInRange( const Vec2& worldPosition, float pickupRadius ) const;

@@ -43,6 +43,7 @@ class GameStatePlay : public GameState {
     void ChangeFloorsUp();
 
     static bool Command_PauseGame( EventArgs& args );
+    static void ResetMaterialCreated();
 
 
     private:

@@ -8,6 +8,7 @@
 
 #include "Game/Actor.hpp"
 #include "Game/Inventory.hpp"
+#include "Game/Map.hpp"
 #include "Game/StatsManager.hpp"
 
 
@@ -94,13 +95,16 @@ Definition<Actor>::Definition( const XMLElement& element ) {
 
 template<>
 void Definition<Actor>::Define( Actor& theObject ) const {
+    Map* theMap = theObject.m_map;
+    RNG* mapRNG = theMap->GetMapRNG();
+
     Strings parentOptions;
     parentOptions = m_properties.GetValue( "parents", parentOptions );
     int numParents = (int)parentOptions.size();
 
     // Select parent actor type
     if( numParents > 0 ) {
-        int parentIndex = g_RNG->GetRandomIntLessThan( numParents );
+        int parentIndex = mapRNG->GetRandomIntLessThan( numParents );
         const Definition<Actor>* parentDef = Definition<Actor>::GetDefinition( parentOptions[parentIndex] );
         parentDef->Define( theObject );
     } else { // No parents
@@ -134,19 +138,19 @@ void Definition<Actor>::Define( Actor& theObject ) const {
     std::string bodyItemSet = "";
 
     if( numBody > 0 ) {
-        int bodyIndex = g_RNG->GetRandomIntLessThan( numBody );
+        int bodyIndex = mapRNG->GetRandomIntLessThan( numBody );
         theObject.m_paperDollSprites[PAPER_DOLL_BODY] = bodyOptions[bodyIndex];
 
         bodyItemSet = bodyItemSets[bodyIndex];
     }
 
     if( numEars > 0 ) {
-        int earIndex = g_RNG->GetRandomIntLessThan( numEars );
+        int earIndex = mapRNG->GetRandomIntLessThan( numEars );
         theObject.m_paperDollSprites[PAPER_DOLL_EARS] = earOptions[earIndex];
     }
 
     if( numHair > 0 ) {
-        int hairIndex = g_RNG->GetRandomIntLessThan( numHair );
+        int hairIndex = mapRNG->GetRandomIntLessThan( numHair );
         theObject.m_paperDollSprites[PAPER_DOLL_HAIR] = hairOptions[hairIndex];
     }
 

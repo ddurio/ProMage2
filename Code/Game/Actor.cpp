@@ -67,11 +67,19 @@ void Actor::Startup() {
     m_animator = new Animator( this );
 
     // Clothe people
-    Item* dress = m_inventory->SpawnNewItem( "Dress" );
-    m_inventory->EquipItem( dress );
+    std::vector< std::string > starterItems = {
+        "Dress",
+        "Tunic",
+        "LightArmorSkillbook",
+    };
 
-    Item* tunic = m_inventory->SpawnNewItem( "Tunic" );
-    m_inventory->EquipItem( tunic );
+    int numItems = (int)starterItems.size();
+
+    for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
+        const std::string& itemType = starterItems[itemIndex];
+        Item* item = m_inventory->SpawnNewItem( itemType );
+        m_inventory->EquipItem( item );
+    }
 
     // Create meshes
     BuildMesh();

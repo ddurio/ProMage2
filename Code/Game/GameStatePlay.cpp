@@ -61,6 +61,9 @@ GameStatePlay::~GameStatePlay() {
     CLEAR_POINTER( m_map );
     CLEAR_POINTER( m_gameInput );
     CLEAR_POINTER( m_pauseUI );
+    Map::ResetMaterialCreated();
+
+    g_theEventSystem->Unsubscribe( "playerDeath", this, &GameStatePlay::HandlePlayerDeath );
 }
 
 
@@ -90,9 +93,7 @@ void GameStatePlay::Startup() {
 
     m_floorZeroSeed = g_RNG->GetRandomSeed();
     m_mapRNG = new RNG( m_floorZeroSeed );
-
-    m_map = new Map( "Floor0", "Island", m_mapRNG );
-    m_map->Startup();
+    GoToFloor( 0, STAIRS_DOWN );
 
     g_theEventSystem->Subscribe( "playerDeath", this, &GameStatePlay::HandlePlayerDeath );
 
@@ -356,18 +357,22 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
     Map* nextMap = new Map( Stringf( "Floor%d", m_currentFloor ), floorType, m_mapRNG, newFloorIndex );
     nextMap->Startup();
 
-    Actor* player = m_map->GetPlayer();
-    m_map->RemovePlayerFromMap( player );
-    nextMap->AddPlayerToMap( player );
+    if( m_map != nullptr ) {
+        Actor* player = m_map->GetPlayer();
+        m_map->RemovePlayerFromMap( player );
+        nextMap->AddPlayerToMap( player );
 
-    IntVec2 stairCoords = nextMap->GetTileCoordsForStairs( stairType );
+        IntVec2 stairCoords = nextMap->GetTileCoordsForStairs( stairType );
 
-    if( stairCoords != IntVec2::NEGONE ) {
-        Vec2 stairsWorldCoords = Vec2( stairCoords ) + Vec2( 0.5f );
-        player->SetWorldPosition( stairsWorldCoords );
+        if( stairCoords != IntVec2::NEGONE ) {
+            Vec2 stairsWorldCoords = Vec2( stairCoords ) + Vec2( 0.5f );
+            player->SetWorldPosition( stairsWorldCoords );
+        }
+
+        m_map->Shutdown();
+        CLEAR_POINTER( m_map );
     }
 
-    CLEAR_POINTER( m_map );
     m_map = nextMap;
 }
 

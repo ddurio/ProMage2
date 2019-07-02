@@ -58,7 +58,35 @@ bool MerchantController::InteractWithActor( Actor* instigator ) {
 
 // ----- Private -----
 void MerchantController::UpdateTradeUI() const {
-    CreateUIWindow();
+    Vec2 windowSize = CreateUIWindow();
+
+    // Inventory titles
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    std::string playerStr = "Player Inventory";
+    std::string merchantStr = "Merchant Inventory";
+
+    ImVec2 playerSize   = ImGui::CalcTextSize( playerStr.c_str() );
+    ImVec2 merchantSize = ImGui::CalcTextSize( merchantStr.c_str() );
+
+    float windowWidth = ImGui::GetWindowWidth();
+    float currentPosX = ImGui::GetCursorPosX();
+
+    float playerStart   = (0.25f * windowWidth) - (0.5f * playerSize.x)   - style.ItemSpacing.x;
+    float merchantStart = (0.75f * windowWidth) - (0.5f * merchantSize.x) - style.ItemSpacing.x;
+
+    ImGui::SetCursorPosX( currentPosX + playerStart );
+    ImGui::Text( playerStr.c_str() );
+
+    ImGui::SameLine();
+
+    ImGui::SetCursorPosX( currentPosX + merchantStart );
+    ImGui::Text( merchantStr.c_str() );
+
+
+    // Setup Columns
+    CreateUIColumns( windowSize );
+
 
     // Player(?) inventory on left
     Inventory* otherInventory = GetActorInventory( m_interactingWith );
@@ -75,7 +103,7 @@ void MerchantController::UpdateTradeUI() const {
 }
 
 
-void MerchantController::CreateUIWindow() const {
+Vec2 MerchantController::CreateUIWindow() const {
     // Setup Window
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
 
@@ -92,6 +120,13 @@ void MerchantController::CreateUIWindow() const {
     ImGui::SetNextWindowSize( ImVec2( windowSize.x, windowSize.y ), ImGuiCond_Always );
     ImGui::Begin( "Trade", nullptr, windowFlags );
 
+    //ImGui::Columns( 1, nullptr, false );
+
+    return windowSize;
+}
+
+
+void MerchantController::CreateUIColumns( const Vec2& windowSize ) const {
     // Setup Columns
     ImGui::Columns( 8, nullptr, false );
 
@@ -111,5 +146,4 @@ void MerchantController::CreateUIWindow() const {
     ImGui::SetColumnWidth( 6, equipmentColSize );
     ImGui::SetColumnWidth( 7, equipmentColSize );
 }
-
 
