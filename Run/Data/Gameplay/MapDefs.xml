@@ -1,5 +1,5 @@
 <MapDefinitions>
-    <MapDefinition name="Island" width="16~32" height="9~18" fillTile="EdgedGrass" edgeTile="Water">
+    <MapDefinition name="Island" width="16~32" height="9~18" fillTile="EdgedGrass" edgeTile="EdgedWater">
         <GenerationSteps>
             <RoomsAndPaths>
                 <Rooms count="3" width="2~5" height="3~6" floor="HardWoodFloor" wall="StoneWall"/>

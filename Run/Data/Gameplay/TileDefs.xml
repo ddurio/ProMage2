@@ -81,6 +81,16 @@
         allowsSwimming="false"
     />
     <TileDefinition
+        name="EdgedWater"
+        spriteCoords="24,26"
+        context="edged"
+        texelColor="33,136,38"
+        allowsSight="true"
+        allowsWalking="false"
+        allowsFlying="true"
+        allowsSwimming="true"
+    />
+    <TileDefinition
         name="EdgedGrass"
         spriteCoords="6,26"
         context="edged"
