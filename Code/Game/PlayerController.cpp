@@ -63,10 +63,9 @@ void PlayerController::Update( float deltaSeconds ) {
     }
 
 
-    // Pickup Item or Merchant
-    if( !m_inventoryOpen && m_gameInput->ShouldInteract() ) {
-        m_tradeOpen = true;
-        InteractFromInput();
+    // Pickup Item or Merchant (can't do either while already trading)
+    if( !m_inventoryOpen && !m_tradeOpen && m_gameInput->ShouldInteract() ) {
+        m_tradeOpen = InteractFromInput();
     }
 
 

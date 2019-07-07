@@ -37,7 +37,7 @@ class ActorController {
     void SetMoveDir( const Vec2& moveDir ) const;
     void ToggleInventory() const;
 
-    void InteractFromInput() const;
+    bool InteractFromInput() const;
     void PickupItem( Item* itemToPickup ) const;
 
     void UpdateActorPortrait() const;

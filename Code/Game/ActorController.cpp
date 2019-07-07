@@ -98,7 +98,8 @@ void ActorController::ToggleInventory() const {
 }
 
 
-void ActorController::InteractFromInput() const {
+// Returns true if the merchant was interacted with
+bool ActorController::InteractFromInput() const {
     Strings actions;
 
     // Look for item in range
@@ -134,10 +135,14 @@ void ActorController::InteractFromInput() const {
 
         if( chosenAction == "item" ) {
             PickupItem( itemToPickUp );
+            return false;
         } else if( chosenAction == TAG_MERCHANT ) {
             merchant->InteractWithActor( m_myActor );
+            return true;
         }
     }
+
+    return false;
 }
 
 

@@ -576,8 +576,8 @@ void Inventory::CreateItemTooltip( Item* item ) const {
     ImGuiStyle origStyle = tooltipStyle;
 
     // Set color based on equippable
-    bool isEquippable = playerInventory->IsItemEquipable( item );
-    ImVec4 normalColor = isEquippable ? Rgba::WHITE.GetAsImGui() : Rgba::ORGANIC_GRAY.GetAsImGui();
+    bool isUsable = playerInventory->IsItemEquipable( item ) || item->IsConsumable();
+    ImVec4 normalColor = isUsable ? Rgba::WHITE.GetAsImGui() : Rgba::ORGANIC_GRAY.GetAsImGui();
     tooltipStyle.Colors[ImGuiCol_Text] = normalColor;
 
     // Item tooltip: name, slot, etc

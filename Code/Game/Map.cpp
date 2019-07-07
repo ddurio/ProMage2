@@ -312,14 +312,14 @@ Actor* Map::GetActorInCone( const Vec2& coneCenter, const Vec2& coneDirection, f
             }
 
             Vec2 actorPos = actor->GetPosition();
-            Vec2 displacement = (actorPos - coneCenter).GetNormalized();
+            Vec2 displacement = (actorPos - coneCenter);
 
             // Is actor within cone radius
             float dispLengthSqr = displacement.GetLengthSquared();
             bool actorWithinRadius = (dispLengthSqr <= coneRadiusSqr);
 
             // Is actor within cone angle
-            float dispDotCone = DotProduct( displacement, coneDirNorm );
+            float dispDotCone = DotProduct( displacement.GetNormalized(), coneDirNorm );
             bool actorWithinAngle = (dispDotCone >= coneMinDot);
 
             // Valid hit actor, but is it the best so far?
