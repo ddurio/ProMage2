@@ -39,9 +39,11 @@ class Map {
     int GetTileIndexFromTileCoords( const IntVec2& tileCoords ) const;
     int GetTileIndexFromTileCoords( int xIndex, int yIndex ) const;
     int GetTileIndexFromWorldCoords( const Vec2& worldCoords ) const;
+
     const Tile& GetTileFromTileIndex( int tileIndex ) const;
     const Tile& GetTileFromTileCoords( const IntVec2& tileCoords ) const;
     const Tile& GetTileFromTileCoords( int xIndex, int yIndex ) const;
+    bool GetTileFromTileCoordsIfValid( const Tile*& outTile, const IntVec2& tileCoords ) const;
     const Tile& GetTileFromWorldCoords( const Vec2& worldCoords ) const;
     //std::vector< const Tile& > GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const;
     //auto GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const -> const Tile(&)[8];

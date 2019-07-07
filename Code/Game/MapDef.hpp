@@ -29,4 +29,10 @@ class MapDef {
     IntRange m_width = IntRange::ZERO;
     IntRange m_height = IntRange::ZERO;
     std::vector<MapGenStep*> m_mapGenSteps;
+
+
+    void DefineFillAndEdge( Map& map ) const;
+    void DefineFromMGS( Map& map ) const;
+    void DefineFromContextTiles( Map& map ) const;
+    void DefineTileColliders( Map& map ) const;
 };

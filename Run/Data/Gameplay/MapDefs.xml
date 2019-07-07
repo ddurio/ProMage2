@@ -1,5 +1,5 @@
 <MapDefinitions>
-    <MapDefinition name="Island" width="16~32" height="9~18" fillTile="Grass" edgeTile="Water">
+    <MapDefinition name="Island" width="16~32" height="9~18" fillTile="EdgedGrass" edgeTile="Water">
         <GenerationSteps>
             <RoomsAndPaths>
                 <Rooms count="3" width="2~5" height="3~6" floor="HardWoodFloor" wall="StoneWall"/>
@@ -10,8 +10,8 @@
             <CellularAutomata ifNeighborType="StairsDown" setTags="stairDownAccess"/>
 
             <Sprinkle ifIsType="HardWoodFloor" spawnActor="HumanFemale" controller="Player" count="1"/>
-            <Sprinkle ifIsType="HardWoodFloor" spawnActor="SkeletonMale" controller="Enemy" count="1"/>
             <!--
+            <Sprinkle ifIsType="HardWoodFloor" spawnActor="SkeletonMale" controller="Enemy" count="1"/>
 
             <Sprinkle ifIsType="Grass" changeToType="Stone" count="0~4"/>
             <CellularAutomata ifIsType="Grass" ifNeighborType="Stone" changeToType="Stone"/>

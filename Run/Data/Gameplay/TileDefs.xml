@@ -54,6 +54,43 @@
         allowsSwimming="false"
     />
     <TileDefinition
+        name="CaveInvisible"
+        spriteCoords="26,5"
+        texelColor="90,90,90"
+        allowsSight="false"
+        allowsWalking="false"
+        allowsFlying="false"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="CaveStoneFloor"
+        spriteCoords="10,31"
+        texelColor="75,75,75"
+        allowsSight="true"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="CaveDirtFloor"
+        spriteCoords="28,31"
+        texelColor="229,234,140"
+        allowsSight="true"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="EdgedGrass"
+        spriteCoords="6,26"
+        context="edged"
+        texelColor="31,136,38"
+        allowsSight="true"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
         name="StairsDown"
         spriteCoords="30,13"
         texelColor="234,234,129"
@@ -86,33 +123,6 @@
         texelColor="50,50,50"
         allowsSight="false"
         allowsWalking="false"
-        allowsFlying="true"
-        allowsSwimming="false"
-    />
-    <TileDefinition
-        name="CaveInvisible"
-        spriteCoords="26,5"
-        texelColor="90,90,90"
-        allowsSight="false"
-        allowsWalking="false"
-        allowsFlying="false"
-        allowsSwimming="false"
-    />
-    <TileDefinition
-        name="CaveStoneFloor"
-        spriteCoords="10,31"
-        texelColor="75,75,75"
-        allowsSight="true"
-        allowsWalking="true"
-        allowsFlying="true"
-        allowsSwimming="false"
-    />
-    <TileDefinition
-        name="CaveDirtFloor"
-        spriteCoords="28,31"
-        texelColor="229,234,140"
-        allowsSight="true"
-        allowsWalking="true"
         allowsFlying="true"
         allowsSwimming="false"
     />

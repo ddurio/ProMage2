@@ -172,6 +172,23 @@ const Tile& Map::GetTileFromTileCoords( int xIndex, int yIndex ) const {
 }
 
 
+bool Map::GetTileFromTileCoordsIfValid( const Tile*& outTile, const IntVec2& tileCoords ) const {
+    if( tileCoords.x < 0 || tileCoords.y < 0 ) {
+        return false;
+    }
+
+    int numTiles = (int)m_tiles.size();
+    int tileIndex = (tileCoords.y * m_mapDimensions.x) + tileCoords.x;
+
+    if( tileIndex < 0 || tileIndex >= numTiles ) {
+        return false;
+    }
+
+    outTile = &m_tiles[tileIndex];
+    return true;
+}
+
+
 const Tile& Map::GetTileFromWorldCoords( const Vec2& worldCoords ) const {
     IntVec2 tileCoords = GetTileCoordsFromWorldCoords( worldCoords );
     return GetTileFromTileCoords( tileCoords );
@@ -509,82 +526,17 @@ bool Map::s_materialCreated = false;
 
 
 void Map::CreateTerrainMesh() {
-    int numTilesX = m_mapDimensions.x;
-    int numTilesY = m_mapDimensions.y;
+    int numTiles = m_mapDimensions.x * m_mapDimensions.y;
 
     CPUMesh builder;
 
-    Vec3 vertOffsets[9] = {
-        Vec3(  0.f,     0.f,    0.f ),  // Bottom Left
-        Vec3(  0.5f,    0.f,    0.f ),  // Bottom Center
-        Vec3(  1.f,     0.f,    0.f ),  // Bottom Right
-        Vec3(  0.f,     0.5f,   0.f ),  // Center Left
-        Vec3(  0.5f,    0.5f,   0.f ),  // Center Center
-        Vec3(  1.f,     0.5f,   0.f ),  // Center Right
-        Vec3(  0.f,     1.f,    0.f ),  // Top Left
-        Vec3(  0.5f,    1.f,    0.f ),  // Top Center
-        Vec3(  1.f,     1.f,    0.f ),  // Top Right
-    };
-
-    Vec2 uvValues[9] = {
-        ALIGN_BOTTOM_LEFT,
-        ALIGN_BOTTOM_CENTER,
-        ALIGN_BOTTOM_RIGHT,
-        ALIGN_CENTER_LEFT,
-        ALIGN_CENTER,
-        ALIGN_CENTER_RIGHT,
-        ALIGN_TOP_LEFT,
-        ALIGN_TOP_CENTER,
-        ALIGN_TOP_RIGHT
-    };
-
-
-    for( int tileY = 0; tileY < numTilesY; tileY++ ) {
-        for( int tileX = 0; tileX < numTilesX; tileX++ ) {
-            int tileIndex = tileY * numTilesX + tileX;
-            const Tile& tile = m_tiles[tileIndex];
-
-            Vec3 center = Vec3( (float)tileX, (float)tileY, 0.f );
-            int indexList[9] = {};
-
-            // Construct all the verts
-            for( int offsetIndex = 0; offsetIndex < 9; offsetIndex++ ) {
-                // Position
-                const Vec3& offset = vertOffsets[offsetIndex];
-                Vec3 vertPos = center + offset;
-
-                // Color
-                Rgba tint = tile.GetTint();
-
-                // UV - invert min/max
-                AABB2 uvs = tile.GetUVs();
-                Vec2 alignment = uvValues[offsetIndex];
-                const Vec2 vertUV = uvs.GetPointWithin( alignment );
-
-                // Add Vert
-                builder.SetColor( tint );
-                builder.SetUV( vertUV );
-                indexList[offsetIndex] = builder.AddVertex( vertPos );
-            }
-
-            int indexBL = indexList[0];
-            int indexBC = indexList[1];
-            int indexBR = indexList[2];
-            int indexCL = indexList[3];     // TL---TC---TR
-            int indexCC = indexList[4];     // CL   CC   CR
-            int indexCR = indexList[5];     // BL---BC---BR
-            int indexTL = indexList[6];
-            int indexTC = indexList[7];
-            int indexTR = indexList[8];
-
-            builder.AddIndexedQuad( indexCL, indexCC, indexBL, indexBC );
-            builder.AddIndexedQuad( indexCC, indexCR, indexBC, indexBR );
-            builder.AddIndexedQuad( indexTL, indexTC, indexCL, indexCC );
-            builder.AddIndexedQuad( indexTC, indexTR, indexCC, indexCR );
-        }
+    // Add tile verts
+    for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
+        const Tile& tile = m_tiles[tileIndex];
+        tile.AddVertsToMesh( builder );
     }
 
-    // Mesh
+    // GPU Mesh
     GPUMesh* mesh = new GPUMesh( g_theRenderer );
     mesh->CopyVertsFromCPUMesh( &builder, "BuiltIn/Unlit" );
 
@@ -599,6 +551,7 @@ void Map::CreateTerrainMesh() {
         s_materialCreated = true;
     }
 
+    // Model
     m_model = new Model();
     m_model->SetMesh( mesh );
     m_model->SetMaterial( "Terrain" );

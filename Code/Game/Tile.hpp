@@ -5,17 +5,28 @@
 #include "Engine/Math/IntVec2.hpp"
 
 
-struct AABB2;
+class CPUMesh;
+class Map;
 class TileDef;
+
+struct AABB2;
 struct Metadata;
+
+
+typedef unsigned int NeighborFlag;
+
 
 class Tile {
     public:
     Tile( IntVec2 tileCoords, const std::string& type );
     ~Tile();
 
+    void AddTypesFromNeighbors( const Map& map );
+    void AddVertsToMesh( CPUMesh& builder ) const;
+
     AABB2 GetWorldBounds() const;
     const std::string& GetTileType() const;
+    const std::string& GetTileContext() const;
     AABB2 GetUVs() const;
     Rgba GetTint() const;
 
@@ -34,8 +45,15 @@ class Tile {
     void SetDistanceField( float newDistance );
     void SetNoiseValue( float newNoise );
 
+    void AddRenderType( const TileDef* tileDef );
+    void AddRenderType( const std::string& tileType );
+
     private:
     IntVec2 m_tileCoords = IntVec2( -1, -1 );
     const TileDef* m_tileDef = nullptr;
     Metadata* m_metadata = nullptr;
+
+
+    void GetEdgedNeighborByType( const Map& map, std::map< std::string, NeighborFlag >& edgedNeighbors ) const;
+    void AddEdgesFromNeighborFlags( std::map< std::string, NeighborFlag >& edgedNeighbors );
 };

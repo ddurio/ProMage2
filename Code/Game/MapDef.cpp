@@ -72,8 +72,20 @@ const MapDef* MapDef::GetMapDef( std::string mapType ) {
 void MapDef::Define( Map& map ) const {
     int mapWidth = map.m_mapRNG->GetRandomIntInRange( m_width );
     int mapHeight = map.m_mapRNG->GetRandomIntInRange( m_height );
-
     map.m_mapDimensions = IntVec2( mapWidth, mapHeight );
+
+    DefineFillAndEdge( map );
+    DefineFromMGS( map );
+    DefineFromContextTiles( map );
+    DefineTileColliders( map );
+}
+
+
+void MapDef::DefineFillAndEdge( Map& map ) const {
+    IntVec2 mapDimensions = map.GetMapDimensions();
+    int mapWidth = mapDimensions.x;
+    int mapHeight = mapDimensions.y;
+
     // Ensures no tile destructor gets called during creation
     // Avoids 'delete metadata' getting called and dangling pointers
     map.m_tiles.reserve( mapWidth * mapHeight );
@@ -111,26 +123,45 @@ void MapDef::Define( Map& map ) const {
             map.m_tiles[tileIndex].SetTileType( m_tileEdgeType );
         }
     }
+}
 
+
+void MapDef::DefineFromMGS( Map& map ) const {
     // Run Each MapGenStep
     int numSteps = (int)m_mapGenSteps.size();
+
     for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
         m_mapGenSteps[stepIndex]->Run( map );
     }
+}
+
+
+void MapDef::DefineFromContextTiles( Map& map ) const {
+    IntVec2 mapDimensions = map.GetMapDimensions();
+    int numTiles = mapDimensions.x * mapDimensions.y;
+
+    for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
+        Tile& tile = map.m_tiles[tileIndex];
+        tile.AddTypesFromNeighbors( map );
+    }
+}
+
+
+void MapDef::DefineTileColliders( Map& map ) const {
+    IntVec2 mapDimensions = map.GetMapDimensions();
+    int numTiles = mapDimensions.x * mapDimensions.y;
 
     // Setup Tile Colliders
-    for( int tileCoordY = 0; tileCoordY < mapHeight; tileCoordY ++ ) {
-        for( int tileCoordX = 0; tileCoordX < mapWidth; tileCoordX++ ) {
-            const Tile& tile = map.GetTileFromTileCoords( tileCoordX, tileCoordY );
+    for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
+        const Tile& tile = map.GetTileFromTileIndex( tileIndex );
 
-            if( !tile.AllowsWalking() ) {
-                if( map.m_tilesRB == nullptr ) {
-                    map.m_tilesRB = g_thePhysicsSystem->CreateNewRigidBody( 1.f );
-                }
-
-                AABB2 worldBounds = tile.GetWorldBounds();
-                map.m_tilesRB->AddCollider( worldBounds );
+        if( !tile.AllowsWalking() ) {
+            if( map.m_tilesRB == nullptr ) {
+                map.m_tilesRB = g_thePhysicsSystem->CreateNewRigidBody( 1.f );
             }
+
+            AABB2 worldBounds = tile.GetWorldBounds();
+            map.m_tilesRB->AddCollider( worldBounds );
         }
     }
 }
