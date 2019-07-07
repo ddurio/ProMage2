@@ -1,6 +1,7 @@
 #include "Game/PlayerController.hpp"
 
 #include "Engine/Core/ImGuiSystem.hpp"
+#include "Engine/Core/Time.hpp"
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
@@ -9,6 +10,7 @@
 #include "Game/Animator.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
+#include "Game/GameState.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/Map.hpp"
 #include "Game/StatsManager.hpp"
@@ -39,14 +41,20 @@ PlayerController::~PlayerController() {
 
 
 void PlayerController::Update( float deltaSeconds ) {
+    bool inventoryWasOpen = m_inventoryOpen;
+    bool tradeWasOpen = m_tradeOpen;
+
+
     // Movement
     Vec2 moveDir = m_gameInput->GetMovementDirection();
     SetMoveDir( moveDir );
+
 
     // Health Regen
     const StatsManager* statsManager = GetActorStats();
     float regenPerSecond = statsManager->GetHealthRegen();
     m_myActor->TakeDamage( -regenPerSecond * deltaSeconds ); // Negative damage == healing
+
 
     // Inventory
     if( !m_tradeOpen && m_gameInput->WasInventoryToggled() ) {
@@ -54,11 +62,13 @@ void PlayerController::Update( float deltaSeconds ) {
         ToggleInventory();
     }
 
+
     // Pickup Item or Merchant
     if( !m_inventoryOpen && m_gameInput->ShouldInteract() ) {
-        m_tradeOpen = !m_tradeOpen;
+        m_tradeOpen = true;
         InteractFromInput();
     }
+
 
     // Exit menus
     if( m_gameInput->ShouldExitMenu() ) {
@@ -71,6 +81,7 @@ void PlayerController::Update( float deltaSeconds ) {
         }
     }
 
+    
     // Attack
     if( m_gameInput->ShouldAttack() ) {
         m_myActor->StartAttack();
@@ -87,6 +98,19 @@ void PlayerController::Update( float deltaSeconds ) {
             m_myActor->StartAttack( false );
         }
     }
+
+
+    // Pause / Resume game
+    Clock* stateClock = g_theGame->GetGameState()->GetStateClock();
+
+    if( (m_inventoryOpen && !inventoryWasOpen) ||
+        (m_tradeOpen && !tradeWasOpen) ) {
+        stateClock->Pause();
+    } else if( (!m_inventoryOpen && inventoryWasOpen) ||
+        (!m_tradeOpen && tradeWasOpen) ) {
+        stateClock->Unpause();
+    }
+
 
     UpdateHUD();
 }
