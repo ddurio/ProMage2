@@ -17,8 +17,10 @@ class PlayerController : public ActorController {
 
     private:
     GameInput* m_gameInput = nullptr;
-
     std::string m_portraitViewName = "playerController/portraitView";
+
+    bool m_inventoryOpen = false;
+    bool m_tradeOpen = false;
 
 
     void UpdateHUD();

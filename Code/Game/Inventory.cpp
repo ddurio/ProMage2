@@ -575,12 +575,18 @@ void Inventory::CreateItemTooltip( Item* item ) const {
     ImGuiStyle& tooltipStyle = ImGui::GetStyle();
     ImGuiStyle origStyle = tooltipStyle;
 
+    // Set color based on equippable
+    bool isEquippable = playerInventory->IsItemEquipable( item );
+    ImVec4 normalColor = isEquippable ? Rgba::WHITE.GetAsImGui() : Rgba::ORGANIC_GRAY.GetAsImGui();
+    tooltipStyle.Colors[ImGuiCol_Text] = normalColor;
+
     // Item tooltip: name, slot, etc
     ImGui::BeginTooltip();
 
     ImGui::Text( "Name: %s", item->GetItemType().c_str() );
 
     ItemSlot slot = item->GetItemSlot();
+
     if( slot != ITEM_SLOT_NONE ) {
         ImGui::Text( "Slot: %s", item->GetItemSlotText().c_str() );
 
@@ -600,7 +606,7 @@ void Inventory::CreateItemTooltip( Item* item ) const {
         Strings tags = set.GetTags();
 
         
-        tooltipStyle.Colors[ImGuiCol_Text] = (playerInventory->HasOneItemSet( set )) ? Rgba::GREEN.GetAsImGui() : Rgba::RED.GetAsImGui();
+        tooltipStyle.Colors[ImGuiCol_Text] = (playerInventory->HasOneItemSet( set )) ? Rgba::ORGANIC_GREEN.GetAsImGui() : Rgba::ORGANIC_RED.GetAsImGui();
         ImGui::Text( "Requires: %s", JoinStrings( tags, " OR " ).c_str() );
     }
 

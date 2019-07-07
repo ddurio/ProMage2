@@ -49,13 +49,26 @@ void PlayerController::Update( float deltaSeconds ) {
     m_myActor->TakeDamage( -regenPerSecond * deltaSeconds ); // Negative damage == healing
 
     // Inventory
-    if( m_gameInput->WasInventoryToggled() ) {
+    if( !m_tradeOpen && m_gameInput->WasInventoryToggled() ) {
+        m_inventoryOpen = !m_inventoryOpen;
         ToggleInventory();
     }
 
     // Pickup Item or Merchant
-    if( m_gameInput->ShouldInteract() ) {
+    if( !m_inventoryOpen && m_gameInput->ShouldInteract() ) {
+        m_tradeOpen = !m_tradeOpen;
         InteractFromInput();
+    }
+
+    // Exit menus
+    if( m_gameInput->ShouldExitMenu() ) {
+        if( m_inventoryOpen ) {
+            m_inventoryOpen = false;
+            ToggleInventory();
+        } else if( m_tradeOpen ) {
+            // Merchant will close the window
+            m_tradeOpen = false;
+        }
     }
 
     // Attack

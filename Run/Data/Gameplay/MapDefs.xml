@@ -3,7 +3,7 @@
         <GenerationSteps>
             <RoomsAndPaths>
                 <Rooms count="3" width="2~5" height="3~6" floor="HardWoodFloor" wall="StoneWall"/>
-                <Paths floor="Sand" loop="false"/>
+                <Paths floor="EdgedSand" loop="false"/>
             </RoomsAndPaths>
 
             <Sprinkle ifIsType="HardWoodFloor" changeToType="StairsDown" setTags="stairsDown" count="1"/>
@@ -44,7 +44,7 @@
             <CellularAutomata ifNeighborType="StairsUp" setTags="stairUpAccess"/>
             <!-- Merchant -->
             <!--Sprinkle ifHasTags="stairDownAccess" spawnActor="Merchant" controller="Merchant" setTags="merchant" count="1"/>-->
-            <Sprinkle ifHasTags="stairUpAccess" spawnActor="Merchant" controller="Merchant" setTags="merchant" count="1"/>
+            <Sprinkle ifHasTags="stairUpAccess" ifIsType="CaveDirtFloor" spawnActor="Merchant" controller="Merchant" setTags="merchant" count="1"/>
             <CellularAutomata ifNeighborHasTags="merchant" setTags="merchantAccess"/>
             <!--<Sprinkle ifHasTags="stairUpAccess" spawnActor="SkeletonMale" controller="Enemy" count="1"/>-->
             <Sprinkle ifIsType="CaveDirtFloor" spawnActor="SkeletonMale" controller="Enemy" count="20"/>

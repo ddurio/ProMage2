@@ -80,6 +80,20 @@
         allowsFlying="true"
         allowsSwimming="false"
     />
+
+    <!-- Start of Expanding Tiles -->
+    <!--    Will only expand over tiles above and each other -->
+    
+    <TileDefinition
+        name="EdgedLava"
+        spriteCoords="12,26"
+        context="edged"
+        texelColor="33,136,38"
+        allowsSight="true"
+        allowsWalking="false"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
     <TileDefinition
         name="EdgedWater"
         spriteCoords="24,26"
@@ -91,6 +105,46 @@
         allowsSwimming="true"
     />
     <TileDefinition
+        name="EdgedSand"
+        spriteCoords="3,26"
+        context="edged"
+        texelColor="130,70,30"
+        allowsSight="true"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="EdgedCaveDirt"
+        spriteCoords="27,26"
+        context="edged"
+        texelColor="33,136,40"
+        allowsSight="true"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="EdgedObsidian"
+        spriteCoords="9,26"
+        context="edged"
+        texelColor="20,20,20"
+        allowsSight="true"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="EdgedDarkGrass"
+        spriteCoords="15,26"
+        context="edged"
+        texelColor="31,140,38"
+        allowsSight="true"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
         name="EdgedGrass"
         spriteCoords="6,26"
         context="edged"
@@ -100,6 +154,10 @@
         allowsFlying="true"
         allowsSwimming="false"
     />
+
+    <!-- End of Expanding Tiles              -->
+    <!--    Will not expand over tiles below -->
+    
     <TileDefinition
         name="StairsDown"
         spriteCoords="30,13"

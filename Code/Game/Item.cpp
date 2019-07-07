@@ -232,15 +232,15 @@ float Item::GetDefense() const {
 
 Rgba Item::GetQualityColor() const {
     if( m_quality >= 5.f ) {
-        return Rgba::ORANGE;
+        return Rgba::ORGANIC_ORANGE;
     } else if( m_quality >= 4.f ) {
-        return Rgba::PURPLE;
+        return Rgba::ORGANIC_PURPLE;
     } else if( m_quality >= 3.f ) {
-        return Rgba::BLUE;
+        return Rgba::ORGANIC_BLUE;
     } else if( m_quality >= 2.f ) {
-        return Rgba::GREEN;
+        return Rgba::ORGANIC_GREEN;
     } else {
-        return Rgba::WHITE;
+        return Rgba::DIM_WHITE;
     }
 }
 
