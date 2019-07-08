@@ -48,6 +48,7 @@ class Map {
     //std::vector< const Tile& > GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const;
     //auto GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const -> const Tile(&)[8];
 
+    int GetCurrentFloor() const;
     Inventory* GetMapInventory() const;
     Actor* GetPlayer() const;
     Actor* GetActorInRange( const std::string& typeToFind, const Vec2& worldCoords, float radius ) const;

@@ -234,6 +234,12 @@ std::vector< const Tile& > Map::GetSurroundingTilesFromWorldCoords( const Vec2& 
 }
 */
 
+
+int Map::GetCurrentFloor() const {
+    return m_floorIndex;
+}
+
+
 Inventory* Map::GetMapInventory() const {
     return m_inventory;
 }

@@ -167,8 +167,8 @@ float s_qualityChances[4] = {
 
 float s_slotBaseDefense[NUM_ITEM_SLOTS - 1] = {
     2.f, // Helm
-    4.f, // Chest
-    0.f, // Shoulder
+    3.f, // Chest
+    1.f, // Shoulder
     3.f, // Legs
     1.f  // Feet
 };

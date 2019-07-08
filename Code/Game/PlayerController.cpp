@@ -180,6 +180,41 @@ void PlayerController::UpdateHUD() {
 
     healthStyle.Colors[ImGuiCol_PlotHistogram] = origColor;
     ImGui::End();
+
+
+    // Setup Floor Number
+    AABB2 floorBounds = clientBounds.GetBoxWithin( portraitSize, ALIGN_BOTTOM_RIGHT );
+    Vec2 floorOrigin = Vec2( floorBounds.mins.x, floorBounds.maxs.y - 10.f );
+
+    ImGui::SetNextWindowPos( ImVec2( floorOrigin.x, floorOrigin.y ), ImGuiCond_Always );
+    ImGui::SetNextWindowSize( ImVec2( portraitWidth, portraitWidth ), ImGuiCond_Always );
+    ImGui::Begin( "FloorNumber", nullptr, windowFlags );
+    ImGui::SetWindowFontScale( 4.f );
+
+    ImGuiStyle& floorStyle = ImGui::GetStyle();
+
+    std::string floorTitleStr = "Floor";
+
+    Map* theMap = GetMap();
+    int floorIndex = theMap->GetCurrentFloor();
+    std::string floorNumStr = Stringf( "%d", floorIndex );
+
+    ImVec2 floorTitleSize = ImGui::CalcTextSize( floorTitleStr.c_str() );
+    ImVec2 floorNumSize = ImGui::CalcTextSize( floorNumStr.c_str() );
+    float windowWidth = ImGui::GetWindowWidth();
+
+    float centeredTitleStart = (windowWidth - floorTitleSize.x) * 0.5f - floorStyle.ItemSpacing.x;
+    float centeredNumStart = (windowWidth - floorNumSize.x) * 0.5f - floorStyle.ItemSpacing.x;
+    float currentPosX = ImGui::GetCursorPosX();
+
+
+    ImGui::SetCursorPosX( currentPosX + centeredTitleStart );
+    ImGui::Text( floorTitleStr.c_str() );
+
+    ImGui::SetCursorPosX( currentPosX + centeredNumStart );
+    ImGui::Text( floorNumStr.c_str() );
+
+    ImGui::End();
 }
 
 
