@@ -244,6 +244,12 @@ bool GameStatePlay::HandleKeyPressed( unsigned char keyCode ) {
     if( keyCode == KB_F1 ) {
         m_isDebugging = !m_isDebugging;
         return true;
+    } else if( keyCode == KB_F2 ) { // Cheat go down a floor
+        ChangeFloorsDown();
+        return true;
+    } else if( keyCode == KB_F3 ) { // Cheat go up a floor
+        ChangeFloorsUp();
+        return true;
     } else if( keyCode == KB_F || keyCode == KB_SPACE ) { // Take the Stairs
         Actor* player = m_map->GetPlayer();
 

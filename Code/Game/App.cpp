@@ -96,24 +96,21 @@ void App::RunFrame() {
 
 
 bool App::HandleKeyPressed( unsigned char keyCode ) {
-    //g_theDevConsole->PrintString( Stringf( "KeyCode pressed: %x", keyCode ) );
+    // Open / Close DevConsole
+    if( keyCode == KB_TILDE ) {
+        g_theDevConsole->Toggle();
+        return true;
+    }
 
+    // Pass keystrokes to DevConsole if open
     if( g_theDevConsole->IsTakingInput() ) {
-        if( keyCode == 0xC0 ) { // ~ Key
-            g_theDevConsole->Toggle();
-            return true;
-        }
-
         return g_theDevConsole->HandleKeyPressed( keyCode );
     }
 
     switch( keyCode ) {
-        case(0x77): { // F8 Key
+        case( KB_F8 ): { // Restart game
             Shutdown();
             Startup();
-            return true;
-        } case(0xC0): { // ~ Key
-            g_theDevConsole->Toggle();
             return true;
         }
     }
