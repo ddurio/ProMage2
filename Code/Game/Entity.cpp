@@ -129,6 +129,12 @@ void Entity::SetWorldPosition( const Vec2& worldPosition ) {
 }
 
 
+// CHEAT: Used by gameState to make player invulnerable
+void Entity::SetKillable( bool isKillable ) {
+    m_canDie = isKillable;
+}
+
+
 void Entity::Die() {
     m_isDead = true;
     m_isGarbage = true;

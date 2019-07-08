@@ -26,6 +26,7 @@
 #include "Game/ActorDef.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
+#include "Game/Inventory.hpp"
 #include "Game/ItemDef.hpp"
 #include "Game/Map.hpp"
 #include "Game/MapDef.hpp"
@@ -250,6 +251,13 @@ bool GameStatePlay::HandleKeyPressed( unsigned char keyCode ) {
     } else if( keyCode == KB_F3 ) { // Cheat go up a floor
         ChangeFloorsUp();
         return true;
+    } else if( keyCode == KB_F4 ) { // Cheat make player invulnerable
+        Actor* player = m_map->GetPlayer();
+        player->SetKillable( !player->IsKillable() );
+    } else if( keyCode == KB_F5 ) { // Cheat give player gold
+        Actor* player = m_map->GetPlayer();
+        Inventory* playerInv = player->GetInventory();
+        playerInv->TransferMoney( 10000 );
     } else if( keyCode == KB_F || keyCode == KB_SPACE ) { // Take the Stairs
         Actor* player = m_map->GetPlayer();
 

@@ -67,7 +67,7 @@ float StatsManager::GetInteractRadius() const {
 
 
 void StatsManager::TakeDamage( float damageToTake ) {
-    if( !m_myActor->IsKillable() ) {
+    if( !m_myActor->IsKillable() && damageToTake >= 0 ) {
         return;
     }
 

@@ -77,6 +77,7 @@ class Entity {
 
     void SetFaction( FactionID faction );
     void SetWorldPosition( const Vec2& worldPosition );
+    void SetKillable( bool isKillable );
 
     protected:
     const int m_entityIndex = -1;
