@@ -50,6 +50,8 @@ GameStatePlay::GameStatePlay() {
     m_gameCamera = new TopDownFollowCamera( nullptr );
     m_gameCamera->SetOrthoProjection( 10.f );
 
+    m_debugCamera = new Camera(); // Projection set in SetupDebugCamera
+
     // Resources
     BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
     g_theRenderer->BindTexture( font->GetTexturePath() );
@@ -197,7 +199,8 @@ void GameStatePlay::Render() {
         }
     }
 
-    g_theRenderer->BeginCamera( m_gameCamera );
+    Camera* activeCamera = GetActiveCamera();
+    g_theRenderer->BeginCamera( activeCamera );
 
     g_theRenderer->ClearRenderTarget( Rgba::BLACK );
     g_theRenderer->BindShader( nullptr );
@@ -206,10 +209,10 @@ void GameStatePlay::Render() {
 
     if( m_isDebugging ) {
         g_thePhysicsSystem->RenderDebug();
-        g_theDebugger->RenderWorld( m_gameCamera );
+        g_theDebugger->RenderWorld( activeCamera );
     }
 
-    g_theRenderer->EndCamera( m_gameCamera );
+    g_theRenderer->EndCamera( activeCamera );
 
 
 
@@ -258,6 +261,8 @@ bool GameStatePlay::HandleKeyPressed( unsigned char keyCode ) {
         Actor* player = m_map->GetPlayer();
         Inventory* playerInv = player->GetInventory();
         playerInv->TransferMoney( 10000 );
+    } else if( keyCode == KB_F6 ) { // Cheat use debug camera
+        m_useDebugCamera = !m_useDebugCamera;
     } else if( keyCode == KB_F || keyCode == KB_SPACE ) { // Take the Stairs
         Actor* player = m_map->GetPlayer();
 
@@ -321,6 +326,11 @@ bool GameStatePlay::Command_PauseGame( EventArgs& args ) {
     }
 
     return false;
+}
+
+
+Camera* GameStatePlay::GetActiveCamera() const {
+    return m_useDebugCamera ? m_debugCamera : m_gameCamera;
 }
 
 
@@ -388,6 +398,16 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
     }
 
     m_map = nextMap;
+    SetupDebugCamera();
+}
+
+
+void GameStatePlay::SetupDebugCamera() {
+    IntVec2 mapDims = m_map->GetMapDimensions();
+    Vec2 halfDims = mapDims / 2.f;
+
+    m_debugCamera->SetOrthoProjection( (float)mapDims.y );
+    m_debugCamera->Translate2D( halfDims );
 }
 
 

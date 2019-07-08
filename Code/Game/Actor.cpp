@@ -63,6 +63,15 @@ Actor::~Actor() {
 }
 
 
+bool Actor::CompareActorDrawOrder( const Actor* const& actorA, const Actor* const& actorB ) {
+    if( actorA == nullptr || actorB == nullptr ) {
+        return true;
+    }
+
+    return (actorA->GetPosition().y > actorB->GetPosition().y);
+}
+
+
 void Actor::Startup() {
     m_animator = new Animator( this );
 
@@ -365,4 +374,3 @@ void Actor::BuildPortraitMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
     m_portraitMesh = new GPUMesh( g_theRenderer );
     m_portraitMesh->CopyVertsFromCPUMesh( &builder );
 }
-

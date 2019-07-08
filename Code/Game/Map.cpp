@@ -92,12 +92,14 @@ void Map::Render() const {
 
     // Render actors/entities
     int numActor = (int)m_actors.size();
+    std::vector< Actor* > actorCopies = m_actors;
+    std::sort( actorCopies.begin(), actorCopies.end(), &Actor::CompareActorDrawOrder );
 
     for( int actorIndex = 0; actorIndex < numActor; actorIndex++ ) {
-        const Actor* actor = m_actors[actorIndex];
+        const Actor* actor = actorCopies[actorIndex];
 
         if( actor != nullptr ) {
-            m_actors[actorIndex]->Render();
+            actorCopies[actorIndex]->Render();
         }
     }
 }
@@ -516,7 +518,7 @@ bool Map::HandleEnemyDeath( EventArgs& args ) {
     if( deadActor->m_deathTimer == nullptr ) {
         Clock* gameClock = g_theGame->GetGameClock();
         deadActor->m_deathTimer = new Timer( gameClock );
-        deadActor->m_deathTimer->Start( 3.f );
+        deadActor->m_deathTimer->Start( 1.5f );
     } else {
         CLEAR_POINTER( deadActor->m_deathTimer );
         deadActor->m_isGarbage = true;

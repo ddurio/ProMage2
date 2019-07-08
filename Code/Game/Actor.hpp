@@ -43,6 +43,8 @@ class Actor : public Entity {
     explicit Actor( Map* theMap, const std::string& actorType, const std::string& controllerType );
     ~Actor();
 
+    static bool CompareActorDrawOrder( const Actor* const& actorA, const Actor* const& actorB );
+
     void Startup();
     void Shutdown();
 

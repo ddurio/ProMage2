@@ -20,10 +20,6 @@ class TileDef {
         bool operator()( const TileDef* const& tileDefA, const TileDef* const& tileDefB );
     };
 
-    /*
-    bool operator<( const TileDef& otherTileDef ) const;
-    */
-
     static void InitializeTileDefs();
     static void DestroyTileDefs();
     static const TileDef* GetTileDef( std::string tileType );

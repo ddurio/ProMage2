@@ -48,18 +48,19 @@ class GameStatePlay : public GameState {
 
     private:
     GameInput* m_gameInput = nullptr;
+    Camera* m_debugCamera = nullptr;
+    Map* m_map = nullptr;
     RNG* m_mapRNG = nullptr;
+
     unsigned int m_floorZeroSeed = 0;
     unsigned int m_currentFloor = 0;
 
-    std::vector<Material*> m_materials;
-
-    bool m_isDebugging = false;
-    bool m_isPaused = false;
-
     Timer* m_deathTimer = nullptr;
+    bool m_isDebugging = false;
+    bool m_useDebugCamera = false;
 
-    Map* m_map = nullptr;
+    // Pause info
+    bool m_isPaused = false;
     UIWidget* m_pauseUI = nullptr;
     UniformBuffer* m_pauseUBO = nullptr;
     Timer* m_fadeTimer = nullptr;
@@ -70,7 +71,9 @@ class GameStatePlay : public GameState {
     std::string m_pauseMatName = "Data/Materials/PauseEffect.xml";
     std::string m_grayscaleMatName = "Data/Materials/GrayscaleEffect.xml";
 
+    Camera* GetActiveCamera() const;
     void BuildPauseUI();
     void GoToFloor( unsigned int newFloorIndex, StairType stairType );
+    void SetupDebugCamera();
     bool HandlePlayerDeath( EventArgs& args );
 };
