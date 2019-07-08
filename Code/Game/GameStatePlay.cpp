@@ -63,6 +63,7 @@ GameStatePlay::GameStatePlay() {
 GameStatePlay::~GameStatePlay() {
     CLEAR_POINTER( m_map );
     CLEAR_POINTER( m_gameInput );
+    CLEAR_POINTER( m_debugCamera );
     CLEAR_POINTER( m_pauseUI );
     Map::ResetMaterialCreated();
 

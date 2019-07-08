@@ -176,6 +176,7 @@ float s_slotBaseDefense[NUM_ITEM_SLOTS - 1] = {
 template<>
 void Definition<Item>::Define( Item& theObject ) const {
     ItemSlot slot = theObject.GetItemSlot();
+    RNG* rng = (theObject.m_itemRNG == nullptr) ? g_RNG : theObject.m_itemRNG;
 
     if( slot == ITEM_SLOT_NONE ) {
         return;
@@ -187,7 +188,7 @@ void Definition<Item>::Define( Item& theObject ) const {
     if( qualityOverride > 0.f ) {
         theObject.m_quality = qualityOverride;
     } else {
-        float qualityRoll = g_RNG->GetRandomFloatZeroToOne();
+        float qualityRoll = rng->GetRandomFloatZeroToOne();
 
         if( qualityRoll >= s_qualityChances[0] ) {
             theObject.m_quality = 5.f; // Legendary

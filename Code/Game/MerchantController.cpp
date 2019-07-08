@@ -17,11 +17,12 @@ MerchantController::MerchantController( Actor* myActor ) :
 
     // Add items to inventory for sale
     Map* theMap = GetMap();
+    RNG* mapRNG = theMap->GetMapRNG();
     Inventory* inventory = m_myActor->GetInventory();
-    int numItems = g_RNG->GetRandomIntInRange( 10, 30 );
+    int numItems = mapRNG->GetRandomIntInRange( 10, 30 );
 
     for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
-        theMap->SpawnLootDrop( inventory );
+        theMap->SpawnLootDrop( inventory, Vec2::ZERO, mapRNG );
     }
 }
 

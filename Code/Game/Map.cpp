@@ -407,8 +407,9 @@ Actor* Map::SpawnNewActor( std::string actorType, std::string controllerType, co
 }
 
 
-Item* Map::SpawnLootDrop( Inventory* inventory, const Vec2& worldPosition /*= Vec2::ZERO */ ) const {
-    float diceRoll = g_RNG->GetRandomFloatZeroToOne();
+Item* Map::SpawnLootDrop( Inventory* inventory, const Vec2& worldPosition /*= Vec2::ZERO*/, RNG* customRNG /*= nullptr */ ) const {
+    RNG* rng = (customRNG == nullptr) ? g_RNG : customRNG;
+    float diceRoll = rng->GetRandomFloatZeroToOne();
     int numItems = (int)m_lootTypes.size();
 
     for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
@@ -416,7 +417,7 @@ Item* Map::SpawnLootDrop( Inventory* inventory, const Vec2& worldPosition /*= Ve
 
         if( diceRoll >= requiredRoll ) {
             std::string itemType = m_lootTypes[itemIndex];
-            Item* item = inventory->SpawnNewItem( itemType, worldPosition );
+            Item* item = inventory->SpawnNewItem( itemType, worldPosition, customRNG );
             return item;
         }
     }

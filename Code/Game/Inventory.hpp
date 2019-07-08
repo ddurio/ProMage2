@@ -27,7 +27,7 @@ class Inventory {
 
     void Render() const;
 
-    Item* SpawnNewItem( std::string itemType, const Vec2& worldPosition = Vec2::ZERO );
+    Item* SpawnNewItem( std::string itemType, const Vec2& worldPosition = Vec2::ZERO, RNG* customRNG = nullptr );
 
     void TransferMoney( int moneyToTransfer );
     void AddItemToInventory( Item* itemToAdd, int indexToAdd = -1 );

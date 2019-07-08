@@ -59,7 +59,7 @@ class Map {
     bool IsValidTileCoords( const IntVec2& tileCoords ) const;
 
     Actor* SpawnNewActor( std::string actorType, std::string controllerType, const Vec2& worldPosition );
-    Item* SpawnLootDrop( Inventory* inventory, const Vec2& worldPosition = Vec2::ZERO ) const;
+    Item* SpawnLootDrop( Inventory* inventory, const Vec2& worldPosition = Vec2::ZERO, RNG* customRNG = nullptr ) const;
 
     void SetPlayer( Actor* player );
     void AddPlayerToMap( Actor* actor );

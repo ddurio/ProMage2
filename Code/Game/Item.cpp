@@ -14,8 +14,9 @@
 #include "Game/ItemDef.hpp"
 
 
-Item::Item( Map* theMap, std::string itemType ) :
-    Entity( theMap ) {
+Item::Item( Map* theMap, std::string itemType, RNG* itemRNG /*= nullptr */ ) :
+    Entity( theMap ),
+    m_itemRNG( itemRNG ) {
     m_itemDef = Definition<Item>::GetDefinition( itemType );
     GUARANTEE_OR_DIE( m_itemDef != nullptr, Stringf( "(Item) Failed to find itemDef of name %s", itemType.c_str() ) );
     m_itemDef->Define( *this );

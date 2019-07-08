@@ -116,8 +116,8 @@ void Inventory::Render() const {
 }
 
 
-Item* Inventory::SpawnNewItem( std::string itemType, const Vec2& worldPosition /*= Vec3::ZERO */ ) {
-    Item* newItem = new Item( m_map, itemType );
+Item* Inventory::SpawnNewItem( std::string itemType, const Vec2& worldPosition /*= Vec2::ZERO*/, RNG* customRNG /*= nullptr */ ) {
+    Item* newItem = new Item( m_map, itemType, customRNG );
     newItem->Startup();
     newItem->SetWorldPosition( worldPosition );
 

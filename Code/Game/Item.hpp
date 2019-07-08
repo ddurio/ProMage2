@@ -29,7 +29,7 @@ class Item : public Entity {
     friend class Definition<Item>;
 
     public:
-    explicit Item( Map* theMap, std::string itemType );
+    explicit Item( Map* theMap, std::string itemType, RNG* itemRNG = nullptr );
     //explicit Item( Map* theMap, const Definition<Item>* itemDef );
 
     void Startup();
@@ -70,6 +70,7 @@ class Item : public Entity {
 
     private:
     const Definition<Item>* m_itemDef = nullptr;
+    RNG* m_itemRNG = nullptr;
 
     int   m_moneyValue = 0;
     float m_quality = 1.f;

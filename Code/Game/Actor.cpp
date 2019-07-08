@@ -65,7 +65,7 @@ Actor::~Actor() {
 
 bool Actor::CompareActorDrawOrder( const Actor* const& actorA, const Actor* const& actorB ) {
     if( actorA == nullptr || actorB == nullptr ) {
-        return true;
+        return false;
     }
 
     return (actorA->GetPosition().y > actorB->GetPosition().y);
@@ -86,7 +86,7 @@ void Actor::Startup() {
 
     for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
         const std::string& itemType = starterItems[itemIndex];
-        Item* item = m_inventory->SpawnNewItem( itemType );
+        Item* item = m_inventory->SpawnNewItem( itemType, Vec2::ZERO, m_map->GetMapRNG() );
         m_inventory->EquipItem( item );
     }
 
