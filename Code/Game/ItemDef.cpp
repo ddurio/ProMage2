@@ -15,8 +15,49 @@
 #include "Game/XMLUtils.hpp"
 
 
+bool g_progressionParsed = false;
+std::vector< int > g_qualityKeyFrames;
+std::vector< float* > g_qualityPercents;
+
+
+void ParseProgression() {
+    XmlDocument doc;
+    const XMLElement& root = ParseXMLRootElement( DATA_PROGRESSION, doc );
+
+    const XMLElement* qualityEle = root.FirstChildElement( "ItemQuality" );
+    const XMLElement* keyEle = qualityEle->FirstChildElement( "KeyFrame" );
+
+    while( keyEle != nullptr ) {
+        int floorIndex  = ParseXMLAttribute( *keyEle, "floor",     0 );
+        float common    = ParseXMLAttribute( *keyEle, "common",    0.f );
+        float uncommon  = ParseXMLAttribute( *keyEle, "uncommon",  0.f );
+        float rare      = ParseXMLAttribute( *keyEle, "rare",      0.f );
+        float epic      = ParseXMLAttribute( *keyEle, "epic",      0.f );
+        float legendary = ParseXMLAttribute( *keyEle, "legendary", 0.f );
+
+        float* frameValues = new float[5];
+        frameValues[0] = common;
+        frameValues[1] = uncommon;
+        frameValues[2] = rare;
+        frameValues[3] = epic;
+        frameValues[4] = legendary;
+
+        g_qualityKeyFrames.push_back( floorIndex );
+        g_qualityPercents.push_back( frameValues );
+        keyEle = keyEle->NextSiblingElement( "KeyFrame" );
+    }
+};
+
+
 template<>
 Definition<Item>::Definition( const XMLElement& element ) {
+    // Parse Progression.xml
+    if( !g_progressionParsed ) {
+        ParseProgression();
+        g_progressionParsed = true;
+    }
+
+
     // Base Values
     m_defType                   = ParseXMLAttribute( element, "name",         "" );
     GUARANTEE_OR_DIE( m_defType != "", "(ItemDef) Missing required attribute 'name'" );
@@ -167,10 +208,10 @@ float s_qualityChances[4] = {
 
 float s_slotBaseDefense[NUM_ITEM_SLOTS - 1] = {
     2.f, // Helm
-    3.f, // Chest
-    1.f, // Shoulder
-    3.f, // Legs
-    1.f  // Feet
+    2.f, // Chest
+    2.f, // Shoulder
+    2.f, // Legs
+    2.f  // Feet
 };
 
 template<>
@@ -184,22 +225,55 @@ void Definition<Item>::Define( Item& theObject ) const {
 
     // Quality
     float qualityOverride = m_properties.GetValue( "quality", -1.f );
+    int numKeys = (int)g_qualityKeyFrames.size();
 
     if( qualityOverride > 0.f ) {
         theObject.m_quality = qualityOverride;
+    } else if( numKeys < 2 ) {
+        theObject.m_quality = 1.f;
     } else {
-        float qualityRoll = rng->GetRandomFloatZeroToOne();
+        Map* theMap = theObject.m_map;
+        int floorIndex = theMap->GetCurrentFloor();
+        int keyIndex = 1;
 
-        if( qualityRoll >= s_qualityChances[0] ) {
-            theObject.m_quality = 5.f; // Legendary
-        } else if( qualityRoll >= s_qualityChances[1] ) {
-            theObject.m_quality = 4.f; // Epic
-        } else if( qualityRoll >= s_qualityChances[2] ) {
-            theObject.m_quality = 3.f; // Rare
-        } else if( qualityRoll >= s_qualityChances[3] ) {
-            theObject.m_quality = 2.f; // Uncommon
-        } else {
-            theObject.m_quality = 1.f; // Common
+        while( (float)floorIndex > g_qualityKeyFrames[keyIndex] ) {
+            if( keyIndex == numKeys - 1 ) {
+                break;
+            }
+
+            keyIndex++;
+        }
+
+        int floorMin = g_qualityKeyFrames[keyIndex - 1];
+        int floorMax = g_qualityKeyFrames[keyIndex];
+        float* percentMin = g_qualityPercents[keyIndex - 1];
+        float* percentMax = g_qualityPercents[keyIndex];
+
+        float scaledFloor = RangeMapFloat( (float)floorIndex, (float)floorMin, (float)floorMax, 0.f, 1.f );
+        float scaledPercent[5] = {
+            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[0], percentMax[0] ),
+            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[1], percentMax[1] ),
+            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[2], percentMax[2] ),
+            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[3], percentMax[3] ),
+            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[4], percentMax[4] )
+        };
+
+        scaledPercent[0] = ClampFloat( scaledPercent[0], 0.f, 1.f );
+        scaledPercent[1] = ClampFloat( scaledPercent[1], 0.f, 1.f );
+        scaledPercent[2] = ClampFloat( scaledPercent[2], 0.f, 1.f );
+        scaledPercent[3] = ClampFloat( scaledPercent[3], 0.f, 1.f );
+        scaledPercent[4] = ClampFloat( scaledPercent[4], 0.f, 1.f );
+
+        float requiredRoll = 0.f;
+        float diceRoll = rng->GetRandomFloatZeroToOne();
+
+        for( int qualityIndex = 0; qualityIndex < 5; qualityIndex++ ) {
+            requiredRoll += scaledPercent[qualityIndex];
+
+            if( diceRoll <= requiredRoll ) {
+                theObject.m_quality = (float)qualityIndex + 1.f;
+                break;
+            }
         }
     }
 

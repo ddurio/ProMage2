@@ -1,0 +1,9 @@
+<Progression>
+    <ItemQuality>
+        <KeyFrame floor="1"  common="1"   uncommon="0"   rare="0"   epic="0"   legendary="0"/>
+        <KeyFrame floor="10" common=".90" uncommon=".10" rare="0"   epic="0"   legendary="0"/>
+        <KeyFrame floor="25" common=".60" uncommon=".34" rare=".05" epic=".01" legendary="0"/>
+        <KeyFrame floor="50" common="0"   uncommon=".60" rare=".34" epic=".05" legendary=".01"/>
+        <KeyFrame floor="70" common="0"   uncommon=".15" rare=".60" epic=".20" legendary=".05"/>
+    </ItemQuality>
+</Progression>

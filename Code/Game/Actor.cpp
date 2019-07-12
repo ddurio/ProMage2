@@ -119,7 +119,8 @@ void Actor::Die() {
 void Actor::TakeDamage( float damageToTake ) {
     if( damageToTake > 0 ) {
         float defense = m_inventory->GetDefense();
-        float damageAfterDefense = Max( damageToTake - defense, 0.f );
+        //float damageAfterDefense = Max( damageToTake - defense, 0.f );
+        float damageAfterDefense = damageToTake * (1 - defense);
 
         m_statsManager->TakeDamage( damageAfterDefense );
     } else {

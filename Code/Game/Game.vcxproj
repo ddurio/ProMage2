@@ -274,9 +274,12 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\Inventory.xml" />
-    <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\MapDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\IsoAnims.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\Progression.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\SpriteAnims.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\SpriteSheets.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml" />

@@ -382,17 +382,20 @@ int Inventory::GetMoney() const {
 
 
 float Inventory::GetDefense() const {
-    float defense = 0.f;
+    // 1 - (1 - itemA)(1 - itemB)(1 - itemC)...
+    float defense = 1.f;
 
     for( int itemIndex = 0; itemIndex < NUM_ITEM_SLOTS - 1; itemIndex++ ) {
         Item* item = m_equippedItems[itemIndex];
 
         if( item != nullptr ) {
-            defense += item->GetDefense();
+            //defense += item->GetDefense();
+            float itemMitigation = item->GetDefense() * 0.1f;
+            defense *= (1 - itemMitigation);
         }
     }
 
-    return defense;
+    return (1 - defense);
 }
 
 

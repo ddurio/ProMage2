@@ -81,5 +81,5 @@ void StatsManager::TakeDamage( float damageToTake ) {
 
 void StatsManager::Revive() {
     m_health = m_maxHealth;
-    // DFS1FIXME: Could have penalties here
+    // DFS1FIXME: Could have death penalties here
 }

@@ -278,5 +278,8 @@
     <Xml Include="..\..\Run\Data\Gameplay\IsoAnims.xml">
       <Filter>Data</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\Progression.xml">
+      <Filter>Data</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
