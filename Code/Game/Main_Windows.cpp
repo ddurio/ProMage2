@@ -89,6 +89,11 @@ void Startup() {
     GUARANTEE_OR_DIE( root != nullptr, "Poorly constructed XML file" );
     g_theGameConfigBlackboard.SetFromXMLElementAttributes( *root->ToElement() );
 
+#ifdef _DEBUG
+    g_theGameConfigBlackboard.SetValue( "debugFlags", "NO_PRELOAD_TEXTURES" );
+#endif
+
+
     // Make the App
     g_theApp = new App( GameWinProc );
     g_theApp->Startup();

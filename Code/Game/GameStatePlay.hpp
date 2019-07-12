@@ -74,6 +74,7 @@ class GameStatePlay : public GameState {
     Camera* GetActiveCamera() const;
     void BuildPauseUI();
     void GoToFloor( unsigned int newFloorIndex, StairType stairType );
+    bool Command_GoToFloor( EventArgs& args );
     void SetupDebugCamera();
     bool HandlePlayerDeath( EventArgs& args );
 };

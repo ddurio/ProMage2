@@ -10,7 +10,7 @@
     </ItemDef>
     <ItemDef name="PlateHelm" slot="Helm" spriteSheet="PaperDoll.Hat.3">
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <!-- Chest -->
     <ItemDef name="Dress" slot="Chest" spriteSheet="PaperDoll.Chest.F1">
@@ -39,7 +39,7 @@
     <ItemDef name="PlateChestF" slot="Chest" spriteSheet="PaperDoll.Chest.F6">
         <ItemSet name="Female"/>
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <ItemDef name="LeatherChestM" slot="Chest" spriteSheet="PaperDoll.Chest.M1">
         <ItemSet name="Male"/>
@@ -54,12 +54,12 @@
     <ItemDef name="PlateChestM" slot="Chest" spriteSheet="PaperDoll.Chest.M3">
         <ItemSet name="Male"/>
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <ItemDef name="SleevelessPlateChestM" slot="Chest" spriteSheet="PaperDoll.Chest.M4">
         <ItemSet name="Male"/>
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <ItemDef name="Shirt" slot="Chest" spriteSheet="PaperDoll.Chest.M5">
         <ItemSet name="Male"/>
@@ -84,7 +84,7 @@
     <ItemDef name="PlateShoulderF" slot="Shoulder" spriteSheet="PaperDoll.Shoulder.F2">
         <ItemSet name="Female"/>
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <ItemDef name="LeatherShoulderM" slot="Shoulder" spriteSheet="PaperDoll.Shoulder.M1">
         <ItemSet name="Male"/>
@@ -94,7 +94,7 @@
     <ItemDef name="PlateShoulderM" slot="Shoulder" spriteSheet="PaperDoll.Shoulder.M2">
         <ItemSet name="Male"/>
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <!-- Legs -->
     <ItemDef name="PantsF" slot="Legs" spriteSheet="PaperDoll.Legs.F1">
@@ -110,7 +110,7 @@
     <ItemDef name="PlateLegsF" slot="Legs" spriteSheet="PaperDoll.Legs.F3">
         <ItemSet name="Female"/>
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <ItemDef name="PantsM" slot="Legs" spriteSheet="PaperDoll.Legs.M1">
         <ItemSet name="Male"/>
@@ -125,7 +125,7 @@
     <ItemDef name="PlateLegsM" slot="Legs" spriteSheet="PaperDoll.Legs.M6">
         <ItemSet name="Male"/>
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <!-- Feet -->
     <ItemDef name="BootsF" slot="Feet" spriteSheet="PaperDoll.Feet.F1">
@@ -141,7 +141,7 @@
     <ItemDef name="PlateBootsF" slot="Feet" spriteSheet="PaperDoll.Feet.F3">
         <ItemSet name="Female"/>
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <ItemDef name="Slippers" slot="Feet" spriteSheet="PaperDoll.Feet.F4">
         <ItemSet name="Female"/>
@@ -160,7 +160,7 @@
     <ItemDef name="PlateBootsM" slot="Feet" spriteSheet="PaperDoll.Feet.M3">
         <ItemSet name="Male"/>
         <ItemSet name="Heavy"/>
-        <Drop floor="30~70" bias="middle"/>
+        <Drop floor="30~223" bias="middle"/>
     </ItemDef>
     <ItemDef name="Shoes" slot="Feet" spriteSheet="PaperDoll.Feet.M4">
         <ItemSet name="Male"/>
@@ -171,13 +171,13 @@
         <ItemSet name="Ranged"/>
         <Attack anim="PaperDoll.Shoot"/>
         <Portrait anim="PaperDoll.Shoot.Right" frame="3"/>
-        <Drop floor="10~100" bias="middle"/>
+        <Drop floor="-1" bias="middle"/>
     </ItemDef>
     <ItemDef name="RecurveBow" slot="Weapon" spriteSheet="PaperDoll.Weapon.RecurveBow">
         <ItemSet name="Ranged"/>
         <Attack anim="PaperDoll.Shoot"/>
         <Portrait anim="PaperDoll.Shoot.Right" frame="3"/>
-        <Drop floor="10~100" bias="middle"/>
+        <Drop floor="-1" bias="middle"/>
     </ItemDef>
     <ItemDef name="StarterDagger" slot="Weapon" spriteSheet="PaperDoll.Weapon.Dagger">
         <ItemSet name="Melee"/>
@@ -211,7 +211,7 @@
     <ItemDef name="HeavyArmorSkillbook" slot="None" spriteSheet="Terrain">
         <Portrait spriteCoords="1,14"/>
         <Consumable itemSet="Heavy"/>
-        <Drop floor="20~70" bias="middle"/>
+        <Drop floor="20~223" bias="middle"/>
     </ItemDef>
     <ItemDef name="MeleeSkillbook" slot="None" spriteSheet="Terrain">
         <Portrait spriteCoords="8,14"/>

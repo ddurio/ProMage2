@@ -3,6 +3,7 @@
 #include "Engine/Core/DebugDraw.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Core/WindowContext.hpp"
@@ -68,6 +69,7 @@ GameStatePlay::~GameStatePlay() {
     Map::ResetMaterialCreated();
 
     g_theEventSystem->Unsubscribe( "playerDeath", this, &GameStatePlay::HandlePlayerDeath );
+    g_theEventSystem->Unsubscribe( "goToFloor", this, &GameStatePlay::Command_GoToFloor );
 }
 
 
@@ -79,10 +81,15 @@ void GameStatePlay::Startup() {
 
     RenderContext* renderer = g_theRenderer;
 
-#ifdef _DEBUG
-    renderer = nullptr;
-#endif
+    // Check for debugFlag
+    std::string debugFlagStr = g_theGameConfigBlackboard.GetValue( "debugFlags", "" );
+    Strings debugFlags = SplitStringOnDelimeter( debugFlagStr, ',', false );
 
+    if( EngineCommon::VectorContains( debugFlags, std::string("NO_PRELOAD_TEXTURES") ) ) {
+        renderer = nullptr;
+    }
+
+    // PreLoad all game assets
     SpriteSheet::Initialize( DATA_PAPER_DOLL_SPRITES, "SpriteSheet", renderer );
     SpriteAnimDef::Initialize( DATA_PAPER_DOLL_ANIMS, "SpriteAnim" );
     IsoSpriteAnimDef::Initialize( DATA_PAPER_DOLL_ISO_ANIMS, "IsoSpriteAnim" );
@@ -100,6 +107,7 @@ void GameStatePlay::Startup() {
     GoToFloor( 0, STAIRS_DOWN );
 
     g_theEventSystem->Subscribe( "playerDeath", this, &GameStatePlay::HandlePlayerDeath );
+    g_theEventSystem->Subscribe( "goToFloor", this, &GameStatePlay::Command_GoToFloor );
 
     BuildPauseUI();
     BuildLoadedMesh();
@@ -400,6 +408,14 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
 
     m_map = nextMap;
     SetupDebugCamera();
+}
+
+
+bool GameStatePlay::Command_GoToFloor( EventArgs& args ) {
+    int floorIndex = args.GetValue( "number", 0 );
+    GoToFloor( floorIndex, STAIRS_UP );
+
+    return true;
 }
 
 
