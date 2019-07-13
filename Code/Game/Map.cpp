@@ -54,9 +54,6 @@ void Map::Startup() {
     m_mapDef->Define( *this );
     CreateTerrainMesh();
 
-    m_inventory->SpawnNewItem( "Slippers", Vec2( 4.5f, 4.5f ) );
-    m_inventory->SpawnNewItem( "Shoes", Vec2( 5.5f, 5.5f ) );
-
     g_theEventSystem->Subscribe( "enemyDeath", this, &Map::HandleEnemyDeath );
 }
 
@@ -124,7 +121,7 @@ const IntVec2 Map::GetTileCoordsFromWorldCoords( const Vec2& worldCoords ) const
 
 
 const IntVec2 Map::GetTileCoordsForStairs( bool getStairsDown ) const {
-    std::string stairTag = Stringf( "stairs%s", getStairsDown ? "Down" : "Up" );
+    std::string stairTag = getStairsDown ? TAG_STAIRS_DOWN : TAG_STAIRS_UP;
     int numTiles = (int)m_tiles.size();
 
     for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
@@ -534,7 +531,7 @@ bool Map::HandleEnemyDeath( EventArgs& args ) {
 void Map::SpawnEnemyLootDrop( Actor* enemy ) const {
     // Get item from enemy
     Inventory* enemyInv = enemy->GetInventory();
-    Item* loot = enemyInv->GetRandomItem( (m_floorIndex >= 10) );
+    Item* loot = enemyInv->GetRandomItem( (m_floorIndex >= 5) );
     enemyInv->UnequipItem( loot );
     enemyInv->RemoveItemFromInventory( loot );
 

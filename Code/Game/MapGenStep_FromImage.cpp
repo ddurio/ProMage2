@@ -44,23 +44,26 @@ void MapGenStep_FromImage::RunOnce( Map& map ) const {
     int mapOffsetY = (int)imageBounds.mins.y;
 
     int rotations = m_mapRNG->GetRandomIntInRange( m_numRotations );
-    DebuggerPrintf( Stringf( "NumRotations=%d\n", rotations ).c_str() );
-    Image* rotatedImage = new Image( *m_image );
-    m_image->GetRotated( rotations, *rotatedImage );
+    Image rotatedImage;
+    m_image->GetRotated( rotations, rotatedImage );
 
     for( int texelX = 0, mapX = mapOffsetX; texelX < imageDimensions.x && mapX < mapDimensions.x; texelX++, mapX++ ) {
-        for( int texelY = 0, mapY = mapOffsetY; texelY < imageDimensions.y && mapY < mapDimensions.y; texelY++, mapY++ ) {
-            Rgba texelColor = rotatedImage->GetTexelColor( texelX, texelY );
+        for( int texelY = imageDimensions.y - 1, mapY = mapOffsetY; texelY >= 0 && mapY < mapDimensions.y; texelY--, mapY++ ) {
+            Rgba texelColor = rotatedImage.GetTexelColor( texelX, texelY );
             float chanceToExist = texelColor.a;
 
             if( chanceToExist == 0.f ) {
                 continue;
             }
 
-            texelColor.a = 1.f; // color match will always have alpha set to one
+            texelColor.a = 1.f; // color to match will always have alpha set to one
             const TileDef* tileDef = TileDef::GetTileDefFromTexelColor( texelColor );
 
-            GUARANTEE_OR_DIE( tileDef != nullptr, Stringf( "ERROR: TileDef not found with requested texelColor %s", texelColor.GetAsString().c_str() ) );
+            //GUARANTEE_OR_DIE( tileDef != nullptr, Stringf( "ERROR: TileDef not found with requested texelColor %s", texelColor.GetAsString().c_str() ) );
+            if( tileDef == nullptr ) {
+                continue;
+                //ERROR_AND_DIE( Stringf( "ERROR: TileDef not found with requested texelColor %s", texelColor.GetAsString().c_str() ) );
+            }
 
             if( m_mapRNG->PercentChance( chanceToExist ) ) {
                 int tileIndex = mapY * mapDimensions.x + mapX;
@@ -69,6 +72,4 @@ void MapGenStep_FromImage::RunOnce( Map& map ) const {
             }
         }
     }
-
-    delete rotatedImage;
 }

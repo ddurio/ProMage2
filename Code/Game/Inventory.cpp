@@ -318,7 +318,7 @@ Item* Inventory::GetItemAtPosition( const Vec2& worldPosition ) const {
 Item* Inventory::GetClosestItemInRange( const Vec2& worldPosition, float pickupRadius ) const {
     float radiusSquared = pickupRadius * pickupRadius;
     int bestIndex = -1;
-    float bestDistSquared = -1.f;
+    float bestDistSquared = 9999999.f;
 
     for( int itemIndex = 0; itemIndex < m_numItemSlots; itemIndex++ ) {
         Item* item = m_unequippedItems[itemIndex];
@@ -334,7 +334,7 @@ Item* Inventory::GetClosestItemInRange( const Vec2& worldPosition, float pickupR
         }
     }
 
-    if( bestDistSquared < radiusSquared ) {
+    if( bestIndex >= 0 && bestDistSquared < radiusSquared ) {
         return m_unequippedItems[bestIndex];
     } else {
         return nullptr;
@@ -438,8 +438,7 @@ float Inventory::GetDefense() const {
         Item* item = m_equippedItems[itemIndex];
 
         if( item != nullptr ) {
-            //defense += item->GetDefense();
-            float itemMitigation = item->GetDefense() * 0.1f;
+            float itemMitigation = item->GetDefense() * 0.045f;
             defense *= (1 - itemMitigation);
         }
     }

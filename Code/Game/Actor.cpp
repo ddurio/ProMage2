@@ -49,8 +49,10 @@ Actor::Actor( Map* theMap, const std::string& actorType, const std::string& cont
         m_controller = new PlayerController( this );
     } else if( StringICmp(controllerType, "Merchant" ) ) {
         m_controller = new MerchantController( this );
-    } else if( StringICmp(controllerType, "Enemy" ) ) {
+    } else if( StringICmp( controllerType, "Enemy" ) ) {
         m_controller = new EnemyController( this );
+    } else if( StringICmp( controllerType, "Danny" ) ) {
+        // DFS1FIXME: Setup final controller for credits
     }
 }
 
@@ -119,7 +121,6 @@ void Actor::Die() {
 void Actor::TakeDamage( float damageToTake ) {
     if( damageToTake > 0 ) {
         float defense = m_inventory->GetDefense();
-        //float damageAfterDefense = Max( damageToTake - defense, 0.f );
         float damageAfterDefense = damageToTake * (1 - defense);
 
         m_statsManager->TakeDamage( damageAfterDefense );

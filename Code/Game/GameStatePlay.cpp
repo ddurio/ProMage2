@@ -4,6 +4,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/Profiler.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Core/WindowContext.hpp"
@@ -339,7 +340,11 @@ bool GameStatePlay::Command_PauseGame( EventArgs& args ) {
 
 
 Camera* GameStatePlay::GetActiveCamera() const {
-    return m_useDebugCamera ? m_debugCamera : m_gameCamera;
+    if( m_useDebugCamera || m_currentFloor == 22 || m_currentFloor == 222 ) {
+        return m_debugCamera;
+    } else {
+        return m_gameCamera;
+    }
 }
 
 
@@ -386,7 +391,20 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
     m_mapRNG->SetSeed( m_floorZeroSeed + m_currentFloor );
     m_mapRNG->SetPosition( 0 );
 
-    std::string floorType = (m_currentFloor == 0) ? "Island" : "Cave";
+    // Choose floor type
+    std::string floorType = "";
+    
+    if( m_currentFloor == 0 ) {
+        floorType = "Island";
+    } else if( m_currentFloor == 22 ) {
+        floorType = "DD1";
+    } else if( m_currentFloor == 222 ) {
+        floorType = "DD2";
+    } else {
+        floorType = "Cave";
+    }
+
+    // Setup new map
     Map* nextMap = new Map( Stringf( "Floor%d", m_currentFloor ), floorType, m_mapRNG, newFloorIndex );
     nextMap->Startup();
 

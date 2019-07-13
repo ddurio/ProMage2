@@ -8,7 +8,7 @@
             </RoomsAndPaths>
 
             <Sprinkle ifIsType="HardWoodFloor" changeToType="StairsDown" setTags="stairsDown" count="1"/>
-            <CellularAutomata ifNeighborType="StairsDown" setTags="stairDownAccess"/>
+            <CellularAutomata ifNeighborType="StairsDown" setTags="stairsDownAccess"/>
 
             <Sprinkle ifIsType="HardWoodFloor" spawnActor="HumanFemale" controller="Player" count="1"/>
             <Sprinkle ifIsType="HardWoodFloor" spawnActor="SkeletonMale" controller="Enemy" count="1"/>
@@ -40,16 +40,32 @@
             <CellularAutomata ifIsType="FakeStone" ifNeighborType="CaveDirtFloor" changeToType="StoneWall"/>
             <!-- Stairs -->
             <Sprinkle ifIsType="CaveDirtFloor" changeToType="StairsDown" setTags="stairsDown" count="1"/>
-            <CellularAutomata ifNeighborType="StairsDown" setTags="stairDownAccess"/>
+            <CellularAutomata ifIsType="CaveDirtFloor" ifNeighborType="StairsDown" setTags="stairsDownAccess"/>
             <Sprinkle ifIsType="CaveDirtFloor" changeToType="StairsUp" setTags="stairsUp" count="1"/>
-            <CellularAutomata ifNeighborType="StairsUp" setTags="stairUpAccess"/>
+            <CellularAutomata ifIsType="CaveDirtFloor" ifNeighborType="StairsUp" setTags="stairsUpAccess"/>
             <!-- Merchant -->
-            <!--Sprinkle ifHasTags="stairDownAccess" spawnActor="Merchant" controller="Merchant" setTags="merchant" count="1"/>-->
-            <Sprinkle ifHasTags="stairUpAccess" ifIsType="CaveDirtFloor" spawnActor="Merchant" controller="Merchant" setTags="merchant" count="1"/>
+            <Sprinkle chanceToRun="0.5" ifHasTags="stairsDownAccess" ifIsType="CaveDirtFloor" spawnActor="Merchant" controller="Merchant" setTags="merchant" count="1"/>
             <CellularAutomata ifNeighborHasTags="merchant" setTags="merchantAccess"/>
-            <!--<Sprinkle ifHasTags="stairUpAccess" spawnActor="SkeletonMale" controller="Enemy" count="1"/>-->
+            <!-- Skeletons -->
             <Sprinkle ifIsType="CaveDirtFloor" spawnActor="SkeletonMale" controller="Enemy" count="20"/>
-            <!--<Sprinkle ifHasTags="stairUpAccess" spawnActor="SkeletonMale" controller="Enemy" count="1"/>-->
+        </GenerationSteps>
+    </MapDefinition>
+    <MapDefinition name="DD1" width="20" height="14" fillTile="FakeStone">
+        <GenerationSteps>
+            <FromImage imageFilePath="Data/Images/DD1.png" numRotations="0" alignX="0.5" alignY="0.5"/>
+            <!-- Stairs -->
+            <CellularAutomata ifIsType="StairsUp" ifNeighborType="Grass" setTags="stairsUp"/>
+            <CellularAutomata ifIsType="Grass" changeToType="CaveDirtFloor" setTags="stairsUpAccess"/>
+            <CellularAutomata ifIsType="StairsDown" setTags="stairsDown"/>
+            <CellularAutomata ifIsType="Water" changeToType="CaveDirtFloor" setTags="stairsDownAccess"/>
+        </GenerationSteps>
+    </MapDefinition>
+    <MapDefinition name="DD2" width="20" height="14" fillTile="FakeStone">
+        <GenerationSteps>
+            <FromImage imageFilePath="Data/Images/DD2.png" numRotations="0" alignX="0.5" alignY="0.5"/>
+            <CellularAutomata ifIsType="StairsUp" ifNeighborType="Grass" setTags="stairsUp"/>
+            <CellularAutomata ifIsType="Grass" changeToType="CaveDirtFloor" setTags="stairsUpAccess"/>
+            <CellularAutomata ifIsType="Water" changeToType="CaveDirtFloor" spawnActor="HumanMale" controller="Danny"/>
         </GenerationSteps>
     </MapDefinition>
 </MapDefinitions>

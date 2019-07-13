@@ -83,7 +83,7 @@
     <TileDefinition
         name="CaveDirtFloor"
         spriteCoords="28,31"
-        texelColor="229,234,140"
+        texelColor="98,68,30"
         allowsSight="true"
         allowsWalking="true"
         allowsFlying="true"
@@ -91,7 +91,7 @@
     />
 
     <!-- Start of Expanding Tiles -->
-    <!--    Will only expand over tiles above and each other -->
+    <!--    Will only expand over tiles above them -->
     
     <TileDefinition
         name="EdgedLava"
@@ -137,7 +137,7 @@
         name="EdgedDarkGrass"
         spriteCoords="15,26"
         context="edged"
-        texelColor="31,140,38"
+        texelColor="31,150,38"
         allowsSight="true"
         allowsWalking="true"
         allowsFlying="true"
@@ -147,7 +147,7 @@
         name="EdgedGrass"
         spriteCoords="6,26"
         context="edged"
-        texelColor="31,136,38"
+        texelColor="31,100,38"
         allowsSight="true"
         allowsWalking="true"
         allowsFlying="true"
@@ -157,7 +157,7 @@
         name="EdgedWater"
         spriteCoords="24,26"
         context="edged"
-        texelColor="33,136,38"
+        texelColor="22,22,223"
         allowsSight="true"
         allowsWalking="false"
         allowsFlying="true"
@@ -197,10 +197,19 @@
     <TileDefinition
         name="StoneWallBracket"
         spriteCoords="17,12"
-        texelColor="50,50,50"
+        texelColor="51,51,51"
         allowsSight="false"
         allowsWalking="false"
         allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="Lapis"
+        spriteCoords="18,10"
+        texelColor="2,34,221"
+        allowsSight="false"
+        allowsWalking="false"
+        allowsFlying="false"
         allowsSwimming="false"
     />
 </TileDefinitions>

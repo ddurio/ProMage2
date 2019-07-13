@@ -283,6 +283,6 @@ void Definition<Item>::Define( Item& theObject ) const {
 
     // Defense
     if( slot != ITEM_SLOT_WEAPON && proficiency >= 0.f ) {
-        theObject.m_defense = s_slotBaseDefense[slot] + theObject.m_quality + (2.f * proficiency);
+        theObject.m_defense = s_slotBaseDefense[slot] + theObject.m_quality + proficiency;
     }
 }
