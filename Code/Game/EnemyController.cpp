@@ -1,14 +1,45 @@
 #include "Game/EnemyController.hpp"
 
+#include "Engine/Math/IntRange.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 
 #include "Game/Actor.hpp"
 #include "Game/Inventory.hpp"
+#include "Game/Item.hpp"
 #include "Game/Map.hpp"
+
+
+static bool g_progressionParsed = false;
+static std::vector< int > g_mobGearKeyFrames;
+static std::vector< IntRange > g_mobGearValues;
+
+
+static void ParseMobProgression() {
+    XmlDocument doc;
+    const XMLElement& root = ParseXMLRootElement( DATA_PROGRESSION, doc );
+
+    const XMLElement* mobEle = root.FirstChildElement( "Mobs" );
+    const XMLElement* keyEle = mobEle->FirstChildElement( "KeyFrame" );
+
+    while( keyEle != nullptr ) {
+        int floorIndex    = ParseXMLAttribute( *keyEle, "floor",    0 );
+        IntRange numItems = ParseXMLAttribute( *keyEle, "numItems", IntRange::ONE );
+
+        g_mobGearKeyFrames.push_back( floorIndex );
+        g_mobGearValues.push_back( numItems );
+        keyEle = keyEle->NextSiblingElement( "KeyFrame" );
+    }
+};
 
 
 EnemyController::EnemyController( Actor* myActor ) :
     ActorController( myActor ) {
+    if( !g_progressionParsed ) {
+        ParseMobProgression();
+        g_progressionParsed = true;
+    }
+
     m_myActor->SetFaction( FACTION_ENEMY1 );
     Inventory* inventory = m_myActor->GetInventory();
 
@@ -19,9 +50,38 @@ EnemyController::EnemyController( Actor* myActor ) :
     inventory->EquipItem( weapon );
 
     // Armor
+    // Get number of items based on Progression.xml info
     Map* theMap = GetMap();
-    int numNewItems = g_RNG->GetRandomIntInRange( 1, 5 );
+    int floorIndex = theMap->GetCurrentFloor();
+    int numKeys = (int)g_mobGearKeyFrames.size();
+    int keyIndex = 1;
 
+    while( (float)floorIndex > g_mobGearKeyFrames[keyIndex] ) {
+        if( keyIndex == numKeys - 1 ) {
+            break;
+        }
+
+        keyIndex++;
+    }
+
+    int floorMin = g_mobGearKeyFrames[keyIndex - 1];
+    int floorMax = g_mobGearKeyFrames[keyIndex];
+    IntRange rangeMin = g_mobGearValues[keyIndex - 1];
+    IntRange rangeMax = g_mobGearValues[keyIndex];
+
+    float scaledFloor = RangeMapFloat( (float)floorIndex, (float)floorMin, (float)floorMax, 0.f, 1.f );
+    float scaledMin = RangeMapFloat( scaledFloor, 0.f, 1.f, (float)rangeMin.min, (float)rangeMax.min );
+    float scaledMax = RangeMapFloat( scaledFloor, 0.f, 1.f, (float)rangeMin.max, (float)rangeMax.max );
+
+    int scaledMinInt = RoundToInt( scaledMin );
+    scaledMinInt = Max( scaledMinInt, 0 );
+
+    int scaledMaxInt = RoundToInt( scaledMax );
+    scaledMaxInt = Max( scaledMaxInt, 0 );
+
+    int numNewItems = g_RNG->GetRandomIntInRange( scaledMinInt, scaledMaxInt );
+
+    // Spawn new items
     for( int itemIndex = 0; itemIndex < numNewItems; itemIndex++ ) {
         Item* newItem = theMap->SpawnLootDrop( inventory );
 
@@ -29,7 +89,20 @@ EnemyController::EnemyController( Actor* myActor ) :
             break;
         }
 
-        inventory->EquipItem( newItem );
+        // Equip it if the new item is better
+        ItemSlot slot = newItem->GetItemSlot();
+        Item* equippedItem = inventory->GetItemInSlot( slot );
+
+        if( equippedItem == nullptr ) {
+            inventory->EquipItem( newItem );
+        } else {
+            float equippedValue = (slot == ITEM_SLOT_WEAPON) ? equippedItem->GetAttackDamage() : equippedItem->GetDefense();
+            float newValue =      (slot == ITEM_SLOT_WEAPON) ? newItem->GetAttackDamage()      : newItem->GetDefense();
+
+            if( newValue > equippedValue ) {
+                inventory->EquipItem( newItem );
+            }
+        }
     }
 }
 

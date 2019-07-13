@@ -93,6 +93,9 @@
         <!-- Male item set added via Body -->
         <ItemSet name="Melee"/>
         <ItemSet name="Ranged"/>
+        <ItemSet name="Light"/>
+        <ItemSet name="Medium"/>
+        <ItemSet name="Heavy"/>
 
         <Stats>
             <Health max="80" regenPerSecond="5"/>

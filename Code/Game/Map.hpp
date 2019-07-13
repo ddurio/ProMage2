@@ -99,6 +99,7 @@ class Map {
 
 
     bool HandleEnemyDeath( EventArgs& args );
+    void SpawnEnemyLootDrop( Actor* enemy ) const;
 
     void CreateTerrainMesh();
     void CreateLootTable();

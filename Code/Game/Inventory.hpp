@@ -36,7 +36,7 @@ class Inventory {
     void DropItem( int itemIndexToDrop );
 
     void EquipItem( Item* itemToEquip, bool removeFromInventory = true, int currentItemDestinationIndex = -1 );
-    void UnequipItem( Item* itemToUnequip );
+    void UnequipItem( Item* itemToUnequip, bool returnToInventory = true );
 
     void SetRenderPreferences( bool renderEquippedItems = true, bool renderUnequippedItems = false );
     void SetInventorySize( int numItemSlots );
@@ -52,6 +52,7 @@ class Inventory {
 
     Item* GetItemInSlot( int unequippedSlotIndex ) const;
     Item* GetItemInSlot( ItemSlot equippedItemSlot ) const;
+    Item* GetRandomItem( bool includeWeapon ) const;
 
     int GetItemIndex( Item* itemToFind, bool& outIsEquipped ) const;
     int GetMoney() const;

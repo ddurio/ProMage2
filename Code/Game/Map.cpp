@@ -19,6 +19,7 @@
 #include "Game/Actor.hpp"
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
+#include "Game/Item.hpp"
 #include "Game/MapDef.hpp"
 #include "Game/Metadata.hpp"
 #include "Game/Tile.hpp"
@@ -523,15 +524,27 @@ bool Map::HandleEnemyDeath( EventArgs& args ) {
     } else {
         CLEAR_POINTER( deadActor->m_deathTimer );
         deadActor->m_isGarbage = true;
-
-        SpawnLootDrop( m_inventory, deadActor->GetPosition() );
+        SpawnEnemyLootDrop( deadActor );
     }
 
     return false;
 }
 
 
-bool Map::s_materialCreated = false;
+void Map::SpawnEnemyLootDrop( Actor* enemy ) const {
+    // Get item from enemy
+    Inventory* enemyInv = enemy->GetInventory();
+    Item* loot = enemyInv->GetRandomItem( (m_floorIndex >= 10) );
+    enemyInv->UnequipItem( loot );
+    enemyInv->RemoveItemFromInventory( loot );
+
+    // Add item to map
+    loot->SetWorldPosition( enemy->GetPosition() );
+    m_inventory->AddItemToInventory( loot );
+}
+
+
+bool Map::s_materialCreated = false; // Used in F8 restart
 
 
 void Map::CreateTerrainMesh() {

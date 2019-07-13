@@ -15,12 +15,12 @@
 #include "Game/XMLUtils.hpp"
 
 
-bool g_progressionParsed = false;
-std::vector< int > g_qualityKeyFrames;
-std::vector< float* > g_qualityPercents;
+static bool g_progressionParsed = false;
+static std::vector< int > g_qualityKeyFrames;
+static std::vector< float* > g_qualityPercents;
 
 
-void ParseProgression() {
+static void ParseItemProgression() {
     XmlDocument doc;
     const XMLElement& root = ParseXMLRootElement( DATA_PROGRESSION, doc );
 
@@ -53,7 +53,7 @@ template<>
 Definition<Item>::Definition( const XMLElement& element ) {
     // Parse Progression.xml
     if( !g_progressionParsed ) {
-        ParseProgression();
+        ParseItemProgression();
         g_progressionParsed = true;
     }
 

@@ -4,6 +4,7 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/WindowContext.hpp"
+#include "Engine/Math/RNG.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteAnimDef.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
@@ -223,12 +224,15 @@ void Inventory::EquipItem( Item* itemToEquip, bool removeFromInventory /*= true*
 }
 
 
-void Inventory::UnequipItem( Item* itemToUnequip ) {
+void Inventory::UnequipItem( Item* itemToUnequip, bool returnToInventory /*= true */ ) {
     ItemSlot slot = itemToUnequip->GetItemSlot();
 
     if( m_equippedItems[slot] == itemToUnequip ) {
         m_equippedItems[slot] = nullptr;
-        AddItemToInventory( itemToUnequip );
+
+        if( returnToInventory ) {
+            AddItemToInventory( itemToUnequip );
+        }
     }
 }
 
@@ -351,6 +355,51 @@ Item* Inventory::GetItemInSlot( int unequippedSlotIndex ) const {
 
 Item* Inventory::GetItemInSlot( ItemSlot equippedItemSlot ) const {
     return m_equippedItems[equippedItemSlot];
+}
+
+
+Item* Inventory::GetRandomItem( bool includeWeapon ) const {
+    std::vector< Item* > items;
+
+    // Add equipped items to the list
+    for( int slotIndex = 0; slotIndex < NUM_ITEM_SLOTS; slotIndex++ ) {
+        if( slotIndex == ITEM_SLOT_WEAPON && !includeWeapon ) {
+            continue;
+        }
+
+        Item* item = m_equippedItems[slotIndex];
+
+        if( item != nullptr ) {
+            items.push_back( item );
+        }
+    }
+
+    // Add unequipped items to the list
+    for( int itemIndex = 0; itemIndex < m_numItemSlots; itemIndex++ ) {
+        Item* item = m_unequippedItems[itemIndex];
+
+        if( item == nullptr ) {
+            continue;
+        }
+
+        ItemSlot slot = item->GetItemSlot();
+
+        if( slot == ITEM_SLOT_WEAPON && !includeWeapon ) {
+            continue;
+        }
+
+        items.push_back( item );
+    }
+
+    // Select a random item
+    int numItems = (int)items.size();
+
+    if( numItems == 0 ) {
+        return nullptr;
+    }
+
+    int itemIndex = g_RNG->GetRandomIntLessThan( numItems );
+    return items[itemIndex];
 }
 
 
