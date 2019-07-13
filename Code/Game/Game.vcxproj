@@ -196,6 +196,7 @@
     <ClCompile Include="ActorController.cpp" />
     <ClCompile Include="ActorDef.cpp" />
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="CreditsController.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="ActorDef.hpp" />
     <ClInclude Include="Animator.hpp" />
     <ClInclude Include="App.hpp" />
+    <ClInclude Include="CreditsController.hpp" />
     <ClInclude Include="Definition.hpp" />
     <ClInclude Include="EnemyController.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />

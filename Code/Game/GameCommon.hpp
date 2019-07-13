@@ -72,9 +72,11 @@ constexpr char  EVENT_DEATH_ENEMY[]         = "enemyDeath";
 constexpr char  FONT_NAME_SQUIRREL[]        = "SquirrelFixedFont";
 constexpr char  MAT_NAME_PAPER_DOLL[]       = "PaperDoll";
 
+constexpr char  TAG_CREDITS[]               = "creditsAccess";
 constexpr char  TAG_STAIRS_UP[]             = "stairsUpAccess";
 constexpr char  TAG_STAIRS_DOWN[]           = "stairsDownAccess";
 constexpr char  TAG_MERCHANT[]              = "merchantAccess";
 
 constexpr char  TEXTURE_GOLD_PILE[]         = "Data/Images/GoldPile.png";
+constexpr char  TEXTURE_CREDTIS_GUILDHALL[] = "Data/Images/Guildhall.png";
 

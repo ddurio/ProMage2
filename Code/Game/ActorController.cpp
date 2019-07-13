@@ -116,12 +116,19 @@ bool ActorController::InteractFromInput() const {
     const Tile& tile = m_myActor->m_map->GetTileFromWorldCoords( m_myActor->GetPosition() );
     const Tags& tags = tile.GetMetadata()->m_tagData;
     Actor* merchant = nullptr;
+    Actor* credits = nullptr;
 
     if( tags.HasTags( TAG_MERCHANT ) ) {
         merchant = m_myActor->m_map->GetActorInRange( "merchant", m_myActor->GetPosition(), actorStats->GetInteractRadius() );
 
         if( merchant != nullptr ) {
             actions.push_back( TAG_MERCHANT );
+        }
+    } else if( tags.HasTags( TAG_CREDITS ) ) {
+        credits = m_myActor->m_map->GetActorInRange( "credits", m_myActor->GetPosition(), actorStats->GetInteractRadius() );
+
+        if( credits != nullptr ) {
+            actions.push_back( TAG_CREDITS );
         }
     }
 
@@ -138,6 +145,9 @@ bool ActorController::InteractFromInput() const {
             return false;
         } else if( chosenAction == TAG_MERCHANT ) {
             merchant->InteractWithActor( m_myActor );
+            return true;
+        } else if( chosenAction == TAG_CREDITS ) {
+            credits->InteractWithActor( m_myActor );
             return true;
         }
     }

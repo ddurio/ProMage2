@@ -111,4 +111,7 @@
         <Parent name="OrcMale"/>
         <Money value="1000"/>
     </ActorDef>
+    <ActorDef name="Credits" canDie="false" canWalk="false">
+        <Parent name="HumanMale"/>
+    </ActorDef>
 </ActorDefinitions>

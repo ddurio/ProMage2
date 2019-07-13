@@ -26,6 +26,7 @@
 #include "Game/Actor.hpp"
 #include "Game/ActorController.hpp"
 #include "Game/ActorDef.hpp"
+#include "Game/CreditsController.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
 #include "Game/Inventory.hpp"
@@ -224,6 +225,10 @@ void GameStatePlay::Render() {
 
     g_theRenderer->EndCamera( activeCamera );
 
+    if( m_credits != nullptr ) {
+        // Uses its own camera
+        m_credits->RenderCredits();
+    }
 
 
     if( m_isPaused ) {
@@ -322,6 +327,11 @@ void GameStatePlay::ChangeFloorsDown() {
 void GameStatePlay::ChangeFloorsUp() {
     unsigned int floorIndex = m_currentFloor - 1;
     GoToFloor( floorIndex, STAIRS_DOWN );
+}
+
+
+void GameStatePlay::RegisterCreditsController( CreditsController* controller ) {
+    m_credits = controller;
 }
 
 

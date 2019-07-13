@@ -133,6 +133,9 @@
     <ClCompile Include="EnemyController.cpp">
       <Filter>ActorComponents</Filter>
     </ClCompile>
+    <ClCompile Include="CreditsController.cpp">
+      <Filter>ActorComponents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -247,6 +250,9 @@
       <Filter>ActorComponents</Filter>
     </ClInclude>
     <ClInclude Include="EnemyController.hpp">
+      <Filter>ActorComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditsController.hpp">
       <Filter>ActorComponents</Filter>
     </ClInclude>
   </ItemGroup>

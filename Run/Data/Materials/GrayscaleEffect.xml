@@ -1,0 +1,4 @@
+<Materials>
+    <Material id="GrayscaleEffect" shader="Data/Shaders/GrayscaleEffect.hlsl">
+    </Material>
+</Materials>

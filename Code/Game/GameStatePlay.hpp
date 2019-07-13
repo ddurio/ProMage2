@@ -6,6 +6,7 @@
 #include "Game/GameState.hpp"
 
 
+class CreditsController;
 class GameInput;
 class Map;
 class Material;
@@ -42,6 +43,8 @@ class GameStatePlay : public GameState {
     void ChangeFloorsDown();
     void ChangeFloorsUp();
 
+    void RegisterCreditsController( CreditsController* controller );
+
     static bool Command_PauseGame( EventArgs& args );
     static void ResetMaterialCreated();
 
@@ -70,6 +73,9 @@ class GameStatePlay : public GameState {
     std::string m_pauseViewName = "gameStatePlay/pauseEffect";
     std::string m_pauseMatName = "Data/Materials/PauseEffect.xml";
     std::string m_grayscaleMatName = "Data/Materials/GrayscaleEffect.xml";
+
+    CreditsController* m_credits = nullptr;
+
 
     Camera* GetActiveCamera() const;
     void BuildPauseUI();

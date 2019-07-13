@@ -16,6 +16,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/Animator.hpp"
+#include "Game/CreditsController.hpp"
 #include "Game/EnemyController.hpp"
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
@@ -51,8 +52,8 @@ Actor::Actor( Map* theMap, const std::string& actorType, const std::string& cont
         m_controller = new MerchantController( this );
     } else if( StringICmp( controllerType, "Enemy" ) ) {
         m_controller = new EnemyController( this );
-    } else if( StringICmp( controllerType, "Danny" ) ) {
-        // DFS1FIXME: Setup final controller for credits
+    } else if( StringICmp( controllerType, "Credits" ) ) {
+        m_controller = new CreditsController( this );
     }
 }
 
@@ -62,6 +63,7 @@ Actor::~Actor() {
     CLEAR_POINTER( m_animator );
     CLEAR_POINTER( m_portraitMesh );
     CLEAR_POINTER( m_statsManager );
+    CLEAR_POINTER( m_controller );
 }
 
 
