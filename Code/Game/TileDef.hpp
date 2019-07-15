@@ -12,6 +12,7 @@
 class Texture;
 class SpriteSheet;
 
+
 class TileDef {
     public:
     explicit TileDef( const XMLElement& element );
@@ -34,20 +35,23 @@ class TileDef {
     const Rgba& GetSpriteTint() const;
     const Rgba& GetTexelColor() const;
     int GetDrawOrder() const;
+    const Strings& GetExtraRenderTypes() const;
 
     bool AllowsSight() const;
     bool AllowsWalking() const;
     bool AllowsFlying() const;
     bool AllowsSwimming() const;
 
+
     private:
     static int s_numTileTypes;
     static std::map<std::string, TileDef*> s_tileDefs;
     static const SpriteSheet* s_terrainSprites;
 
+    int m_drawOrder = -1;
     std::string m_tileType = "";
     std::string m_tileContext = "single";
-    int m_drawOrder = -1;
+    Strings m_extraRenderTypes;
 
     IntVec2 m_spriteCoords = IntVec2::ZERO;
     AABB2 m_uvCoords = AABB2();

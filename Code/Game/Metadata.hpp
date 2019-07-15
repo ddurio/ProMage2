@@ -8,8 +8,7 @@
 #include "queue"
 
 
-
-class TileDef;
+typedef std::priority_queue< const TileDef*, std::vector< const TileDef* >, TileDef::CompareDrawOrder > TileQueue;
 
 
 struct Metadata {
@@ -17,5 +16,5 @@ struct Metadata {
     Tags m_tagData;
     float m_distanceField = 999999;
     float m_noiseValue = 0.0f;
-    std::priority_queue< const TileDef*, std::vector< const TileDef* >, TileDef::CompareDrawOrder > m_renderTypes;
+    TileQueue m_renderTypes;
 };

@@ -27,8 +27,6 @@ class Tile {
     AABB2 GetWorldBounds() const;
     const std::string& GetTileType() const;
     const std::string& GetTileContext() const;
-    AABB2 GetUVs() const;
-    Rgba GetTint() const;
 
     IntVec2 GetTileCoords() const;
     Metadata* GetMetadata() const;
@@ -45,8 +43,8 @@ class Tile {
     void SetDistanceField( float newDistance );
     void SetNoiseValue( float newNoise );
 
-    void AddRenderType( const TileDef* tileDef );
     void AddRenderType( const std::string& tileType );
+    void AddRenderType( const TileDef* tileDef );
 
     private:
     IntVec2 m_tileCoords = IntVec2( -1, -1 );
@@ -54,6 +52,8 @@ class Tile {
     Metadata* m_metadata = nullptr;
 
 
+    AABB2 GetUVs() const;
+    Rgba GetTint() const;
     void GetEdgedNeighborByType( const Map& map, std::map< std::string, NeighborFlag >& edgedNeighbors ) const;
     void AddEdgesFromNeighborFlags( std::map< std::string, NeighborFlag >& edgedNeighbors );
 };

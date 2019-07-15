@@ -20,6 +20,9 @@ TileDef::TileDef( const XMLElement& element ) {
     m_spriteCoords = ParseXMLAttribute( element, "spriteCoords", m_spriteCoords );
     s_terrainSprites->GetSpriteDef( m_spriteCoords ).GetUVs( m_uvCoords.mins, m_uvCoords.maxs );
 
+    std::string extraRenderStr = ParseXMLAttribute( element, "extraRenderTypes", "" );
+    m_extraRenderTypes = SplitStringOnDelimeter( extraRenderStr, ',', false );
+
     m_spriteTint = ParseXMLAttribute( element, "spriteTint", m_spriteTint );
     m_texelColor = ParseXMLAttribute( element, "texelColor", m_texelColor );
 
@@ -138,6 +141,11 @@ const Rgba& TileDef::GetTexelColor() const {
 
 int TileDef::GetDrawOrder() const {
     return m_drawOrder;
+}
+
+
+const Strings& TileDef::GetExtraRenderTypes() const {
+    return m_extraRenderTypes;
 }
 
 

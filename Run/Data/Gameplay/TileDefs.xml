@@ -179,6 +179,7 @@
     <TileDefinition
         name="StairsUp"
         spriteCoords="30,14"
+        extraRenderTypes="CaveDirtFloor"
         texelColor="240,240,129"
         allowsSight="true"
         allowsWalking="false"

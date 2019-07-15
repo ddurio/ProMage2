@@ -98,14 +98,12 @@ void Tile::AddTypesFromNeighbors( const Map& map ) {
 void Tile::AddVertsToMesh( CPUMesh& builder ) const {
     // Base Tile Type
     AABB2 tileBounds = GetWorldBounds();
-    Rgba tint = GetTint();
-    AABB2 uvs = GetUVs();
+    Rgba tint;
+    AABB2 uvs;
 
-    builder.SetColor( tint );
-    builder.AddQuad( tileBounds, uvs );
-
-    // Additional render tiles (edged tiles)
-    std::priority_queue< const TileDef*, std::vector< const TileDef* >, TileDef::CompareDrawOrder > renderTypes = m_metadata->m_renderTypes; // Intentionally makes a copy
+    // Additional render tiles (edged tiles / stairs)
+    TileQueue renderTypes = m_metadata->m_renderTypes; // Intentionally makes a copy
+    renderTypes.push( m_tileDef );
 
     while( !renderTypes.empty() ) {
         const TileDef* tileDef = renderTypes.top();
@@ -134,19 +132,6 @@ const std::string& Tile::GetTileType() const {
 
 const std::string& Tile::GetTileContext() const {
     return m_tileDef->GetTileContext();
-}
-
-
-AABB2 Tile::GetUVs() const {
-    AABB2 uvs;
-    m_tileDef->GetUVs( uvs.mins, uvs.maxs );
-
-    return uvs;
-}
-
-
-Rgba Tile::GetTint() const {
-    return m_tileDef->GetSpriteTint();
 }
 
 
@@ -191,12 +176,25 @@ bool Tile::AllowsSwimming() const {
 
 
 void Tile::SetTileType( std::string type ) {
-    m_tileDef = TileDef::GetTileDef( type );
+    const TileDef* tileDef = TileDef::GetTileDef( type );
+    SetTileType( tileDef );
 }
 
 
 void Tile::SetTileType( const TileDef* tileDef ) {
-    m_tileDef = tileDef;
+    if( m_tileDef != tileDef ) {
+        m_tileDef = tileDef;
+
+        m_metadata->m_renderTypes = TileQueue();
+        const Strings& extraTypes = m_tileDef->GetExtraRenderTypes();
+
+        int numTypes = (int)extraTypes.size();
+
+        for( int typeIndex = 0; typeIndex < numTypes; typeIndex++ ) {
+            const std::string& extraStr = extraTypes[typeIndex];
+            AddRenderType( extraStr );
+        }
+    }
 }
 
 
@@ -210,19 +208,27 @@ void Tile::SetNoiseValue( float newNoise ) {
 }
 
 
-void Tile::AddRenderType( const TileDef* tileDef ) {
-    int myDrawOrder = m_tileDef->GetDrawOrder();
-    int newDrawOrder = tileDef->GetDrawOrder();
-
-    if( myDrawOrder < newDrawOrder ) {
-        m_metadata->m_renderTypes.push( tileDef );
-    }
-}
-
-
 void Tile::AddRenderType( const std::string& tileType ) {
     const TileDef* tileDef = TileDef::GetTileDef( tileType );
     AddRenderType( tileDef );
+}
+
+
+void Tile::AddRenderType( const TileDef* tileDef ) {
+    m_metadata->m_renderTypes.push( tileDef );
+}
+
+
+AABB2 Tile::GetUVs() const {
+    AABB2 uvs;
+    m_tileDef->GetUVs( uvs.mins, uvs.maxs );
+
+    return uvs;
+}
+
+
+Rgba Tile::GetTint() const {
+    return m_tileDef->GetSpriteTint();
 }
 
 
