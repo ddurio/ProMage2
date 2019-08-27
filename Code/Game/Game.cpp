@@ -37,19 +37,7 @@ void Game::Shutdown() {
 void Game::Update() {
     m_gameState->Update();
 
-    /*
-    ImGui::Begin( "Hello, world!" );
-    ImGui::Text( "This is useful text.." );
-    ImGui::Checkbox( "Demo Window", &ui_testCheck1 );
-    ImGui::Checkbox( "Another window", &ui_testCheck2 );
-
-    ImGui::SliderFloat( "float", &ui_testSlider, 0.f, 1.f );
-    ImGui::ColorEdit3( "clear color", (float*)&ui_testColor );
-
-    ImGui::End();
-    */
-
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 }
 
 

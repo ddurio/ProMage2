@@ -15,6 +15,10 @@ MapGenStep_DistanceField::MapGenStep_DistanceField( const XMLElement& element ) 
 
 void MapGenStep_DistanceField::RunOnce( Map& map ) const {
     std::vector<IntVec2> openTiles;
+    IntVec2 mapDimensions = map.GetMapDimensions();
+    int numTiles = mapDimensions.x * mapDimensions.y;
+    openTiles.reserve( numTiles );
+
     ResetDistanceField( map, openTiles );
 
     std::vector<IntVec2>::iterator openTilesIter = openTiles.begin();
@@ -28,7 +32,7 @@ void MapGenStep_DistanceField::RunOnce( Map& map ) const {
         openTilesIter = openTiles.erase( openTilesIter );
     }
 
-    EchoDistanceField( map );
+    //EchoDistanceField( map );
 }
 
 
@@ -97,6 +101,7 @@ bool MapGenStep_DistanceField::IsTileValid( const Tile& tile ) const {
         return tile.AllowsWalking();
     }
 
+    // ThesisFIXME: Error on unknown movement type...
     return false;
 }
 

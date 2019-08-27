@@ -1,7 +1,7 @@
 <TileDefinitions>
     <TileDefinition
         name="Grass"
-        spriteCoords="1,0"
+        spriteCoords="7,31"
         texelColor="31,136,38"
         allowsSight="true"
         allowsWalking="true"

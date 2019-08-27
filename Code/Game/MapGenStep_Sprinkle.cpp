@@ -22,6 +22,7 @@ void MapGenStep_Sprinkle::RunOnce( Map& map ) const {
         int tileIndex = -1;
         const Tile* tile = nullptr;
 
+        // ThesisFIXME: This produces an infinite loop if no tiles available
         do {
             tileIndex = m_mapRNG->GetRandomIntLessThan( numTiles );
             tile = &(map.GetTileFromTileIndex( tileIndex ));

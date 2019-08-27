@@ -101,8 +101,10 @@ void GameStatePlay::Startup() {
 
     Definition<Actor>::Initialize( DATA_ACTOR_DEFS, "ActorDef" );
     Definition<Item>::Initialize( DATA_ITEM_DEFS, "ItemDef" );
+
     TileDef::InitializeTileDefs();
     MapDef::InitializeMapDefs();
+    ParseMapProgression();
 
     m_floorZeroSeed = g_RNG->GetRandomSeed();
     m_mapRNG = new RNG( m_floorZeroSeed );
@@ -358,6 +360,48 @@ Camera* GameStatePlay::GetActiveCamera() const {
 }
 
 
+std::string GameStatePlay::GetFloorTypeFromIndex() const {
+    int numKeys = (int)m_mapTypeFloors.size();
+
+    if( numKeys == 0 ) {
+        return "Cave";
+    }
+
+    int keyIndex = 0;
+
+    for( keyIndex; keyIndex < numKeys; keyIndex++ ) {
+        const unsigned int& floorNumber = m_mapTypeFloors[keyIndex];
+
+        if( m_currentFloor < floorNumber ) {
+            break;
+        }
+    }
+
+    keyIndex = Max( --keyIndex, 0 );
+    return m_mapTypeNames[keyIndex];
+}
+
+
+void GameStatePlay::ParseMapProgression() {
+    XmlDocument doc;
+    const XMLElement& root = ParseXMLRootElement( DATA_PROGRESSION, doc );
+
+    const XMLElement* mapEle = root.FirstChildElement( "Maps" );
+    const XMLElement* keyEle = mapEle->FirstChildElement( "KeyFrame" );
+
+    while( keyEle != nullptr ) {
+        int floorIndex  = ParseXMLAttribute( *keyEle, "floor",     0 );
+        std::string mapType = ParseXMLAttribute( *keyEle, "mapType", "" );
+        GUARANTEE_OR_DIE( mapType != "", "(GameStatePlay) Map progression missing required attribute 'mapType'" );
+
+        m_mapTypeFloors.push_back( floorIndex );
+        m_mapTypeNames.push_back( mapType );
+
+        keyEle = keyEle->NextSiblingElement( "KeyFrame" );
+    }
+}
+
+
 void GameStatePlay::BuildPauseUI() {
     m_pauseUI = new UIWidget( ALIGN_CENTER, Vec2::ZERO, Vec2::ONE, Vec2::ZERO );
     m_pauseUI->SetColor( Rgba::CLEAR );
@@ -402,17 +446,7 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
     m_mapRNG->SetPosition( 0 );
 
     // Choose floor type
-    std::string floorType = "";
-    
-    if( m_currentFloor == 0 ) {
-        floorType = "Island";
-    } else if( m_currentFloor == 22 ) {
-        floorType = "DD1";
-    } else if( m_currentFloor == 222 ) {
-        floorType = "DD2";
-    } else {
-        floorType = "Cave";
-    }
+    std::string floorType = GetFloorTypeFromIndex();
 
     // Setup new map
     Map* nextMap = new Map( Stringf( "Floor%d", m_currentFloor ), floorType, m_mapRNG, newFloorIndex );

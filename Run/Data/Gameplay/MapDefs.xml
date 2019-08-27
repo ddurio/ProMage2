@@ -71,4 +71,31 @@
             <CellularAutomata ifIsType="CaveDirtFloor" ifNeighborHasTags="credits" setTags="creditsAccess"/>
         </GenerationSteps>
     </MapDefinition>
+    <MapDefinition name="Cavern" width="100" height="100" fillTile="EdgedSand" edgeTile="EdgedWater">
+        <GenerationSteps>
+            <!-- Lake -->
+            <PerlinNoise ifIsType="EdgedSand" ifNoise="0.8~1" octaves="1" gridSize="20" changeToType="EdgedWater" setTags="Lake"/>
+            <PerlinNoise ifIsType="EdgedSand" ifNoise="-1~-0.8" octaves="1" gridSize="20" changeToType="EdgedWater" setTags="Lake"/>
+            <DistanceField ifHasTags="Lake" movementType="Walk"/>
+            <CellularAutomata ifDistanceField="1~2" setTags="NearLake"/>
+            <!-- River -->
+            <PerlinNoise ifIsType="EdgedSand" ifNoise="-0.1~0.1" octaves="1" gridSize="30" changeToType="EdgedWater" setTags="River"/>
+            <DistanceField ifHasTags="River" movementType="Walk"/>
+            <CellularAutomata ifDistanceField="1~2" setTags="NearRiver"/>
+            <CellularAutomata ifHasTags="NearLake,NearRiver" ifIsType="EdgedSand" changeToType="EdgedWater"/>
+            <CellularAutomata ifIsType="EdgedSand" ifNeighborType="EdgedWater" ifNumNeighbors="7~8" changeToType="EdgedWater" numIterations="5"/>
+            <CellularAutomata ifIsType="EdgedWater" ifNeighborType="EdgedSand" ifNumNeighbors="8" changeToType="EdgedSand"/>
+            <!-- Cliff -->
+            <CellularAutomata ifIsType="EdgedSand" ifNeighborType="EdgedWater" changeToType="CliffGrass"/>
+            <DistanceField ifIsType="CliffGrass" movementType="Walk"/>
+            <CellularAutomata ifIsType="EdgedSand" ifDistanceField="0~3" changeToType="EdgedGrass"/>
+            <!-- Stairs -->
+            <Sprinkle ifIsType="EdgedSand" changeToType="StairsDown" setTags="stairsDown" count="1"/>
+            <CellularAutomata ifIsType="EdgedSand" ifNeighborType="StairsDown" setTags="stairsDownAccess"/>
+
+            <DistanceField ifIsType="StairsDown" movementType="Walk"/>
+            <Sprinkle ifIsType="EdgedSand" ifDistanceField="0~999998" changeToType="StairsUp" setTags="stairsUp" count="1"/>
+            <CellularAutomata ifIsType="EdgedSand" ifNeighborType="StairsUp" setTags="stairsUpAccess"/>
+        </GenerationSteps>
+    </MapDefinition>
 </MapDefinitions>

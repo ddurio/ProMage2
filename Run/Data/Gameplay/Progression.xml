@@ -15,4 +15,13 @@
         <KeyFrame floor="70" numItems="9~12"/>
         <KeyFrame floor="222" numItems="15"/>
     </Mobs>
+    <Maps>
+        <KeyFrame floor="0"   mapType="Island"/>
+        <KeyFrame floor="1"   mapType="Cavern"/>
+        <KeyFrame floor="10"  mapType="Cave"/>
+        <KeyFrame floor="22"  mapType="DD1"/>
+        <KeyFrame floor="23"  mapType="Cavern"/>
+        <KeyFrame floor="222" mapType="DD2"/>
+        <KeyFrame floor="223" mapType="Cave"/>
+    </Maps>
 </Progression>

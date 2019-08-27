@@ -14,7 +14,7 @@ MapGenStep_PerlinNoise::MapGenStep_PerlinNoise( const XMLElement& element ) :
     m_gridSize          = ParseXMLAttribute( element, "gridSize",    m_gridSize );
     m_octavePersistence = ParseXMLAttribute( element, "persistence", m_octavePersistence );
     m_octaveScale       = ParseXMLAttribute( element, "scale",       m_octaveScale );
-    m_seed              = ParseXMLAttribute( element, "seed",        m_seed );
+    //m_seed              = ParseXMLAttribute( element, "seed",        m_seed );
 }
 
 
@@ -26,6 +26,7 @@ void MapGenStep_PerlinNoise::RunOnce( Map& map ) const {
     float persistence = m_mapRNG->GetRandomFloatInRange( m_octavePersistence );
     float scale       = m_mapRNG->GetRandomFloatInRange( m_octaveScale );
     int gridSize      = m_mapRNG->GetRandomIntInRange( m_gridSize );
+    unsigned int seed  = m_mapRNG->GetRandomSeed();
     
     // For each tile (by X and Y)
     for( int tileY = 0; tileY < mapDimensions.y; tileY++ ) {
@@ -36,7 +37,8 @@ void MapGenStep_PerlinNoise::RunOnce( Map& map ) const {
             float centerX = (float)tileX + 0.5f;
             float centerY = (float)tileY + 0.5f;
 
-            float tileNoise = Compute2dPerlinNoise( centerX, centerY, (float)gridSize, octaves, persistence, scale, true, m_seed );
+            //float tileNoise = Compute2dPerlinNoise( centerX, centerY, (float)gridSize, octaves, persistence, scale, true, m_seed );
+            float tileNoise = Compute2dPerlinNoise( centerX, centerY, (float)gridSize, octaves, persistence, scale, true, seed );
             //float tileNoise = Compute2dPerlinNoise( centerX, centerY );
 
             tile.SetNoiseValue( tileNoise );

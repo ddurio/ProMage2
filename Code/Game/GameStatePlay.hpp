@@ -57,6 +57,8 @@ class GameStatePlay : public GameState {
 
     unsigned int m_floorZeroSeed = 0;
     unsigned int m_currentFloor = 0;
+    std::vector< unsigned int > m_mapTypeFloors;
+    std::vector< std::string > m_mapTypeNames;
 
     Timer* m_deathTimer = nullptr;
     bool m_isDebugging = false;
@@ -78,9 +80,14 @@ class GameStatePlay : public GameState {
 
 
     Camera* GetActiveCamera() const;
+    std::string GetFloorTypeFromIndex() const;
+
+    void ParseMapProgression();
     void BuildPauseUI();
+
     void GoToFloor( unsigned int newFloorIndex, StairType stairType );
     bool Command_GoToFloor( EventArgs& args );
+
     void SetupDebugCamera();
     bool HandlePlayerDeath( EventArgs& args );
 };
