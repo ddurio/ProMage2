@@ -486,7 +486,7 @@ void GameStatePlay::SetupDebugCamera() {
     Vec2 halfDims = mapDims / 2.f;
 
     m_debugCamera->SetOrthoProjection( (float)mapDims.y );
-    m_debugCamera->Translate2D( halfDims );
+    m_debugCamera->Translate( halfDims );
 }
 
 

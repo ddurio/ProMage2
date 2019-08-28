@@ -57,10 +57,12 @@ void PlayerController::Update( float deltaSeconds ) {
 
 
     // Inventory
+    /*
     if( !m_tradeOpen && m_gameInput->WasInventoryToggled() ) {
         m_inventoryOpen = !m_inventoryOpen;
         ToggleInventory();
     }
+    */
 
 
     // Pickup Item or Merchant (can't do either while already trading)
@@ -82,6 +84,7 @@ void PlayerController::Update( float deltaSeconds ) {
 
     
     // Attack
+    /*
     if( m_gameInput->ShouldAttack() ) {
         m_myActor->StartAttack();
     } else if( m_myActor->IsAttacking() ) {
@@ -97,7 +100,7 @@ void PlayerController::Update( float deltaSeconds ) {
             m_myActor->StartAttack( false );
         }
     }
-
+    */
 
     // Pause / Resume game
     Clock* stateClock = g_theGame->GetGameState()->GetStateClock();

@@ -144,8 +144,11 @@ bool ActorController::InteractFromInput() const {
             PickupItem( itemToPickUp );
             return false;
         } else if( chosenAction == TAG_MERCHANT ) {
+            // Disable for Thesis
+            /*
             merchant->InteractWithActor( m_myActor );
             return true;
+            */
         } else if( chosenAction == TAG_CREDITS ) {
             credits->InteractWithActor( m_myActor );
             return true;

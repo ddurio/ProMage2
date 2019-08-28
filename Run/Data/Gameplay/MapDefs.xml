@@ -44,10 +44,10 @@
             <Sprinkle ifIsType="CaveDirtFloor" changeToType="StairsUp" setTags="stairsUp" count="1"/>
             <CellularAutomata ifIsType="CaveDirtFloor" ifNeighborType="StairsUp" setTags="stairsUpAccess"/>
             <!-- Merchant -->
-            <Sprinkle chanceToRun="0.5" ifHasTags="stairsDownAccess" ifIsType="CaveDirtFloor" spawnActor="Merchant" controller="Merchant" setTags="merchant" count="1"/>
+            <Sprinkle chanceToRun="0.5" ifHasTags="stairsDownAccess" ifIsType="CaveDirtFloor" spawnActor="Merchant" setTags="merchant" count="1"/>
             <CellularAutomata ifNeighborHasTags="merchant" setTags="merchantAccess"/>
             <!-- Skeletons -->
-            <Sprinkle ifIsType="CaveDirtFloor" spawnActor="SkeletonMale" controller="Enemy" count="20"/>
+            <Sprinkle ifIsType="CaveDirtFloor" spawnActor="SkeletonMale" count="20"/>
         </GenerationSteps>
     </MapDefinition>
     <MapDefinition name="DD1" width="24" height="14" fillTile="FakeStone">

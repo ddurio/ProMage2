@@ -105,9 +105,11 @@
         <Body spriteSheet="PaperDoll.Body.Skeleton.M1" itemSet="Skeleton,Male"/>
     </ActorDef>
     <ActorDef name="Merchant" canDie="false" canWalk="false">
+        <!--
         <Parent name="HumanFemale"/>
         <Parent name="HumanMale"/>
         <Parent name="OrcFemale"/>
+        -->
         <Parent name="OrcMale"/>
         <Money value="1000"/>
     </ActorDef>
