@@ -1,3 +1,6 @@
 [submodule "Code/Submodule/Engine"]
 	path = Code/Submodule/Engine
 	url = https://github.com/ddurio/Engine.git
+[submodule "Code/Submodule/MapGen"]
+	path = Code/Submodule/MapGen
+	url = https://github.com/ddurio/MapGen.git
