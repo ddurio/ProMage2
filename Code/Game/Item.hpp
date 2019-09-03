@@ -26,11 +26,10 @@ struct WeaponInfo {
 
 
 class Item : public Entity {
-    friend class Definition<Item>;
+    friend class ItemDef;
 
     public:
     explicit Item( Map* theMap, std::string itemType, RNG* itemRNG = nullptr );
-    //explicit Item( Map* theMap, const Definition<Item>* itemDef );
 
     void Startup();
     void Shutdown();
@@ -69,7 +68,7 @@ class Item : public Entity {
     void Consume( Actor* consumer ) const;
 
     private:
-    const Definition<Item>* m_itemDef = nullptr;
+    const ItemDef* m_itemDef = nullptr;
     RNG* m_itemRNG = nullptr;
 
     int   m_moneyValue = 0;

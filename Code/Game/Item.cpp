@@ -17,9 +17,9 @@
 Item::Item( Map* theMap, std::string itemType, RNG* itemRNG /*= nullptr */ ) :
     Entity( theMap ),
     m_itemRNG( itemRNG ) {
-    m_itemDef = Definition<Item>::GetDefinition( itemType );
+    m_itemDef = ItemDef::GetDefinition( itemType );
     GUARANTEE_OR_DIE( m_itemDef != nullptr, Stringf( "(Item) Failed to find itemDef of name %s", itemType.c_str() ) );
-    m_itemDef->Define( *this );
+    m_itemDef->DefineObject( *this );
 
     // Item Sprite Material
     m_material = g_theRenderer->GetOrCreateMaterial( "ItemSprite" );
@@ -31,17 +31,6 @@ Item::Item( Map* theMap, std::string itemType, RNG* itemRNG /*= nullptr */ ) :
 
     m_material->SetShader( shader );
 }
-
-
-// Missing code from above, but is this function necessary?
-/*
-Item::Item( Map* theMap, const Definition<Item>* itemDef ) :
-    Entity( theMap ),
-    m_itemDef(itemDef) {
-    GUARANTEE_OR_DIE( m_itemDef != nullptr, "(Item) Cannot construct from itemDef of nullptr" );
-    m_itemDef->Define( *this );
-}
-*/
 
 
 void Item::Startup() {
@@ -109,12 +98,12 @@ void Item::OnCollisionTile( Tile* collidingTile ) {
 
 
 const SpriteDef Item::GetPortrait() const {
-    return m_itemDef->GetProperty( "portrait", SpriteDef( Vec2::ZERO, Vec2::ONE, "" ) );
+    return m_itemDef->GetPortrait();
 }
 
 
 ItemSlot Item::GetItemSlot() const {
-    ItemSlot slot = m_itemDef->GetProperty( "slot", ITEM_SLOT_NONE );
+    ItemSlot slot = m_itemDef->GetItemSlot();
     return slot;
 }
 
@@ -137,13 +126,12 @@ std::string Item::GetItemSlotText() const {
 
 
 std::vector< Tags > Item::GetItemSets() const {
-    std::vector< Tags > emptySet;
-    return m_itemDef->GetProperty( "itemSets", emptySet );
+    return m_itemDef->GetItemSets();
 }
 
 
 std::string Item::GetSprites() const {
-    return m_itemDef->GetProperty( "spriteSheet", std::string("") );
+    return m_itemDef->GetSpriteSheet();
 }
 
 
@@ -166,17 +154,17 @@ int Item::GetValue() const {
 
 
 std::string Item::GetAttackAnim() const {
-    return m_itemDef->GetProperty<std::string>( "attackAnim", ANIM_PAPER_DOLL_IDLE );
+    return m_itemDef->GetAttackAnim();
 }
 
 
 float Item::GetAttackRange() const {
-    return m_itemDef->GetProperty( "attackRange", -1.f );
+    return m_itemDef->GetAttackRange();
 }
 
 
 float Item::GetAttackDamage() const {
-    float baseDamage = m_itemDef->GetProperty( "attackDamage", 0.f );
+    float baseDamage = m_itemDef->GetAttackDamage();
     float scaledDamage = baseDamage * m_quality;
 
     return scaledDamage;
@@ -184,12 +172,12 @@ float Item::GetAttackDamage() const {
 
 
 float Item::GetAttackConeWidth() const {
-    return m_itemDef->GetProperty( "attackConeWidth", 0.f );
+    return m_itemDef->GetAttackConeWidth();
 }
 
 
 float Item::GetAttackConeDotProduct() const {
-    return m_itemDef->GetProperty( "attackConeDot", 1.f );
+    return m_itemDef->GetAttackConeDot();
 }
 
 
@@ -267,7 +255,7 @@ std::string Item::GetQualityDescription() const {
 
 
 bool Item::IsConsumable() const {
-    return m_itemDef->GetProperty( "isConsumable", false );
+    return m_itemDef->IsConsumable();
 }
 
 
@@ -276,7 +264,7 @@ std::string Item::GetConsumptionDescription() const {
         return "";
     }
 
-    std::string setsToAddStr = m_itemDef->GetProperty( "onConsumeItemSet", std::string() );
+    std::string setsToAddStr = m_itemDef->GetConsumptionItemSet();
     Strings setsToAddArray = SplitStringOnDelimeter( setsToAddStr, ',', false );
     std::string formattedSets = JoinStrings( setsToAddArray, " AND " );
     std::string description = Stringf( "Provides: %s", formattedSets.c_str() );
@@ -290,7 +278,7 @@ void Item::Consume( Actor* consumer ) const {
         return;
     }
 
-    std::string itemSetToAdd = m_itemDef->GetProperty( "onConsumeItemSet", std::string() );
+    std::string itemSetToAdd = m_itemDef->GetConsumptionItemSet();
     
     Inventory* consumerInv = consumer->GetInventory();
     consumerInv->AddItemSets( itemSetToAdd );
@@ -312,7 +300,7 @@ void Item::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
 
     // World Dims
     Vec2 spriteDimensions = textureDimensions * uvDimensions;
-    Vec2 spriteWorldDimensions = spriteDimensions / m_itemDef->GetProperty( "spritePPU", 40.f );
+    Vec2 spriteWorldDimensions = spriteDimensions / m_itemDef->GetSpritePPU();
 
     // Local Dims
     float halfWidth  = spriteWorldDimensions.x / 2.f;

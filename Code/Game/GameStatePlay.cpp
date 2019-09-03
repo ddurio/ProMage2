@@ -99,8 +99,8 @@ void GameStatePlay::Startup() {
     SpriteSheet::Initialize( DATA_INVENTORY_SPRITES, "SpriteSheet", renderer );
     SpriteAnimDef::Initialize( DATA_INVENTORY_SPRITES, "SpriteAnim" );
 
-    Definition<Actor>::Initialize( DATA_ACTOR_DEFS, "ActorDef" );
-    Definition<Item>::Initialize( DATA_ITEM_DEFS, "ItemDef" );
+    ActorDef::LoadFromFile( DATA_ACTOR_DEFS, "ActorDef" );
+    ItemDef::LoadFromFile( DATA_ITEM_DEFS, "ItemDef" );
 
     TileDef::InitializeTileDefs();
     MapDef::InitializeMapDefs();

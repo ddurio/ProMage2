@@ -579,23 +579,23 @@ void Map::CreateTerrainMesh() {
 
 
 void Map::CreateLootTable() {
-    const std::map< std::string, Definition<Item>*, StringCmpCaseI >& itemDefs = Definition<Item>::GetAllDefinitions();
+    std::vector< const ItemDef* > itemDefs = ItemDef::GetAllDefinitions();
     auto itemDefIter = itemDefs.begin();
 
     float totalUnscaledPercents = 0.f;
     std::vector< float > itemPercents;
 
     for( itemDefIter; itemDefIter != itemDefs.end(); itemDefIter++ ) {
-        const Definition<Item>* itemDef = itemDefIter->second;
-        IntRange floorRange = itemDef->GetProperty( "dropFloors", IntRange::NEGONE );
+        const ItemDef* itemDef = *itemDefIter;
+        IntRange floorRange = itemDef->GetDropFloors();
 
         if( !floorRange.IsIntInRange( m_floorIndex ) ) {
             continue;
         }
 
         // Valid item.. scale to find percent chance
-        const std::string& itemType = itemDefIter->first;
-        std::string bias = itemDef->GetProperty( "dropBias", std::string() );
+        const std::string& itemType = itemDef->GetDefintionType();
+        std::string bias = itemDef->GetDropBias();
         float itemPercent = 0.f;
 
         // Map floor range into 0 -> 1 based on bias

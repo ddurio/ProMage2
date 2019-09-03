@@ -329,7 +329,6 @@
     <ClInclude Include="Animator.hpp" />
     <ClInclude Include="App.hpp" />
     <ClInclude Include="CreditsController.hpp" />
-    <ClInclude Include="Definition.hpp" />
     <ClInclude Include="EnemyController.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />

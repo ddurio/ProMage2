@@ -36,7 +36,7 @@ enum PaperDollSlot {
 
 
 class Actor : public Entity {
-    friend class Definition<Actor>;
+    friend class ActorDef;
     friend class ActorController;
 
     public:
@@ -70,7 +70,7 @@ class Actor : public Entity {
     WeaponInfo GetWeaponInfo() const;
 
     private:
-    const Definition<Actor>* m_actorDef = nullptr;
+    const ActorDef* m_actorDef = nullptr;
     Inventory* m_inventory = nullptr;
     ActorController* m_controller = nullptr;
 

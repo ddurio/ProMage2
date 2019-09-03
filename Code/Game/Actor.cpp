@@ -31,9 +31,9 @@
 Actor::Actor( Map* theMap, const std::string& actorType, const std::string& controllerType ) :
     Entity( theMap, ENTITY_TYPE_ACTOR ) {
 
-    m_actorDef = Definition<Actor>::GetDefinition( actorType );
+    m_actorDef = ActorDef::GetDefinition( actorType );
     GUARANTEE_OR_DIE( m_actorDef != nullptr, Stringf( "(Actor) Failed to find actorDef of name %s", actorType.c_str() ) );
-    m_actorDef->Define( *this );
+    m_actorDef->DefineObject( *this );
 
     // Actor PaperDoll Material
     m_material = g_theRenderer->GetOrCreateMaterial( MAT_NAME_PAPER_DOLL );
@@ -350,7 +350,7 @@ void Actor::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
 
     // World Dims
     Vec2 spriteDimensions = textureDimensions * uvDimensions;
-    Vec2 spriteWorldDimensions = spriteDimensions / m_actorDef->GetProperty( "spritePPU", 40.f );
+    Vec2 spriteWorldDimensions = spriteDimensions / m_actorDef->GetSpritePPU();
 
     // Local Dims
     float halfWidth  = spriteWorldDimensions.x / 2.f;

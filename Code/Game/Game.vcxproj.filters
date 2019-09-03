@@ -219,9 +219,6 @@
     <ClInclude Include="TopDownFollowCamera.hpp">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="Definition.hpp">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="GameState.hpp">
       <Filter>GameState</Filter>
     </ClInclude>

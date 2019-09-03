@@ -1,16 +1,15 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
+#include "Engine/Core/Definition.hpp"
 #include "Engine/Core/XMLUtils.hpp"
-
-#include "Game/Definition.hpp"
 
 
 class Actor;
 
 
 class StatsManager {
-    friend class Definition<Actor>;
+    friend class ActorDef;
 
     public:
     StatsManager() {};
