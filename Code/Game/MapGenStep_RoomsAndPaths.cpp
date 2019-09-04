@@ -5,8 +5,9 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 
+#include "MapGen/Map/Tile.hpp"
+
 #include "Game/Map.hpp"
-#include "Game/Tile.hpp"
 
 
 MapGenStep_RoomsAndPaths::MapGenStep_RoomsAndPaths( const XMLElement& element ) :

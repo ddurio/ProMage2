@@ -3,8 +3,9 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/IntVec2.hpp"
 
+#include "MapGen/Map/Tile.hpp"
+
 #include "Game/Map.hpp"
-#include "Game/Tile.hpp"
 
 
 MapGenStep_DistanceField::MapGenStep_DistanceField( const XMLElement& element ) :
@@ -46,10 +47,12 @@ void MapGenStep_DistanceField::ResetDistanceField( Map& map, std::vector<IntVec2
             Tile& tile = GetTile( map, tileIndex );
 
             if( MapGenStep::IsTileValid(tile) ) {
-                tile.SetDistanceField( 0.f );
+                tile.SetHeatMap( "Distance", 0.f );
+                //tile.SetDistanceField( 0.f );
                 openTiles.push_back( IntVec2( tileX, tileY ) );
             } else {
-                tile.SetDistanceField( 999999.f );
+                tile.SetHeatMap( "Distance", 999999.f );
+                //tile.SetDistanceField( 999999.f );
             }
         }
     }
@@ -59,7 +62,11 @@ void MapGenStep_DistanceField::ResetDistanceField( Map& map, std::vector<IntVec2
 void MapGenStep_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& openTiles, const IntVec2& tileCoords ) const {
     int tileIndex = map.GetTileIndexFromTileCoords( tileCoords );
     Tile& tile = GetTile( map, tileIndex );
-    float distance = tile.GetDistanceField() + 1.0f;
+
+    float distance;
+    tile.GetHeatMap( "Distance", distance );
+    distance += 1.f;
+    //float distance = tile.GetDistanceField() + 1.0f;
 
     IntVec2 neighborOffsets[4] = {
         IntVec2( -1,  0 ), // Left
@@ -76,8 +83,12 @@ void MapGenStep_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& op
             int neighborIndex = map.GetTileIndexFromTileCoords( neighborCoords );
             Tile& neighbor = GetTile( map, neighborIndex );
 
-            if( IsTileValid( neighbor ) && distance < neighbor.GetDistanceField() ) {
-                neighbor.SetDistanceField( distance );
+            float neighborDist;
+            neighbor.GetHeatMap( "Distance", neighborDist );
+
+            if( IsTileValid( neighbor ) && distance < neighborDist ) {
+                neighbor.SetHeatMap( "Distance", distance );
+                //neighbor.SetDistanceField( distance );
 
                 if( !VectorContains( openTiles, neighborCoords ) ) {
                     openTiles.push_back( neighborCoords );
@@ -128,7 +139,8 @@ void MapGenStep_DistanceField::EchoDistanceField( Map& map ) const {
     for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
         const Tile& tile = map.GetTileFromTileIndex( tileIndex );
         IntVec2 tileCoords = tile.GetTileCoords();
-        float distance = tile.GetDistanceField();
+        float distance;
+        tile.GetHeatMap( "Distance", distance );
 
         std::string distanceString = Stringf( "(MGS_DistanceField) Tile (%s) distance = %f", tileCoords.GetAsString().c_str(), distance );
 

@@ -2,14 +2,15 @@
 
 #include "Engine/Math/RNG.hpp"
 
+#include "MapGen/Map/Metadata.hpp"
+#include "MapGen/Map/Tile.hpp"
+
 #include "Game/Actor.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameStatePlay.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/Map.hpp"
-#include "Game/Metadata.hpp"
 #include "Game/StatsManager.hpp"
-#include "Game/Tile.hpp"
 
 
 ActorController::ActorController( Actor* myActor ) :

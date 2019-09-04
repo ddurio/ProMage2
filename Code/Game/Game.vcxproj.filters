@@ -49,12 +49,6 @@
     <ClCompile Include="Map.cpp">
       <Filter>Map</Filter>
     </ClCompile>
-    <ClCompile Include="MapDef.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
     <ClCompile Include="MapGenStep_CellularAutomata.cpp">
       <Filter>Map</Filter>
     </ClCompile>
@@ -71,15 +65,6 @@
       <Filter>Map</Filter>
     </ClCompile>
     <ClCompile Include="MapGenStep_Sprinkle.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Tile.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="TileDef.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Metadata.cpp">
       <Filter>Map</Filter>
     </ClCompile>
     <ClCompile Include="Item.cpp">
@@ -168,12 +153,6 @@
     <ClInclude Include="Map.hpp">
       <Filter>Map</Filter>
     </ClInclude>
-    <ClInclude Include="MapDef.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
     <ClInclude Include="MapGenStep_CellularAutomata.hpp">
       <Filter>Map</Filter>
     </ClInclude>
@@ -190,15 +169,6 @@
       <Filter>Map</Filter>
     </ClInclude>
     <ClInclude Include="MapGenStep_Sprinkle.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Tile.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="TileDef.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Metadata.hpp">
       <Filter>Map</Filter>
     </ClInclude>
     <ClInclude Include="Item.hpp">

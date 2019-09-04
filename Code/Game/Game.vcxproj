@@ -301,8 +301,6 @@
     <ClCompile Include="ItemDef.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="Map.cpp" />
-    <ClCompile Include="MapDef.cpp" />
-    <ClCompile Include="MapGenStep.cpp" />
     <ClCompile Include="MapGenStep_CellularAutomata.cpp" />
     <ClCompile Include="MapGenStep_DistanceField.cpp" />
     <ClCompile Include="MapGenStep_FromImage.cpp" />
@@ -310,12 +308,9 @@
     <ClCompile Include="MapGenStep_RoomsAndPaths.cpp" />
     <ClCompile Include="MapGenStep_Sprinkle.cpp" />
     <ClCompile Include="MerchantController.cpp" />
-    <ClCompile Include="Metadata.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="StatsManager.cpp" />
-    <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="TileDef.cpp" />
     <ClCompile Include="TopDownFollowCamera.cpp" />
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UILabel.cpp" />
@@ -342,8 +337,6 @@
     <ClInclude Include="Item.hpp" />
     <ClInclude Include="ItemDef.hpp" />
     <ClInclude Include="Map.hpp" />
-    <ClInclude Include="MapDef.hpp" />
-    <ClInclude Include="MapGenStep.hpp" />
     <ClInclude Include="MapGenStep_CellularAutomata.hpp" />
     <ClInclude Include="MapGenStep_DistanceField.hpp" />
     <ClInclude Include="MapGenStep_FromImage.hpp" />
@@ -351,11 +344,8 @@
     <ClInclude Include="MapGenStep_RoomsAndPaths.hpp" />
     <ClInclude Include="MapGenStep_Sprinkle.hpp" />
     <ClInclude Include="MerchantController.hpp" />
-    <ClInclude Include="Metadata.hpp" />
     <ClInclude Include="PlayerController.hpp" />
     <ClInclude Include="StatsManager.hpp" />
-    <ClInclude Include="Tile.hpp" />
-    <ClInclude Include="TileDef.hpp" />
     <ClInclude Include="TopDownFollowCamera.hpp" />
     <ClInclude Include="UIButton.hpp" />
     <ClInclude Include="UILabel.hpp" />

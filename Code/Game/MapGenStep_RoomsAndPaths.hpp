@@ -1,7 +1,7 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
-#include "Game/MapGenStep.hpp"
+#include "MapGen/GenSteps/MapGenStep.hpp"
 
 
 class MapGenStep_RoomsAndPaths : public MapGenStep {

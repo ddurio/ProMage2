@@ -5,7 +5,7 @@
 #include "Engine/Core/Image.hpp"
 #include "Engine/Math/FloatRange.hpp"
 
-#include "Game/MapGenStep.hpp"
+#include "MapGen/GenSteps/MapGenStep.hpp"
 
 
 class Image;

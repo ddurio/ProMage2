@@ -2,8 +2,9 @@
 
 #include "Engine/Math/RNG.hpp"
 
+#include "MapGen/Map/Tile.hpp"
+
 #include "Game/Map.hpp"
-#include "Game/Tile.hpp"
 
 
 MapGenStep_Sprinkle::MapGenStep_Sprinkle( const XMLElement& element ) :

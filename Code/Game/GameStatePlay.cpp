@@ -23,6 +23,9 @@
 #include "Engine/Renderer/TextureView2D.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
 
+#include "MapGen/Map/MapDef.hpp"
+#include "MapGen/Map/TileDef.hpp"
+
 #include "Game/Actor.hpp"
 #include "Game/ActorController.hpp"
 #include "Game/ActorDef.hpp"
@@ -32,8 +35,6 @@
 #include "Game/Inventory.hpp"
 #include "Game/ItemDef.hpp"
 #include "Game/Map.hpp"
-#include "Game/MapDef.hpp"
-#include "Game/TileDef.hpp"
 #include "Game/TopDownFollowCamera.hpp"
 #include "Game/UIButton.hpp"
 #include "Game/UILabel.hpp"
@@ -102,8 +103,8 @@ void GameStatePlay::Startup() {
     ActorDef::LoadFromFile( DATA_ACTOR_DEFS, "ActorDef" );
     ItemDef::LoadFromFile( DATA_ITEM_DEFS, "ItemDef" );
 
-    TileDef::InitializeTileDefs();
-    MapDef::InitializeMapDefs();
+    TileDef::LoadFromFile( DATA_TILE_DEFS, "TileDefinition" );
+    MapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
     ParseMapProgression();
 
     m_floorZeroSeed = g_RNG->GetRandomSeed();

@@ -16,14 +16,15 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 
+#include "MapGen/Map/MapDef.hpp"
+#include "MapGen/Map/Metadata.hpp"
+#include "MapGen/Map/Tile.hpp"
+#include "MapGen/Map/TileDef.hpp"
+
 #include "Game/Actor.hpp"
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/Item.hpp"
-#include "Game/MapDef.hpp"
-#include "Game/Metadata.hpp"
-#include "Game/Tile.hpp"
-#include "Game/TileDef.hpp"
 #include "Game/TopDownFollowCamera.hpp"
 
 
@@ -50,8 +51,8 @@ void Map::Startup() {
 
     CreateLootTable(); // Must be before define (actors spawned will refer to this)
 
-    m_mapDef = MapDef::GetMapDef( m_mapType );
-    m_mapDef->Define( *this );
+    m_mapDef = MapDef::GetDefinition( m_mapType );
+    m_mapDef->DefineObject( *this );
     CreateTerrainMesh();
 
     g_theEventSystem->Subscribe( "enemyDeath", this, &Map::HandleEnemyDeath );

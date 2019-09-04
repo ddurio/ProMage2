@@ -3,9 +3,10 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/RNG.hpp"
 
+#include "MapGen/Map/Metadata.hpp"
+#include "MapGen/Map/Tile.hpp"
+
 #include "Game/Map.hpp"
-#include "Game/Metadata.hpp"
-#include "Game/Tile.hpp"
 
 
 MapGenStep_CellularAutomata::MapGenStep_CellularAutomata( const XMLElement& element ) :

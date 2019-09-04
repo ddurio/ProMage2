@@ -5,8 +5,9 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
 
+#include "MapGen/Map/Tile.hpp"
+
 #include "Game/Entity.hpp"
-#include "Game/Tile.hpp"
 
 
 class Actor;

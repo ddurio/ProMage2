@@ -4,9 +4,10 @@
 #include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 
+#include "MapGen/Map/Tile.hpp"
+#include "MapGen/Map/TileDef.hpp"
+
 #include "Game/Map.hpp"
-#include "Game/Tile.hpp"
-#include "Game/TileDef.hpp"
 
 #include "math.h"
 

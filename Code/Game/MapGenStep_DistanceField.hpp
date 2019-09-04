@@ -3,7 +3,7 @@
 
 #include "Engine/Core/XMLUtils.hpp"
 
-#include "Game/MapGenStep.hpp"
+#include "MapGen/GenSteps/MapGenStep.hpp"
 
 
 class Map;

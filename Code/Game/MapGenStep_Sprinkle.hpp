@@ -4,7 +4,7 @@
 #include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Math/IntRange.hpp"
 
-#include "Game/MapGenStep.hpp"
+#include "MapGen/GenSteps/MapGenStep.hpp"
 
 
 class MapGenStep_Sprinkle : public MapGenStep {

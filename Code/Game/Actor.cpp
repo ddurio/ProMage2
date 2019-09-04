@@ -15,6 +15,8 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
+#include "MapGen/Map/Tile.hpp"
+
 #include "Game/Animator.hpp"
 #include "Game/CreditsController.hpp"
 #include "Game/EnemyController.hpp"
@@ -25,7 +27,6 @@
 #include "Game/MerchantController.hpp"
 #include "Game/PlayerController.hpp"
 #include "Game/StatsManager.hpp"
-#include "Game/Tile.hpp"
 
 
 Actor::Actor( Map* theMap, const std::string& actorType, const std::string& controllerType ) :

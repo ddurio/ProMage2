@@ -4,8 +4,9 @@
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Math/SmoothNoise.hpp"
 
+#include "MapGen/Map/Tile.hpp"
+
 #include "Game/Map.hpp"
-#include "Game/Tile.hpp"
 
 
 MapGenStep_PerlinNoise::MapGenStep_PerlinNoise( const XMLElement& element ) :
@@ -41,7 +42,8 @@ void MapGenStep_PerlinNoise::RunOnce( Map& map ) const {
             float tileNoise = Compute2dPerlinNoise( centerX, centerY, (float)gridSize, octaves, persistence, scale, true, seed );
             //float tileNoise = Compute2dPerlinNoise( centerX, centerY );
 
-            tile.SetNoiseValue( tileNoise );
+            tile.SetHeatMap( "Noise", tileNoise );
+            //tile.SetNoiseValue( tileNoise );
             //DebuggerPrintf( Stringf( "X: %d Y: %d Noise: %f\n", tileX, tileY, tileNoise ).c_str() );
 
             // if XML conditions met
