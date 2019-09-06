@@ -11,9 +11,6 @@
     <Filter Include="Data">
       <UniqueIdentifier>{4c835591-a5d2-4953-8db1-e922010d0e0e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Map">
-      <UniqueIdentifier>{d2dd936d-8f61-497f-ad46-124ffbac0806}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI">
       <UniqueIdentifier>{b9d6a342-6dfc-4dd1-8a82-8022a6e70fae}</UniqueIdentifier>
     </Filter>
@@ -22,6 +19,15 @@
     </Filter>
     <Filter Include="ActorComponents">
       <UniqueIdentifier>{21b44ac0-fe81-45a7-a6f0-892d46a5161d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MapGen">
+      <UniqueIdentifier>{d2dd936d-8f61-497f-ad46-124ffbac0806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MapGen\Map">
+      <UniqueIdentifier>{b85a1e67-8e1e-4db1-bda0-9c913f76a47c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MapGen\GenSteps">
+      <UniqueIdentifier>{3daa73b8-ba35-4666-a134-5f7d57c48184}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,27 +51,6 @@
     </ClCompile>
     <ClCompile Include="UIWidget.cpp">
       <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Map.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_CellularAutomata.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_DistanceField.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_FromImage.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_PerlinNoise.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_RoomsAndPaths.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenStep_Sprinkle.cpp">
-      <Filter>Map</Filter>
     </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>Entities</Filter>
@@ -121,6 +106,42 @@
     <ClCompile Include="CreditsController.cpp">
       <Filter>ActorComponents</Filter>
     </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MapGenStep.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MapGenStep_CellularAutomata.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MapGenStep_DistanceField.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MapGenStep_FromImage.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MapGenStep_PerlinNoise.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MapGenStep_RoomsAndPaths.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MapGenStep_Sprinkle.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\Map\Map.cpp">
+      <Filter>MapGen\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\Map\MapDef.cpp">
+      <Filter>MapGen\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\Map\Metadata.cpp">
+      <Filter>MapGen\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\Map\Tile.cpp">
+      <Filter>MapGen\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\Map\TileDef.cpp">
+      <Filter>MapGen\Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -149,27 +170,6 @@
     </ClInclude>
     <ClInclude Include="UIWidget.hpp">
       <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Map.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_CellularAutomata.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_DistanceField.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_FromImage.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_PerlinNoise.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_RoomsAndPaths.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenStep_Sprinkle.hpp">
-      <Filter>Map</Filter>
     </ClInclude>
     <ClInclude Include="Item.hpp">
       <Filter>Entities</Filter>
@@ -221,6 +221,42 @@
     </ClInclude>
     <ClInclude Include="CreditsController.hpp">
       <Filter>ActorComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MapGenStep.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MapGenStep_CellularAutomata.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MapGenStep_DistanceField.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MapGenStep_FromImage.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MapGenStep_PerlinNoise.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MapGenStep_RoomsAndPaths.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MapGenStep_Sprinkle.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\Map\Map.hpp">
+      <Filter>MapGen\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\Map\MapDef.hpp">
+      <Filter>MapGen\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\Map\Metadata.hpp">
+      <Filter>MapGen\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\Map\Tile.hpp">
+      <Filter>MapGen\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\Map\TileDef.hpp">
+      <Filter>MapGen\Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

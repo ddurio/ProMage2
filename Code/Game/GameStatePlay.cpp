@@ -23,9 +23,6 @@
 #include "Engine/Renderer/TextureView2D.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
 
-#include "MapGen/Map/MapDef.hpp"
-#include "MapGen/Map/TileDef.hpp"
-
 #include "Game/Actor.hpp"
 #include "Game/ActorController.hpp"
 #include "Game/ActorDef.hpp"
@@ -33,8 +30,11 @@
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
 #include "Game/Inventory.hpp"
+#include "Game/Item.hpp"
 #include "Game/ItemDef.hpp"
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
+#include "Game/MapGen/Map/MapDef.hpp"
+#include "Game/MapGen/Map/TileDef.hpp"
 #include "Game/TopDownFollowCamera.hpp"
 #include "Game/UIButton.hpp"
 #include "Game/UILabel.hpp"
@@ -102,8 +102,10 @@ void GameStatePlay::Startup() {
 
     ActorDef::LoadFromFile( DATA_ACTOR_DEFS, "ActorDef" );
     ItemDef::LoadFromFile( DATA_ITEM_DEFS, "ItemDef" );
-
     TileDef::LoadFromFile( DATA_TILE_DEFS, "TileDefinition" );
+
+    Actor::SetupSpawnActorMGS();
+    Item::SetupSpawnItemMGS();
     MapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
     ParseMapProgression();
 
@@ -120,7 +122,6 @@ void GameStatePlay::Startup() {
 
 
 void GameStatePlay::Shutdown() {
-    m_map->Shutdown();
     m_gameInput->Shutdown();
 }
 
@@ -451,7 +452,6 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
 
     // Setup new map
     Map* nextMap = new Map( Stringf( "Floor%d", m_currentFloor ), floorType, m_mapRNG, newFloorIndex );
-    nextMap->Startup();
 
     if( m_map != nullptr ) {
         Actor* player = m_map->GetPlayer();
@@ -465,7 +465,6 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
             player->SetWorldPosition( stairsWorldCoords );
         }
 
-        m_map->Shutdown();
         CLEAR_POINTER( m_map );
     }
 

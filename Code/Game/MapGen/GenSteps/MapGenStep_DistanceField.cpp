@@ -1,11 +1,10 @@
-#include "Game/MapGenStep_DistanceField.hpp"
+#include "Game/MapGen/GenSteps/MapGenStep_DistanceField.hpp"
 
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/IntVec2.hpp"
 
-#include "MapGen/Map/Tile.hpp"
-
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
+#include "Game/MapGen/Map/Tile.hpp"
 
 
 MapGenStep_DistanceField::MapGenStep_DistanceField( const XMLElement& element ) :
@@ -43,7 +42,7 @@ void MapGenStep_DistanceField::ResetDistanceField( Map& map, std::vector<IntVec2
     // For each tile (by X and Y) set initial distanceField value
     for( int tileY = 0; tileY < mapDimensions.y; tileY++ ) {
         for( int tileX = 0; tileX < mapDimensions.x; tileX++ ) {
-            int tileIndex = map.GetTileIndexFromTileCoords( tileX, tileY );
+            int tileIndex = map.GetTileIndex( tileX, tileY );
             Tile& tile = GetTile( map, tileIndex );
 
             if( MapGenStep::IsTileValid(tile) ) {
@@ -60,7 +59,7 @@ void MapGenStep_DistanceField::ResetDistanceField( Map& map, std::vector<IntVec2
 
 
 void MapGenStep_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& openTiles, const IntVec2& tileCoords ) const {
-    int tileIndex = map.GetTileIndexFromTileCoords( tileCoords );
+    int tileIndex = map.GetTileIndex( tileCoords );
     Tile& tile = GetTile( map, tileIndex );
 
     float distance;
@@ -80,7 +79,7 @@ void MapGenStep_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& op
         IntVec2 neighborCoords = tileCoords + neighborOffsets[offsetIndex];
 
         if( map.IsValidTileCoords( neighborCoords ) ) {
-            int neighborIndex = map.GetTileIndexFromTileCoords( neighborCoords );
+            int neighborIndex = map.GetTileIndex( neighborCoords );
             Tile& neighbor = GetTile( map, neighborIndex );
 
             float neighborDist;
@@ -137,7 +136,7 @@ void MapGenStep_DistanceField::EchoDistanceField( Map& map ) const {
     int numTiles = mapDimensions.x * mapDimensions.y;
 
     for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
-        const Tile& tile = map.GetTileFromTileIndex( tileIndex );
+        const Tile& tile = map.GetTile( tileIndex );
         IntVec2 tileCoords = tile.GetTileCoords();
         float distance;
         tile.GetHeatMap( "Distance", distance );

@@ -11,7 +11,7 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 
 #include "Game/Item.hpp"
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
 #include "Game/XMLUtils.hpp"
 
 

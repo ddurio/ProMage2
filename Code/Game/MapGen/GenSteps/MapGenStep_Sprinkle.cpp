@@ -1,10 +1,9 @@
-#include "Game/MapGenStep_Sprinkle.hpp"
+#include "Game/MapGen/GenSteps/MapGenStep_Sprinkle.hpp"
 
 #include "Engine/Math/RNG.hpp"
 
-#include "MapGen/Map/Tile.hpp"
-
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
+#include "Game/MapGen/Map/Tile.hpp"
 
 
 MapGenStep_Sprinkle::MapGenStep_Sprinkle( const XMLElement& element ) :
@@ -26,7 +25,7 @@ void MapGenStep_Sprinkle::RunOnce( Map& map ) const {
         // ThesisFIXME: This produces an infinite loop if no tiles available
         do {
             tileIndex = m_mapRNG->GetRandomIntLessThan( numTiles );
-            tile = &(map.GetTileFromTileIndex( tileIndex ));
+            tile = &(map.GetTile( tileIndex ));
         } while( !IsTileValid( *tile ) );
 
         ChangeTile( map, tileIndex );

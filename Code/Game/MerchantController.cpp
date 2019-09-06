@@ -7,7 +7,7 @@
 #include "Game/Actor.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameInput.hpp"
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
 #include "Game/Inventory.hpp"
 
 

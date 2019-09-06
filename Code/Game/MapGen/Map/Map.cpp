@@ -1,13 +1,9 @@
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
 
-#include "Engine/Core/DebugDraw.hpp"
-#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Timer.hpp"
-#include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Ray2.hpp"
 #include "Engine/Math/RNG.hpp"
-#include "Engine/Physics/Collider2D.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -16,15 +12,11 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 
-#include "MapGen/Map/MapDef.hpp"
-#include "MapGen/Map/Metadata.hpp"
-#include "MapGen/Map/Tile.hpp"
-#include "MapGen/Map/TileDef.hpp"
-
-#include "Game/Actor.hpp"
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/Item.hpp"
+#include "Game/MapGen/Map/MapDef.hpp"
+#include "Game/MapGen/Map/Metadata.hpp"
 #include "Game/TopDownFollowCamera.hpp"
 
 
@@ -33,23 +25,12 @@ Map::Map( std::string mapName, std::string mapType, RNG* mapRNG, int level /*= 0
     m_mapType(mapType),
     m_mapRNG(mapRNG),
     m_floorIndex(level) {
-}
-
-
-Map::~Map() {
-    EngineCommon::ClearVector( m_actors );
-    CLEAR_POINTER( m_inventory );
-    CLEAR_POINTER( m_model );
-
-    g_thePhysicsSystem->DestroyRigidBody( m_tilesRB );
-    g_theEventSystem->Unsubscribe( "enemyDeath", this, &Map::HandleEnemyDeath );
-}
-
-
-void Map::Startup() {
+    m_tilesRB = g_thePhysicsSystem->CreateNewRigidBody( 1.f );
     m_inventory = new Inventory( nullptr, m_self, false, true ); // Must be before Define, could be needed
 
     CreateLootTable(); // Must be before define (actors spawned will refer to this)
+    g_theEventSystem->Subscribe( "spawnActor", this, &Map::SpawnNewActor );
+    g_theEventSystem->Subscribe( "spawnItem", this, &Map::SpawnNewItem );
 
     m_mapDef = MapDef::GetDefinition( m_mapType );
     m_mapDef->DefineObject( *this );
@@ -59,8 +40,15 @@ void Map::Startup() {
 }
 
 
-void Map::Shutdown() {
+Map::~Map() {
+    EngineCommon::ClearVector( m_actors );
+    CLEAR_POINTER( m_inventory );
     CLEAR_POINTER( m_model );
+
+    g_thePhysicsSystem->DestroyRigidBody( m_tilesRB );
+    g_theEventSystem->Unsubscribe( "spawnActor", this, &Map::SpawnNewActor );
+    g_theEventSystem->Unsubscribe( "spawnItem", this, &Map::SpawnNewItem );
+    g_theEventSystem->Unsubscribe( "enemyDeath", this, &Map::HandleEnemyDeath );
 }
 
 
@@ -104,6 +92,11 @@ void Map::Render() const {
 }
 
 
+int Map::GetCurrentFloor() const {
+    return m_floorIndex;
+}
+
+
 RNG* Map::GetMapRNG() const {
     return m_mapRNG;
 }
@@ -114,9 +107,15 @@ IntVec2 Map::GetMapDimensions() const {
 }
 
 
-const IntVec2 Map::GetTileCoordsFromWorldCoords( const Vec2& worldCoords ) const {
+Inventory* Map::GetMapInventory() const {
+    return m_inventory;
+}
+
+
+const IntVec2 Map::GetTileCoords( const Vec2& worldCoords ) const {
     int tempX = ClampInt( (int)worldCoords.x, 0, m_mapDimensions.x - 1 );
     int tempY = ClampInt( (int)worldCoords.y, 0, m_mapDimensions.y - 1 );
+
     return IntVec2( tempX, tempY );
 }
 
@@ -138,42 +137,48 @@ const IntVec2 Map::GetTileCoordsForStairs( bool getStairsDown ) const {
 }
 
 
-int Map::GetTileIndexFromTileCoords( const IntVec2& tileCoords ) const {
+int Map::GetTileIndex( const IntVec2& tileCoords ) const {
     int numTiles = (int)m_tiles.size();
     int tileIndex = (tileCoords.y * m_mapDimensions.x) + tileCoords.x;
     return ClampInt( tileIndex, 0, numTiles - 1 );
 }
 
 
-int Map::GetTileIndexFromTileCoords( int xIndex, int yIndex ) const {
-    return GetTileIndexFromTileCoords( IntVec2( xIndex, yIndex ) );
+int Map::GetTileIndex( int xIndex, int yIndex ) const {
+    return GetTileIndex( IntVec2( xIndex, yIndex ) );
 }
 
 
-int Map::GetTileIndexFromWorldCoords( const Vec2& worldCoords ) const {
-    IntVec2 tileCoords = GetTileCoordsFromWorldCoords( worldCoords );
-    return GetTileIndexFromTileCoords( tileCoords );
+int Map::GetTileIndex( const Vec2& worldCoords ) const {
+    IntVec2 tileCoords = GetTileCoords( worldCoords );
+    return GetTileIndex( tileCoords );
 }
 
 
-const Tile& Map::GetTileFromTileIndex( int tileIndex ) const {
+const Tile& Map::GetTile( int tileIndex ) const {
     return m_tiles[tileIndex];
 }
 
 
-const Tile& Map::GetTileFromTileCoords( const IntVec2& tileCoords ) const {
-    int tileIndex = GetTileIndexFromTileCoords( tileCoords );
+const Tile& Map::GetTile( int xIndex, int yIndex ) const {
+    int tileIndex = GetTileIndex( xIndex, yIndex );
     return m_tiles[tileIndex];
 }
 
 
-const Tile& Map::GetTileFromTileCoords( int xIndex, int yIndex ) const {
-    int tileIndex = GetTileIndexFromTileCoords( xIndex, yIndex );
+const Tile& Map::GetTile( const IntVec2& tileCoords ) const {
+    int tileIndex = GetTileIndex( tileCoords );
     return m_tiles[tileIndex];
 }
 
 
-bool Map::GetTileFromTileCoordsIfValid( const Tile*& outTile, const IntVec2& tileCoords ) const {
+const Tile& Map::GetTile( const Vec2& worldCoords ) const {
+    IntVec2 tileCoords = GetTileCoords( worldCoords );
+    return GetTile( tileCoords );
+}
+
+
+bool Map::GetTileIfValid( const Tile*& outTile, const IntVec2& tileCoords ) const {
     if( tileCoords.x < 0 || tileCoords.y < 0 ) {
         return false;
     }
@@ -190,59 +195,9 @@ bool Map::GetTileFromTileCoordsIfValid( const Tile*& outTile, const IntVec2& til
 }
 
 
-const Tile& Map::GetTileFromWorldCoords( const Vec2& worldCoords ) const {
-    IntVec2 tileCoords = GetTileCoordsFromWorldCoords( worldCoords );
-    return GetTileFromTileCoords( tileCoords );
-}
-
-
-// Trailing return type (array of 8 Tile references)
-/*
-auto Map::GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const -> const Tile(&)[8] {
-    IntVec2 tileCoords = GetTileCoordsFromWorldCoords( worldCoords );
-}
-*/
-
-
-/*
-std::vector< const Tile& > Map::GetSurroundingTilesFromWorldCoords( const Vec2& worldCoords ) const {
-    IntVec2 centerCoords = GetTileCoordsFromWorldCoords( worldCoords );
-
-    static const int numTileOffsets = 8;
-    static const IntVec2 tileOffsets[numTileOffsets] = {
-        IntVec2(  0,  1 ),  // North
-        IntVec2(  0, -1 ),  // South
-        IntVec2( -1,  0 ),  // West
-        IntVec2(  1,  0 ),  // East
-        IntVec2( -1,  1 ),  // Northwest
-        IntVec2(  1,  1 ),  // Northeast
-        IntVec2( -1, -1 ),  // Southwest
-        IntVec2(  1, -1 )   // Southeast
-    };
-
-    std::vector< const Tile& > surroundingTiles;
-
-    for( int offsetIndex = 0; offsetIndex < numTileOffsets; offsetIndex++ ) {
-        IntVec2 offsetCoords = centerCoords + tileOffsets[offsetIndex];
-
-        if( IsValidTileCoords( offsetCoords) ) {
-            const Tile& tile = GetTileFromTileCoords( offsetCoords );
-            surroundingTiles.push_back( tile );
-        }
-    }
-
-    return surroundingTiles;
-}
-*/
-
-
-int Map::GetCurrentFloor() const {
-    return m_floorIndex;
-}
-
-
-Inventory* Map::GetMapInventory() const {
-    return m_inventory;
+bool Map::IsValidTileCoords( const IntVec2& tileCoords ) const {
+    return (tileCoords.x >= 0 && tileCoords.x < m_mapDimensions.x &&
+            tileCoords.y >= 0 && tileCoords.y < m_mapDimensions.y);
 }
 
 
@@ -364,7 +319,7 @@ bool Map::HasLineOfSight( const Actor* fromActor, const Actor* toActor ) const {
     for( int yIndex = 0; yIndex < m_mapDimensions.y; yIndex++ ) {
         for( int xIndex = 0; xIndex < m_mapDimensions.x; xIndex++ ) {
             // Check if tile blocks sight
-            const Tile& tile = GetTileFromTileCoords( xIndex, yIndex );
+            const Tile& tile = GetTile( xIndex, yIndex );
 
             if( tile.AllowsSight() ) {
                 continue;
@@ -386,12 +341,6 @@ bool Map::HasLineOfSight( const Actor* fromActor, const Actor* toActor ) const {
     }
 
     return true;
-}
-
-
-bool Map::IsValidTileCoords( const IntVec2& tileCoords ) const {
-    return (tileCoords.x >= 0 && tileCoords.x < m_mapDimensions.x &&
-            tileCoords.y >= 0 && tileCoords.y < m_mapDimensions.y);
 }
 
 
@@ -425,6 +374,37 @@ Item* Map::SpawnLootDrop( Inventory* inventory, const Vec2& worldPosition /*= Ve
 }
 
 
+bool Map::SpawnNewActor( EventArgs& args ) {
+    std::string actorType = args.GetValue( "spawnActor", "" );
+    std::string controller = args.GetValue( "controller", "" );
+    Tile* callingTile = args.GetValue( "callingTile", (Tile*)nullptr );
+
+    if( actorType == "" || controller == "" || callingTile == nullptr ) {
+        return false;
+    }
+
+    IntVec2 tileCoords = callingTile->GetTileCoords();
+
+    SpawnNewActor( actorType, controller, Vec2( tileCoords ) );
+    return false;
+}
+
+
+bool Map::SpawnNewItem( EventArgs& args ) {
+    std::string itemType = args.GetValue( "spawnItem", "" );
+    Tile* callingTile = args.GetValue( "callingTile", (Tile*)nullptr );
+
+    if( itemType == "" || callingTile == nullptr ) {
+        return false;
+    }
+
+    IntVec2 tileCoords = callingTile->GetTileCoords();
+
+    m_inventory->SpawnNewItem( itemType, Vec2( tileCoords ) );
+    return false;
+}
+
+
 void Map::SetPlayer( Actor* player ) {
     m_player = player;
 
@@ -433,34 +413,29 @@ void Map::SetPlayer( Actor* player ) {
 }
 
 
-void Map::AddPlayerToMap( Actor* actor ) {
+void Map::AddPlayerToMap( Actor* player ) {
     if( m_player != nullptr ) {
         m_player->m_isGarbage = true;
     }
 
-    SetPlayer( actor );
-    AddActorToMap( actor );
+    SetPlayer( player );
+    AddActorToMap( player );
 }
 
 
 void Map::AddActorToMap( Actor* actor ) {
     actor->m_map = this;
 
-    AddActorToList( actor, m_actors );
-}
-
-
-void Map::AddActorToList( Actor* actor, std::vector< Actor* >& list ) {
-    int numActor = (int)list.size();
+    int numActor = (int)m_actors.size();
 
     for( int actorIndex = 0; actorIndex < numActor; actorIndex++ ) {
-        if( list[actorIndex] == nullptr ) {
-            list[actorIndex] = actor;
+        if( m_actors[actorIndex] == nullptr ) {
+            m_actors[actorIndex] = actor;
             return;
         }
     }
 
-    list.push_back( actor );
+    m_actors.push_back( actor );
 }
 
 
@@ -471,30 +446,25 @@ void Map::ClearPlayer( Actor* player ) {
 }
 
 
-void Map::RemovePlayerFromMap( Actor* actor ) {
-    if( m_player == actor ) {
+void Map::RemovePlayerFromMap( Actor* player ) {
+    if( m_player == player ) {
         m_player = nullptr;
     } else {
         g_theDevConsole->PrintString( "(Map) WARNING: Actor argument does not match current player" );
     }
 
-    RemoveActorFromMap( actor );
+    RemoveActorFromMap( player );
 }
 
 
 void Map::RemoveActorFromMap( Actor* actor ) {
     actor->m_map = nullptr;
 
-    RemoveActorFromList( actor, m_actors );
-}
-
-
-void Map::RemoveActorFromList( Actor* actor, std::vector< Actor* >& list ) {
-    int numActor = (int)list.size();
+    int numActor = (int)m_actors.size();
 
     for( int actorIndex = 0; actorIndex < numActor; actorIndex++ ) {
-        if( list[actorIndex] == actor ) {
-            list[actorIndex] = nullptr;
+        if( m_actors[actorIndex] == actor ) {
+            m_actors[actorIndex] = nullptr;
             return;
         }
     }
@@ -564,7 +534,7 @@ void Map::CreateTerrainMesh() {
     Material* material = g_theRenderer->GetOrCreateMaterial( "Terrain" );
 
     if( !s_materialCreated ) {
-        std::string terrainTexture = TileDef::GetSpriteTexture();
+        std::string terrainTexture = TileDef::GetTerrainSprites().GetTexturePath();
         material->SetTexture( terrainTexture );
         material->SetShader( "BuiltIn/Unlit" );
 
@@ -641,3 +611,4 @@ void Map::CollectGarbage() {
         }
     }
 }
+

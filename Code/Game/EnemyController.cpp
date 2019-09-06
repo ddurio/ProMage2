@@ -7,7 +7,7 @@
 #include "Game/Actor.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/Item.hpp"
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
 
 
 static bool g_progressionParsed = false;

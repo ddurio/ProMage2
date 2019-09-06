@@ -9,7 +9,7 @@
 #include "Game/Game.hpp"
 #include "Game/GameStatePlay.hpp"
 #include "Game/Inventory.hpp"
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
 #include "Game/StatsManager.hpp"
 
 
@@ -39,7 +39,7 @@ std::string ActorController::GetDeathEvent() const {
 
 
 bool ActorController::TakeClosestStairs() const {
-    const Tile& tile = m_myActor->m_map->GetTileFromWorldCoords( m_myActor->GetPosition() );
+    const Tile& tile = m_myActor->m_map->GetTile( m_myActor->GetPosition() );
     const Metadata* metadata = tile.GetMetadata();
 
     if( metadata->m_tagData.HasTags( TAG_STAIRS_DOWN ) ) {
@@ -114,7 +114,7 @@ bool ActorController::InteractFromInput() const {
 
 
     // Look for tile tags
-    const Tile& tile = m_myActor->m_map->GetTileFromWorldCoords( m_myActor->GetPosition() );
+    const Tile& tile = m_myActor->m_map->GetTile( m_myActor->GetPosition() );
     const Tags& tags = tile.GetMetadata()->m_tagData;
     Actor* merchant = nullptr;
     Actor* credits = nullptr;

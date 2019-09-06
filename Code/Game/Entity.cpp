@@ -10,7 +10,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 
 #include "Game/Game.hpp"
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
 #include "Game/StatsManager.hpp"
 
 

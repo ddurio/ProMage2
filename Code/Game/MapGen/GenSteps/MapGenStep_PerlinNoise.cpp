@@ -1,12 +1,11 @@
-#include "Game/MapGenStep_PerlinNoise.hpp"
+#include "Game/MapGen/GenSteps/MapGenStep_PerlinNoise.hpp"
 
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Math/SmoothNoise.hpp"
 
-#include "MapGen/Map/Tile.hpp"
-
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
+#include "Game/MapGen/Map/Tile.hpp"
 
 
 MapGenStep_PerlinNoise::MapGenStep_PerlinNoise( const XMLElement& element ) :

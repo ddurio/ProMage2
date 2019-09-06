@@ -1,12 +1,11 @@
-#include "Game/MapGenStep_CellularAutomata.hpp"
+#include "Game/MapGen/GenSteps/MapGenStep_CellularAutomata.hpp"
 
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/RNG.hpp"
 
-#include "MapGen/Map/Metadata.hpp"
-#include "MapGen/Map/Tile.hpp"
-
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
+#include "Game/MapGen/Map/Metadata.hpp"
+#include "Game/MapGen/Map/Tile.hpp"
 
 
 MapGenStep_CellularAutomata::MapGenStep_CellularAutomata( const XMLElement& element ) :
@@ -27,7 +26,7 @@ void MapGenStep_CellularAutomata::RunOnce( Map& map ) const {
     // For each tile (by X and Y)
     for( int tileY = 0; tileY < mapDimensions.y; tileY++ ) {
         for( int tileX = 0; tileX < mapDimensions.x; tileX++ ) {
-            const Tile& tile = map.GetTileFromTileCoords( tileX, tileY );
+            const Tile& tile = map.GetTile( tileX, tileY );
             int numMatchingNeighbors = 0;
 
             // ifType matches or ifType not set in XML
@@ -40,7 +39,7 @@ void MapGenStep_CellularAutomata::RunOnce( Map& map ) const {
                             // If xCoords are valid and don't match tileX & Y
                             if( neighborX >= 0 && neighborX < mapDimensions.x &&
                                 !(neighborX == tileX && neighborY == tileY ) ) {
-                                const Tile& neighbor = map.GetTileFromTileCoords( neighborX, neighborY );
+                                const Tile& neighbor = map.GetTile( neighborX, neighborY );
 
                                 if( IsNeighborTileValid( neighbor ) ) {
                                     numMatchingNeighbors++;
@@ -51,7 +50,7 @@ void MapGenStep_CellularAutomata::RunOnce( Map& map ) const {
                 }
 
                 if( m_ifNumNeighbors.IsIntInRange( numMatchingNeighbors ) ) {
-                    tileIndexesToChange.push_back( map.GetTileIndexFromTileCoords( tileX, tileY ) );
+                    tileIndexesToChange.push_back( map.GetTileIndex( tileX, tileY ) );
                 }
             }
         }

@@ -18,7 +18,7 @@ class Model;
 class RigidBody2D;
 
 
-class Map {
+class OldMap {
     friend class MapDef;
     friend class MapGenStep;
 

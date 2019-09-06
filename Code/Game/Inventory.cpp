@@ -11,7 +11,7 @@
 #include "Engine/Renderer/TextureView2D.hpp"
 
 #include "Game/Item.hpp"
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
 
 
 Inventory::Inventory( Actor* owner, Map*& theMap, bool renderEquippedItems /*= true*/, bool renderUnequippedItems /*= false */ ) :
@@ -282,7 +282,7 @@ bool Inventory::HasOneItemSet( const Tags& itemSetTags ) const {
 
 
 Item* Inventory::GetItemAtPosition( const Vec2& worldPosition ) const {
-     int requestedTileIndex = m_map->GetTileIndexFromWorldCoords( worldPosition );
+     int requestedTileIndex = m_map->GetTileIndex( worldPosition );
 
     // Unequipped Items
     int numItems = (int)m_unequippedItems.size();
@@ -290,7 +290,7 @@ Item* Inventory::GetItemAtPosition( const Vec2& worldPosition ) const {
         Item* item = m_unequippedItems[itemIndex];
 
         if( item != nullptr ) {
-            int itemTileIndex = m_map->GetTileIndexFromWorldCoords( item->GetPosition() );
+            int itemTileIndex = m_map->GetTileIndex( item->GetPosition() );
 
             if( requestedTileIndex == itemTileIndex ) {
                 return item;
@@ -303,7 +303,7 @@ Item* Inventory::GetItemAtPosition( const Vec2& worldPosition ) const {
         Item* item = m_equippedItems[itemIndex];
 
         if( item != nullptr ) {
-            int itemTileIndex = m_map->GetTileIndexFromWorldCoords( item->GetPosition() );
+            int itemTileIndex = m_map->GetTileIndex( item->GetPosition() );
 
             if( requestedTileIndex == itemTileIndex ) {
                 return item;

@@ -31,6 +31,8 @@ class Item : public Entity {
     public:
     explicit Item( Map* theMap, std::string itemType, RNG* itemRNG = nullptr );
 
+    static void SetupSpawnItemMGS();
+
     void Startup();
     void Shutdown();
 

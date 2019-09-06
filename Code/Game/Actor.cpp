@@ -15,15 +15,15 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
-#include "MapGen/Map/Tile.hpp"
-
 #include "Game/Animator.hpp"
 #include "Game/CreditsController.hpp"
 #include "Game/EnemyController.hpp"
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/Item.hpp"
-#include "Game/Map.hpp"
+#include "Game/MapGen/GenSteps/MapGenStep.hpp"
+#include "Game/MapGen/Map/Map.hpp"
+#include "Game/MapGen/Map/Tile.hpp"
 #include "Game/MerchantController.hpp"
 #include "Game/PlayerController.hpp"
 #include "Game/StatsManager.hpp"
@@ -65,6 +65,15 @@ Actor::~Actor() {
     CLEAR_POINTER( m_portraitMesh );
     CLEAR_POINTER( m_statsManager );
     CLEAR_POINTER( m_controller );
+}
+
+
+void Actor::SetupSpawnActorMGS() {
+    Strings attrNames;
+    attrNames.push_back( "spawnActor" );
+    attrNames.push_back( "controller" );
+
+    MapGenStep::AddCustomResult( "spawnActor", attrNames, false );
 }
 
 

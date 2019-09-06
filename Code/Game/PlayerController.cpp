@@ -12,7 +12,7 @@
 #include "Game/GameInput.hpp"
 #include "Game/GameState.hpp"
 #include "Game/Inventory.hpp"
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
 #include "Game/StatsManager.hpp"
 
 

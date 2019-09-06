@@ -12,6 +12,7 @@
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"
 #include "Game/ItemDef.hpp"
+#include "Game/MapGen/GenSteps/MapGenStep.hpp"
 
 
 Item::Item( Map* theMap, std::string itemType, RNG* itemRNG /*= nullptr */ ) :
@@ -30,6 +31,14 @@ Item::Item( Map* theMap, std::string itemType, RNG* itemRNG /*= nullptr */ ) :
     g_theRenderer->BindShader( shader );
 
     m_material->SetShader( shader );
+}
+
+
+void Item::SetupSpawnItemMGS() {
+    Strings attrNames;
+    attrNames.push_back( "spawnItem" );
+
+    MapGenStep::AddCustomResult( "spawnItem", attrNames );
 }
 
 

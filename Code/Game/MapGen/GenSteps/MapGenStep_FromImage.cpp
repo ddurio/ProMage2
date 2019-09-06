@@ -1,13 +1,12 @@
-#include "Game/MapGenStep_FromImage.hpp"
+#include "Game/MapGen/GenSteps/MapGenStep_FromImage.hpp"
 
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 
-#include "MapGen/Map/Tile.hpp"
-#include "MapGen/Map/TileDef.hpp"
-
-#include "Game/Map.hpp"
+#include "Game/MapGen/Map/Map.hpp"
+#include "Game/MapGen/Map/Tile.hpp"
+#include "Game/MapGen/Map/TileDef.hpp"
 
 #include "math.h"
 
