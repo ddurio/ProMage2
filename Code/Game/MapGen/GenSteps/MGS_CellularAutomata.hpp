@@ -4,9 +4,6 @@
 #include "Game/MapGen/GenSteps/MapGenStep.hpp"
 
 
-class Map;
-
-
 class MGS_CellularAutomata : public MapGenStep {
     public:
     MGS_CellularAutomata( const XMLElement& element );
@@ -30,9 +27,7 @@ class MGS_CellularAutomata : public MapGenStep {
 
     void RunOnce( Map& theMap ) const;
 
-    //void ValidateTile( const Tile& tile, TileValidity& tileValidity ) const;
     TileValidity IsNeighborTileValid( const Tile& neighbor ) const;
-
     int CountMatchingNeighbors( int homeTileX, int homeTileY, Map& theMap, std::vector< TileValidity >& tileValidities ) const;
 
     IntRange ParseCustomIntRange( const std::string& rangeAsStr ) const;

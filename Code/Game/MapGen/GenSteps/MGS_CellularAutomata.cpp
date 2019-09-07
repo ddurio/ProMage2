@@ -21,7 +21,6 @@ MGS_CellularAutomata::MGS_CellularAutomata( const XMLElement& element ) :
 
 
 void MGS_CellularAutomata::RunOnce( Map& theMap ) const {
-    PROFILE_SCOPE( "MGS_CA RunOnce" );
     IntVec2 mapDimensions = theMap.GetMapDimensions();
     std::vector<int> tileIndexesToChange;
 

@@ -109,12 +109,6 @@
     <ClCompile Include="MapGen\GenSteps\MapGenStep.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
-    <ClCompile Include="MapGen\GenSteps\MapGenStep_CellularAutomata.cpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGen\GenSteps\MapGenStep_DistanceField.cpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClCompile>
     <ClCompile Include="MapGen\GenSteps\MapGenStep_FromImage.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
@@ -143,6 +137,9 @@
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
     <ClCompile Include="MapGen\GenSteps\MGS_CellularAutomata.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MGS_DistanceField.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
   </ItemGroup>
@@ -228,12 +225,6 @@
     <ClInclude Include="MapGen\GenSteps\MapGenStep.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
-    <ClInclude Include="MapGen\GenSteps\MapGenStep_CellularAutomata.hpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGen\GenSteps\MapGenStep_DistanceField.hpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClInclude>
     <ClInclude Include="MapGen\GenSteps\MapGenStep_FromImage.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
@@ -262,6 +253,9 @@
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
     <ClInclude Include="MapGen\GenSteps\MGS_CellularAutomata.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MGS_DistanceField.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
   </ItemGroup>

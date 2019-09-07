@@ -1,71 +1,65 @@
-#include "Game/MapGen/GenSteps/MapGenStep_DistanceField.hpp"
+#include "Game/MapGen/GenSteps/MGS_DistanceField.hpp"
 
-#include "Engine/Core/DevConsole.hpp"
-#include "Engine/Math/IntVec2.hpp"
+#include "Engine/Core/Profiler.hpp"
 
 #include "Game/MapGen/Map/Map.hpp"
-#include "Game/MapGen/Map/Tile.hpp"
 
 
-MapGenStep_DistanceField::MapGenStep_DistanceField( const XMLElement& element ) :
+MGS_DistanceField::MGS_DistanceField( const XMLElement& element ) :
     MapGenStep(element) {
     m_movementType = ParseXMLAttribute( element, "movementType", m_movementType );
 }
 
 
-void MapGenStep_DistanceField::RunOnce( Map& map ) const {
-    std::vector<IntVec2> openTiles;
-    IntVec2 mapDimensions = map.GetMapDimensions();
+void MGS_DistanceField::RunOnce( Map& theMap ) const {
+    IntVec2 mapDimensions = theMap.GetMapDimensions();
     int numTiles = mapDimensions.x * mapDimensions.y;
+
+    std::vector<IntVec2> openTiles;
+    std::vector< bool > openedTiles;
+
     openTiles.reserve( numTiles );
+    openedTiles.resize( numTiles, false );
 
-    ResetDistanceField( map, openTiles );
-
+    SetupDistanceField( theMap, openTiles );
     std::vector<IntVec2>::iterator openTilesIter = openTiles.begin();
 
-    for( openTilesIter; openTilesIter != openTiles.end(); openTilesIter ) {
-        IntVec2 tileCoords = *openTilesIter;
+    while( openTilesIter != openTiles.end() ) {
+        const IntVec2& tileCoords = *openTilesIter;
 
-        OpenNeighbors( map, openTiles, tileCoords );
-
-        // Remove current tile and update iterator
-        openTilesIter = openTiles.erase( openTilesIter );
+        OpenNeighbors( theMap, openTiles, openedTiles, tileCoords );
+        openTilesIter = openTiles.erase( openTilesIter ); // Remove current tile and update iterator
     }
 
     //EchoDistanceField( map );
 }
 
 
-void MapGenStep_DistanceField::ResetDistanceField( Map& map, std::vector<IntVec2>& openTiles ) const {
+void MGS_DistanceField::SetupDistanceField( Map& map, std::vector<IntVec2>& openTiles ) const {
     IntVec2 mapDimensions = map.GetMapDimensions();
     
     // For each tile (by X and Y) set initial distanceField value
     for( int tileY = 0; tileY < mapDimensions.y; tileY++ ) {
         for( int tileX = 0; tileX < mapDimensions.x; tileX++ ) {
-            int tileIndex = map.GetTileIndex( tileX, tileY );
-            Tile& tile = GetTile( map, tileIndex );
+            Tile& tile = GetTile( map, tileX, tileY );
 
-            if( MapGenStep::IsTileValid(tile) ) {
+            if( IsTileValid( tile ) ) {
                 tile.SetHeatMap( "Distance", 0.f );
-                //tile.SetDistanceField( 0.f );
                 openTiles.push_back( IntVec2( tileX, tileY ) );
             } else {
                 tile.SetHeatMap( "Distance", 999999.f );
-                //tile.SetDistanceField( 999999.f );
             }
         }
     }
 }
 
 
-void MapGenStep_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& openTiles, const IntVec2& tileCoords ) const {
-    int tileIndex = map.GetTileIndex( tileCoords );
-    Tile& tile = GetTile( map, tileIndex );
+void MGS_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& openTiles, std::vector<bool>& openedTiles, const IntVec2& tileCoords ) const {
+    Tile& tile = GetTile( map, tileCoords.x, tileCoords.y );
 
     float distance;
     tile.GetHeatMap( "Distance", distance );
     distance += 1.f;
-    //float distance = tile.GetDistanceField() + 1.0f;
 
     IntVec2 neighborOffsets[4] = {
         IntVec2( -1,  0 ), // Left
@@ -85,12 +79,12 @@ void MapGenStep_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& op
             float neighborDist;
             neighbor.GetHeatMap( "Distance", neighborDist );
 
-            if( IsTileValid( neighbor ) && distance < neighborDist ) {
+            if( IsNeighborTileValid( neighbor ) && distance < neighborDist ) {
                 neighbor.SetHeatMap( "Distance", distance );
-                //neighbor.SetDistanceField( distance );
 
-                if( !VectorContains( openTiles, neighborCoords ) ) {
+                if( !openedTiles[neighborIndex] ) {
                     openTiles.push_back( neighborCoords );
+                    openedTiles[neighborIndex] = true;
                 }
             }
         }
@@ -98,9 +92,7 @@ void MapGenStep_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& op
 }
 
 
-// Used to check validity of pathing through a tile
-// Base class version instead used to determine goals / starting points of algorithm
-bool MapGenStep_DistanceField::IsTileValid( const Tile& tile ) const {
+bool MGS_DistanceField::IsNeighborTileValid( const Tile& tile ) const {
     if( m_movementType == "Fly" ) {
         return tile.AllowsFlying();
     } else if( m_movementType == "Sight" ) {
@@ -109,29 +101,17 @@ bool MapGenStep_DistanceField::IsTileValid( const Tile& tile ) const {
         return tile.AllowsSwimming();
     } else if( m_movementType == "Walk" ) {
         return tile.AllowsWalking();
-    }
-
-    // ThesisFIXME: Error on unknown movement type...
-    return false;
-}
-
-
-bool MapGenStep_DistanceField::VectorContains( const std::vector<IntVec2>& coordVec, const IntVec2& coords ) const {
-    std::vector<IntVec2>::const_iterator vecIter = coordVec.begin();
-
-    for( vecIter; vecIter != coordVec.end(); vecIter++ ) {
-        const IntVec2& compare = *vecIter;
-
-        if( coords == compare ) {
-            return true;
-        }
+    } else {
+        std::string errorMsg = Stringf( "(MGS_DistanceField) Unknown movement type '%s'", m_movementType.c_str() );
+        ERROR_RECOVERABLE( errorMsg.c_str() );
     }
 
     return false;
 }
 
 
-void MapGenStep_DistanceField::EchoDistanceField( Map& map ) const {
+/*
+void MGS_DistanceField::EchoDistanceField( Map& map ) const {
     IntVec2 mapDimensions = map.GetMapDimensions();
     int numTiles = mapDimensions.x * mapDimensions.y;
 
@@ -143,7 +123,8 @@ void MapGenStep_DistanceField::EchoDistanceField( Map& map ) const {
 
         std::string distanceString = Stringf( "(MGS_DistanceField) Tile (%s) distance = %f", tileCoords.GetAsString().c_str(), distance );
 
-        g_theDevConsole->PrintString( distanceString );
+        g_theDevConsole->PrintString( distanceString, s_mgsChannel );
         //DebuggerPrintf( distanceString.c_str() );
     }
 }
+*/
