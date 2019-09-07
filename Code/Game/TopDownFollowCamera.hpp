@@ -18,4 +18,7 @@ class TopDownFollowCamera : public Camera {
     private:
     const Entity* m_target = nullptr;
     Vec2 m_position = Vec2::ZERO;
+
+
+    Vec2 GetClampedPosition( const Vec2& targetPosition ) const;
 };

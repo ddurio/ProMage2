@@ -124,9 +124,6 @@
     <ClCompile Include="MapGen\GenSteps\MapGenStep_RoomsAndPaths.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
-    <ClCompile Include="MapGen\GenSteps\MapGenStep_Sprinkle.cpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClCompile>
     <ClCompile Include="MapGen\Map\Map.cpp">
       <Filter>MapGen\Map</Filter>
     </ClCompile>
@@ -141,6 +138,12 @@
     </ClCompile>
     <ClCompile Include="MapGen\Map\TileDef.cpp">
       <Filter>MapGen\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MGS_Sprinkle.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MGS_CellularAutomata.cpp">
+      <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -240,9 +243,6 @@
     <ClInclude Include="MapGen\GenSteps\MapGenStep_RoomsAndPaths.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
-    <ClInclude Include="MapGen\GenSteps\MapGenStep_Sprinkle.hpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClInclude>
     <ClInclude Include="MapGen\Map\Map.hpp">
       <Filter>MapGen\Map</Filter>
     </ClInclude>
@@ -257,6 +257,12 @@
     </ClInclude>
     <ClInclude Include="MapGen\Map\TileDef.hpp">
       <Filter>MapGen\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MGS_Sprinkle.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MGS_CellularAutomata.hpp">
+      <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

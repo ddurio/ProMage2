@@ -68,6 +68,7 @@ class Entity {
     const Vec2 GetPosition() const;
     const Transform2D* GetTransformPointer() const;
 
+    Map* GetMap() const;
     const FactionID GetFaction() const;
     const EntityType GetEntityType() const;
     RigidBody2D* GetRigidBody() const;

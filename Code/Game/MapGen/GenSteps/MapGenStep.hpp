@@ -15,6 +15,7 @@ class Tile;
 class MapGenStep {
     public:
     explicit MapGenStep( const XMLElement& element );
+    virtual ~MapGenStep() {};
 
     static void AddCustomCondition( const std::string& eventName, const Strings& attrNames, bool requireAllAttr = true );
     static void AddCustomResult( const std::string& eventName, const Strings& attrNames, bool requireAllAttr = true );
@@ -28,6 +29,7 @@ class MapGenStep {
 
 
     protected:
+    static DevConsoleChannel s_mgsChannel;
     mutable RNG* m_mapRNG = nullptr;
 
 
@@ -58,14 +60,14 @@ class MapGenStep {
 
     // Conditions
     std::string m_ifIsType          = "";
-    std::string m_ifHasTags         = "";
+    Strings m_ifHasTags;
     std::map< std::string, FloatRange, StringCmpCaseI > m_ifHeatMap;
     static std::vector< CustomEvent > s_customConditions;
     std::vector< CustomEvent > m_customConditions;
     
     // Results
     std::string m_setType           = "";
-    std::string m_setTags           = "";
+    Strings m_setTags;
     std::map< std::string, FloatRange, StringCmpCaseI > m_setHeatMap;
     static std::vector< CustomEvent > s_customResults;
     std::vector< CustomEvent > m_customResults;

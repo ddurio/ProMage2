@@ -43,6 +43,11 @@ const Transform2D* Entity::GetTransformPointer() const {
 }
 
 
+Map* Entity::GetMap() const {
+    return m_map;
+}
+
+
 const FactionID Entity::GetFaction() const {
     return m_faction;
 }

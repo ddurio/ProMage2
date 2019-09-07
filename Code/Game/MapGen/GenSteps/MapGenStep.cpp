@@ -4,12 +4,12 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 
-#include "Game/MapGen/GenSteps/MapGenStep_CellularAutomata.hpp"
 #include "Game/MapGen/GenSteps/MapGenStep_DistanceField.hpp"
 #include "Game/MapGen/GenSteps/MapGenStep_FromImage.hpp"
 #include "Game/MapGen/GenSteps/MapGenStep_PerlinNoise.hpp"
 #include "Game/MapGen/GenSteps/MapGenStep_RoomsAndPaths.hpp"
-#include "Game/MapGen/GenSteps/MapGenStep_Sprinkle.hpp"
+#include "Game/MapGen/GenSteps/MGS_CellularAutomata.hpp"
+#include "Game/MapGen/GenSteps/MGS_Sprinkle.hpp"
 #include "Game/MapGen/Map/Map.hpp"
 #include "Game/MapGen/Map/Metadata.hpp"
 #include "Game/MapGen/Map/Tile.hpp"
@@ -22,13 +22,18 @@ std::vector< MapGenStep::CustomEvent > MapGenStep::s_customResults;
 
 
 MapGenStep::MapGenStep( const XMLElement& element ) {
+    if( s_mgsChannel == DevConsole::CHANNEL_UNDEFINED ) {
+        s_mgsChannel = g_theDevConsole->AddChannelByName( "MapGen" );
+    }
+
     m_stepType = element.Name();
-    m_chanceToRun      = ParseXMLAttribute( element, "chanceToRun",      m_chanceToRun );
-    m_numIterations    = ParseXMLAttribute( element, "numIterations",    m_numIterations );
+    m_chanceToRun               = ParseXMLAttribute( element, "chanceToRun",      m_chanceToRun );
+    m_numIterations             = ParseXMLAttribute( element, "numIterations",    m_numIterations );
 
     // Conditions
-    m_ifIsType         = ParseXMLAttribute( element, "ifIsType",         m_ifIsType );
-    m_ifHasTags        = ParseXMLAttribute( element, "ifHasTags",        m_ifHasTags );
+    m_ifIsType                  = ParseXMLAttribute( element, "ifIsType",         m_ifIsType );
+    std::string ifHasTagsCSV    = ParseXMLAttribute( element, "ifHasTags",        "" );
+    m_ifHasTags = SplitStringOnDelimeter( ifHasTagsCSV, ',', false );
 
     int numCustomConditions = (int)s_customConditions.size();
 
@@ -44,8 +49,9 @@ MapGenStep::MapGenStep( const XMLElement& element ) {
     }
 
     // Results
-    m_setType          = ParseXMLAttribute( element, "setType",          m_setType );
-    m_setTags          = ParseXMLAttribute( element, "setTags",          m_setTags );
+    m_setType               = ParseXMLAttribute( element, "setType", m_setType );
+    std::string setTagsCSV  = ParseXMLAttribute( element, "setTags", "" );
+    m_setTags = SplitStringOnDelimeter( setTagsCSV, ',', false );
 
     int numCustomResults = (int)s_customResults.size();
 
@@ -112,11 +118,11 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element ) {
     MapGenStep* step = nullptr;
 
     if( stepType == "Sprinkle" ) {
-        step = new MapGenStep_Sprinkle( element );
+        step = new MGS_Sprinkle( element );
     } else if( stepType == "FromImage") {
         step = new MapGenStep_FromImage( element );
     } else if( stepType == "CellularAutomata" ) {
-        step = new MapGenStep_CellularAutomata( element );
+        step = new MGS_CellularAutomata( element );
     } else if( stepType == "DistanceField" ) {
         step = new MapGenStep_DistanceField( element );
     } else if( stepType == "PerlinNoise" ) {
@@ -154,7 +160,7 @@ bool MapGenStep::IsTileValid( const Tile& tile ) const {
     }
 
     // Tags
-    if( m_ifHasTags != "" && !tileTags.HasTags( m_ifHasTags )) {
+    if( !m_ifHasTags.empty() && !tileTags.HasTags( m_ifHasTags )) {
         return false;
     }
 
@@ -200,7 +206,7 @@ void MapGenStep::ChangeTile( Map& map, int tileIndex ) const {
     }
 
     // Tags
-    if( m_setTags != "" ) {
+    if( !m_setTags.empty() ) {
         Metadata* tileMetadata = tile.GetMetadata();
         Tags& tileTags = tileMetadata->m_tagData;
 
@@ -253,6 +259,10 @@ void MapGenStep::ChangeTile( Map& map, int tileX, int tileY ) const {
 }
 
 
+// PROTECTED -------------------------------------------------
+DevConsoleChannel MapGenStep::s_mgsChannel = DevConsole::CHANNEL_UNDEFINED;
+
+
 Tile& MapGenStep::GetTile( Map& map, int tileIndex ) const {
     return map.m_tiles[tileIndex];
 }
@@ -264,6 +274,7 @@ Tile& MapGenStep::GetTile( Map& map, int tileX, int tileY ) const {
 }
 
 
+// PRIVATE -------------------------------------------------
 MapGenStep::CustomEvent::CustomEvent( const CustomEvent& event, const Strings& parsedValues ) :
     name( event.name ),
     requireAll( event.requireAll ),
