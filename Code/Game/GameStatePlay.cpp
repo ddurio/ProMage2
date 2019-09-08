@@ -32,6 +32,7 @@
 #include "Game/Inventory.hpp"
 #include "Game/Item.hpp"
 #include "Game/ItemDef.hpp"
+#include "Game/MapGen/GenSteps/MapGenStep.hpp"
 #include "Game/MapGen/Map/Map.hpp"
 #include "Game/MapGen/Map/MapDef.hpp"
 #include "Game/MapGen/Map/TileDef.hpp"
@@ -104,8 +105,8 @@ void GameStatePlay::Startup() {
     ItemDef::LoadFromFile( DATA_ITEM_DEFS, "ItemDef" );
     TileDef::LoadFromFile( DATA_TILE_DEFS, "TileDefinition" );
 
-    Actor::SetupSpawnActorMGS();
-    Item::SetupSpawnItemMGS();
+    m_spawnActorIndex = Actor::SetupSpawnActorMGS();
+    m_spawnItemIndex  = Item::SetupSpawnItemMGS();
     MapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
     ParseMapProgression();
 
@@ -122,7 +123,16 @@ void GameStatePlay::Startup() {
 
 
 void GameStatePlay::Shutdown() {
+    m_map->Shutdown();
     m_gameInput->Shutdown();
+
+    MapGenStep::RemoveCustomResult( m_spawnActorIndex );
+    MapGenStep::RemoveCustomResult( m_spawnItemIndex );
+
+    ActorDef::DestroyDefs();
+    ItemDef::DestroyDefs();
+    TileDef::DestroyDefs();
+    MapDef::DestroyDefs();
 }
 
 

@@ -17,8 +17,10 @@ class MapGenStep {
     explicit MapGenStep( const XMLElement& element );
     virtual ~MapGenStep() {};
 
-    static void AddCustomCondition( const std::string& eventName, const Strings& attrNames, bool requireAllAttr = true );
-    static void AddCustomResult( const std::string& eventName, const Strings& attrNames, bool requireAllAttr = true );
+    static int AddCustomCondition( const std::string& eventName, const Strings& attrNames, bool requireAllAttr = true );
+    static int AddCustomResult( const std::string& eventName, const Strings& attrNames, bool requireAllAttr = true );
+    static void RemoveCustomCondition( int conditionIndex );
+    static void RemoveCustomResult( int resultIndex );
     static MapGenStep* CreateMapGenStep( const XMLElement& element );
 
     void Run( Map& map ) const;
@@ -42,6 +44,7 @@ class MapGenStep {
     struct CustomEvent {
         public:
         std::string name = "";
+        bool isEnabled = true;
         bool requireAll = true;
 
         Strings attrNames;

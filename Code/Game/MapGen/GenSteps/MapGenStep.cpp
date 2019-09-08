@@ -93,23 +93,65 @@ MapGenStep::MapGenStep( const XMLElement& element ) {
 }
 
 
-void MapGenStep::AddCustomCondition( const std::string& eventName, const Strings& attrNames, bool requireAllAttr /*= true */ ) {
+int MapGenStep::AddCustomCondition( const std::string& eventName, const Strings& attrNames, bool requireAllAttr /*= true */ ) {
     CustomEvent newCondition;
     newCondition.name = eventName;
     newCondition.attrNames = attrNames;
     newCondition.requireAll = requireAllAttr;
 
+    int numConditions = (int)s_customConditions.size();
+
+    for( int conditionIndex = 0; conditionIndex < numConditions; conditionIndex++ ) {
+        const CustomEvent& oldEvent = s_customConditions[conditionIndex];
+
+        if( !oldEvent.isEnabled ) {
+            s_customConditions[conditionIndex] = newCondition;
+            return conditionIndex;
+        }
+    }
+
     s_customConditions.push_back( newCondition );
+    return numConditions;
 }
 
 
-void MapGenStep::AddCustomResult( const std::string& eventName, const Strings& attrNames, bool requireAllAttr /*= true */ ) {
+int MapGenStep::AddCustomResult( const std::string& eventName, const Strings& attrNames, bool requireAllAttr /*= true */ ) {
     CustomEvent newResult;
     newResult.name = eventName;
     newResult.attrNames = attrNames;
     newResult.requireAll = requireAllAttr;
 
+    int numResults = (int)s_customResults.size();
+
+    for( int resultIndex = 0; resultIndex < numResults; resultIndex++ ) {
+        const CustomEvent& oldEvent = s_customResults[resultIndex];
+
+        if( !oldEvent.isEnabled ) {
+            s_customResults[resultIndex] = newResult;
+            return resultIndex;
+        }
+    }
+
     s_customResults.push_back( newResult );
+    return numResults;
+}
+
+
+void MapGenStep::RemoveCustomCondition( int conditionIndex ) {
+    int numConditions = (int)s_customConditions.size();
+
+    if( conditionIndex >= 0 && conditionIndex < numConditions ) {
+        s_customConditions[conditionIndex].isEnabled = false;
+    }
+}
+
+
+void MapGenStep::RemoveCustomResult( int resultIndex ) {
+    int numResults = (int)s_customResults.size();
+
+    if( resultIndex >= 0 && resultIndex < numResults ) {
+        s_customResults[resultIndex].isEnabled = false;
+    }
 }
 
 
@@ -184,6 +226,11 @@ bool MapGenStep::IsTileValid( const Tile& tile ) const {
 
     for( int conditionIndex = 0; conditionIndex < numCustomConditions; conditionIndex++ ) {
         const CustomEvent& event = m_customConditions[conditionIndex];
+
+        if( !event.isEnabled ) {
+            continue;
+        }
+
         EventArgs args = event.CreateEventArgs();
         args.SetValue( "callingTile", &tile );
 
@@ -230,6 +277,11 @@ void MapGenStep::ChangeTile( Map& map, int tileIndex ) const {
 
     for( int resultIndex = 0; resultIndex < numCustomResults; resultIndex++ ) {
         const CustomEvent& event = m_customResults[resultIndex];
+
+        if( !event.isEnabled ) {
+            continue;
+        }
+
         EventArgs args = event.CreateEventArgs();
         args.SetValue( "callingTile", &tile );
 

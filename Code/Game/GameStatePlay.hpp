@@ -55,6 +55,9 @@ class GameStatePlay : public GameState {
     Map* m_map = nullptr;
     RNG* m_mapRNG = nullptr;
 
+    int m_spawnActorIndex = -1;
+    int m_spawnItemIndex = -1;
+
     unsigned int m_floorZeroSeed = 0;
     unsigned int m_currentFloor = 0;
     std::vector< unsigned int > m_mapTypeFloors;

@@ -34,11 +34,11 @@ Item::Item( Map* theMap, std::string itemType, RNG* itemRNG /*= nullptr */ ) :
 }
 
 
-void Item::SetupSpawnItemMGS() {
+int Item::SetupSpawnItemMGS() {
     Strings attrNames;
     attrNames.push_back( "spawnItem" );
 
-    MapGenStep::AddCustomResult( "spawnItem", attrNames );
+    return MapGenStep::AddCustomResult( "spawnItem", attrNames );
 }
 
 

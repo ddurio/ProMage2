@@ -68,12 +68,12 @@ Actor::~Actor() {
 }
 
 
-void Actor::SetupSpawnActorMGS() {
+int Actor::SetupSpawnActorMGS() {
     Strings attrNames;
     attrNames.push_back( "spawnActor" );
     attrNames.push_back( "controller" );
 
-    MapGenStep::AddCustomResult( "spawnActor", attrNames, false );
+    return MapGenStep::AddCustomResult( "spawnActor", attrNames, false );
 }
 
 
