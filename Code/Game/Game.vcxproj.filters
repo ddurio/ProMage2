@@ -109,12 +109,6 @@
     <ClCompile Include="MapGen\GenSteps\MapGenStep.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
-    <ClCompile Include="MapGen\GenSteps\MapGenStep_FromImage.cpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGen\GenSteps\MapGenStep_PerlinNoise.cpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClCompile>
     <ClCompile Include="MapGen\GenSteps\MapGenStep_RoomsAndPaths.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
@@ -143,6 +137,9 @@
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
     <ClCompile Include="MapGen\GenSteps\MGS_FromImage.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MGS_PerlinNoise.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
   </ItemGroup>
@@ -228,12 +225,6 @@
     <ClInclude Include="MapGen\GenSteps\MapGenStep.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
-    <ClInclude Include="MapGen\GenSteps\MapGenStep_FromImage.hpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGen\GenSteps\MapGenStep_PerlinNoise.hpp">
-      <Filter>MapGen\GenSteps</Filter>
-    </ClInclude>
     <ClInclude Include="MapGen\GenSteps\MapGenStep_RoomsAndPaths.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
@@ -262,6 +253,9 @@
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
     <ClInclude Include="MapGen\GenSteps\MGS_FromImage.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MGS_PerlinNoise.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
   </ItemGroup>

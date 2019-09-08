@@ -301,8 +301,7 @@
     <ClCompile Include="ItemDef.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="MapGen\GenSteps\MapGenStep.cpp" />
-    <ClCompile Include="MapGen\GenSteps\MapGenStep_FromImage.cpp" />
-    <ClCompile Include="MapGen\GenSteps\MapGenStep_PerlinNoise.cpp" />
+    <ClCompile Include="MapGen\GenSteps\MGS_PerlinNoise.cpp" />
     <ClCompile Include="MapGen\GenSteps\MapGenStep_RoomsAndPaths.cpp" />
     <ClCompile Include="MapGen\GenSteps\MGS_CellularAutomata.cpp" />
     <ClCompile Include="MapGen\GenSteps\MGS_DistanceField.cpp" />
@@ -343,8 +342,7 @@
     <ClInclude Include="Item.hpp" />
     <ClInclude Include="ItemDef.hpp" />
     <ClInclude Include="MapGen\GenSteps\MapGenStep.hpp" />
-    <ClInclude Include="MapGen\GenSteps\MapGenStep_FromImage.hpp" />
-    <ClInclude Include="MapGen\GenSteps\MapGenStep_PerlinNoise.hpp" />
+    <ClInclude Include="MapGen\GenSteps\MGS_PerlinNoise.hpp" />
     <ClInclude Include="MapGen\GenSteps\MapGenStep_RoomsAndPaths.hpp" />
     <ClInclude Include="MapGen\GenSteps\MGS_CellularAutomata.hpp" />
     <ClInclude Include="MapGen\GenSteps\MGS_DistanceField.hpp" />

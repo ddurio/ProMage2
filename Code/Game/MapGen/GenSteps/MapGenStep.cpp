@@ -4,11 +4,11 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 
-#include "Game/MapGen/GenSteps/MapGenStep_PerlinNoise.hpp"
 #include "Game/MapGen/GenSteps/MapGenStep_RoomsAndPaths.hpp"
 #include "Game/MapGen/GenSteps/MGS_CellularAutomata.hpp"
 #include "Game/MapGen/GenSteps/MGS_DistanceField.hpp"
 #include "Game/MapGen/GenSteps/MGS_FromImage.hpp"
+#include "Game/MapGen/GenSteps/MGS_PerlinNoise.hpp"
 #include "Game/MapGen/GenSteps/MGS_Sprinkle.hpp"
 #include "Game/MapGen/Map/Map.hpp"
 #include "Game/MapGen/Map/Metadata.hpp"
@@ -126,7 +126,7 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element ) {
     } else if( stepType == "DistanceField" ) {
         step = new MGS_DistanceField( element );
     } else if( stepType == "PerlinNoise" ) {
-        step = new MapGenStep_PerlinNoise( element );
+        step = new MGS_PerlinNoise( element );
     } else if( stepType == "RoomsAndPaths" ) {
         step = new MapGenStep_RoomsAndPaths( element );
     }
