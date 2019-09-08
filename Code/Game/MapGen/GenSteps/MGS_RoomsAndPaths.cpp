@@ -1,4 +1,4 @@
-#include "Game/MapGen/GenSteps/MapGenStep_RoomsAndPaths.hpp"
+#include "Game/MapGen/GenSteps/MGS_RoomsAndPaths.hpp"
 
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Math/IntVec2.hpp"
@@ -9,7 +9,7 @@
 #include "Game/MapGen/Map/Tile.hpp"
 
 
-MapGenStep_RoomsAndPaths::MapGenStep_RoomsAndPaths( const XMLElement& element ) :
+MGS_RoomsAndPaths::MGS_RoomsAndPaths( const XMLElement& element ) :
     MapGenStep(element) {
 
     // Rooms
@@ -30,30 +30,29 @@ MapGenStep_RoomsAndPaths::MapGenStep_RoomsAndPaths( const XMLElement& element ) 
 }
 
 
-void MapGenStep_RoomsAndPaths::RunOnce( Map& map ) const {
+void MGS_RoomsAndPaths::RunOnce( Map& theMap ) const {
     std::vector<IntVec2> roomPositions;
     std::vector<IntVec2> roomSizes;
 
-    bool roomsGenerated = GenerateRooms( map, roomPositions, roomSizes );
-    GUARANTEE_OR_DIE( roomsGenerated, "Failed to generate Rooms and Paths" );
-    ChangeRoomTiles( map, roomPositions, roomSizes );
+    GenerateRooms( theMap, roomPositions, roomSizes );
+    ChangeRoomTiles( theMap, roomPositions, roomSizes );
 
     std::vector<IntVec2> roomCenters;
     GetRoomCenters( roomPositions, roomSizes, roomCenters );
-    GeneratePaths( map, roomCenters );
+    GeneratePaths( theMap, roomCenters );
 }
 
 
-bool MapGenStep_RoomsAndPaths::GenerateRooms( const Map& map, std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const {
-    IntVec2 mapDimensions = map.GetMapDimensions();
-    AABB2 mapBounds = AABB2( Vec2::ZERO, Vec2( (float)mapDimensions.x, (float)mapDimensions.y ) );
+void MGS_RoomsAndPaths::GenerateRooms( const Map& theMap, std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const {
+    IntVec2 theMapDimensions = theMap.GetMapDimensions();
+    AABB2 theMapBounds = AABB2( Vec2::ZERO, Vec2( (float)theMapDimensions.x, (float)theMapDimensions.y ) );
 
     int numRooms    = m_mapRNG->GetRandomIntInRange( m_numRooms );
     int numOverlaps = m_mapRNG->GetRandomIntInRange( m_numOverlaps );
 
     for( int roomIndex = 0; roomIndex < numRooms; roomIndex++ ) {
         bool roomIsValid = false;
-        int  numAttempts = 1000;
+        int  attemptsRemaining = 1000;
 
         do {
             // Generate room size (plus two to account for walls)
@@ -67,27 +66,27 @@ bool MapGenStep_RoomsAndPaths::GenerateRooms( const Map& map, std::vector<IntVec
             Vec2 alignment = Vec2( alignX, alignY );
 
             // Convert to tile coords
-            AABB2 roomBounds = mapBounds.GetBoxWithin( roomDimensions, alignment );
-            int mapOffsetX = (int)roomBounds.mins.x;
-            int mapOffsetY = (int)roomBounds.mins.y;
+            AABB2 roomBounds = theMapBounds.GetBoxWithin( roomDimensions, alignment );
+            int theMapOffsetX = (int)roomBounds.mins.x;
+            int theMapOffsetY = (int)roomBounds.mins.y;
 
-            roomIsValid = AddRoomIfValid( roomPositions, roomSizes, numOverlaps, IntVec2( mapOffsetX, mapOffsetY ), IntVec2( width, height ) );
+            roomIsValid = AddRoomIfValid( theMap, roomPositions, roomSizes, numOverlaps, IntVec2( theMapOffsetX, theMapOffsetY ), IntVec2( width, height ) );
 
-            if( !roomIsValid && --numAttempts < 0 ) {
-                g_theDevConsole->PrintString( "(MGS_RoomsAndPaths) WARNING: Failed to place rooms as requested", DevConsole::CHANNEL_WARNING );
-                return true;
+            if( !roomIsValid && --attemptsRemaining < 0 ) {
+                std::string warningMsg = "(MGS_RoomsAndPaths) WARNING: Failed to place rooms as requested";
+                g_theDevConsole->PrintString( warningMsg, s_mgsChannel | DevConsole::CHANNEL_WARNING );
+                return;
             }
         } while( !roomIsValid );
     }
-
-    return true;
 }
 
 
-bool MapGenStep_RoomsAndPaths::AddRoomIfValid( std::vector<IntVec2>& positions, std::vector<IntVec2>& sizes, int& remainingOverlaps, const IntVec2& newPosition, const IntVec2& newSize ) const {
+bool MGS_RoomsAndPaths::AddRoomIfValid( const Map& theMap, std::vector<IntVec2>& positions, std::vector<IntVec2>& sizes, int& remainingOverlaps, const IntVec2& newPosition, const IntVec2& newSize ) const {
     int numExistingRooms = (int)positions.size();
     int overlaps = remainingOverlaps;
 
+    // Check for rooms overlapping
     for( int roomIndex = 0; roomIndex < numExistingRooms; roomIndex++ ) {
         const IntVec2& existingPosition = positions[roomIndex];
         const IntVec2& existingSize     = sizes[roomIndex];
@@ -101,13 +100,41 @@ bool MapGenStep_RoomsAndPaths::AddRoomIfValid( std::vector<IntVec2>& positions, 
         }
     }
 
+
+    // Check for valid tiles under new room
+    if( !IsAlignmentValid( theMap, newPosition, newSize ) ) {
+        return false;
+    }
+
+
     positions.push_back( newPosition );
     sizes.push_back( newSize );
     remainingOverlaps = overlaps;
     return true;
 }
 
-bool MapGenStep_RoomsAndPaths::DoRoomsOverlap( const IntVec2& roomPositionA, const IntVec2& roomSizeA, const IntVec2& roomPositionB, const IntVec2& roomSizeB ) const {
+
+bool MGS_RoomsAndPaths::IsAlignmentValid( const Map& theMap, const IntVec2& roomPosition, const IntVec2& roomSize ) const {
+    int maxX = roomPosition.x + roomSize.x;
+    int maxY = roomPosition.y + roomSize.y;
+
+    for( int tileY = roomPosition.y; tileY <= maxY; tileY++ ) {
+        for( int tileX = roomPosition.x; tileX <= maxX; tileX++ ) {
+            const Tile* tile = nullptr;
+
+            if( theMap.GetTileIfValid( tile, IntVec2( tileX, tileY ) ) ) {
+                if( !IsTileValid( *tile ) ) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+
+bool MGS_RoomsAndPaths::DoRoomsOverlap( const IntVec2& roomPositionA, const IntVec2& roomSizeA, const IntVec2& roomPositionB, const IntVec2& roomSizeB ) const {
     // A Mins and Maxs
     int roomAMinX = roomPositionA.x;
     int roomAMinY = roomPositionA.y;
@@ -134,7 +161,7 @@ bool MapGenStep_RoomsAndPaths::DoRoomsOverlap( const IntVec2& roomPositionA, con
 }
 
 
-void MapGenStep_RoomsAndPaths::ChangeRoomTiles( Map& map, const std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const {
+void MGS_RoomsAndPaths::ChangeRoomTiles( Map& theMap, const std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const {
     int numRooms = (int)roomPositions.size();
 
     for( int roomIndex = 0; roomIndex < numRooms; roomIndex++ ) {
@@ -146,8 +173,8 @@ void MapGenStep_RoomsAndPaths::ChangeRoomTiles( Map& map, const std::vector<IntV
 
         for( int tileY = minY; tileY <= maxY; tileY++ ) {
             for( int tileX = minX; tileX <= maxX; tileX++ ) {
-                ChangeTile( map, tileX, tileY );
-                Tile& tile = GetTile( map, tileX, tileY );
+                ChangeTile( theMap, tileX, tileY );
+                Tile& tile = GetTile( theMap, tileX, tileY );
 
                 std::string tileType = "";
                 if( tileX == minX || tileX == maxX ||
@@ -164,7 +191,7 @@ void MapGenStep_RoomsAndPaths::ChangeRoomTiles( Map& map, const std::vector<IntV
 }
 
 
-void MapGenStep_RoomsAndPaths::GetRoomCenters( const std::vector<IntVec2>& positions, const std::vector<IntVec2>& sizes, std::vector<IntVec2>& centers ) const {
+void MGS_RoomsAndPaths::GetRoomCenters( const std::vector<IntVec2>& positions, const std::vector<IntVec2>& sizes, std::vector<IntVec2>& centers ) const {
     int numRooms = (int)positions.size();
 
     for( int roomIndex = 0; roomIndex < numRooms; roomIndex++ ) {
@@ -177,7 +204,7 @@ void MapGenStep_RoomsAndPaths::GetRoomCenters( const std::vector<IntVec2>& posit
 }
 
 
-void MapGenStep_RoomsAndPaths::GeneratePaths( Map& map, std::vector<IntVec2>& roomCenters ) const {
+void MGS_RoomsAndPaths::GeneratePaths( Map& theMap, std::vector<IntVec2>& roomCenters ) const {
     float straightness = m_mapRNG->GetRandomFloatInRange( m_pathStraightChance );
 
     if( m_pathLoop ) {
@@ -214,7 +241,7 @@ void MapGenStep_RoomsAndPaths::GeneratePaths( Map& map, std::vector<IntVec2>& ro
             int pathSizeY = ClampInt( (int)subPathY, -absRemainY, absRemainY );
             IntVec2 pathSize( pathSizeX, pathSizeY );
 
-            ChangePathTiles( map, subPathStart, pathSize );
+            ChangePathTiles( theMap, subPathStart, pathSize );
             subPathStart += pathSize;
             remainingDistance -= pathSize;
         }
@@ -224,41 +251,41 @@ void MapGenStep_RoomsAndPaths::GeneratePaths( Map& map, std::vector<IntVec2>& ro
 }
 
 
-void MapGenStep_RoomsAndPaths::ChangePathTiles( Map& map, const IntVec2& pathStart, const IntVec2& pathSize ) const {
+void MGS_RoomsAndPaths::ChangePathTiles( Map& theMap, const IntVec2& pathStart, const IntVec2& pathSize ) const {
     bool xFirst = m_mapRNG->PercentChance( 0.5f );
     IntVec2 pathPosition = pathStart;
 
     if( xFirst ) {
-        ChangePathTilesX( map, pathPosition, pathSize.x );
+        ChangePathTilesX( theMap, pathPosition, pathSize.x );
         pathPosition += IntVec2( pathSize.x, 0 );
-        ChangePathTilesY( map, pathPosition, pathSize.y );
+        ChangePathTilesY( theMap, pathPosition, pathSize.y );
     } else {
-        ChangePathTilesY( map, pathPosition, pathSize.y );
+        ChangePathTilesY( theMap, pathPosition, pathSize.y );
         pathPosition += IntVec2( 0, pathSize.y );
-        ChangePathTilesX( map, pathPosition, pathSize.x );
+        ChangePathTilesX( theMap, pathPosition, pathSize.x );
     }
 }
 
 
-void MapGenStep_RoomsAndPaths::ChangePathTilesX( Map& map, const IntVec2& pathStart, int lengthX ) const {
+void MGS_RoomsAndPaths::ChangePathTilesX( Map& theMap, const IntVec2& pathStart, int lengthX ) const {
     int offset = (lengthX > 0) ? 1 : -1; // Used to determine left vs right
     int pathLength = abs( lengthX );
 
     for( int stepIndex = 1; stepIndex <= pathLength; stepIndex++ ) {
         int tileX = pathStart.x + (offset * stepIndex);
-        Tile& tile = GetTile( map, tileX, pathStart.y );
+        Tile& tile = GetTile( theMap, tileX, pathStart.y );
         tile.SetTileType( m_pathFloor );
     }
 }
 
 
-void MapGenStep_RoomsAndPaths::ChangePathTilesY( Map& map, const IntVec2& pathStart, int lengthY ) const {
+void MGS_RoomsAndPaths::ChangePathTilesY( Map& theMap, const IntVec2& pathStart, int lengthY ) const {
     int offset = (lengthY > 0) ? 1 : -1; // Used to determine left vs right
     int pathLength = abs( lengthY );
 
     for( int stepIndex = 1; stepIndex <= pathLength; stepIndex++ ) {
         int tileY = pathStart.y + (offset * stepIndex);
-        Tile& tile = GetTile( map, pathStart.x, tileY );
+        Tile& tile = GetTile( theMap, pathStart.x, tileY );
         tile.SetTileType( m_pathFloor );
     }
 }
