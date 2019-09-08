@@ -46,6 +46,10 @@ CreditsController::CreditsController( Actor* myActor ) :
 CreditsController::~CreditsController() {
     CLEAR_POINTER( m_creditsModel  );
     CLEAR_POINTER( m_creditsCamera );
+
+    CLEAR_POINTER( m_guildhallMesh );
+    CLEAR_POINTER( m_titleMesh );
+    CLEAR_POINTER( m_thanksMesh );
 }
 
 

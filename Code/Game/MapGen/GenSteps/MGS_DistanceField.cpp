@@ -1,7 +1,5 @@
 #include "Game/MapGen/GenSteps/MGS_DistanceField.hpp"
 
-#include "Engine/Core/Profiler.hpp"
-
 #include "Game/MapGen/Map/Map.hpp"
 
 

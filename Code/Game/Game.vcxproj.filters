@@ -142,6 +142,9 @@
     <ClCompile Include="MapGen\GenSteps\MGS_DistanceField.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MGS_FromImage.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -256,6 +259,9 @@
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
     <ClInclude Include="MapGen\GenSteps\MGS_DistanceField.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MGS_FromImage.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
   </ItemGroup>

@@ -25,6 +25,9 @@ class Map {
     explicit Map( std::string mapName, std::string mapType, RNG* mapRNG, int level = 0 );
     ~Map();
 
+    void Startup();
+    void Shutdown();
+
     void Update( float deltaSeconds );
     void Render() const;
 

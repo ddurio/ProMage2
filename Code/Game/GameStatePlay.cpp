@@ -451,7 +451,12 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
     std::string floorType = GetFloorTypeFromIndex();
 
     // Setup new map
+    if( m_map != nullptr ) {
+        m_map->Shutdown();
+    }
+
     Map* nextMap = new Map( Stringf( "Floor%d", m_currentFloor ), floorType, m_mapRNG, newFloorIndex );
+    nextMap->Startup();
 
     if( m_map != nullptr ) {
         Actor* player = m_map->GetPlayer();

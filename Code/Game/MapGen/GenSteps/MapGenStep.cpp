@@ -4,11 +4,11 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 
-#include "Game/MapGen/GenSteps/MapGenStep_FromImage.hpp"
 #include "Game/MapGen/GenSteps/MapGenStep_PerlinNoise.hpp"
 #include "Game/MapGen/GenSteps/MapGenStep_RoomsAndPaths.hpp"
 #include "Game/MapGen/GenSteps/MGS_CellularAutomata.hpp"
 #include "Game/MapGen/GenSteps/MGS_DistanceField.hpp"
+#include "Game/MapGen/GenSteps/MGS_FromImage.hpp"
 #include "Game/MapGen/GenSteps/MGS_Sprinkle.hpp"
 #include "Game/MapGen/Map/Map.hpp"
 #include "Game/MapGen/Map/Metadata.hpp"
@@ -120,7 +120,7 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element ) {
     if( stepType == "Sprinkle" ) {
         step = new MGS_Sprinkle( element );
     } else if( stepType == "FromImage") {
-        step = new MapGenStep_FromImage( element );
+        step = new MGS_FromImage( element );
     } else if( stepType == "CellularAutomata" ) {
         step = new MGS_CellularAutomata( element );
     } else if( stepType == "DistanceField" ) {
@@ -149,6 +149,7 @@ void MapGenStep::Run( Map& map ) const {
 }
 
 
+// PROTECTED ---------------------------------------
 bool MapGenStep::IsTileValid( const Tile& tile ) const {
     std::string tileType     = tile.GetTileType();
     const Metadata* metadata = tile.GetMetadata();
@@ -234,22 +235,6 @@ void MapGenStep::ChangeTile( Map& map, int tileIndex ) const {
 
         g_theEventSystem->FireEvent( event.name, args );
     }
-
-    /*
-    if( m_spawnActorType != "" ) {
-        IntVec2 tileCoords = tile.GetTileCoords();
-        Vec2 worldCoords = Vec2( (float)tileCoords.x + 0.5f, (float)tileCoords.y + 0.5f );
-
-        map.SpawnNewActor( m_spawnActorType, m_actorController, worldCoords );
-    }
-
-    if( m_spawnItemType != "" ) {
-        IntVec2 tileCoords = tile.GetTileCoords();
-        Vec2 worldCoords = Vec2( (float)tileCoords.x + 0.5f, (float)tileCoords.y + 0.5f );
-        Inventory* mapInventory = map.GetMapInventory();
-        mapInventory->SpawnNewItem( m_spawnItemType, worldCoords );
-    }
-    */
 }
 
 

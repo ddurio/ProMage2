@@ -23,15 +23,15 @@ class MapGenStep {
 
     void Run( Map& map ) const;
 
-    virtual bool IsTileValid( const Tile& tile ) const;
-    virtual void ChangeTile( Map& map, int tileIndex ) const;
-    virtual void ChangeTile( Map& map, int tileX, int tileY ) const;
-
 
     protected:
     static DevConsoleChannel s_mgsChannel;
     mutable RNG* m_mapRNG = nullptr;
 
+
+    virtual bool IsTileValid( const Tile& tile ) const;
+    virtual void ChangeTile( Map& map, int tileIndex ) const;
+    virtual void ChangeTile( Map& map, int tileX, int tileY ) const;
 
     Tile& GetTile( Map& map, int tileIndex ) const;
     Tile& GetTile( Map& map, int tileX, int tileY ) const;

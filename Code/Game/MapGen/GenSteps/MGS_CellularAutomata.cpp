@@ -1,6 +1,5 @@
 #include "Game/MapGen/GenSteps/MGS_CellularAutomata.hpp"
 
-#include "Engine/Core/Profiler.hpp"
 #include "Engine/Math/RNG.hpp"
 
 #include "Game/MapGen/Map/Map.hpp"

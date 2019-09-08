@@ -1,6 +1,7 @@
 #include "Game/MapGen/Map/MapDef.hpp"
 
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/Profiler.hpp"
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
 
@@ -81,6 +82,8 @@ void MapDef::DefineFillAndEdge( Map& map ) const {
 
 
 void MapDef::DefineFromMGS( Map& theMap ) const {
+    PROFILE_SCOPE( "(MapDef) DefineFromMGS" );
+
     // Run Each MapGenStep
     int numSteps = (int)m_mapGenSteps.size();
 

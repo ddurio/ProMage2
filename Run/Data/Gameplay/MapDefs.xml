@@ -50,7 +50,7 @@
             <Sprinkle ifIsType="CaveDirtFloor" spawnActor="SkeletonMale" count="20"/>
         </GenerationSteps>
     </MapDefinition>
-    <MapDefinition name="DD1" width="24" height="14" fillTile="FakeStone">
+    <MapDefinition name="DD1" width="26" height="14" fillTile="FakeStone">
         <GenerationSteps>
             <FromImage imageFilePath="Data/Images/DD1.png" numRotations="0" alignX="0.5" alignY="0.5"/>
             <!-- Stairs -->
@@ -60,7 +60,7 @@
             <CellularAutomata ifIsType="Water" setType="CaveDirtFloor" setTags="stairsDownAccess"/>
         </GenerationSteps>
     </MapDefinition>
-    <MapDefinition name="DD2" width="24" height="14" fillTile="FakeStone">
+    <MapDefinition name="DD2" width="26" height="14" fillTile="FakeStone">
         <GenerationSteps>
             <FromImage imageFilePath="Data/Images/DD2.png" numRotations="0" alignX="0.5" alignY="0.5"/>
             <!-- Stairs -->
@@ -68,7 +68,9 @@
             <CellularAutomata ifIsType="Grass" setType="CaveDirtFloor" setTags="stairsUpAccess"/>
             <!-- Credits -->
             <CellularAutomata ifIsType="Water" setType="CaveDirtFloor" spawnActor="Credits" controller="Credits" setTags="credits"/>
+            <!--
             <CellularAutomata ifIsType="CaveDirtFloor" ifNeighborHasTags="credits" setTags="creditsAccess"/>
+            -->
         </GenerationSteps>
     </MapDefinition>
     <MapDefinition name="Cavern" width="100" height="100" fillTile="EdgedSand" edgeTile="EdgedWater">

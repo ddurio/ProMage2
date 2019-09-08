@@ -46,6 +46,15 @@ Map::~Map() {
     CLEAR_POINTER( m_model );
 
     g_thePhysicsSystem->DestroyRigidBody( m_tilesRB );
+}
+
+
+void Map::Startup() {
+
+}
+
+
+void Map::Shutdown() {
     g_theEventSystem->Unsubscribe( "spawnActor", this, &Map::SpawnNewActor );
     g_theEventSystem->Unsubscribe( "spawnItem", this, &Map::SpawnNewItem );
     g_theEventSystem->Unsubscribe( "enemyDeath", this, &Map::HandleEnemyDeath );
@@ -383,9 +392,9 @@ bool Map::SpawnNewActor( EventArgs& args ) {
         return false;
     }
 
-    IntVec2 tileCoords = callingTile->GetTileCoords();
+    Vec2 tileCenter = Vec2( callingTile->GetTileCoords() ) + Vec2( 0.5f );
 
-    SpawnNewActor( actorType, controller, Vec2( tileCoords ) );
+    SpawnNewActor( actorType, controller, tileCenter );
     return false;
 }
 
@@ -398,9 +407,9 @@ bool Map::SpawnNewItem( EventArgs& args ) {
         return false;
     }
 
-    IntVec2 tileCoords = callingTile->GetTileCoords();
+    Vec2 tileCenter = Vec2( callingTile->GetTileCoords() ) + Vec2( 0.5f );
 
-    m_inventory->SpawnNewItem( itemType, Vec2( tileCoords ) );
+    m_inventory->SpawnNewItem( itemType, tileCenter );
     return false;
 }
 
