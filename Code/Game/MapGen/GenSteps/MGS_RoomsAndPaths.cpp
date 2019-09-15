@@ -43,7 +43,7 @@ void MGS_RoomsAndPaths::RunOnce( Map& theMap ) const {
 }
 
 
-void MGS_RoomsAndPaths::GenerateRooms( const Map& theMap, std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const {
+void MGS_RoomsAndPaths::GenerateRooms( Map& theMap, std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const {
     IntVec2 theMapDimensions = theMap.GetMapDimensions();
     AABB2 theMapBounds = AABB2( Vec2::ZERO, Vec2( (float)theMapDimensions.x, (float)theMapDimensions.y ) );
 
@@ -82,7 +82,7 @@ void MGS_RoomsAndPaths::GenerateRooms( const Map& theMap, std::vector<IntVec2>& 
 }
 
 
-bool MGS_RoomsAndPaths::AddRoomIfValid( const Map& theMap, std::vector<IntVec2>& positions, std::vector<IntVec2>& sizes, int& remainingOverlaps, const IntVec2& newPosition, const IntVec2& newSize ) const {
+bool MGS_RoomsAndPaths::AddRoomIfValid( Map& theMap, std::vector<IntVec2>& positions, std::vector<IntVec2>& sizes, int& remainingOverlaps, const IntVec2& newPosition, const IntVec2& newSize ) const {
     int numExistingRooms = (int)positions.size();
     int overlaps = remainingOverlaps;
 
@@ -114,7 +114,7 @@ bool MGS_RoomsAndPaths::AddRoomIfValid( const Map& theMap, std::vector<IntVec2>&
 }
 
 
-bool MGS_RoomsAndPaths::IsAlignmentValid( const Map& theMap, const IntVec2& roomPosition, const IntVec2& roomSize ) const {
+bool MGS_RoomsAndPaths::IsAlignmentValid( Map& theMap, const IntVec2& roomPosition, const IntVec2& roomSize ) const {
     int maxX = roomPosition.x + roomSize.x;
     int maxY = roomPosition.y + roomSize.y;
 
@@ -123,7 +123,7 @@ bool MGS_RoomsAndPaths::IsAlignmentValid( const Map& theMap, const IntVec2& room
             const Tile* tile = nullptr;
 
             if( theMap.GetTileIfValid( tile, IntVec2( tileX, tileY ) ) ) {
-                if( !IsTileValid( *tile ) ) {
+                if( !IsTileValid( theMap, *tile ) ) {
                     return false;
                 }
             }

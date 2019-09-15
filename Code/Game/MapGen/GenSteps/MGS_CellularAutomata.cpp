@@ -33,7 +33,7 @@ void MGS_CellularAutomata::RunOnce( Map& theMap ) const {
             int tileIndex = theMap.GetTileIndex( tileX, tileY );
             const Tile& homeTile = theMap.GetTile( tileIndex );
 
-            if( !IsTileValid( homeTile ) ) {
+            if( !IsTileValid( theMap, homeTile ) ) {
                 continue;
             }
 

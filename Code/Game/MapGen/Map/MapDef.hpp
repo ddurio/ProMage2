@@ -10,15 +10,17 @@
 
 class Map;
 class MapGenStep;
+class RNG;
 
 
 class MapDef : public Definition< Map, MapDef > {
     friend class Definition< Map, MapDef >;
 
     public:
-    void DefineObject( Map& theMap ) const override;
+    virtual void DefineObject( Map& theMap ) const override;
 
-    private:
+
+    protected:
     std::string m_tileFillType = "";
     std::string m_tileEdgeType = "";
     IntRange m_width = IntRange::ZERO;
@@ -29,10 +31,15 @@ class MapDef : public Definition< Map, MapDef > {
     explicit MapDef( const XMLElement& element );
     ~MapDef();
 
-    void DefineFillAndEdge( Map& map ) const;
-    void DefineFromMGS( Map& map ) const;
-    void DefineFromContextTiles( Map& map ) const;
-    void DefineTileColliders( Map& map ) const;
+    RNG* GetMapRNG( const Map& theMap ) const;
+
+    void SetMapDimensions( Map& theMap, const IntVec2& dimensions ) const;
+    void SetMapDef( Map& theMap ) const;
+
+    void DefineFillAndEdge( Map& theMap ) const;
+    void DefineFromMGS( Map& theMap ) const;
+    void DefineFromContextTiles( Map& theMap ) const;
+    void DefineTileColliders( Map& theMap ) const;
 
     bool IsEdgeTile( int tileX, int tileY, int mapWidth, int mapHeight ) const;
 };

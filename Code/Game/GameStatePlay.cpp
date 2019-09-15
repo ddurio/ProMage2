@@ -72,7 +72,7 @@ GameStatePlay::~GameStatePlay() {
     CLEAR_POINTER( m_pauseUI );
     Map::ResetMaterialCreated();
 
-    g_theEventSystem->Unsubscribe( "playerDeath", this, &GameStatePlay::HandlePlayerDeath );
+    g_theEventSystem->Unsubscribe( EVENT_DEATH_PLAYER, this, &GameStatePlay::HandlePlayerDeath );
     g_theEventSystem->Unsubscribe( "goToFloor", this, &GameStatePlay::Command_GoToFloor );
 }
 
@@ -114,7 +114,7 @@ void GameStatePlay::Startup() {
     m_mapRNG = new RNG( m_floorZeroSeed );
     GoToFloor( 0, STAIRS_DOWN );
 
-    g_theEventSystem->Subscribe( "playerDeath", this, &GameStatePlay::HandlePlayerDeath );
+    g_theEventSystem->Subscribe( EVENT_DEATH_PLAYER, this, &GameStatePlay::HandlePlayerDeath );
     g_theEventSystem->Subscribe( "goToFloor", this, &GameStatePlay::Command_GoToFloor );
 
     BuildPauseUI();
@@ -466,7 +466,6 @@ void GameStatePlay::GoToFloor( unsigned int newFloorIndex, StairType stairType )
     }
 
     Map* nextMap = new Map( Stringf( "Floor%d", m_currentFloor ), floorType, m_mapRNG, newFloorIndex );
-    nextMap->Startup();
 
     if( m_map != nullptr ) {
         Actor* player = m_map->GetPlayer();
@@ -498,7 +497,7 @@ bool GameStatePlay::Command_GoToFloor( EventArgs& args ) {
 
 void GameStatePlay::SetupDebugCamera() {
     IntVec2 mapDims = m_map->GetMapDimensions();
-    Vec2 halfDims = mapDims / 2.f;
+    Vec2 halfDims = mapDims * 0.5f;
 
     m_debugCamera->SetOrthoProjection( (float)mapDims.y );
     m_debugCamera->Translate( halfDims );

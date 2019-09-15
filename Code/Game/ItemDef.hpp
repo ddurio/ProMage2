@@ -2,6 +2,7 @@
 #include "Game/GameCommon.hpp"
 
 #include "Engine/Core/Definition.hpp"
+#include "Engine/Core/Tags.hpp"
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Renderer/SpriteDef.hpp"
 
@@ -20,7 +21,6 @@ enum ItemSlot {
 
 
 class Item;
-class Tags;
 
 
 class ItemDef : public Definition< Item, ItemDef > {

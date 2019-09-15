@@ -77,7 +77,7 @@ bool MGS_FromImage::IsAlignmentValid( Map& theMap, const AABB2& imageBounds ) co
             const Tile* tile = nullptr;
 
             if( theMap.GetTileIfValid( tile, IntVec2( tileX, tileY ) ) ) {
-                if( !IsTileValid( *tile ) ) {
+                if( !IsTileValid( theMap, *tile ) ) {
                     return false;
                 }
             }

@@ -14,6 +14,12 @@
 
 #include "Game/Game.hpp"
 
+#if defined(_EDITOR)
+#include "Editor/Editor.hpp"
+
+Editor*         g_theEditor;
+#endif
+
 
 App*            g_theApp;
 Game*           g_theGame;
@@ -58,16 +64,26 @@ void App::Startup() {
     g_thePhysicsSystem->Startup();
     g_theGui->Startup();
 
+#if defined(_EDITOR)
+    g_theEditor = new Editor();
+#else
     g_theGame = new Game( false );
     g_theGame->Startup();
+#endif
+
 
     g_theEventSystem->Subscribe( "quit", this, &App::Command_Quit );
 }
 
 
 void App::Shutdown() {
+#if defined(_EDITOR)
+    g_theEditor->Shutdown();
+    CLEAR_POINTER( g_theEditor );
+#else
     g_theGame->Shutdown();
     CLEAR_POINTER( g_theGame );
+#endif
 
     g_theGui->Shutdown();
     g_thePhysicsSystem->Shutdown();
@@ -115,7 +131,11 @@ bool App::HandleKeyPressed( unsigned char keyCode ) {
         }
     }
 
+#if defined(_EDITOR)
+    return g_theEditor->HandleKeyPressed( keyCode );
+#else
     return g_theGame->HandleKeyPressed( keyCode );
+#endif
 }
 
 
@@ -124,7 +144,11 @@ bool App::HandleKeyReleased( unsigned char keyCode ) {
         return g_theDevConsole->HandleKeyReleased( keyCode );
     }
 
+#if defined(_EDITOR)
+    return g_theEditor->HandleKeyReleased( keyCode );
+#else
     return g_theGame->HandleKeyReleased( keyCode );
+#endif
 }
 
 
@@ -138,7 +162,11 @@ bool App::HandleCharTyped( unsigned char character ) {
 
 
 bool App::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f*/ ) {
+#if defined(_EDITOR)
+    return g_theEditor->HandleMouseButton( event, scrollAmount );
+#else
     return g_theGame->HandleMouseButton( event, scrollAmount );
+#endif
 }
 
 
@@ -184,18 +212,23 @@ void App::EndFrame() {
 
 
 void App::Update() {
+#if defined(_EDITOR)
+    g_theEditor->Update();
+#else
     g_theGame->Update();
-    //g_thePhysicsSystem->Update( deltaSeconds ); // DFS1FIXME: Should be done inside the gameState updates if desired
-    //g_theDebugger->Update( deltaSeconds );
+#endif
 }
 
 
 void App::Render() const {
     g_theRenderer->ClearRenderTarget( Rgba( 0.f, 0.f, 0.f, 1.f ) );
 
+#if defined(_EDITOR)
+    g_theEditor->Render();
+#else
     g_theGame->Render();
+#endif
 
-    //g_thePhysicsSystem->RenderDebug(); // maybe wrap in  debugRender bool?
     g_theDebugger->RenderScreen();
     g_theGui->Render();
     g_theDevConsole->Render( g_theRenderer );

@@ -22,10 +22,12 @@ class Map {
     friend class MapGenStep;
 
     public:
+    explicit Map( std::string mapName, RNG* mapRNG );
     explicit Map( std::string mapName, std::string mapType, RNG* mapRNG, int level = 0 );
     ~Map();
 
-    void Startup();
+    void StartupPreDefine();
+    void StartupPostDefine();
     void Shutdown();
 
     void Update( float deltaSeconds );

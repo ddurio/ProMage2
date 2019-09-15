@@ -48,8 +48,12 @@ constexpr char  ANIM_INVENTORY_SHOULDER[]   = "Inventory.Shoulder";
 constexpr char  ANIM_INVENTORY_WEAPON[]     = "Inventory.Weapon";
 
 constexpr int   APP_MIN_FPS = 10;
-constexpr char  APP_TITLE[] = "AdventureLess (ddurio)";
 constexpr float APP_MAX_DELTA_SECONDS = 1.f / (float)APP_MIN_FPS;
+#if defined(_EDITOR)
+constexpr char  APP_TITLE[] = "ProMage2 (ddurio)";
+#else
+constexpr char  APP_TITLE[] = "AdventureLess (ddurio)";
+#endif
 
 constexpr float CLIENT_ASPECT = (16.f / 9.f);
 constexpr float CLIENT_MAX_SCREEN_PERCENT = 0.9f;

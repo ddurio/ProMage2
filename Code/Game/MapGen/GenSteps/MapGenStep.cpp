@@ -192,7 +192,7 @@ void MapGenStep::Run( Map& map ) const {
 
 
 // PROTECTED ---------------------------------------
-bool MapGenStep::IsTileValid( const Tile& tile ) const {
+bool MapGenStep::IsTileValid( Map& theMap, const Tile& tile ) const {
     std::string tileType     = tile.GetTileType();
     const Metadata* metadata = tile.GetMetadata();
     const Tags& tileTags     = metadata->m_tagData;
@@ -233,6 +233,7 @@ bool MapGenStep::IsTileValid( const Tile& tile ) const {
 
         EventArgs args = event.CreateEventArgs();
         args.SetValue( "callingTile", &tile );
+        args.SetValue( "callingMap", &theMap );
 
         g_theEventSystem->FireEvent( event.name, args );
 
@@ -245,8 +246,8 @@ bool MapGenStep::IsTileValid( const Tile& tile ) const {
 }
 
 
-void MapGenStep::ChangeTile( Map& map, int tileIndex ) const {
-    Tile& tile = map.m_tiles[tileIndex];
+void MapGenStep::ChangeTile( Map& theMap, int tileIndex ) const {
+    Tile& tile = theMap.m_tiles[tileIndex];
 
     // Tile Type
     if( m_setType != "" ) {
@@ -284,15 +285,16 @@ void MapGenStep::ChangeTile( Map& map, int tileIndex ) const {
 
         EventArgs args = event.CreateEventArgs();
         args.SetValue( "callingTile", &tile );
+        args.SetValue( "callingMap", &theMap );
 
         g_theEventSystem->FireEvent( event.name, args );
     }
 }
 
 
-void MapGenStep::ChangeTile( Map& map, int tileX, int tileY ) const {
-    int tileIndex = map.GetTileIndex( tileX, tileY );
-    ChangeTile( map, tileIndex );
+void MapGenStep::ChangeTile( Map& theMap, int tileX, int tileY ) const {
+    int tileIndex = theMap.GetTileIndex( tileX, tileY );
+    ChangeTile( theMap, tileIndex );
 }
 
 

@@ -33,15 +33,15 @@ void MGS_DistanceField::RunOnce( Map& theMap ) const {
 }
 
 
-void MGS_DistanceField::SetupDistanceField( Map& map, std::vector<IntVec2>& openTiles ) const {
-    IntVec2 mapDimensions = map.GetMapDimensions();
+void MGS_DistanceField::SetupDistanceField( Map& theMap, std::vector<IntVec2>& openTiles ) const {
+    IntVec2 mapDimensions = theMap.GetMapDimensions();
     
     // For each tile (by X and Y) set initial distanceField value
     for( int tileY = 0; tileY < mapDimensions.y; tileY++ ) {
         for( int tileX = 0; tileX < mapDimensions.x; tileX++ ) {
-            Tile& tile = GetTile( map, tileX, tileY );
+            Tile& tile = GetTile( theMap, tileX, tileY );
 
-            if( IsTileValid( tile ) ) {
+            if( IsTileValid( theMap, tile ) ) {
                 tile.SetHeatMap( "Distance", 0.f );
                 openTiles.push_back( IntVec2( tileX, tileY ) );
             } else {

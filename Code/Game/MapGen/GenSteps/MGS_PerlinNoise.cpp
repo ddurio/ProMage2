@@ -15,8 +15,8 @@ MGS_PerlinNoise::MGS_PerlinNoise( const XMLElement& element ) :
 }
 
 
-void MGS_PerlinNoise::RunOnce( Map& map ) const {
-    IntVec2 mapDimensions = map.GetMapDimensions();
+void MGS_PerlinNoise::RunOnce( Map& theMap ) const {
+    IntVec2 theMapDimensions = theMap.GetMapDimensions();
     std::vector<int> tileIndexesToChange;
 
     int gridSize      = m_mapRNG->GetRandomIntInRange( m_gridSize );
@@ -26,9 +26,9 @@ void MGS_PerlinNoise::RunOnce( Map& map ) const {
     unsigned int seed = m_mapRNG->GetRandomSeed();
     
     // For each tile (by X and Y)
-    for( int tileY = 0; tileY < mapDimensions.y; tileY++ ) {
-        for( int tileX = 0; tileX < mapDimensions.x; tileX++ ) {
-            Tile& tile = GetTile( map, tileX, tileY );
+    for( int tileY = 0; tileY < theMapDimensions.y; tileY++ ) {
+        for( int tileX = 0; tileX < theMapDimensions.x; tileX++ ) {
+            Tile& tile = GetTile( theMap, tileX, tileY );
 
             // Calculate Noise
             float centerX = (float)tileX + 0.5f;
@@ -37,8 +37,8 @@ void MGS_PerlinNoise::RunOnce( Map& map ) const {
             float tileNoise = Compute2dPerlinNoise( centerX, centerY, (float)gridSize, octaves, persistence, scale, true, seed );
             tile.SetHeatMap( "Noise", tileNoise );
 
-            if( IsTileValid( tile ) ) {
-                ChangeTile( map, tileX, tileY );
+            if( IsTileValid( theMap, tile ) ) {
+                ChangeTile( theMap, tileX, tileY );
             }
         }
     }

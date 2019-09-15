@@ -1,7 +1,6 @@
 #include "Game/ItemDef.hpp"
 
 #include "Engine/Core/DevConsole.hpp"
-#include "Engine/Core/Tags.hpp"
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/MathUtils.hpp"

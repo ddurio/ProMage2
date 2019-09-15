@@ -20,23 +20,24 @@
 #include "Game/TopDownFollowCamera.hpp"
 
 
+Map::Map( std::string mapName, RNG* mapRNG ) :
+    m_mapName( mapName ),
+    m_mapRNG( mapRNG ) {
+    StartupPreDefine();
+}
+
+
 Map::Map( std::string mapName, std::string mapType, RNG* mapRNG, int level /*= 0 */ ) :
     m_mapName(mapName),
     m_mapType(mapType),
     m_mapRNG(mapRNG),
     m_floorIndex(level) {
-    m_tilesRB = g_thePhysicsSystem->CreateNewRigidBody( 1.f );
-    m_inventory = new Inventory( nullptr, m_self, false, true ); // Must be before Define, could be needed
-
-    CreateLootTable(); // Must be before define (actors spawned will refer to this)
-    g_theEventSystem->Subscribe( "spawnActor", this, &Map::SpawnNewActor );
-    g_theEventSystem->Subscribe( "spawnItem", this, &Map::SpawnNewItem );
+    StartupPreDefine();
 
     m_mapDef = MapDef::GetDefinition( m_mapType );
     m_mapDef->DefineObject( *this );
-    CreateTerrainMesh();
 
-    g_theEventSystem->Subscribe( "enemyDeath", this, &Map::HandleEnemyDeath );
+    StartupPostDefine();
 }
 
 
@@ -49,15 +50,27 @@ Map::~Map() {
 }
 
 
-void Map::Startup() {
+void Map::StartupPreDefine() {
+    m_tilesRB = g_thePhysicsSystem->CreateNewRigidBody( 1.f );
+    m_inventory = new Inventory( nullptr, m_self, false, true ); // Must be before Define, could be needed
 
+    CreateLootTable(); // Must be before define (actors spawned will refer to this)
+    g_theEventSystem->Subscribe( "spawnActor", this, &Map::SpawnNewActor );
+    g_theEventSystem->Subscribe( "spawnItem", this, &Map::SpawnNewItem );
+}
+
+
+void Map::StartupPostDefine() {
+    CreateTerrainMesh();
+
+    g_theEventSystem->Subscribe( EVENT_DEATH_ENEMY, this, &Map::HandleEnemyDeath );
 }
 
 
 void Map::Shutdown() {
     g_theEventSystem->Unsubscribe( "spawnActor", this, &Map::SpawnNewActor );
     g_theEventSystem->Unsubscribe( "spawnItem", this, &Map::SpawnNewItem );
-    g_theEventSystem->Unsubscribe( "enemyDeath", this, &Map::HandleEnemyDeath );
+    g_theEventSystem->Unsubscribe( EVENT_DEATH_ENEMY, this, &Map::HandleEnemyDeath );
 }
 
 
@@ -387,30 +400,40 @@ bool Map::SpawnNewActor( EventArgs& args ) {
     std::string actorType = args.GetValue( "spawnActor", "" );
     std::string controller = args.GetValue( "controller", "" );
     Tile* callingTile = args.GetValue( "callingTile", (Tile*)nullptr );
+    Map* callingMap = args.GetValue( "callingMap", (Map*)nullptr );
 
-    if( actorType == "" || controller == "" || callingTile == nullptr ) {
+    if( actorType == "" ||  callingTile == nullptr || callingMap == nullptr ) {
+        return false;
+    }
+
+    if( callingMap != this ) {
         return false;
     }
 
     Vec2 tileCenter = Vec2( callingTile->GetTileCoords() ) + Vec2( 0.5f );
 
     SpawnNewActor( actorType, controller, tileCenter );
-    return false;
+    return true;
 }
 
 
 bool Map::SpawnNewItem( EventArgs& args ) {
     std::string itemType = args.GetValue( "spawnItem", "" );
     Tile* callingTile = args.GetValue( "callingTile", (Tile*)nullptr );
+    Map* callingMap = args.GetValue( "callingMap", (Map*)nullptr );
 
-    if( itemType == "" || callingTile == nullptr ) {
+    if( itemType == "" || callingTile == nullptr || callingMap == nullptr ) {
+        return false;
+    }
+
+    if( callingMap != this ) {
         return false;
     }
 
     Vec2 tileCenter = Vec2( callingTile->GetTileCoords() ) + Vec2( 0.5f );
 
     m_inventory->SpawnNewItem( itemType, tileCenter );
-    return false;
+    return true;
 }
 
 

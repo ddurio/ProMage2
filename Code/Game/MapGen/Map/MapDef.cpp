@@ -57,6 +57,22 @@ MapDef::~MapDef() {
 }
 
 
+RNG* MapDef::GetMapRNG( const Map& theMap ) const {
+    return theMap.m_mapRNG;
+}
+
+
+void MapDef::SetMapDimensions( Map& theMap, const IntVec2& dimensions ) const {
+    theMap.m_mapDimensions = dimensions;
+}
+
+
+void MapDef::SetMapDef( Map& theMap ) const {
+    theMap.m_mapType = m_defType;
+    theMap.m_mapDef = this;
+}
+
+
 void MapDef::DefineFillAndEdge( Map& map ) const {
     IntVec2 mapDimensions = map.GetMapDimensions();
     int mapWidth = mapDimensions.x;

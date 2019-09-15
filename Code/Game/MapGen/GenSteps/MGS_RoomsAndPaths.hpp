@@ -26,10 +26,10 @@ class MGS_RoomsAndPaths : public MapGenStep {
     void RunOnce( Map& theMap ) const;
 
     // Rooms
-    void GenerateRooms( const Map& theMap, std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const;
-    bool AddRoomIfValid( const Map& theMap, std::vector<IntVec2>& positions, std::vector<IntVec2>& sizes, int& remainingOverlaps, const IntVec2& newPosition, const IntVec2& newSize ) const;
+    void GenerateRooms( Map& theMap, std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const;
+    bool AddRoomIfValid( Map& theMap, std::vector<IntVec2>& positions, std::vector<IntVec2>& sizes, int& remainingOverlaps, const IntVec2& newPosition, const IntVec2& newSize ) const;
     bool DoRoomsOverlap( const IntVec2& roomPositionA, const IntVec2& roomSizeA, const IntVec2& roomPositionB, const IntVec2& roomSizeB ) const;
-    bool IsAlignmentValid( const Map& theMap, const IntVec2& roomPosition, const IntVec2& roomSize ) const;
+    bool IsAlignmentValid( Map& theMap, const IntVec2& roomPosition, const IntVec2& roomSize ) const;
     void ChangeRoomTiles( Map& theMap, const std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const;
 
     // Paths
