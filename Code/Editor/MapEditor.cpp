@@ -18,9 +18,11 @@ MapEditor::MapEditor( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const
     const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( "Cavern" );
     eMapDef->DefineObject( &m_mapPerStep );
 
-    m_mapCamera = new Camera();
+    m_stepIndex = (int)m_mapPerStep.size() - 1;
+    g_theEventSystem->Subscribe( EVENT_EDITOR_STEP_INDEX, this, &MapEditor::SetMapStepIndex );
 
     // Setup camera
+    m_mapCamera = new Camera();
     IntVec2 mapDims = m_mapPerStep[0]->GetMapDimensions(); // ThesisFIXME: camera dimensions will be wrong if map size ever changes
     m_mapCamera->SetOrthoProjection( (float)mapDims.y );
 
@@ -40,10 +42,7 @@ MapEditor::~MapEditor() {
 
 
 void MapEditor::UpdateChild( float deltaSeconds ) {
-    // ThesisFIXME: getting rotating step index.. needs to be based on member variable
-    int numSteps = (int)m_mapPerStep.size();
-    int stepIndex = GetIndexOverTime( numSteps, 1.f );
-    Map*& theMap = m_mapPerStep[stepIndex];
+    Map*& theMap = m_mapPerStep[m_stepIndex];
 
     g_theRenderer->BeginCamera( m_mapCamera );
     theMap->Render();
@@ -52,6 +51,21 @@ void MapEditor::UpdateChild( float deltaSeconds ) {
     void* mapView = m_mapCamera->GetRenderTarget()->GetShaderView();
     ImVec2 windowSize = ImGui::GetWindowSize(); // ThesisFIXME: This is bigger than I expected it to be (auto added scroll bar)
     ImGui::Image( mapView, windowSize );
+}
+
+
+bool MapEditor::SetMapStepIndex( EventArgs& args ) {
+    int newIndex = args.GetValue( "stepIndex", -1 );
+    int numSteps = (int)m_mapPerStep.size();
+
+    if( newIndex < 0 || newIndex >= numSteps ) {
+        std::string warningMsg = Stringf( "(MapEditor) Attempting to set stepIndex (%d) with %d steps", newIndex, numSteps );
+        g_theDevConsole->PrintString( warningMsg, DevConsole::CHANNEL_WARNING ); // TheisFIXME: Add this to the editor channel when it exists
+        return false;
+    }
+
+    m_stepIndex = newIndex;
+    return true; // ThesisFIXME: be careful other things don't also need this event
 }
 
 #endif

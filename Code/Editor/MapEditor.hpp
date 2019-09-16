@@ -24,4 +24,6 @@ class MapEditor : public EditorWindow {
 
 
     void UpdateChild( float deltaSeconds ) override;
+
+    bool SetMapStepIndex( EventArgs& args );
 };
