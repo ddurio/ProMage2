@@ -96,7 +96,8 @@
             <CellularAutomata ifIsType="EdgedWater" ifNeighborType="CaveDirtFloor" ifNumNeighbors="3~8" setType="CaveDirtFloor" numIterations="2"/>
             <CellularAutomata ifIsType="StoneWall" ifNeighborType="CaveDirtFloor" ifNumNeighbors="7~8" setType="CaveDirtFloor" numIterations="2"/>
             <!-- Cliff -->
-            <CellularAutomata ifIsType="EdgedSand" ifNeighborType="EdgedWater" setType="CliffGrass"/>
+            <DistanceField ifIsType="EdgedWater" movementType="Walk"/>
+            <CellularAutomata ifHeatMapDistance="1" ifNeighborType="EdgedWater" setType="CliffGrass"/>
             <DistanceField ifIsType="CliffGrass" movementType="Walk"/>
             <CellularAutomata ifIsType="EdgedSand" ifHeatMapDistance="0~3" setType="EdgedGrass"/>
             <!-- Stairs -->
