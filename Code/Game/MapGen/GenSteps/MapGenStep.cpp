@@ -191,6 +191,11 @@ void MapGenStep::Run( Map& map ) const {
 }
 
 
+std::string MapGenStep::GetName() const {
+    return m_stepType;
+}
+
+
 // PROTECTED ---------------------------------------
 bool MapGenStep::IsTileValid( Map& theMap, const Tile& tile ) const {
     std::string tileType     = tile.GetTileType();

@@ -9,10 +9,12 @@
 class Camera;
 
 
-class MapEditor : public EditorWindow {
+class MapWindow : public EditorWindow {
     public:
-    MapEditor( const Vec2& normDimensions = Vec2( 0.8f, 0.9f ), const Vec2& alignment = Vec2( 0.f, 1.f ) );
-    ~MapEditor();
+    MapWindow( const Vec2& normDimensions = Vec2( 0.8f, 0.9f ), const Vec2& alignment = Vec2( 0.f, 1.f ) );
+    ~MapWindow();
+
+    Strings GetStepNames() const;
 
 
     private:

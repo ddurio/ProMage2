@@ -17,6 +17,8 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     using Definition< Map, EditorMapDef >::GetDefinition;
     using Definition< Map, EditorMapDef >::DestroyDefs;
 
+    Strings GetStepNames( int indexOffset = 0 ) const;
+
 
     private:
     struct AsyncPayload {

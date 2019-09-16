@@ -1,5 +1,5 @@
 #if defined(_EDITOR)
-#include "Editor/MapEditor.hpp"
+#include "Editor/MapWindow.hpp"
 
 #include "Editor/EditorMapDef.hpp"
 
@@ -10,7 +10,7 @@
 #include "Engine/Renderer/TextureView2D.hpp"
 
 
-MapEditor::MapEditor( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const Vec2& alignment /*= Vec2( 0.f, 1.f ) */ ) :
+MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const Vec2& alignment /*= Vec2( 0.f, 1.f ) */ ) :
     EditorWindow( normDimensions, alignment ) {
     // ThesisFIXME: Choose better name for this window
     m_windowName = "MapEditor";
@@ -19,7 +19,7 @@ MapEditor::MapEditor( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const
     eMapDef->DefineObject( &m_mapPerStep );
 
     m_stepIndex = (int)m_mapPerStep.size() - 1;
-    g_theEventSystem->Subscribe( EVENT_EDITOR_STEP_INDEX, this, &MapEditor::SetMapStepIndex );
+    g_theEventSystem->Subscribe( EVENT_EDITOR_STEP_INDEX, this, &MapWindow::SetMapStepIndex );
 
     // Setup camera
     m_mapCamera = new Camera();
@@ -35,13 +35,37 @@ MapEditor::MapEditor( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const
 }
 
 
-MapEditor::~MapEditor() {
+MapWindow::~MapWindow() {
     CLEAR_POINTER( m_mapCamera );
     EngineCommon::ClearVector( m_mapPerStep );
 }
 
 
-void MapEditor::UpdateChild( float deltaSeconds ) {
+Strings MapWindow::GetStepNames() const {
+    Strings stepNames;
+    stepNames.push_back( "0: Fill And Edge" );
+
+    // Gen Steps
+    std::string defType = m_mapPerStep[0]->GetMapType();
+    const EditorMapDef* mapDef = EditorMapDef::GetDefinition( defType );
+    Strings genStepNames = mapDef->GetStepNames( 1 );
+
+    stepNames.insert( stepNames.end(), genStepNames.begin(), genStepNames.end() );
+
+    // Edged
+    int stepIndex = (int)stepNames.size();
+    std::string edgedName = Stringf( "%d: Edged Tiles", stepIndex );
+    stepNames.push_back( edgedName );
+
+    // Colliders
+    std::string colliderName = Stringf( "%d: Phys. Colliders", stepIndex + 1 );
+    stepNames.push_back( colliderName );
+
+    return stepNames;
+}
+
+
+void MapWindow::UpdateChild( float deltaSeconds ) {
     Map*& theMap = m_mapPerStep[m_stepIndex];
 
     g_theRenderer->BeginCamera( m_mapCamera );
@@ -54,7 +78,7 @@ void MapEditor::UpdateChild( float deltaSeconds ) {
 }
 
 
-bool MapEditor::SetMapStepIndex( EventArgs& args ) {
+bool MapWindow::SetMapStepIndex( EventArgs& args ) {
     int newIndex = args.GetValue( "stepIndex", -1 );
     int numSteps = (int)m_mapPerStep.size();
 

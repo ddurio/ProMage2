@@ -461,9 +461,9 @@
     <ClCompile Include="..\Editor\Editor.cpp" />
     <ClCompile Include="..\Editor\EditorMapDef.cpp" />
     <ClCompile Include="..\Editor\EditorWindow.cpp" />
-    <ClCompile Include="..\Editor\MapEditor.cpp" />
-    <ClCompile Include="..\Editor\StepEditor.cpp" />
-    <ClCompile Include="..\Editor\XmlEditor.cpp" />
+    <ClCompile Include="..\Editor\MapWindow.cpp" />
+    <ClCompile Include="..\Editor\StepWindow.cpp" />
+    <ClCompile Include="..\Editor\XmlWindow.cpp" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="ActorController.cpp" />
     <ClCompile Include="ActorDef.cpp" />
@@ -507,9 +507,9 @@
     <ClInclude Include="..\Editor\EditorCommon.hpp" />
     <ClInclude Include="..\Editor\EditorMapDef.hpp" />
     <ClInclude Include="..\Editor\EditorWindow.hpp" />
-    <ClInclude Include="..\Editor\MapEditor.hpp" />
-    <ClInclude Include="..\Editor\StepEditor.hpp" />
-    <ClInclude Include="..\Editor\XmlEditor.hpp" />
+    <ClInclude Include="..\Editor\MapWindow.hpp" />
+    <ClInclude Include="..\Editor\StepWindow.hpp" />
+    <ClInclude Include="..\Editor\XmlWindow.hpp" />
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="ActorController.hpp" />
     <ClInclude Include="ActorDef.hpp" />

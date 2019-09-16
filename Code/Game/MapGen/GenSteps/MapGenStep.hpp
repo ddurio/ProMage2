@@ -25,6 +25,8 @@ class MapGenStep {
 
     void Run( Map& map ) const;
 
+    virtual std::string GetName() const;
+
 
     protected:
     static DevConsoleChannel s_mgsChannel;

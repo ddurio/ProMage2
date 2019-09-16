@@ -26,6 +26,20 @@ void EditorMapDef::DefineObject( Map& theMap ) const {
 }
 
 
+Strings EditorMapDef::GetStepNames( int indexOffset /*= 0 */ ) const {
+    Strings stepNames;
+    int numSteps = (int)m_mapGenSteps.size();
+
+    for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
+        const MapGenStep* genStep = m_mapGenSteps[stepIndex];
+        std::string stepName = Stringf( "%d: %s", stepIndex + indexOffset, genStep->GetName().c_str() );
+        stepNames.push_back( stepName );
+    }
+
+    return stepNames;
+}
+
+
 // PRIVATE -------------------------------------------
 EditorMapDef::EditorMapDef( const XMLElement& element ) :
     MapDef( element ) {

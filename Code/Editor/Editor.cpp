@@ -2,9 +2,9 @@
 #include "Editor/Editor.hpp"
 
 #include "Editor/EditorMapDef.hpp"
-#include "Editor/MapEditor.hpp"
-#include "Editor/StepEditor.hpp"
-#include "Editor/XmlEditor.hpp"
+#include "Editor/MapWindow.hpp"
+#include "Editor/StepWindow.hpp"
+#include "Editor/XmlWindow.hpp"
 
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -41,6 +41,8 @@ Editor::~Editor() {
     CLEAR_POINTER( m_mapEditor );
     CLEAR_POINTER( m_stepEditor );
     CLEAR_POINTER( m_xmlEditor );
+
+    Map::ResetMaterialCreated();
 }
 
 
@@ -69,9 +71,9 @@ void Editor::Startup() {
     EditorMapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
 
     // Setup Editor
-    m_mapEditor = new MapEditor();
-    m_stepEditor = new StepEditor();
-    m_xmlEditor = new XmlEditor();
+    m_mapEditor = new MapWindow();
+    m_stepEditor = new StepWindow( *m_mapEditor );
+    m_xmlEditor = new XmlWindow();
 
     BuildLoadedMesh();
 }

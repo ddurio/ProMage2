@@ -9,9 +9,9 @@
 class Camera;
 class GPUMesh;
 class Map;
-class MapEditor;
-class StepEditor;
-class XmlEditor;
+class MapWindow;
+class StepWindow;
+class XmlWindow;
 
 
 class Editor {
@@ -52,9 +52,9 @@ class Editor {
     Camera* m_uiCamera = nullptr;
     Clock m_editorClock;
 
-    MapEditor* m_mapEditor      = nullptr;
-    StepEditor* m_stepEditor    = nullptr;
-    XmlEditor* m_xmlEditor      = nullptr;
+    MapWindow* m_mapEditor      = nullptr;
+    StepWindow* m_stepEditor    = nullptr;
+    XmlWindow* m_xmlEditor      = nullptr;
 
 
     bool UpdateIsLoaded();

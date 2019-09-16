@@ -114,6 +114,11 @@ void Map::Render() const {
 }
 
 
+std::string Map::GetMapType() const {
+    return m_mapType;
+}
+
+
 int Map::GetCurrentFloor() const {
     return m_floorIndex;
 }

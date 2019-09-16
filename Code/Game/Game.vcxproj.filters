@@ -151,16 +151,16 @@
     <ClCompile Include="..\Editor\EditorWindow.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\Editor\MapEditor.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Editor\XmlEditor.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Editor\StepEditor.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
     <ClCompile Include="..\Editor\EditorMapDef.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Editor\MapWindow.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Editor\StepWindow.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Editor\XmlWindow.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -285,19 +285,19 @@
     <ClInclude Include="..\Editor\EditorCommon.hpp">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\Editor\StepEditor.hpp">
-      <Filter>Editor</Filter>
-    </ClInclude>
     <ClInclude Include="..\Editor\EditorWindow.hpp">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\Editor\MapEditor.hpp">
-      <Filter>Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Editor\XmlEditor.hpp">
-      <Filter>Editor</Filter>
-    </ClInclude>
     <ClInclude Include="..\Editor\EditorMapDef.hpp">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Editor\MapWindow.hpp">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Editor\StepWindow.hpp">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Editor\XmlWindow.hpp">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
