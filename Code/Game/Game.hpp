@@ -2,7 +2,7 @@
 #include "Game/GameCommon.hpp"
 
 #include "Engine/Core/EventSystem.hpp"
-#include "Engine/Core/VertexPCU.hpp"
+#include "Engine/Vertex/VertexPCU.hpp"
 
 #include "Game/Entity.hpp"
 

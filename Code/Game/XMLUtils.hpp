@@ -1,7 +1,7 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
-#include "Engine/Core/XMLUtils.hpp"
+#include "Engine/Utils/XMLUtils.hpp"
 
 
 enum ItemSlot : int;

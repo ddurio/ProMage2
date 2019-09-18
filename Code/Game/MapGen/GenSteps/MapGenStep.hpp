@@ -2,9 +2,9 @@
 #include "Engine/Core/EngineCommon.hpp"
 
 #include "Engine/Core/EventSystem.hpp"
-#include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/IntRange.hpp"
+#include "Engine/Utils/XMLUtils.hpp"
 
 
 class Map;
@@ -30,7 +30,6 @@ class MapGenStep {
 
     protected:
     static DevConsoleChannel s_mgsChannel;
-    mutable RNG* m_mapRNG = nullptr;
 
 
     virtual bool IsTileValid( Map& theMap, const Tile& tile ) const;

@@ -383,7 +383,9 @@ Actor* Map::SpawnNewActor( std::string actorType, std::string controllerType, co
 
 
 Item* Map::SpawnLootDrop( Inventory* inventory, const Vec2& worldPosition /*= Vec2::ZERO*/, RNG* customRNG /*= nullptr */ ) const {
+    GUARANTEE_OR_DIE( customRNG != nullptr, "" );
     RNG* rng = (customRNG == nullptr) ? g_RNG : customRNG;
+
     float diceRoll = rng->GetRandomFloatZeroToOne();
     int numItems = (int)m_lootTypes.size();
 

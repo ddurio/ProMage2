@@ -1,13 +1,12 @@
 #include "Game/GameStatePlay.hpp"
 
-#include "Engine/Core/DebugDraw.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
-#include "Engine/Core/NamedStrings.hpp"
-#include "Engine/Core/Profiler.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Core/WindowContext.hpp"
+#include "Engine/Debug/DebugDraw.hpp"
+#include "Engine/Debug/Profiler.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
@@ -22,6 +21,7 @@
 #include "Engine/Renderer/SpriteAnimDef.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
+#include "Engine/Utils/NamedStrings.hpp"
 
 #include "Game/Actor.hpp"
 #include "Game/ActorController.hpp"

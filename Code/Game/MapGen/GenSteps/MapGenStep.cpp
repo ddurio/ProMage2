@@ -177,15 +177,15 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element ) {
 }
 
 
-void MapGenStep::Run( Map& map ) const {
-    m_mapRNG = map.m_mapRNG;
-    int numIterations = m_mapRNG->GetRandomIntInRange( m_numIterations );
+void MapGenStep::Run( Map& theMap ) const {
+    RNG* mapRNG = theMap.GetMapRNG();
+    int numIterations = mapRNG->GetRandomIntInRange( m_numIterations );
 
     for( int iterationIndex = 0; iterationIndex < numIterations; iterationIndex++ ) {
-        float iterationChance = m_mapRNG->GetRandomFloatInRange( m_chanceToRun );
+        float iterationChance = mapRNG->GetRandomFloatInRange( m_chanceToRun );
 
-        if( m_mapRNG->PercentChance( iterationChance ) ) {
-            RunOnce( map );
+        if( mapRNG->PercentChance( iterationChance ) ) {
+            RunOnce( theMap );
         }
     }
 }
@@ -252,6 +252,7 @@ bool MapGenStep::IsTileValid( Map& theMap, const Tile& tile ) const {
 
 
 void MapGenStep::ChangeTile( Map& theMap, int tileIndex ) const {
+    RNG* mapRNG = theMap.GetMapRNG();
     Tile& tile = theMap.m_tiles[tileIndex];
 
     // Tile Type
@@ -274,7 +275,7 @@ void MapGenStep::ChangeTile( Map& theMap, int tileIndex ) const {
         const std::string& heatMapName = heatMapIter->first;
         const FloatRange& heatMapRange = heatMapIter->second;
 
-        float heatMapValue = m_mapRNG->GetRandomFloatInRange( heatMapRange );
+        float heatMapValue = mapRNG->GetRandomFloatInRange( heatMapRange );
         tile.SetHeatMap( heatMapName, heatMapValue );
     }
 

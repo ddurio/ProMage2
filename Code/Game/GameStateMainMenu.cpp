@@ -1,10 +1,10 @@
 #include "Game/GameStateMainMenu.hpp"
 
-#include "Engine/Core/DebugDraw.hpp"
-#include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Debug/DebugDraw.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Shader.hpp"
+#include "Engine/Utils/NamedStrings.hpp"
 
 #include "Game/Game.hpp"
 #include "Game/GameStatePlay.hpp"

@@ -16,14 +16,16 @@ MGS_PerlinNoise::MGS_PerlinNoise( const XMLElement& element ) :
 
 
 void MGS_PerlinNoise::RunOnce( Map& theMap ) const {
+    RNG* mapRNG = theMap.GetMapRNG();
+
     IntVec2 theMapDimensions = theMap.GetMapDimensions();
     std::vector<int> tileIndexesToChange;
 
-    int gridSize      = m_mapRNG->GetRandomIntInRange( m_gridSize );
-    int octaves       = m_mapRNG->GetRandomIntInRange( m_numOctaves );
-    float persistence = m_mapRNG->GetRandomFloatInRange( m_octavePersistence );
-    float scale       = m_mapRNG->GetRandomFloatInRange( m_octaveScale );
-    unsigned int seed = m_mapRNG->GetRandomSeed();
+    int gridSize      = mapRNG->GetRandomIntInRange( m_gridSize );
+    int octaves       = mapRNG->GetRandomIntInRange( m_numOctaves );
+    float persistence = mapRNG->GetRandomFloatInRange( m_octavePersistence );
+    float scale       = mapRNG->GetRandomFloatInRange( m_octaveScale );
+    unsigned int seed = mapRNG->GetRandomSeed();
     
     // For each tile (by X and Y)
     for( int tileY = 0; tileY < theMapDimensions.y; tileY++ ) {

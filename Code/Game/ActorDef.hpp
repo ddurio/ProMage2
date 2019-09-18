@@ -1,7 +1,7 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
-#include "Engine/Core/Definition.hpp"
+#include "Engine/Utils/Definition.hpp"
 
 
 class Actor;

@@ -2,11 +2,11 @@
 #include "Game/GameCommon.hpp"
 
 #include "Engine/Audio/AudioSystem.hpp"
-#include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/Capsule3.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Physics/RigidBody2D.hpp"
+#include "Engine/Vertex/VertexUtils.hpp"
 
 #include "vector"
 

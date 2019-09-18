@@ -1,7 +1,7 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
-#include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Vertex/VertexUtils.hpp"
 
 #include "Game/UIWidget.hpp"
 

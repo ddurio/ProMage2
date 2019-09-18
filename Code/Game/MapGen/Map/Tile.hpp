@@ -1,8 +1,8 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 
-#include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Vertex/VertexUtils.hpp"
 
 
 class CPUMesh;

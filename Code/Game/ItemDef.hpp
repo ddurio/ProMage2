@@ -1,10 +1,10 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
-#include "Engine/Core/Definition.hpp"
-#include "Engine/Core/Tags.hpp"
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Renderer/SpriteDef.hpp"
+#include "Engine/Utils/Definition.hpp"
+#include "Engine/Utils/Tags.hpp"
 
 
 enum ItemSlot {

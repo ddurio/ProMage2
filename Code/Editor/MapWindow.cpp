@@ -66,6 +66,8 @@ Strings MapWindow::GetStepNames() const {
 
 
 void MapWindow::UpdateChild( float deltaSeconds ) {
+    UNUSED( deltaSeconds );
+
     Map*& theMap = m_mapPerStep[m_stepIndex];
 
     g_theRenderer->BeginCamera( m_mapCamera );

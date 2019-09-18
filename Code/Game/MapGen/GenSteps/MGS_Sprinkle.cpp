@@ -14,7 +14,8 @@ MGS_Sprinkle::MGS_Sprinkle( const XMLElement& element ) :
 
 
 void MGS_Sprinkle::RunOnce( Map& theMap ) const {
-    int numSprinkles = m_mapRNG->GetRandomIntInRange( m_countRange );
+    RNG* mapRNG = theMap.GetMapRNG();
+    int numSprinkles = mapRNG->GetRandomIntInRange( m_countRange );
 
     IntVec2 mapDimensions = theMap.GetMapDimensions();
     int numTiles = mapDimensions.x * mapDimensions.y;
@@ -31,7 +32,7 @@ void MGS_Sprinkle::RunOnce( Map& theMap ) const {
                 return;
             }
 
-            tileIndex = m_mapRNG->GetRandomIntLessThan( numTiles );
+            tileIndex = mapRNG->GetRandomIntLessThan( numTiles );
             tile = &(theMap.GetTile( tileIndex ));
             
             numAttempts++;

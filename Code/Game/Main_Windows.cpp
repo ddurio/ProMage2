@@ -2,8 +2,8 @@
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 
 #include "Engine/Core/ImGuiSystem.hpp"
-#include "Engine/Core/NamedStrings.hpp"
-#include "Engine/Core/XMLUtils.hpp"
+#include "Engine/Utils/NamedStrings.hpp"
+#include "Engine/Utils/XMLUtils.hpp"
 
 #include "Game/App.hpp"
 

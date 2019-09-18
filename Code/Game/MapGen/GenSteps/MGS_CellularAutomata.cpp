@@ -20,6 +20,7 @@ MGS_CellularAutomata::MGS_CellularAutomata( const XMLElement& element ) :
 
 
 void MGS_CellularAutomata::RunOnce( Map& theMap ) const {
+    RNG* mapRNG = theMap.GetMapRNG();
     IntVec2 mapDimensions = theMap.GetMapDimensions();
     std::vector<int> tileIndexesToChange;
 
@@ -50,7 +51,7 @@ void MGS_CellularAutomata::RunOnce( Map& theMap ) const {
     int numTilesToChange = (int)tileIndexesToChange.size();
 
     for( int changeIndex = 0; changeIndex < numTilesToChange; changeIndex++ ) {
-        if( m_mapRNG->PercentChance( m_chancePerTile ) ) {
+        if( mapRNG->PercentChance( m_chancePerTile ) ) {
             ChangeTile( theMap, tileIndexesToChange[changeIndex] );
         }
     }

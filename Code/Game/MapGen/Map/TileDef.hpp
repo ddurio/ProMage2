@@ -1,11 +1,11 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 
-#include "Engine/Core/Definition.hpp"
 #include "Engine/Core/Rgba.hpp"
-#include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Utils/Definition.hpp"
+#include "Engine/Utils/XMLUtils.hpp"
 
 #include "map"
 

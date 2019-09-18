@@ -20,6 +20,8 @@ StepWindow::~StepWindow() {
 
 
 void StepWindow::UpdateChild( float deltaSeconds ) {
+    UNUSED( deltaSeconds );
+
     Strings stepNames = m_mapEditor.GetStepNames();
 
     int numSteps = (int)stepNames.size();

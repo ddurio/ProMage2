@@ -1,7 +1,7 @@
 #pragma once
 #include "Game/GameCommon.hpp"
 
-#include "Engine/Core/Tags.hpp"
+#include "Engine/Utils/Tags.hpp"
 
 #include "Game/Actor.hpp"
 #include "Game/ItemDef.hpp"

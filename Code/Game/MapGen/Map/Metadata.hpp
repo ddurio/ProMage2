@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 
-#include "Engine/Core/Tags.hpp"
+#include "Engine/Utils/Tags.hpp"
 
 #include "Game/MapGen/Map/TileDef.hpp"
 

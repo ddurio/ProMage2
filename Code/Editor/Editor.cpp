@@ -6,7 +6,6 @@
 #include "Editor/StepWindow.hpp"
 #include "Editor/XmlWindow.hpp"
 
-#include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -14,6 +13,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/SpriteAnimDef.hpp"
+#include "Engine/Utils/NamedStrings.hpp"
 
 #include "Game/Actor.hpp"
 #include "Game/ActorDef.hpp"
@@ -104,12 +104,15 @@ bool Editor::HandleKeyPressed( unsigned char keyCode ) {
 
 
 bool Editor::HandleKeyReleased( unsigned char keyCode ) {
+    UNUSED( keyCode );
     // ThesisFIXME: Implement key released
     return false;
 }
 
 
 bool Editor::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f */ ) {
+    UNUSED( event );
+    UNUSED( scrollAmount );
     // ThesisFIXME: Implement mouse event
     return false;
 }

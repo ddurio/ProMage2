@@ -44,11 +44,12 @@ void MGS_RoomsAndPaths::RunOnce( Map& theMap ) const {
 
 
 void MGS_RoomsAndPaths::GenerateRooms( Map& theMap, std::vector<IntVec2>& roomPositions, std::vector<IntVec2>& roomSizes ) const {
+    RNG* mapRNG = theMap.GetMapRNG();
     IntVec2 theMapDimensions = theMap.GetMapDimensions();
     AABB2 theMapBounds = AABB2( Vec2::ZERO, Vec2( (float)theMapDimensions.x, (float)theMapDimensions.y ) );
 
-    int numRooms    = m_mapRNG->GetRandomIntInRange( m_numRooms );
-    int numOverlaps = m_mapRNG->GetRandomIntInRange( m_numOverlaps );
+    int numRooms    = mapRNG->GetRandomIntInRange( m_numRooms );
+    int numOverlaps = mapRNG->GetRandomIntInRange( m_numOverlaps );
 
     for( int roomIndex = 0; roomIndex < numRooms; roomIndex++ ) {
         bool roomIsValid = false;
@@ -56,13 +57,13 @@ void MGS_RoomsAndPaths::GenerateRooms( Map& theMap, std::vector<IntVec2>& roomPo
 
         do {
             // Generate room size (plus two to account for walls)
-            int width = m_mapRNG->GetRandomIntInRange( m_roomWidth ) + 2;
-            int height = m_mapRNG->GetRandomIntInRange( m_roomHeight ) + 2;
+            int width = mapRNG->GetRandomIntInRange( m_roomWidth ) + 2;
+            int height = mapRNG->GetRandomIntInRange( m_roomHeight ) + 2;
             Vec2 roomDimensions( (float)width, (float)height );
 
             // Get random alignment
-            float alignX = m_mapRNG->GetRandomFloatZeroToOne();
-            float alignY = m_mapRNG->GetRandomFloatZeroToOne();
+            float alignX = mapRNG->GetRandomFloatZeroToOne();
+            float alignY = mapRNG->GetRandomFloatZeroToOne();
             Vec2 alignment = Vec2( alignX, alignY );
 
             // Convert to tile coords
@@ -205,7 +206,8 @@ void MGS_RoomsAndPaths::GetRoomCenters( const std::vector<IntVec2>& positions, c
 
 
 void MGS_RoomsAndPaths::GeneratePaths( Map& theMap, std::vector<IntVec2>& roomCenters ) const {
-    float straightness = m_mapRNG->GetRandomFloatInRange( m_pathStraightChance );
+    RNG* mapRNG = theMap.GetMapRNG();
+    float straightness = mapRNG->GetRandomFloatInRange( m_pathStraightChance );
 
     if( m_pathLoop ) {
         roomCenters.push_back( roomCenters[0] );
@@ -252,7 +254,8 @@ void MGS_RoomsAndPaths::GeneratePaths( Map& theMap, std::vector<IntVec2>& roomCe
 
 
 void MGS_RoomsAndPaths::ChangePathTiles( Map& theMap, const IntVec2& pathStart, const IntVec2& pathSize ) const {
-    bool xFirst = m_mapRNG->PercentChance( 0.5f );
+    RNG* mapRNG = theMap.GetMapRNG();
+    bool xFirst = mapRNG->PercentChance( 0.5f );
     IntVec2 pathPosition = pathStart;
 
     if( xFirst ) {

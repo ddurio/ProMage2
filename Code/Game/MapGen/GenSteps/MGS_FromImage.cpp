@@ -29,12 +29,13 @@ std::map< std::string, const TileDef* > MGS_FromImage::s_tileDefsByTexelColor;
 
 
 void MGS_FromImage::RunOnce( Map& theMap ) const {
+    RNG* mapRNG = theMap.GetMapRNG();
     IntVec2 imageDimensions = m_image->GetDimensions();
     IntVec2 mapDimensions = theMap.GetMapDimensions();
 
     IntVec2 imageOffset = GetImageOffset( theMap );
 
-    int rotations = m_mapRNG->GetRandomIntInRange( m_numRotations );
+    int rotations = mapRNG->GetRandomIntInRange( m_numRotations );
     Image rotatedImage;
     m_image->GetRotated( rotations, rotatedImage );
 
@@ -56,7 +57,7 @@ void MGS_FromImage::RunOnce( Map& theMap ) const {
                 continue;
             }
 
-            if( m_mapRNG->PercentChance( chanceToExist ) ) {
+            if( mapRNG->PercentChance( chanceToExist ) ) {
                 int tileIndex = mapY * mapDimensions.x + mapX;
                 Tile& tile = GetTile( theMap, tileIndex );
                 tile.SetTileType( tileDef );
@@ -89,6 +90,7 @@ bool MGS_FromImage::IsAlignmentValid( Map& theMap, const AABB2& imageBounds ) co
 
 
 IntVec2 MGS_FromImage::GetImageOffset( Map& theMap ) const {
+    RNG* mapRNG = theMap.GetMapRNG();
     IntVec2 imageDimensions = m_image->GetDimensions();
     IntVec2 mapDimensions = theMap.GetMapDimensions();
 
@@ -100,8 +102,8 @@ IntVec2 MGS_FromImage::GetImageOffset( Map& theMap ) const {
             return IntVec2::NEGONE;
         }
 
-        float alignX = m_mapRNG->GetRandomFloatInRange( m_alignX );
-        float alignY = m_mapRNG->GetRandomFloatInRange( m_alignY );
+        float alignX = mapRNG->GetRandomFloatInRange( m_alignX );
+        float alignY = mapRNG->GetRandomFloatInRange( m_alignY );
 
         AABB2 mapBounds = AABB2( Vec2::ZERO, Vec2( mapDimensions ) );
         imageBounds = mapBounds.GetBoxWithin( Vec2( imageDimensions ), Vec2( alignX, alignY ) );

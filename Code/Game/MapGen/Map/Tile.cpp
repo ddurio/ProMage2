@@ -1,9 +1,9 @@
 #include "Game/MapGen/Map/Tile.hpp"
 
-#include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
+#include "Engine/Vertex/VertexUtils.hpp"
 
 #include "Game/MapGen/Map/TileDef.hpp"
 #include "Game/MapGen/Map/Map.hpp"

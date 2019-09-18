@@ -1,13 +1,13 @@
 #include "Game/Entity.hpp"
 
 #include "Engine/Core/Timer.hpp"
-#include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/Capsule3.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Vertex/VertexUtils.hpp"
 
 #include "Game/Game.hpp"
 #include "Game/MapGen/Map/Map.hpp"

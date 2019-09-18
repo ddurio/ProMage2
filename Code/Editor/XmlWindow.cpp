@@ -15,7 +15,7 @@ XmlWindow::~XmlWindow() {
 
 
 void XmlWindow::UpdateChild( float deltaSeconds ) {
-
+    UNUSED( deltaSeconds );
 }
 
 #endif

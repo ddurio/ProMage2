@@ -1,7 +1,7 @@
 #include "Game/MapGen/Map/MapDef.hpp"
 
 #include "Engine/Core/DevConsole.hpp"
-#include "Engine/Core/Profiler.hpp"
+#include "Engine/Debug/Profiler.hpp"
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"
 

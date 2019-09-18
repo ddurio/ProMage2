@@ -1,6 +1,5 @@
 #include "Game/Item.hpp"
 
-#include "Engine/Core/Tags.hpp"
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteAnimDef.hpp"
@@ -8,6 +7,7 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
+#include "Engine/Utils/Tags.hpp"
 
 #include "Game/Game.hpp"
 #include "Game/Inventory.hpp"

@@ -1,9 +1,9 @@
 #pragma once
 #include "Engine/Core/EngineCommon.hpp"
 
-#include "Engine/Core/Definition.hpp"
-#include "Engine/Core/XMLUtils.hpp"
 #include "Engine/Math/IntRange.hpp"
+#include "Engine/Utils/Definition.hpp"
+#include "Engine/Utils/XMLUtils.hpp"
 
 #include "map"
 
