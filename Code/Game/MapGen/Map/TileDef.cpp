@@ -1,6 +1,6 @@
 #include "Game/MapGen/Map/TileDef.hpp"
 
-#include "Engine/Core/DevConsole.hpp"
+#include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"

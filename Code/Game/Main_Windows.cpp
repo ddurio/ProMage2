@@ -2,6 +2,7 @@
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 
 #include "Engine/Core/ImGuiSystem.hpp"
+#include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Utils/NamedStrings.hpp"
 #include "Engine/Utils/XMLUtils.hpp"
 
@@ -18,7 +19,7 @@ bool GameWinProc( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM l
     UNUSED( lParam );
     unsigned char asKey = (unsigned char)wParam;
 
-    if( g_theGui != nullptr ) {
+    if( !g_theDevConsole->IsTakingInput() && g_theGui != nullptr ) {
         bool handled = ImGui_ImplWin32_WndProcHandler( windowHandle, wmMessageCode, wParam, lParam );
         UNUSED( handled ); // FIXME: What does this variable mean???
         const ImGuiIO& io = ImGui::GetIO();

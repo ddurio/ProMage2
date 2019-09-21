@@ -23,7 +23,6 @@ Game::~Game() {
     CLEAR_POINTER( m_gameState );
 }
 
-
 void Game::Startup() {
 
 }
@@ -36,8 +35,6 @@ void Game::Shutdown() {
 
 void Game::Update() {
     m_gameState->Update();
-
-    //ImGui::ShowDemoWindow();
 }
 
 

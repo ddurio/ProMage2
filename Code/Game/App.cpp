@@ -1,11 +1,11 @@
 #include "Game/App.hpp"
 
 #include "Engine/Audio/AudioSystem.hpp"
-#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Debug/DebugDraw.hpp"
+#include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
@@ -162,6 +162,10 @@ bool App::HandleCharTyped( unsigned char character ) {
 
 
 bool App::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f*/ ) {
+    if( g_theDevConsole->IsTakingInput() ) {
+        return g_theDevConsole->HandleMouseEvent( event, scrollAmount );
+    }
+
 #if defined(_EDITOR)
     return g_theEditor->HandleMouseButton( event, scrollAmount );
 #else

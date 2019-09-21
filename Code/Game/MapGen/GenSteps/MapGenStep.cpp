@@ -23,7 +23,7 @@ std::vector< MapGenStep::CustomEvent > MapGenStep::s_customResults;
 
 MapGenStep::MapGenStep( const XMLElement& element ) {
     if( s_mgsChannel == DevConsole::CHANNEL_UNDEFINED ) {
-        s_mgsChannel = g_theDevConsole->AddChannelByName( "MapGen" );
+        s_mgsChannel = g_theDevConsole->AddChannel( "MapGen", Rgba::ORGANIC_GREEN );
     }
 
     m_stepType = element.Name();

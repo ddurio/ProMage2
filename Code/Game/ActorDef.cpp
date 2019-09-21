@@ -1,6 +1,6 @@
 #include "Game/ActorDef.hpp"
 
-#include "Engine/Core/DevConsole.hpp"
+#include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/RNG.hpp"

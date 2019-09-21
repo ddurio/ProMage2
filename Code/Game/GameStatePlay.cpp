@@ -1,12 +1,12 @@
 #include "Game/GameStatePlay.hpp"
 
-#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Debug/DebugDraw.hpp"
 #include "Engine/Debug/Profiler.hpp"
+#include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Physics/PhysicsSystem.hpp"

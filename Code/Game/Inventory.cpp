@@ -1,9 +1,9 @@
 #include "Game/Inventory.hpp"
 
-#include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Debug/DebugDraw.hpp"
+#include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Math/RNG.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/SpriteAnimDef.hpp"

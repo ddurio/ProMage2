@@ -1,6 +1,6 @@
 #include "Game/MapGen/GenSteps/MGS_RoomsAndPaths.hpp"
 
-#include "Engine/Core/DevConsole.hpp"
+#include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"

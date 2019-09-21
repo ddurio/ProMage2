@@ -1,6 +1,6 @@
 #include "Game/UIButton.hpp"
 
-#include "Engine/Core/DevConsole.hpp"
+#include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
