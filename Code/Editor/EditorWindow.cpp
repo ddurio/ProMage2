@@ -15,7 +15,7 @@ EditorWindow::~EditorWindow() {
 
 
 void EditorWindow::Update( float deltaSeconds ) {
-    Vec2 windowSize = g_theEditor->CreateWindow( m_windowDimensions, m_windowAlignment, m_windowName );
+    Vec2 windowSize = g_theEditor->CreateWindow( m_windowDimensions, m_windowAlignment, m_windowName.c_str() );
     UpdateChild( deltaSeconds );
     ImGui::End();
 }

@@ -33,6 +33,7 @@ class Map {
     void Update( float deltaSeconds );
     void Render() const;
 
+    std::string GetMapName() const;
     std::string GetMapType() const;
     int GetCurrentFloor() const;
     RNG* GetMapRNG() const;

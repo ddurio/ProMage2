@@ -43,22 +43,22 @@ MapWindow::~MapWindow() {
 
 Strings MapWindow::GetStepNames() const {
     Strings stepNames;
-    stepNames.push_back( "0: Fill And Edge" );
+    stepNames.push_back( "1: Fill And Edge" );
 
     // Gen Steps
     std::string defType = m_mapPerStep[0]->GetMapType();
     const EditorMapDef* mapDef = EditorMapDef::GetDefinition( defType );
-    Strings genStepNames = mapDef->GetStepNames( 1 );
+    Strings genStepNames = mapDef->GetStepNames( 2 ); // One step and make it not zero indexed
 
     stepNames.insert( stepNames.end(), genStepNames.begin(), genStepNames.end() );
 
     // Edged
     int stepIndex = (int)stepNames.size();
-    std::string edgedName = Stringf( "%d: Edged Tiles", stepIndex );
+    std::string edgedName = Stringf( "%d: Edged Tiles", stepIndex + 1 );
     stepNames.push_back( edgedName );
 
     // Colliders
-    std::string colliderName = Stringf( "%d: Phys. Colliders", stepIndex + 1 );
+    std::string colliderName = Stringf( "%d: Phys. Colliders", stepIndex + 2 );
     stepNames.push_back( colliderName );
 
     return stepNames;
@@ -69,6 +69,7 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
     Map*& theMap = m_mapPerStep[m_stepIndex];
+    m_windowName = theMap->GetMapName();
 
     g_theRenderer->BeginCamera( m_mapCamera );
     theMap->Render();

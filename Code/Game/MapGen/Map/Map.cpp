@@ -114,6 +114,11 @@ void Map::Render() const {
 }
 
 
+std::string Map::GetMapName() const {
+    return m_mapName;
+}
+
+
 std::string Map::GetMapType() const {
     return m_mapType;
 }

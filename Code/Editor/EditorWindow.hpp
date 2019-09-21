@@ -18,7 +18,7 @@ class EditorWindow {
 
 
     protected:
-    const char* m_windowName    = "EditorWindow";
+    std::string m_windowName    = "EditorWindow";
 
 
     private:
