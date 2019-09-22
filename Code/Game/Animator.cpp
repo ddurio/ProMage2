@@ -15,8 +15,13 @@ Animator::Animator( Actor* myActor ) :
     m_myActor( myActor ) {
     m_currentAnim = IsoSpriteAnimDef::GetDefinition( ANIM_PAPER_DOLL_IDLE );
 
-    GameState* state = g_theGame->GetGameState();
-    m_animTimer = new Timer( state->GetStateClock() );
+    if( g_theGame != nullptr ) {
+        GameState* state = g_theGame->GetGameState();
+        m_animTimer = new Timer( state->GetStateClock() );
+    } else {
+        m_animTimer = new Timer();
+    }
+
     m_animTimer->Start( m_currentAnim->GetDuration() );
 }
 

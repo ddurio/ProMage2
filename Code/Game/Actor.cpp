@@ -73,7 +73,7 @@ int Actor::SetupSpawnActorMGS() {
     attrNames.push_back( "spawnActor" );
     attrNames.push_back( "controller" );
 
-    return MapGenStep::AddCustomResult( "spawnActor", attrNames, false );
+    return MapGenStep::AddCustomResult( "spawnActor", attrNames, REQUIRE_ONE );
 }
 
 
@@ -373,6 +373,10 @@ void Actor::BuildMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
 
 
 void Actor::BuildPortraitMesh( const Rgba& tint /*= Rgba::WHITE */ ) {
+    if( g_theGame == nullptr ) {
+        return;
+    }
+
     const SpriteDef sprite = m_animator->GetPortraitSpriteDef();
     sprite.GetUVs( m_spriteUVs.mins, m_spriteUVs.maxs );
 

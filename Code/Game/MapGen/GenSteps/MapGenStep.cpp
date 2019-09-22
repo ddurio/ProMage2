@@ -93,11 +93,11 @@ MapGenStep::MapGenStep( const XMLElement& element ) {
 }
 
 
-int MapGenStep::AddCustomCondition( const std::string& eventName, const Strings& attrNames, bool requireAllAttr /*= true */ ) {
+int MapGenStep::AddCustomCondition( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement /*= REQUIRE_ALL */ ) {
     CustomEvent newCondition;
     newCondition.name = eventName;
     newCondition.attrNames = attrNames;
-    newCondition.requireAll = requireAllAttr;
+    newCondition.requirement = requirement;
 
     int numConditions = (int)s_customConditions.size();
 
@@ -115,11 +115,11 @@ int MapGenStep::AddCustomCondition( const std::string& eventName, const Strings&
 }
 
 
-int MapGenStep::AddCustomResult( const std::string& eventName, const Strings& attrNames, bool requireAllAttr /*= true */ ) {
+int MapGenStep::AddCustomResult( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement /*= REQUIRE_ALL */ ) {
     CustomEvent newResult;
     newResult.name = eventName;
     newResult.attrNames = attrNames;
-    newResult.requireAll = requireAllAttr;
+    newResult.requirement = requirement;
 
     int numResults = (int)s_customResults.size();
 
@@ -322,7 +322,7 @@ Tile& MapGenStep::GetTile( Map& map, int tileX, int tileY ) const {
 // PRIVATE -------------------------------------------------
 MapGenStep::CustomEvent::CustomEvent( const CustomEvent& event, const Strings& parsedValues ) :
     name( event.name ),
-    requireAll( event.requireAll ),
+    requirement( event.requirement ),
     attrNames( event.attrNames ),
     attrValues( parsedValues ) {
 }
@@ -344,11 +344,17 @@ Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element ) c
         }
     }
 
-    if( numParsed == 0 || (requireAll && numParsed != numAttrs) ) {
-        return Strings();
-    } else {
-        return parsedValues;
+    switch( requirement ) {
+        case( REQUIRE_ALL ): {
+            return (numParsed == numAttrs) ? parsedValues : Strings();
+        } case( REQUIRE_ONE ): {
+            return (numParsed > 0) ? parsedValues : Strings();
+        } case( REQUIRE_NONE ): {
+            return parsedValues;
+        }
     }
+
+    return Strings();
 }
 
 

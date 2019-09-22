@@ -11,14 +11,20 @@ class Map;
 class RNG;
 class Tile;
 
+enum CustomAttrRequirement {
+    REQUIRE_ALL,
+    REQUIRE_ONE,
+    REQUIRE_NONE
+};
+
 
 class MapGenStep {
     public:
     explicit MapGenStep( const XMLElement& element );
     virtual ~MapGenStep() {};
 
-    static int AddCustomCondition( const std::string& eventName, const Strings& attrNames, bool requireAllAttr = true );
-    static int AddCustomResult( const std::string& eventName, const Strings& attrNames, bool requireAllAttr = true );
+    static int AddCustomCondition( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
+    static int AddCustomResult( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
     static void RemoveCustomCondition( int conditionIndex );
     static void RemoveCustomResult( int resultIndex );
     static MapGenStep* CreateMapGenStep( const XMLElement& element );
@@ -46,7 +52,7 @@ class MapGenStep {
         public:
         std::string name = "";
         bool isEnabled = true;
-        bool requireAll = true;
+        CustomAttrRequirement requirement = REQUIRE_ALL;
 
         Strings attrNames;
         Strings attrValues;

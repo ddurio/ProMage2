@@ -15,10 +15,9 @@
 
 MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const Vec2& alignment /*= Vec2( 0.f, 1.f ) */ ) :
     EditorWindow( normDimensions, alignment ) {
-    // ThesisFIXME: Choose better name for this window
     m_windowName = "MapEditor";
 
-    const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( "Cavern" );
+    const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( "Island" );
     eMapDef->DefineObject( &m_mapPerStep );
 
     m_stepIndex = (int)m_mapPerStep.size() - 1;
@@ -71,11 +70,10 @@ Strings MapWindow::GetStepNames() const {
 
 
 void MapWindow::UpdateChild( float deltaSeconds ) {
-    UNUSED( deltaSeconds );
-
     Map*& theMap = m_mapPerStep[m_stepIndex];
     m_windowName = theMap->GetMapName();
 
+    theMap->Update( deltaSeconds );
     g_theRenderer->BeginCamera( m_mapCamera );
     theMap->Render();
     g_theRenderer->EndCamera( m_mapCamera );
@@ -95,14 +93,14 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
     Vec2 mapSizePixels = pixelsPerTile * mapSizeTiles; // Map size in pixels
 
     AABB2 contentBounds = AABB2( contentMin, contentMax );
-    AABB2 mapBounds = contentBounds.GetBoxWithin( mapSizePixels, ALIGN_CENTER_LEFT );
+    AABB2 mapBounds = contentBounds.GetBoxWithin( mapSizePixels, ALIGN_BOTTOM_LEFT ); // Y is inverted.. actually means top left
 
 
 
     ImGui::Image( mapView, mapBounds.GetDimensions().GetAsImGui() ); // Map render
 
     //ImGui::GetForegroundDrawList()->AddRect( contentBounds.mins.GetAsImGui(), contentBounds.maxs.GetAsImGui(), 0xFFFF'FF00 );
-    //ImGui::GetForegroundDrawList()->AddRect( mapBounds.mins.GetAsImGui(), mapBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
+    ImGui::GetForegroundDrawList()->AddRect( mapBounds.mins.GetAsImGui(), mapBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
 
     if( ImGui::IsItemHovered() ) {
         ImVec2 cursorPos = ImGui::GetMousePos();

@@ -123,7 +123,6 @@ void Editor::Update() {
         return;
     }
 
-    //TheisFIXME: Implement editor update
     float deltaSeconds = m_editorClock.GetDeltaTime();
 
     m_mapEditor->Update( deltaSeconds );
@@ -139,7 +138,6 @@ void Editor::Render() const {
         return;
     }
 
-    //ThesisFIXME: Implement editor render
     m_mapEditor->Render();
     m_stepEditor->Render();
     m_xmlEditor->Render();

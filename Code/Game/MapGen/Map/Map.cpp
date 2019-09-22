@@ -422,6 +422,10 @@ bool Map::SpawnNewActor( EventArgs& args ) {
         return false;
     }
 
+#if defined(_EDITOR)
+    controller = "";
+#endif
+
     Vec2 tileCenter = Vec2( callingTile->GetTileCoords() ) + Vec2( 0.5f );
 
     SpawnNewActor( actorType, controller, tileCenter );
