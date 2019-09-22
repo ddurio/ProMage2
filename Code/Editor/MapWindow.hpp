@@ -23,6 +23,7 @@ class MapWindow : public EditorWindow {
 
     Camera* m_mapCamera = nullptr;
     std::string m_mapViewName = "mapEditor/mapView";
+    std::string m_mapDepthName = "mapEditor/mapDepth";
 
 
     void UpdateChild( float deltaSeconds ) override;

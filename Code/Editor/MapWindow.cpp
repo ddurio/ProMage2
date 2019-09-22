@@ -5,8 +5,11 @@
 
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Debug/DebugDraw.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/Texture2D.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
 
 
@@ -22,9 +25,11 @@ MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const
     g_theEventSystem->Subscribe( EVENT_EDITOR_STEP_INDEX, this, &MapWindow::SetMapStepIndex );
 
     // Setup camera
+    IntVec2 mapDims = m_mapPerStep[0]->GetMapDimensions();
+    float mapAspect = (float)mapDims.x / (float)mapDims.y;
+
     m_mapCamera = new Camera();
-    IntVec2 mapDims = m_mapPerStep[0]->GetMapDimensions(); // ThesisFIXME: camera dimensions will be wrong if map size ever changes
-    m_mapCamera->SetOrthoProjection( (float)mapDims.y );
+    m_mapCamera->SetOrthoProjection( (float)mapDims.y, -100.f, 100.f, mapAspect );
 
     Vec2 halfDims = mapDims * 0.5f;
     m_mapCamera->Translate( halfDims );
@@ -76,8 +81,66 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
     g_theRenderer->EndCamera( m_mapCamera );
 
     void* mapView = m_mapCamera->GetRenderTarget()->GetShaderView();
-    ImVec2 windowSize = ImGui::GetWindowSize(); // ThesisFIXME: This is bigger than I expected it to be (auto added scroll bar)
-    ImGui::Image( mapView, windowSize );
+
+    Vec2 contentMin = ImGui::GetWindowContentRegionMin();
+    Vec2 contentMax = ImGui::GetWindowContentRegionMax();
+    Vec2 contentSize = contentMax - contentMin;
+
+    // Calculate pixel sizes for map
+    IntVec2 mapSizeTiles = theMap->GetMapDimensions();
+
+    Vec2 pixelsPerTile2 = contentSize / mapSizeTiles;
+    float pixelsPerTile = Min( pixelsPerTile2.x, pixelsPerTile2.y ); // Tile size in pixels
+
+    Vec2 mapSizePixels = pixelsPerTile * mapSizeTiles; // Map size in pixels
+
+    AABB2 contentBounds = AABB2( contentMin, contentMax );
+    AABB2 mapBounds = contentBounds.GetBoxWithin( mapSizePixels, ALIGN_CENTER_LEFT );
+
+
+
+    ImGui::Image( mapView, mapBounds.GetDimensions().GetAsImGui() ); // Map render
+
+    //ImGui::GetForegroundDrawList()->AddRect( contentBounds.mins.GetAsImGui(), contentBounds.maxs.GetAsImGui(), 0xFFFF'FF00 );
+    //ImGui::GetForegroundDrawList()->AddRect( mapBounds.mins.GetAsImGui(), mapBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
+
+    if( ImGui::IsItemHovered() ) {
+        ImVec2 cursorPos = ImGui::GetMousePos();
+
+        if( mapBounds.IsPointInside( cursorPos ) ) {
+            Vec2 mapOrigin = mapBounds.mins;
+            Vec2 cursorOffset = cursorPos - mapOrigin;
+
+            Vec2 cursorTileFloat = cursorOffset / pixelsPerTile;
+            IntVec2 cursorTileCoord = IntVec2( (int)cursorTileFloat.x, (int)cursorTileFloat.y );
+            
+            Vec2 tileMin = mapOrigin + (pixelsPerTile * cursorTileCoord);
+            Vec2 tileMax = tileMin + Vec2( pixelsPerTile );
+
+            Rgba tileHighlight = Rgba::GREEN;
+            tileHighlight.a = .3f;
+
+            unsigned char packedColor[4];
+            tileHighlight.GetAsBytes( packedColor );
+            ImU32 highlightColor = *(ImU32*)packedColor;
+
+            ImGui::GetForegroundDrawList()->AddRectFilled( tileMin.GetAsImGui(), tileMax.GetAsImGui(), highlightColor );
+        }
+    }
+
+/*  // Working image drawing
+    ImVec2 imageMin = ImGui::GetItemRectMin();
+    ImVec2 imageMax = ImGui::GetItemRectMax();
+
+    Rgba tileHighlight = Rgba::GREEN;
+    tileHighlight.a = .3f;
+
+    unsigned char packedColor[4];
+    tileHighlight.GetAsBytes( packedColor );
+    ImU32 packedU32 = *(ImU32*)packedColor;
+
+    ImGui::GetForegroundDrawList()->AddRectFilled( imageMin, imageMax, packedU32 );
+*/
 }
 
 
