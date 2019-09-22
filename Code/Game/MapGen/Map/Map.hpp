@@ -69,6 +69,10 @@ class Map {
     bool SpawnNewActor( EventArgs& args );
     bool SpawnNewItem( EventArgs& args );
 
+    bool TrackModifiedTiles( EventArgs& args );
+    void ClearModifiedTiles();
+    std::vector< IntVec2 > GetModifiedTiles() const;
+
     // Lists
     void SetPlayer( Actor* player );
     void AddPlayerToMap( Actor* actor );
@@ -104,6 +108,9 @@ class Map {
 
     std::vector< float >        m_lootPercents;
     std::vector< std::string >  m_lootTypes;
+
+    // Editor info
+    std::vector< IntVec2 >      m_modifiedTiles;
 
 
     bool HandleEnemyDeath( EventArgs& args );

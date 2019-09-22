@@ -19,6 +19,8 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
 
     Strings GetStepNames( int indexOffset = 0 ) const;
 
+    static int SetupChangeTileMGS();
+
 
     private:
     struct AsyncPayload {

@@ -46,8 +46,7 @@ class Editor {
     GPUMesh* m_loadingMesh = nullptr;
     GPUMesh* m_loadedMesh  = nullptr;
 
-    int m_spawnActorIndex = -1;
-    int m_spawnItemIndex  = -1;
+    std::vector< int > m_customResultIndex;
 
     Camera* m_uiCamera = nullptr;
     Clock m_editorClock;

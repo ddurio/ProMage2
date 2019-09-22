@@ -28,5 +28,6 @@ class MapWindow : public EditorWindow {
 
     void UpdateChild( float deltaSeconds ) override;
 
-    bool SetMapStepIndex( EventArgs& args );
+    bool SetVisibleMapStep( EventArgs& args );
+    bool TrackModifiedTiles( EventArgs& args );
 };

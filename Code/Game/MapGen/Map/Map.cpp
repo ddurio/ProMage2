@@ -453,6 +453,32 @@ bool Map::SpawnNewItem( EventArgs& args ) {
 }
 
 
+bool Map::TrackModifiedTiles( EventArgs& args ) {
+    Tile* callingTile = args.GetValue( "callingTile", (Tile*)nullptr );
+    Map* callingMap = args.GetValue( "callingMap", (Map*)nullptr );
+
+    if( callingTile == nullptr ||
+        callingMap == nullptr ||
+        callingMap != this ) {
+        return false;
+    }
+
+    // ThesisFIXME: will probably need extra info from the tile (like what was changed)
+    m_modifiedTiles.push_back( callingTile->GetTileCoords() );
+    return true;
+}
+
+
+void Map::ClearModifiedTiles() {
+    m_modifiedTiles.clear();
+}
+
+
+std::vector< IntVec2 > Map::GetModifiedTiles() const {
+    return m_modifiedTiles;
+}
+
+
 void Map::SetPlayer( Actor* player ) {
     m_player = player;
 

@@ -66,8 +66,9 @@ void Editor::Startup() {
     ItemDef::LoadFromFile( DATA_ITEM_DEFS, "ItemDef" );
     TileDef::LoadFromFile( DATA_TILE_DEFS, "TileDefinition" );
 
-    m_spawnActorIndex = Actor::SetupSpawnActorMGS();
-    m_spawnItemIndex  = Item::SetupSpawnItemMGS();
+    m_customResultIndex.push_back( Actor::SetupSpawnActorMGS() );
+    m_customResultIndex.push_back( Item::SetupSpawnItemMGS() );
+    m_customResultIndex.push_back( EditorMapDef::SetupChangeTileMGS() );
     EditorMapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
 
     // Setup Editor
@@ -80,8 +81,11 @@ void Editor::Startup() {
 
 
 void Editor::Shutdown() {
-    MapGenStep::RemoveCustomResult( m_spawnActorIndex );
-    MapGenStep::RemoveCustomResult( m_spawnItemIndex );
+    int numResults = (int)m_customResultIndex.size();
+
+    for( int resultIndex = 0; resultIndex < numResults; resultIndex++ ) {
+        MapGenStep::RemoveCustomResult( m_customResultIndex[resultIndex] );
+    }
 
     ActorDef::DestroyDefs();
     ItemDef::DestroyDefs();

@@ -40,6 +40,13 @@ Strings EditorMapDef::GetStepNames( int indexOffset /*= 0 */ ) const {
 }
 
 
+int EditorMapDef::SetupChangeTileMGS() {
+    Strings attrNames;
+
+    return MapGenStep::AddCustomResult( "changeTile", attrNames, REQUIRE_NONE );
+}
+
+
 // PRIVATE -------------------------------------------
 EditorMapDef::EditorMapDef( const XMLElement& element ) :
     MapDef( element ) {
@@ -61,11 +68,13 @@ bool EditorMapDef::FinishStep( AsyncPayload& payload ) const {
     if( payload.numStepsDone == payload.numStepsToDo ) {
         payload.theMap->StartupPostDefine();
         payload.theMap->Shutdown();
+        g_theEventSystem->Unsubscribe( "changeTile", payload.theMap, &Map::TrackModifiedTiles );
         m_mainPayloads.Enqueue( payload );
 
         return true;
     }
 
+    payload.theMap->ClearModifiedTiles();
     return false;
 }
 
@@ -86,7 +95,9 @@ void EditorMapDef::LaunchJobs() const {
         std::string mapName = Stringf( "%s: Step %d", m_defType.c_str(), stepIndex );
         RNG* mapRNG = new RNG( mapSeed );
         Map* theMap = new Map( mapName, mapRNG );
+
         SetMapDef( *theMap );
+        g_theEventSystem->Subscribe( "changeTile", theMap, &Map::TrackModifiedTiles );
 
         AsyncPayload payload;
         payload.theMap = theMap;

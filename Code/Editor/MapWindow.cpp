@@ -21,7 +21,7 @@ MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const
     eMapDef->DefineObject( &m_mapPerStep );
 
     m_stepIndex = (int)m_mapPerStep.size() - 1;
-    g_theEventSystem->Subscribe( EVENT_EDITOR_STEP_INDEX, this, &MapWindow::SetMapStepIndex );
+    g_theEventSystem->Subscribe( EVENT_EDITOR_STEP_INDEX, this, &MapWindow::SetVisibleMapStep );
 
     // Setup camera
     IntVec2 mapDims = m_mapPerStep[0]->GetMapDimensions();
@@ -96,17 +96,40 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
     AABB2 mapBounds = contentBounds.GetBoxWithin( mapSizePixels, ALIGN_BOTTOM_LEFT ); // Y is inverted.. actually means top left
 
 
-
+    // RENDER THE MAP
     ImGui::Image( mapView, mapBounds.GetDimensions().GetAsImGui() ); // Map render
-
     //ImGui::GetForegroundDrawList()->AddRect( contentBounds.mins.GetAsImGui(), contentBounds.maxs.GetAsImGui(), 0xFFFF'FF00 );
     ImGui::GetForegroundDrawList()->AddRect( mapBounds.mins.GetAsImGui(), mapBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
+    // RENDER THE MAP - END
 
+
+    Rgba tileHighlight = Rgba::RED;
+    tileHighlight.a = .3f;
+    unsigned char packedColor[4];
+    tileHighlight.GetAsBytes( packedColor );
+    ImU32 highlightColor = *(ImU32*)packedColor;
+
+    Vec2 mapOrigin = mapBounds.mins;
+
+    std::vector< IntVec2 > modifiedTiles = theMap->GetModifiedTiles();
+    int numModifies = (int)modifiedTiles.size();
+
+    for( int modifyIndex = 0; modifyIndex < numModifies; modifyIndex++ ) {
+        IntVec2 invertedTileCoord = modifiedTiles[modifyIndex];
+        invertedTileCoord.y = (mapSizeTiles.y - 1) - invertedTileCoord.y;
+
+        Vec2 tileMin = mapOrigin + (pixelsPerTile * invertedTileCoord);
+        Vec2 tileMax = tileMin + Vec2( pixelsPerTile );
+
+        ImGui::GetForegroundDrawList()->AddRectFilled( tileMin.GetAsImGui(), tileMax.GetAsImGui(), highlightColor );
+    }
+
+
+    // Mouse position
     if( ImGui::IsItemHovered() ) {
         ImVec2 cursorPos = ImGui::GetMousePos();
 
         if( mapBounds.IsPointInside( cursorPos ) ) {
-            Vec2 mapOrigin = mapBounds.mins;
             Vec2 cursorOffset = cursorPos - mapOrigin;
 
             Vec2 cursorTileFloat = cursorOffset / pixelsPerTile;
@@ -115,16 +138,11 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
             Vec2 tileMin = mapOrigin + (pixelsPerTile * cursorTileCoord);
             Vec2 tileMax = tileMin + Vec2( pixelsPerTile );
 
-            Rgba tileHighlight = Rgba::GREEN;
-            tileHighlight.a = .3f;
-
-            unsigned char packedColor[4];
-            tileHighlight.GetAsBytes( packedColor );
-            ImU32 highlightColor = *(ImU32*)packedColor;
-
             ImGui::GetForegroundDrawList()->AddRectFilled( tileMin.GetAsImGui(), tileMax.GetAsImGui(), highlightColor );
         }
     }
+
+
 
 /*  // Working image drawing
     ImVec2 imageMin = ImGui::GetItemRectMin();
@@ -142,7 +160,7 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
 }
 
 
-bool MapWindow::SetMapStepIndex( EventArgs& args ) {
+bool MapWindow::SetVisibleMapStep( EventArgs& args ) {
     int newIndex = args.GetValue( "stepIndex", -1 );
     int numSteps = (int)m_mapPerStep.size();
 
