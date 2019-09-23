@@ -102,11 +102,11 @@
             <CellularAutomata ifIsType="EdgedSand" ifHeatMapDistance="0~3" setType="EdgedGrass"/>
             <!-- Stairs -->
             <Sprinkle ifIsType="EdgedSand" setType="StairsDown" setTags="stairsDown" count="1"/>
-            <CellularAutomata ifIsType="EdgedSand" ifNeighborType="StairsDown" setTags="stairsDownAccess"/>
+            <CellularAutomata ifNeighborType="StairsDown" setTags="stairsDownAccess"/>
 
             <DistanceField ifIsType="StairsDown" movementType="Walk"/>
             <Sprinkle ifIsType="EdgedSand" ifHeatMapDistance="0~999998" setType="StairsUp" setTags="stairsUp" count="1"/>
-            <CellularAutomata ifIsType="EdgedSand" ifNeighborType="StairsUp" setTags="stairsUpAccess"/>
+            <CellularAutomata ifNeighborType="StairsUp" setTags="stairsUpAccess"/>
         </GenerationSteps>
     </MapDefinition>
 </MapDefinitions>

@@ -19,9 +19,6 @@ class EditorWindow {
 
     protected:
     std::string m_windowName    = "EditorWindow";
-
-
-    private:
     Vec2 m_windowDimensions     = Vec2::ZERO;
     Vec2 m_windowAlignment      = Vec2::ZERO;
 };
