@@ -14,6 +14,9 @@ class MapWindow : public EditorWindow {
     MapWindow( const Vec2& normDimensions = Vec2( 0.8f, 0.9f ), const Vec2& alignment = Vec2( 0.f, 1.f ) );
     ~MapWindow();
 
+    void Startup();
+    void Shutdown();
+
     Strings GetStepNames() const;
 
 
@@ -22,12 +25,12 @@ class MapWindow : public EditorWindow {
     int m_stepIndex = -1;
 
     Camera* m_mapCamera = nullptr;
-    std::string m_mapViewName = "mapEditor/mapView";
-    std::string m_mapDepthName = "mapEditor/mapDepth";
+    const std::string m_mapViewName  = "mapEditor/mapView";
 
 
     void UpdateChild( float deltaSeconds ) override;
 
+    bool GenerateMaps( EventArgs& args );
     bool SetVisibleMapStep( EventArgs& args );
     Strings GetTileChanges( const IntVec2& tileCoord ) const;
 };

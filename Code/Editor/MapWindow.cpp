@@ -19,30 +19,29 @@
 MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const Vec2& alignment /*= Vec2( 0.f, 1.f ) */ ) :
     EditorWindow( normDimensions, alignment ) {
     m_windowName = "MapEditor";
-
-    const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( "Cavern" );
-    eMapDef->DefineObject( &m_mapPerStep );
-
-    m_stepIndex = (int)m_mapPerStep.size() - 1;
     g_theEventSystem->Subscribe( EVENT_EDITOR_STEP_INDEX, this, &MapWindow::SetVisibleMapStep );
+    g_theEventSystem->Subscribe( EVENT_EDITOR_GENERATE_MAP, this, &MapWindow::GenerateMaps );
 
-    // Setup camera
-    IntVec2 mapDims = m_mapPerStep[0]->GetMapDimensions();
-    float mapAspect = (float)mapDims.x / (float)mapDims.y;
-
-    m_mapCamera = new Camera();
-    m_mapCamera->SetOrthoProjection( (float)mapDims.y, -100.f, 100.f, mapAspect );
-
-    Vec2 halfDims = mapDims * 0.5f;
-    m_mapCamera->Translate( halfDims );
-
-    // Setup render target
-    TextureView2D* mapView = g_theRenderer->GetOrCreateRenderTarget( m_mapViewName );
-    m_mapCamera->SetRenderTarget( mapView );
+    Startup();
 }
 
 
 MapWindow::~MapWindow() {
+    g_theEventSystem->Unsubscribe( EVENT_EDITOR_STEP_INDEX, this, &MapWindow::SetVisibleMapStep );
+    g_theEventSystem->Unsubscribe( EVENT_EDITOR_GENERATE_MAP, this, &MapWindow::GenerateMaps );
+
+    Shutdown();
+}
+
+
+void MapWindow::Startup() {
+    EventArgs args;
+    GenerateMaps( args );
+}
+
+
+void MapWindow::Shutdown() {
+    m_stepIndex = -1;
     CLEAR_POINTER( m_mapCamera );
     EngineCommon::ClearVector( m_mapPerStep );
 }
@@ -181,6 +180,36 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
 
     ImGui::GetForegroundDrawList()->AddRectFilled( imageMin, imageMax, packedU32 );
 */
+}
+
+
+bool MapWindow::GenerateMaps( EventArgs& args ) {
+    if( m_mapPerStep.size() > 0 ) { // Already generated maps
+        Shutdown();
+    }
+
+    std::string mapType = args.GetValue( "mapType", "Cavern" );
+
+    const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( mapType );
+    eMapDef->DefineObject( &m_mapPerStep );
+
+    m_stepIndex = (int)m_mapPerStep.size() - 1;
+
+    // Setup camera
+    IntVec2 mapDims = m_mapPerStep[0]->GetMapDimensions();
+    float mapAspect = (float)mapDims.x / (float)mapDims.y;
+
+    m_mapCamera = new Camera();
+    m_mapCamera->SetOrthoProjection( (float)mapDims.y, -100.f, 100.f, mapAspect );
+
+    Vec2 halfDims = mapDims * 0.5f;
+    m_mapCamera->Translate( halfDims );
+
+    // Setup render target
+    TextureView2D* mapView = g_theRenderer->GetOrCreateRenderTarget( m_mapViewName );
+    m_mapCamera->SetRenderTarget( mapView );
+
+    return false;
 }
 
 

@@ -19,7 +19,7 @@ bool GameWinProc( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM l
     UNUSED( lParam );
     unsigned char asKey = (unsigned char)wParam;
 
-    if( !g_theDevConsole->IsTakingInput() && g_theGui != nullptr ) {
+    if( !g_theDevConsole->IsTakingInput() && g_theGui->IsSetup() ) {
         bool handled = ImGui_ImplWin32_WndProcHandler( windowHandle, wmMessageCode, wParam, lParam );
         UNUSED( handled ); // FIXME: What does this variable mean???
         const ImGuiIO& io = ImGui::GetIO();

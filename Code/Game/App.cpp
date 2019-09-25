@@ -25,7 +25,6 @@ App*            g_theApp;
 Game*           g_theGame;
 
 AudioSystem*    g_theAudio;
-ImGuiSystem*    g_theGui;
 InputSystem*    g_theInput;
 PhysicsSystem*  g_thePhysicsSystem;
 RenderContext*  g_theRenderer;
@@ -54,7 +53,6 @@ void App::Startup() {
     g_theAudio = new AudioSystem();
     g_thePhysicsSystem = new PhysicsSystem( g_theRenderer );
     g_RNG = new RNG();
-    g_theGui = new ImGuiSystem( g_theRenderer, g_theWindow );
 
     g_theWindow->Startup();
     g_theRenderer->Startup( g_theWindow );
@@ -62,7 +60,7 @@ void App::Startup() {
     g_theInput->Startup();
     g_theAudio->Startup();
     g_thePhysicsSystem->Startup();
-    g_theGui->Startup();
+    g_theGui->Startup( g_theRenderer, g_theWindow );
 
 #if defined(_EDITOR)
     g_theEditor = new Editor();
@@ -94,7 +92,6 @@ void App::Shutdown() {
     g_theRenderer->Shutdown();
     g_theWindow->Shutdown();
 
-    CLEAR_POINTER( g_theGui );
     CLEAR_POINTER( g_RNG );
     CLEAR_POINTER( g_thePhysicsSystem );
     CLEAR_POINTER( g_theAudio );
