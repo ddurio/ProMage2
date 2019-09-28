@@ -19,6 +19,8 @@ enum CustomAttrRequirement {
 
 
 class MapGenStep {
+    friend class EditorMapGenStep;
+
     public:
     explicit MapGenStep( const XMLElement& element );
     virtual ~MapGenStep() {};
@@ -65,7 +67,7 @@ class MapGenStep {
 
     // General
     std::string m_stepType          = "";
-    FloatRange m_chanceToRun        = FloatRange::ONE;
+    float m_chanceToRun             = 1.f;
     IntRange m_numIterations        = IntRange::ONE;
 
     // Conditions

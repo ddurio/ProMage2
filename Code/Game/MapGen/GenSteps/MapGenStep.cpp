@@ -159,18 +159,20 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element ) {
     std::string stepType = element.Name();
     MapGenStep* step = nullptr;
 
-    if( stepType == "Sprinkle" ) {
+    if( StringICmp( stepType, "Sprinkle" ) ) {
         step = new MGS_Sprinkle( element );
-    } else if( stepType == "FromImage") {
+    } else if( StringICmp( stepType, "FromImage" ) ) {
         step = new MGS_FromImage( element );
-    } else if( stepType == "CellularAutomata" ) {
+    } else if( StringICmp( stepType, "CellularAutomata" ) ) {
         step = new MGS_CellularAutomata( element );
-    } else if( stepType == "DistanceField" ) {
+    } else if( StringICmp( stepType, "DistanceField" ) ) {
         step = new MGS_DistanceField( element );
-    } else if( stepType == "PerlinNoise" ) {
+    } else if( StringICmp( stepType, "PerlinNoise" ) ) {
         step = new MGS_PerlinNoise( element );
-    } else if( stepType == "RoomsAndPaths" ) {
+    } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
         step = new MGS_RoomsAndPaths( element );
+    } else {
+        ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
     }
 
     return step;
@@ -182,9 +184,7 @@ void MapGenStep::Run( Map& theMap ) const {
     int numIterations = mapRNG->GetRandomIntInRange( m_numIterations );
 
     for( int iterationIndex = 0; iterationIndex < numIterations; iterationIndex++ ) {
-        float iterationChance = mapRNG->GetRandomFloatInRange( m_chanceToRun );
-
-        if( mapRNG->PercentChance( iterationChance ) ) {
+        if( mapRNG->PercentChance( m_chanceToRun ) ) {
             RunOnce( theMap );
         }
     }

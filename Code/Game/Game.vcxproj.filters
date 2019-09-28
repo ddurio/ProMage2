@@ -163,6 +163,9 @@
     <ClCompile Include="..\Editor\XmlWindow.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\Editor\EditorMapGenStep.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -298,6 +301,9 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="..\Editor\XmlWindow.hpp">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Editor\EditorMapGenStep.hpp">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>

@@ -28,6 +28,7 @@ class TileDef : public Definition< Tile, TileDef > {
     static const SpriteSheet GetTerrainSprites();
     static const TileDef* GetTileDefFromTexelColor( const Rgba& texelColor );
     static std::string GetTileTypeFromTexelColor( const Rgba& texelColor );
+    static Strings GetAllTypes();
 
     const std::string& GetTileType() const;
     const std::string& GetTileContext() const;

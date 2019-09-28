@@ -59,6 +59,19 @@ std::string TileDef::GetTileTypeFromTexelColor( const Rgba& texelColor ) {
 }
 
 
+Strings TileDef::GetAllTypes() {
+    Strings tileTypes;
+    std::map < std::string, TileDef*, StringCmpCaseI >::const_iterator defIter = s_definitions.begin();
+
+    while( defIter != s_definitions.end() ) {
+        tileTypes.push_back( defIter->first );
+        defIter++;
+    }
+
+    return tileTypes;
+}
+
+
 const std::string& TileDef::GetTileType() const {
     return m_defType;
 }

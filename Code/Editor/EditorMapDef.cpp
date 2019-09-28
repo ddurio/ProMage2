@@ -26,6 +26,19 @@ void EditorMapDef::DefineObject( Map& theMap ) const {
 }
 
 
+MapGenStep* EditorMapDef::GetStep( int stepIndex ) const {
+    int stepOffset = 1; // From FillAndEdge
+    int numSteps = (int)m_mapGenSteps.size();
+    int adjustedIndex = stepIndex - stepOffset;
+
+    if( adjustedIndex < 0 || adjustedIndex >= numSteps ) {
+        return nullptr;
+    }
+
+    return m_mapGenSteps[adjustedIndex];
+}
+
+
 Strings EditorMapDef::GetStepNames( int indexOffset /*= 0 */ ) const {
     Strings stepNames;
     int numSteps = (int)m_mapGenSteps.size();
@@ -60,7 +73,7 @@ bool EditorMapDef::IsFinished() const {
 }
 
 
-bool EditorMapDef::FinishStep( AsyncPayload& payload ) const {
+bool EditorMapDef::CompleteStep( AsyncPayload& payload ) const {
     payload.numStepsDone++;
 
     GUARANTEE_RECOVERABLE( payload.numStepsDone <= payload.numStepsToDo, "(EditorMapDef) Too many steps completed!" );
@@ -125,7 +138,7 @@ void EditorMapDef::ProcessWorkerPayloads() const {
 
             DefineFillAndEdge( theMap );
 
-            if( FinishStep( payload ) ) {
+            if( CompleteStep( payload ) ) {
                 break;
             }
 
@@ -136,7 +149,7 @@ void EditorMapDef::ProcessWorkerPayloads() const {
             for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
                 m_mapGenSteps[stepIndex]->Run( theMap );
 
-                if( FinishStep( payload ) ) {
+                if( CompleteStep( payload ) ) {
                     payloadComplete = true;
                     break;
                 }
@@ -148,13 +161,13 @@ void EditorMapDef::ProcessWorkerPayloads() const {
 
             DefineFromContextTiles( theMap );
 
-            if( FinishStep( payload ) ) {
+            if( CompleteStep( payload ) ) {
                 break;
             }
 
             DefineTileColliders( theMap );
 
-            if( FinishStep( payload ) ) {
+            if( CompleteStep( payload ) ) {
                 break;
             } else {
                 ERROR_RECOVERABLE( "(EditorMapDef) Worker never sent job back!" );

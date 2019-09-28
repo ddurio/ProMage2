@@ -11,7 +11,12 @@ class XmlWindow : public EditorWindow {
     XmlWindow( const Vec2& normDimensions = Vec2( 0.2f, 1.f ), const Vec2& alignment = Vec2::ONE );
     ~XmlWindow();
 
+    bool ShouldHighlightTiles() const;
+
 
     private:
+    bool m_highlightChanges = true;
+
+
     void UpdateChild( float deltaSeconds ) override;
 };

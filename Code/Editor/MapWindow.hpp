@@ -17,6 +17,8 @@ class MapWindow : public EditorWindow {
     void Startup();
     void Shutdown();
 
+    int GetStepIndex() const;
+    std::string GetMapType() const;
     Strings GetStepNames() const;
 
 
@@ -27,10 +29,23 @@ class MapWindow : public EditorWindow {
     Camera* m_mapCamera = nullptr;
     const std::string m_mapViewName  = "mapEditor/mapView";
 
+    unsigned int m_highlightColor = 0;
+
+    // Map sizes
+    bool m_sizeIsCalculated = false;
+    AABB2 m_mapBounds = AABB2::ZEROTOONE;
+    float m_pixelsPerTile = -1;
+
 
     void UpdateChild( float deltaSeconds ) override;
 
+    void RenderMap( float deltaSeconds );
+    void RenderTileChangeHighlight();
+    void RenderTileChangeTooltip();
+
     bool GenerateMaps( EventArgs& args );
     bool SetVisibleMapStep( EventArgs& args );
+
+    void CalculateMapSizes();
     Strings GetTileChanges( const IntVec2& tileCoord ) const;
 };

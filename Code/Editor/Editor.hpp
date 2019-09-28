@@ -29,6 +29,9 @@ class Editor {
     void Update();
     void Render() const;
 
+    MapWindow* GetMapWindow() const;
+    XmlWindow* GetXmlWindow() const;
+
     Vec2 CreateWindow( const Vec2& normDimensions, const Vec2& alignment, const char* name = "", ImGuiWindowFlags extraFlags = ImGuiWindowFlags_None ) const;
 
 
@@ -51,9 +54,9 @@ class Editor {
     Camera* m_uiCamera = nullptr;
     Clock m_editorClock;
 
-    MapWindow* m_mapEditor      = nullptr;
-    StepWindow* m_stepEditor    = nullptr;
-    XmlWindow* m_xmlEditor      = nullptr;
+    MapWindow* m_mapWindow      = nullptr;
+    StepWindow* m_stepWindow    = nullptr;
+    XmlWindow* m_xmlWindow      = nullptr;
 
 
     bool UpdateIsLoaded();

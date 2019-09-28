@@ -38,9 +38,9 @@ Editor::~Editor() {
     CLEAR_POINTER( m_uiCamera );
     CLEAR_POINTER( m_loadingMesh );
     CLEAR_POINTER( m_loadedMesh );
-    CLEAR_POINTER( m_mapEditor );
-    CLEAR_POINTER( m_stepEditor );
-    CLEAR_POINTER( m_xmlEditor );
+    CLEAR_POINTER( m_mapWindow );
+    CLEAR_POINTER( m_stepWindow );
+    CLEAR_POINTER( m_xmlWindow );
 
     Map::ResetMaterialCreated();
 }
@@ -72,9 +72,9 @@ void Editor::Startup() {
     EditorMapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
 
     // Setup Editor
-    m_mapEditor = new MapWindow();
-    m_stepEditor = new StepWindow( *m_mapEditor );
-    m_xmlEditor = new XmlWindow();
+    m_mapWindow = new MapWindow();
+    m_stepWindow = new StepWindow( *m_mapWindow );
+    m_xmlWindow = new XmlWindow();
 
     BuildLoadedMesh();
 }
@@ -129,9 +129,9 @@ void Editor::Update() {
 
     float deltaSeconds = m_editorClock.GetDeltaTime();
 
-    m_mapEditor->Update( deltaSeconds );
-    m_stepEditor->Update( deltaSeconds );
-    m_xmlEditor->Update( deltaSeconds );
+    m_mapWindow->Update( deltaSeconds );
+    m_stepWindow->Update( deltaSeconds );
+    m_xmlWindow->Update( deltaSeconds );
 
     ImGui::ShowDemoWindow(); // ThesisFIXME: Needs to be disabled
 }
@@ -142,9 +142,19 @@ void Editor::Render() const {
         return;
     }
 
-    m_mapEditor->Render();
-    m_stepEditor->Render();
-    m_xmlEditor->Render();
+    m_mapWindow->Render();
+    m_stepWindow->Render();
+    m_xmlWindow->Render();
+}
+
+
+MapWindow* Editor::GetMapWindow() const {
+    return m_mapWindow;
+}
+
+
+XmlWindow* Editor::GetXmlWindow() const {
+    return m_xmlWindow;
 }
 
 

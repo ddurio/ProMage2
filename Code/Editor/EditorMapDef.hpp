@@ -17,6 +17,7 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     using Definition< Map, EditorMapDef >::GetDefinition;
     using Definition< Map, EditorMapDef >::DestroyDefs;
 
+    MapGenStep* GetStep( int stepIndex ) const; // Gets a NON-CONST version for editor changes
     Strings GetStepNames( int indexOffset = 0 ) const;
 
     static int SetupChangeTileMGS();
@@ -47,8 +48,7 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     ~EditorMapDef() {};
 
     bool IsFinished() const;
-    bool FinishStep( AsyncPayload& payload ) const;
-    //void DefineFromMGS( Map& theMap ) const override;
+    bool CompleteStep( AsyncPayload& payload ) const;
 
     void SpinUpThreads() const;
     void LaunchJobs() const;
