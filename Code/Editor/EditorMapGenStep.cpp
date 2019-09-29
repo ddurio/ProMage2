@@ -277,6 +277,18 @@ void EditorMapGenStep::RenderTileDropDown( const std::string& uniqueKey, std::st
     ImGui::PushID( comboID.c_str() );
 
     if( ImGui::BeginCombo( label.c_str(), initialType.c_str(), ImGuiComboFlags_None ) ) {
+        ImGui::PushID( "empty" );
+
+        if( ImGui::Selectable( "<NONE>", (initialType == "") ) ) {
+            currentType = "";
+        }
+
+        if( initialType == "" ) {
+            ImGui::SetItemDefaultFocus();
+        }
+
+        ImGui::PopID();
+
         for( int typeIndex = 0; typeIndex < tileTypes.size(); typeIndex++ ) {
             ImGui::PushID( typeIndex );
 
