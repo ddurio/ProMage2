@@ -14,8 +14,10 @@ MGS_CellularAutomata::MGS_CellularAutomata( const XMLElement& element ) :
     m_chancePerTile     = ParseXMLAttribute( element, "chancePerTile",     m_chancePerTile );
 
     m_ifNeighborType    = ParseXMLAttribute( element, "ifNeighborType",    m_ifNeighborType );
-    m_ifNeighborHasTags = ParseXMLAttribute( element, "ifNeighborHasTags", m_ifNeighborHasTags );
     m_ifNumNeighbors    = ParseXMLAttribute( element, "ifNumNeighbors",    m_ifNumNeighbors );
+
+    std::string neighborTagCSV = ParseXMLAttribute( element, "ifNeighborHasTags", "" );
+    m_ifNeighborHasTags = SplitStringOnDelimeter( neighborTagCSV, ',', false );
 }
 
 
@@ -69,7 +71,7 @@ MGS_CellularAutomata::TileValidity MGS_CellularAutomata::IsNeighborTileValid( co
         isValid = INVALID;
     }
     
-    if( m_ifNeighborHasTags != "" && !tileTags.HasTags(m_ifNeighborHasTags)) {
+    if( !m_ifNeighborHasTags.empty() && !tileTags.HasTags(m_ifNeighborHasTags)) {
         isValid = INVALID;
     }
 

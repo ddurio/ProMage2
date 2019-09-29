@@ -35,9 +35,10 @@ class EditorMapGenStep {
     static void RenderResults_RoomsAndPaths( MapGenStep* genStep );
     static void RenderResults_Sprinkle( MapGenStep* genStep );
 
+    static void RenderPercent( float& value, const std::string& label = "" );
     static void RenderIntRange( IntRange& range, const std::string& label = "", int minValue = 0, int maxValue = 10 );
     static void RenderFloatRange( FloatRange& range, const std::string& label = "", float minValue = 0.f, float maxValue = 10.f );
     static void RenderTileDropDown( std::string& currentType, const std::string& label = "Tile Type" );
-    static void RenderTags( Strings& currentTags );
+    static void RenderTags( Strings& currentTags, const std::string& label = "" );
     static void RenderHeatMaps( std::map< std::string, FloatRange, StringCmpCaseI >& currentHeatMaps );
 };

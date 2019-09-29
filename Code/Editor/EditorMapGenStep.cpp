@@ -3,6 +3,12 @@
 #include "Engine/Core/ImGuiSystem.hpp"
 
 #include "Game/MapGen/GenSteps/MapGenStep.hpp"
+#include "Game/MapGen/GenSteps/MGS_CellularAutomata.hpp"
+#include "Game/MapGen/GenSteps/MGS_DistanceField.hpp"
+#include "Game/MapGen/GenSteps/MGS_FromImage.hpp"
+#include "Game/MapGen/GenSteps/MGS_PerlinNoise.hpp"
+#include "Game/MapGen/GenSteps/MGS_RoomsAndPaths.hpp"
+#include "Game/MapGen/GenSteps/MGS_Sprinkle.hpp"
 #include "Game/MapGen/Map/TileDef.hpp"
 
 
@@ -43,24 +49,27 @@ void EditorMapGenStep::RenderConditions( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
-    // Chance to run
-    std::string percentFormat = Stringf( "%.0f%%%%", genStep->m_chanceToRun * 100.f );
-    if( ImGui::SliderFloat( "Chance to Run", &(genStep->m_chanceToRun), 0.f, 1.f, percentFormat.c_str() ) ) {
-        if( genStep->m_chanceToRun > 1.f ) {
-            genStep->m_chanceToRun /= 100.f;
-        }
-    }
-
+    RenderPercent( genStep->m_chanceToRun, "Chance to Run" );
     RenderIntRange( genStep->m_numIterations, "Iterations" );
     ImGui::Separator();
     RenderTileDropDown( genStep->m_ifIsType );
-    RenderTags( genStep->m_ifHasTags );
+    RenderTags( genStep->m_ifHasTags, "Tile" );
     RenderHeatMaps( genStep->m_ifHeatMap );
 }
 
 
 void EditorMapGenStep::RenderConditions_CellularAutomata( MapGenStep* genStep ) {
+    MGS_CellularAutomata* caStep = (MGS_CellularAutomata*)genStep;
 
+    RenderPercent( caStep->m_chancePerTile, "Chance per Tile" );
+    RenderIntRange( caStep->m_radius, "Tile Radius", 1 );
+    ImGui::Separator();
+    RenderTileDropDown( caStep->m_ifNeighborType, "Neighbor Type" );
+    RenderTags( caStep->m_ifNeighborHasTags, "Neighbor" );
+
+    int tileWidth = (2 * caStep->m_radius.max) + 1;
+    int maxNeighbors = (tileWidth * tileWidth) - 1;
+    RenderIntRange( caStep->m_ifNumNeighbors, "Num Neighbors", 0, maxNeighbors );
 }
 
 
@@ -85,7 +94,8 @@ void EditorMapGenStep::RenderConditions_RoomsAndPaths( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderConditions_Sprinkle( MapGenStep* genStep ) {
-
+    MGS_Sprinkle* sprinkleStep = (MGS_Sprinkle*)genStep;
+    RenderIntRange( sprinkleStep->m_countRange, "Sprinkles", 1 );
 }
 
 
@@ -116,11 +126,12 @@ void EditorMapGenStep::RenderResults( MapGenStep* genStep ) {
 void EditorMapGenStep::RenderResults_BaseClass( MapGenStep* genStep ) {
     RenderTileDropDown( genStep->m_setType );
     RenderTags( genStep->m_setTags );
+    RenderHeatMaps( genStep->m_setHeatMap );
 }
 
 
 void EditorMapGenStep::RenderResults_CellularAutomata( MapGenStep* genStep ) {
-
+    UNUSED( genStep );
 }
 
 
@@ -145,7 +156,18 @@ void EditorMapGenStep::RenderResults_RoomsAndPaths( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderResults_Sprinkle( MapGenStep* genStep ) {
+    UNUSED( genStep );
+}
 
+
+void EditorMapGenStep::RenderPercent( float& value, const std::string& label /*= ""*/ ) {
+    std::string percentFormat = Stringf( "%.0f%%%%", value * 100.f );
+
+    if( ImGui::SliderFloat( label.c_str(), &value, 0.f, 1.f, percentFormat.c_str() ) ) {
+        if( value > 1.f ) {
+            value /= 100.f;
+        }
+    }
 }
 
 
@@ -210,8 +232,12 @@ void EditorMapGenStep::RenderTileDropDown( std::string& currentType, const std::
 }
 
 
-void EditorMapGenStep::RenderTags( Strings& currentTags ) {
-    ImGui::Text( "Has Tag:" );
+void EditorMapGenStep::RenderTags( Strings& currentTags, const std::string& label /*= "" */ ) {
+    std::string labelPref = Stringf( "%s%s", label.c_str(), (label == "") ? "" : " " );
+    std::string hasTagLabel = Stringf( "%sHas Tag:", labelPref.c_str() );
+    std::string missingTagLabel = Stringf( "%sMissing Tag:", labelPref.c_str() );
+
+    ImGui::Text( hasTagLabel.c_str() );
     ImGui::SameLine();
     bool focusLastAdd = false;
 
@@ -247,7 +273,7 @@ void EditorMapGenStep::RenderTags( Strings& currentTags ) {
     }
 
     // Missing Tags
-    ImGui::Text( "Missing Tag:" );
+    ImGui::Text( missingTagLabel.c_str() );
     ImGui::SameLine();
     ImGui::PushID( "addMissingTag" );
     bool focusLastMissing = false;

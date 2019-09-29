@@ -5,6 +5,8 @@
 
 
 class MGS_Sprinkle : public MapGenStep {
+    friend class EditorMapGenStep;
+
     public:
     explicit MGS_Sprinkle( const XMLElement& element );
     ~MGS_Sprinkle() {};

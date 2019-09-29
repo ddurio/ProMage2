@@ -5,6 +5,8 @@
 
 
 class MGS_CellularAutomata : public MapGenStep {
+    friend class EditorMapGenStep;
+
     public:
     MGS_CellularAutomata( const XMLElement& element );
     ~MGS_CellularAutomata() {};
@@ -15,8 +17,9 @@ class MGS_CellularAutomata : public MapGenStep {
     float m_chancePerTile           = 1.f;
 
     std::string m_ifNeighborType    = "";
-    std::string m_ifNeighborHasTags = "";
+    Strings m_ifNeighborHasTags;
     IntRange m_ifNumNeighbors       = IntRange( 1, 8 );
+
 
     enum TileValidity {
         UNKNOWN = -1,

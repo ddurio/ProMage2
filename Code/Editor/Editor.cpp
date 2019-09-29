@@ -76,6 +76,10 @@ void Editor::Startup() {
     m_stepWindow = new StepWindow( *m_mapWindow );
     m_xmlWindow = new XmlWindow();
 
+    // Setup Style
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_Header] = Rgba::ORGANIC_GRAY.GetAsImGui();
+
     BuildLoadedMesh();
 }
 
