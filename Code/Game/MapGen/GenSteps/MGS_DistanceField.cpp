@@ -91,13 +91,13 @@ void MGS_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& openTiles
 
 
 bool MGS_DistanceField::IsNeighborTileValid( const Tile& tile ) const {
-    if( m_movementType == "Fly" ) {
+    if( StringICmp( m_movementType, "Fly" ) ) {
         return tile.AllowsFlying();
-    } else if( m_movementType == "Sight" ) {
+    } else if( StringICmp( m_movementType, "Sight" ) ) {
         return tile.AllowsSight();
-    } else if( m_movementType == "Swim" ) {
+    } else if( StringICmp( m_movementType, "Swim" ) ) {
         return tile.AllowsSwimming();
-    } else if( m_movementType == "Walk" ) {
+    } else if( StringICmp( m_movementType, "Walk" ) ) {
         return tile.AllowsWalking();
     } else {
         std::string errorMsg = Stringf( "(MGS_DistanceField) Unknown movement type '%s'", m_movementType.c_str() );
@@ -105,6 +105,18 @@ bool MGS_DistanceField::IsNeighborTileValid( const Tile& tile ) const {
     }
 
     return false;
+}
+
+
+Strings MGS_DistanceField::GetMovementTypes() {
+    Strings movementTypes = {
+        "Fly",
+        "Sight",
+        "Swim",
+        "Walk"
+    };
+
+    return movementTypes;
 }
 
 

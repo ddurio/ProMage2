@@ -5,6 +5,8 @@
 
 
 class MGS_DistanceField : public MapGenStep {
+    friend class EditorMapGenStep;
+
     public:
     explicit MGS_DistanceField( const XMLElement& element );
 
@@ -17,6 +19,8 @@ class MGS_DistanceField : public MapGenStep {
     void OpenNeighbors( Map& map, std::vector<IntVec2>& openTiles, std::vector<bool>& openedTiles, const IntVec2& tileCoords ) const;
 
     bool IsNeighborTileValid( const Tile& tile ) const;
+
+    static Strings GetMovementTypes();
 
     //void EchoDistanceField( Map& map ) const;
 };

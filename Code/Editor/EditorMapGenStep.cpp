@@ -74,7 +74,31 @@ void EditorMapGenStep::RenderConditions_CellularAutomata( MapGenStep* genStep ) 
 
 
 void EditorMapGenStep::RenderConditions_DistanceField( MapGenStep* genStep ) {
+    MGS_DistanceField* dfStep = (MGS_DistanceField*)genStep;
 
+    static const Strings movementTypes = MGS_DistanceField::GetMovementTypes();
+    std::string initialType = dfStep->m_movementType;
+
+    if( ImGui::BeginCombo( "Movement Type", initialType.c_str(), ImGuiComboFlags_None ) ) {
+        for( int typeIndex = 0; typeIndex < movementTypes.size(); typeIndex++ ) {
+            ImGui::PushID( typeIndex );
+
+            const std::string& defType = movementTypes[typeIndex];
+            bool isSelected = StringICmp( initialType, defType );
+
+            if( ImGui::Selectable( defType.c_str(), isSelected ) ) {
+                dfStep->m_movementType = defType;
+            }
+
+            if( isSelected ) {
+                ImGui::SetItemDefaultFocus();
+            }
+
+            ImGui::PopID();
+        }
+
+        ImGui::EndCombo();
+    }
 }
 
 
@@ -136,7 +160,7 @@ void EditorMapGenStep::RenderResults_CellularAutomata( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderResults_DistanceField( MapGenStep* genStep ) {
-
+    UNUSED( genStep );
 }
 
 
