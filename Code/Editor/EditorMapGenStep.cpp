@@ -52,7 +52,7 @@ void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
     RenderPercent( genStep->m_chanceToRun, "Chance to Run" );
     RenderIntRange( genStep->m_numIterations, "Iterations" );
     ImGui::Separator();
-    RenderTileDropDown( genStep->m_ifIsType );
+    RenderTileDropDown( "baseCond", genStep->m_ifIsType );
     RenderTags( "baseCond", genStep->m_ifHasTags, "Tile" );
     RenderHeatMaps( "conditions", genStep->m_ifHeatMap );
     RenderEventList( "Conditions", genStep->s_customConditions, genStep->m_customConditions );
@@ -65,7 +65,7 @@ void EditorMapGenStep::RenderConditions_CellularAutomata( MapGenStep* genStep ) 
     RenderPercent( caStep->m_chancePerTile, "Chance per Tile" );
     RenderIntRange( caStep->m_radius, "Tile Radius", 1 );
     ImGui::Separator();
-    RenderTileDropDown( caStep->m_ifNeighborType, "Neighbor Type" );
+    RenderTileDropDown( "neighborCond", caStep->m_ifNeighborType, "Neighbor Type" );
     RenderTags( "caCond", caStep->m_ifNeighborHasTags, "Neighbor" );
 
     int tileWidth = (2 * caStep->m_radius.max) + 1;
@@ -172,7 +172,7 @@ void EditorMapGenStep::RenderResults( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderResults_BaseClass( MapGenStep* genStep ) {
-    RenderTileDropDown( genStep->m_setType );
+    RenderTileDropDown( "baseResult", genStep->m_setType );
     RenderTags( "baseResult", genStep->m_setTags, "Tile" );
     RenderHeatMaps( "results", genStep->m_setHeatMap );
     RenderEventList( "Results", genStep->s_customResults, genStep->m_customResults );
@@ -206,14 +206,14 @@ void EditorMapGenStep::RenderResults_RoomsAndPaths( MapGenStep* genStep ) {
     RenderIntRange( rnpStep->m_numRooms, "Rooms", 1, 50 );
     RenderIntRange( rnpStep->m_roomWidth, "Width in Tiles", 1, 30 );
     RenderIntRange( rnpStep->m_roomHeight, "Height in Tiles", 1, 30 );
-    RenderTileDropDown( rnpStep->m_roomFloor, "Room Floor Tiles" );
-    RenderTileDropDown( rnpStep->m_roomWall, "Room Wall Tiles" );
+    RenderTileDropDown( "rnpRoomFloor", rnpStep->m_roomFloor, "Room Floor Tiles" );
+    RenderTileDropDown( "rnpRoomWall", rnpStep->m_roomWall, "Room Wall Tiles" );
     RenderIntRange( rnpStep->m_numOverlaps, "Allowed Overlaps" );
     ImGui::Separator();
 
     // Paths
     ImGui::Checkbox( "Make Paths Loop", &rnpStep->m_pathLoop );
-    RenderTileDropDown( rnpStep->m_pathFloor, "Path Tiles" );
+    RenderTileDropDown( "rnPPath", rnpStep->m_pathFloor, "Path Tiles" );
     RenderIntRange( rnpStep->m_numExtraPaths, "Extra Paths" );
     RenderFloatRange( rnpStep->m_pathStraightChance, "Path Straightness", 0.f, 1.f );
 }
@@ -269,13 +269,16 @@ void EditorMapGenStep::RenderFloatRange( FloatRange& range, const std::string& l
 }
 
 
-void EditorMapGenStep::RenderTileDropDown( std::string& currentType, const std::string& label /*= "Tile Type" */ ) {
+void EditorMapGenStep::RenderTileDropDown( const std::string& uniqueKey, std::string& currentType, const std::string& label /*= "Tile Type" */ ) {
+    std::string comboID = Stringf( "tileDD_%s", uniqueKey.c_str() );
+
     static const Strings tileTypes = TileDef::GetAllTypes();
     std::string initialType = currentType;
+    ImGui::PushID( comboID.c_str() );
 
     if( ImGui::BeginCombo( label.c_str(), initialType.c_str(), ImGuiComboFlags_None ) ) {
         for( int typeIndex = 0; typeIndex < tileTypes.size(); typeIndex++ ) {
-            ImGui::PushID( Stringf( "%s_%d", label.c_str(), typeIndex ).c_str() );
+            ImGui::PushID( typeIndex );
 
             const std::string& defType = tileTypes[typeIndex];
             bool isSelected = StringICmp( initialType, defType );
@@ -293,6 +296,8 @@ void EditorMapGenStep::RenderTileDropDown( std::string& currentType, const std::
 
         ImGui::EndCombo();
     }
+
+    ImGui::PopID();
 }
 
 
