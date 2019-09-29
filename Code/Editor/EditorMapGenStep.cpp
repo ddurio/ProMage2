@@ -19,12 +19,12 @@ void EditorMapGenStep::RenderStepParms( MapGenStep* genStep ) {
 void EditorMapGenStep::RenderConditions( MapGenStep* genStep ) {
     if( ImGui::CollapsingHeader( "Conditions", ImGuiTreeNodeFlags_DefaultOpen ) ) {
         RenderConditions_BaseClass( genStep );
+        ImGui::Separator();
+
         std::string stepType = genStep->GetName();
 
         if( StringICmp( stepType, "Sprinkle" ) ) {
             RenderConditions_Sprinkle( genStep );
-        } else if( StringICmp( stepType, "FromImage" ) ) {
-            RenderConditions_FromImage( genStep );
         } else if( StringICmp( stepType, "CellularAutomata" ) ) {
             RenderConditions_CellularAutomata( genStep );
         } else if( StringICmp( stepType, "DistanceField" ) ) {
@@ -33,6 +33,8 @@ void EditorMapGenStep::RenderConditions( MapGenStep* genStep ) {
             RenderConditions_PerlinNoise( genStep );
         } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
             RenderConditions_RoomsAndPaths( genStep );
+        } else if( StringICmp( stepType, "FromImage" ) ) {
+            RenderConditions_FromImage( genStep );
         } else {
             ERROR_RECOVERABLE( Stringf( "(EditorMapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
         }
@@ -49,9 +51,11 @@ void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
         }
     }
 
-    RenderIntRange( genStep->m_numIterations );
+    RenderIntRange( genStep->m_numIterations, "Iterations" );
+    ImGui::Separator();
     RenderTileDropDown( genStep->m_ifIsType );
     RenderTags( genStep->m_ifHasTags );
+    RenderHeatMaps( genStep->m_ifHeatMap );
 }
 
 
@@ -145,10 +149,27 @@ void EditorMapGenStep::RenderResults_Sprinkle( MapGenStep* genStep ) {
 }
 
 
-void EditorMapGenStep::RenderIntRange( IntRange& range ) {
+void EditorMapGenStep::RenderIntRange( IntRange& range, const std::string& label /*= ""*/, int minValue /*= 0*/, int maxValue /*= 10 */ ) {
     IntRange initialIters = range;
 
-    if( ImGui::SliderInt2( "Min/Max Iterations", (int*)&(range), 0, 10 ) ) {
+    if( ImGui::SliderInt2( label.c_str(), (int*)&(range), minValue, maxValue ) ) {
+        bool minChanged = (initialIters.min != range.min);
+
+        if( range.min > range.max ) {
+            if( minChanged ) {
+                range.max = range.min;
+            } else {
+                range.min = range.max;
+            }
+        }
+    }
+}
+
+
+void EditorMapGenStep::RenderFloatRange( FloatRange& range, const std::string& label /*= ""*/, float minValue /*= 0.f*/, float maxValue /*= 10.f */ ) {
+    FloatRange initialIters = range;
+
+    if( ImGui::SliderFloat2( label.c_str(), (float*)&(range), minValue, maxValue ) ) {
         bool minChanged = (initialIters.min != range.min);
 
         if( range.min > range.max ) {
@@ -192,10 +213,14 @@ void EditorMapGenStep::RenderTileDropDown( std::string& currentType, const std::
 void EditorMapGenStep::RenderTags( Strings& currentTags ) {
     ImGui::Text( "Has Tag:" );
     ImGui::SameLine();
+    bool focusLastAdd = false;
 
+    ImGui::PushID( "addHasTag" );
     if( ImGui::Button( "+" ) ) {
         currentTags.push_back( "" );
+        focusLastAdd = true;
     }
+    ImGui::PopID();
 
     std::vector< int > tagsToRemove;
     int numTags = (int)currentTags.size();
@@ -206,6 +231,10 @@ void EditorMapGenStep::RenderTags( Strings& currentTags ) {
         std::string& tag = currentTags[tagIndex];
 
         if( tag[0] != '!' ) {
+            if( focusLastAdd && tagIndex == (numTags - 1) ) {
+                ImGui::SetKeyboardFocusHere( 0 );
+            }
+
             ImGui::InputText( "", &tag, ImGuiInputTextFlags_CharsNoBlank );
             ImGui::SameLine();
 
@@ -220,10 +249,12 @@ void EditorMapGenStep::RenderTags( Strings& currentTags ) {
     // Missing Tags
     ImGui::Text( "Missing Tag:" );
     ImGui::SameLine();
-    ImGui::PushID( 1 );
+    ImGui::PushID( "addMissingTag" );
+    bool focusLastMissing = false;
 
     if( ImGui::Button( "+" ) ) {
         currentTags.push_back( "!" );
+        focusLastMissing = true;
     }
 
     ImGui::PopID();
@@ -235,6 +266,10 @@ void EditorMapGenStep::RenderTags( Strings& currentTags ) {
 
         if( tag[0] == '!' ) {
             std::string subTag = tag.substr( 1 );
+
+            if( focusLastMissing && tagIndex == (numTags - 1) ) {
+                ImGui::SetKeyboardFocusHere( 0 );
+            }
 
             if( ImGui::InputText( "", &subTag, ImGuiInputTextFlags_CharsNoBlank ) ) {
                 tag = Stringf( "!%s", subTag.c_str() );
@@ -265,3 +300,82 @@ void EditorMapGenStep::RenderTags( Strings& currentTags ) {
     }
 }
 
+
+void EditorMapGenStep::RenderHeatMaps( std::map< std::string, FloatRange, StringCmpCaseI >& currentHeatMaps ) {
+    ImGui::Text( "Heat Maps" );
+    ImGui::SameLine();
+
+    static std::string heatMapName = "";
+    bool addHeatMap = false;
+
+    // Add heat map popup
+    ImGui::PushID( "addNewHeatMap" );
+    if( ImGui::Button( "+" ) ) {
+        heatMapName = "";
+        ImGui::OpenPopup( "addHeatMap" );
+    }
+
+    if( ImGui::BeginPopup( "addHeatMap" ) ) {
+        ImGui::Text( "New Heat Map" );
+        ImGui::Separator();
+
+        if( heatMapName == "" ) {
+            // Focus prevents button from being pressed
+            ImGui::SetKeyboardFocusHere();
+        }
+
+        if( ImGui::InputText( "Name", &heatMapName, ImGuiInputTextFlags_CharsNoBlank | ImGuiInputTextFlags_EnterReturnsTrue )
+            && heatMapName != "" ) {
+
+            addHeatMap = true;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+        if( ImGui::Button( "Add" ) ) {
+            addHeatMap = true;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    ImGui::PopID();
+
+    // Add it to the map
+    if( addHeatMap ) {
+        std::map< std::string, FloatRange, StringCmpCaseI >::iterator heatIter = currentHeatMaps.find( heatMapName );
+
+        if( heatIter == currentHeatMaps.end() ) {
+            currentHeatMaps[heatMapName] = FloatRange::ZERO;
+        }
+    }
+
+    // Show the current heat maps
+    std::map< std::string, FloatRange, StringCmpCaseI >::iterator heatIter = currentHeatMaps.begin();
+    Strings mapsToRemove;
+    int mapIndex = 0;
+
+    while( heatIter != currentHeatMaps.end() ) {
+        RenderFloatRange( heatIter->second, heatIter->first );
+        ImGui::SameLine();
+        ImGui::PushID( mapIndex );
+
+        if( ImGui::Button( "X" ) ) {
+            mapsToRemove.push_back( heatIter->first );
+        }
+
+        ImGui::PopID();
+
+        mapIndex++;
+        heatIter++;
+    }
+
+    // Remove maps if necessary
+    int numToRemove = (int)mapsToRemove.size();
+
+    for( int removeIndex = 0; removeIndex < numToRemove; removeIndex++ ) {
+        const std::string& nameToRemove = mapsToRemove[removeIndex];
+        currentHeatMaps.erase( nameToRemove );
+    }
+}
