@@ -598,6 +598,10 @@ void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
 
         int numAttrs = (int)event.attrNames.size();
 
+        if( event.attrValues.size() != numAttrs ) {
+            event.attrValues.resize( numAttrs, "" );
+        }
+
         for( int attrIndex = 0; attrIndex < numAttrs; attrIndex++ ) {
             std::string& name = event.attrNames[attrIndex];
             std::string& value = event.attrValues[attrIndex];
