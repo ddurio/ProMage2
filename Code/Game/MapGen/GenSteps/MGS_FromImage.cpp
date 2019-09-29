@@ -9,9 +9,9 @@
 
 MGS_FromImage::MGS_FromImage( const XMLElement& element ) :
     MapGenStep(element) {
-    std::string imageFilePath = ParseXMLAttribute( element, "imageFilePath", "" );
-    GUARANTEE_OR_DIE( imageFilePath != "", "ERROR: XML Attribute 'imageFilePath' missing for MapGenStep_FromImage" );
-    m_image = new Image( imageFilePath );
+    m_imageFilePath = ParseXMLAttribute( element, "imageFilePath", m_imageFilePath );
+    GUARANTEE_OR_DIE( m_imageFilePath != "", "ERROR: XML Attribute 'imageFilePath' missing for MapGenStep_FromImage" );
+    Startup();
 
     m_alignX       = ParseXMLAttribute( element, "alignX", m_alignX );
     m_alignY       = ParseXMLAttribute( element, "alignY", m_alignY );
@@ -20,7 +20,7 @@ MGS_FromImage::MGS_FromImage( const XMLElement& element ) :
 
 
 MGS_FromImage::~MGS_FromImage() {
-    CLEAR_POINTER( m_image );
+    Shutdown();
 }
 
 
@@ -28,7 +28,23 @@ MGS_FromImage::~MGS_FromImage() {
 std::map< std::string, const TileDef* > MGS_FromImage::s_tileDefsByTexelColor;
 
 
+void MGS_FromImage::Startup() const {
+    m_image = new Image( m_imageFilePath );
+}
+
+
+void MGS_FromImage::Shutdown() const {
+    CLEAR_POINTER( m_image );
+}
+
+
 void MGS_FromImage::RunOnce( Map& theMap ) const {
+    if( m_imageFilePath != m_image->GetImageFilePath() ) {
+        // Likely the editor changed the file path
+        Shutdown();
+        Startup();
+    }
+
     RNG* mapRNG = theMap.GetMapRNG();
     IntVec2 imageDimensions = m_image->GetDimensions();
     IntVec2 mapDimensions = theMap.GetMapDimensions();

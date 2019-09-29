@@ -1,6 +1,7 @@
 #include "Editor/EditorMapGenStep.hpp"
 
 #include "Engine/Core/ImGuiSystem.hpp"
+#include "Engine/Core/WindowContext.hpp"
 
 #include "Game/MapGen/GenSteps/MapGenStep.hpp"
 #include "Game/MapGen/GenSteps/MGS_CellularAutomata.hpp"
@@ -103,7 +104,23 @@ void EditorMapGenStep::RenderConditions_DistanceField( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderConditions_FromImage( MapGenStep* genStep ) {
+    MGS_FromImage* imageStep = (MGS_FromImage*)genStep;
 
+    ImGui::Text( imageStep->m_imageFilePath.c_str() );
+    ImGui::SameLine();
+    
+    if( ImGui::Button( "Open File" ) ) {
+        Strings filter = {
+            "JPG",  "*.jpg",
+            "PNG",  "*.png"
+        };
+
+        imageStep->m_imageFilePath = g_theWindow->OpenFileDialog( "Data/Images", filter, "MGS_FromImage: Open File" );
+    }
+
+    RenderFloatRange( imageStep->m_alignX, "X Alignment", 0.f, 1.f );
+    RenderFloatRange( imageStep->m_alignY, "Y Alignment", 0.f, 1.f );
+    RenderIntRange( imageStep->m_numRotations, "Rotations", 0, 3 );
 }
 
 
@@ -165,7 +182,7 @@ void EditorMapGenStep::RenderResults_DistanceField( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderResults_FromImage( MapGenStep* genStep ) {
-
+    UNUSED( genStep );
 }
 
 

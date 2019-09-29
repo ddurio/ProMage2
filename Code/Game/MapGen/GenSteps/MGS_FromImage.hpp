@@ -13,6 +13,8 @@ struct AABB2;
 
 
 class MGS_FromImage : public MapGenStep {
+    friend class EditorMapGenStep;
+
     public:
     MGS_FromImage( const XMLElement& element );
     ~MGS_FromImage();
@@ -20,10 +22,15 @@ class MGS_FromImage : public MapGenStep {
     private:
     static std::map< std::string, const TileDef* > s_tileDefsByTexelColor;
 
-    Image* m_image = nullptr;
+    std::string m_imageFilePath = "";
+    mutable Image* m_image = nullptr;
     FloatRange m_alignX = FloatRange::ZEROTOONE;
     FloatRange m_alignY = FloatRange::ZEROTOONE;
     IntRange m_numRotations = IntRange::ZERO;
+
+
+    void Startup() const;
+    void Shutdown() const;
 
     void RunOnce( Map& map ) const;
 
