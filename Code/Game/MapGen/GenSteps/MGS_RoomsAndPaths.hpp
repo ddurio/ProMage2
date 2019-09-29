@@ -5,6 +5,8 @@
 
 
 class MGS_RoomsAndPaths : public MapGenStep {
+    friend class EditorMapGenStep;
+
     public:
     MGS_RoomsAndPaths( const XMLElement& element );
 

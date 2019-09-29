@@ -135,7 +135,7 @@ void EditorMapGenStep::RenderConditions_PerlinNoise( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderConditions_RoomsAndPaths( MapGenStep* genStep ) {
-
+    UNUSED( genStep );
 }
 
 
@@ -148,6 +148,8 @@ void EditorMapGenStep::RenderConditions_Sprinkle( MapGenStep* genStep ) {
 void EditorMapGenStep::RenderResults( MapGenStep* genStep ) {
     if( ImGui::CollapsingHeader( "Results", ImGuiTreeNodeFlags_DefaultOpen ) ) {
         RenderResults_BaseClass( genStep );
+        ImGui::Separator();
+
         std::string stepType = genStep->GetName();
 
         if( StringICmp( stepType, "Sprinkle" ) ) {
@@ -197,7 +199,22 @@ void EditorMapGenStep::RenderResults_PerlinNoise( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderResults_RoomsAndPaths( MapGenStep* genStep ) {
+    MGS_RoomsAndPaths* rnpStep = (MGS_RoomsAndPaths*)genStep;
 
+    // Rooms
+    RenderIntRange( rnpStep->m_numRooms, "Rooms", 1, 50 );
+    RenderIntRange( rnpStep->m_roomWidth, "Width in Tiles", 1, 30 );
+    RenderIntRange( rnpStep->m_roomHeight, "Height in Tiles", 1, 30 );
+    RenderTileDropDown( rnpStep->m_roomFloor, "Room Floor Tiles" );
+    RenderTileDropDown( rnpStep->m_roomWall, "Room Wall Tiles" );
+    RenderIntRange( rnpStep->m_numOverlaps, "Allowed Overlaps" );
+    ImGui::Separator();
+
+    // Paths
+    ImGui::Checkbox( "Make Paths Loop", &rnpStep->m_pathLoop );
+    RenderTileDropDown( rnpStep->m_pathFloor, "Path Tiles" );
+    RenderIntRange( rnpStep->m_numExtraPaths, "Extra Paths" );
+    RenderFloatRange( rnpStep->m_pathStraightChance, "Path Straightness", 0.f, 1.f );
 }
 
 

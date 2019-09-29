@@ -72,9 +72,9 @@ void Editor::Startup() {
     EditorMapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
 
     // Setup Editor
-    m_mapWindow = new MapWindow();
-    m_stepWindow = new StepWindow( *m_mapWindow );
-    m_xmlWindow = new XmlWindow();
+    m_mapWindow = new MapWindow( Vec2( 0.75f, 0.9f ) );
+    m_stepWindow = new StepWindow( *m_mapWindow, Vec2( 0.75f, 0.1f ) );
+    m_xmlWindow = new XmlWindow( Vec2( 0.25f, 1.f ) );
 
     // Setup Style
     ImGuiStyle& style = ImGui::GetStyle();
