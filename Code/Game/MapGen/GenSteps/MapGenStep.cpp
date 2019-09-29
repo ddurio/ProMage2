@@ -196,6 +196,11 @@ std::string MapGenStep::GetName() const {
 }
 
 
+std::vector< MapGenStep::CustomEvent > MapGenStep::GetCustomResults() const {
+    return m_customResults;
+}
+
+
 // PROTECTED ---------------------------------------
 bool MapGenStep::IsTileValid( Map& theMap, const Tile& tile ) const {
     std::string tileType     = tile.GetTileType();

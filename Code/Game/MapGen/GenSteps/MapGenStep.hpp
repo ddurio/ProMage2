@@ -22,18 +22,38 @@ class MapGenStep {
     friend class EditorMapGenStep;
 
     public:
+    struct CustomEvent {
+        public:
+        std::string name = "";
+        bool isEnabled = true;
+        CustomAttrRequirement requirement = REQUIRE_ALL;
+
+        Strings attrNames;
+        Strings attrValues;
+
+        CustomEvent() {};
+        CustomEvent( const CustomEvent& event, const Strings& parsedValues );
+        Strings ParseCustomEvent( const XMLElement& element ) const;
+        EventArgs CreateEventArgs() const;
+    };
+
+
     explicit MapGenStep( const XMLElement& element );
     virtual ~MapGenStep() {};
 
     static int AddCustomCondition( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
     static int AddCustomResult( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
+
     static void RemoveCustomCondition( int conditionIndex );
     static void RemoveCustomResult( int resultIndex );
+
     static MapGenStep* CreateMapGenStep( const XMLElement& element );
+
 
     void Run( Map& map ) const;
 
     virtual std::string GetName() const;
+    std::vector< CustomEvent > GetCustomResults() const;
 
 
     protected:
@@ -50,21 +70,6 @@ class MapGenStep {
 
 
     private:
-    struct CustomEvent {
-        public:
-        std::string name = "";
-        bool isEnabled = true;
-        CustomAttrRequirement requirement = REQUIRE_ALL;
-
-        Strings attrNames;
-        Strings attrValues;
-
-        CustomEvent() {};
-        CustomEvent( const CustomEvent& event, const Strings& parsedValues );
-        Strings ParseCustomEvent( const XMLElement& element ) const;
-        EventArgs CreateEventArgs() const;
-    };
-
     // General
     std::string m_stepType          = "";
     float m_chanceToRun             = 1.f;

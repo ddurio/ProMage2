@@ -82,7 +82,7 @@ void EditorMapGenStep::RenderConditions_DistanceField( MapGenStep* genStep ) {
 
     if( ImGui::BeginCombo( "Movement Type", initialType.c_str(), ImGuiComboFlags_None ) ) {
         for( int typeIndex = 0; typeIndex < movementTypes.size(); typeIndex++ ) {
-            ImGui::PushID( typeIndex ); // ThesisFIXME: typeIndex isn't unique
+            ImGui::PushID( typeIndex );
 
             const std::string& defType = movementTypes[typeIndex];
             bool isSelected = StringICmp( initialType, defType );
@@ -618,7 +618,7 @@ void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
             std::string& name = event.attrNames[attrIndex];
             std::string& value = event.attrValues[attrIndex];
 
-            ImGui::InputText( name.c_str(), &value );
+            ImGui::InputText( name.c_str(), &value, ImGuiInputTextFlags_CharsNoBlank );
         }
 
         ImGui::PopID();

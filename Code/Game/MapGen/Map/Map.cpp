@@ -473,7 +473,6 @@ bool Map::TrackModifiedTiles( EventArgs& args ) {
         return false;
     }
 
-    // ThesisFIXME: will probably need extra info from the tile (like what was changed)
     m_modifiedTiles.push_back( callingTile->GetTileCoords() );
     return true;
 }

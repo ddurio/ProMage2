@@ -14,6 +14,8 @@
 #include "Engine/Renderer/Texture2D.hpp"
 #include "Engine/Renderer/TextureView2D.hpp"
 
+#include "Game/Inventory.hpp"
+#include "Game/MapGen/GenSteps/MapGenStep.hpp"
 #include "Game/MapGen/Map/Metadata.hpp"
 
 
@@ -263,22 +265,40 @@ void MapWindow::CalculateMapSizes() {
 
 Strings MapWindow::GetTileChanges( const IntVec2& tileCoord ) const {
     Strings tileChanges;
-    const Tile& currentTile = m_mapPerStep[m_stepIndex]->GetTile( tileCoord );
-    const Tile& prevTile = m_mapPerStep[m_stepIndex - 1]->GetTile( tileCoord );
 
-    // Check type
-    if( prevTile.GetTileType() != currentTile.GetTileType() ) {
-        std::string typeChange = Stringf( "Type: %s --> %s", prevTile.GetTileType().c_str(), currentTile.GetTileType().c_str() );
-        tileChanges.push_back( typeChange );
-    }
+    // Setup data
+    const Map* currentMap = m_mapPerStep[m_stepIndex];
+    const Map* prevMap    = m_mapPerStep[m_stepIndex - 1];
+
+    const Tile& currentTile = currentMap->GetTile( tileCoord );
+    const Tile& prevTile    = prevMap->GetTile( tileCoord );
 
     const Metadata* currentData = currentTile.GetMetadata();
     const Metadata* prevData    = prevTile.GetMetadata();
 
-    // Check tags
     Strings currentTags = currentData->m_tagData.GetTags();
     Strings prevTags    = prevData->m_tagData.GetTags();
 
+    // Find Changes
+    GetTileTypeChanges( tileChanges, currentTile, prevTile );
+    GetTagChanges( tileChanges, currentTags, prevTags );
+    GetHeatMapChanges( tileChanges, currentData, prevData );
+    GetActorChanges( tileChanges, currentMap, prevMap, currentTile );
+    GetItemChanges( tileChanges, currentMap, prevMap, currentTile );
+
+    return tileChanges;
+}
+
+
+void MapWindow::GetTileTypeChanges( Strings& changeList, const Tile& currentTile, const Tile& prevTile ) const {
+    if( prevTile.GetTileType() != currentTile.GetTileType() ) {
+        std::string typeChange = Stringf( "Type: %s --> %s", prevTile.GetTileType().c_str(), currentTile.GetTileType().c_str() );
+        changeList.push_back( typeChange );
+    }
+}
+
+
+void MapWindow::GetTagChanges( Strings& changeList, Strings currentTags, Strings prevTags ) const {
     Strings::iterator currentIter = currentTags.begin();
 
     while( currentIter != currentTags.end() ) {
@@ -304,19 +324,21 @@ Strings MapWindow::GetTileChanges( const IntVec2& tileCoord ) const {
         std::string pluralStr = (currentTags.size() > 1) ? "s" : "";
         std::string newTagStr = JoinStrings( currentTags, ", " );
         std::string addedTagsChange = Stringf( "Tag%s Added: %s", pluralStr.c_str(), newTagStr.c_str() );
-        tileChanges.push_back( addedTagsChange );
+        changeList.push_back( addedTagsChange );
     }
 
     if( !prevTags.empty() ) {
         std::string pluralStr = (prevTags.size() > 1) ? "s" : "";
         std::string removedTags = JoinStrings( prevTags, ", " );
         std::string removedTagsChange = Stringf( "Tag%s Removed: %s", pluralStr.c_str(), removedTags.c_str() );
-        tileChanges.push_back( removedTagsChange );
+        changeList.push_back( removedTagsChange );
     }
+}
 
-    // Heat maps
-    std::map< std::string, float, StringCmpCaseI > currentHeat = currentData->m_heatMaps;
-    std::map< std::string, float, StringCmpCaseI > prevHeat = prevData->m_heatMaps;
+
+void MapWindow::GetHeatMapChanges( Strings& changeList, const Metadata* currentMetadata, const Metadata* prevMetadata ) const {
+    std::map< std::string, float, StringCmpCaseI > currentHeat = currentMetadata->m_heatMaps;
+    std::map< std::string, float, StringCmpCaseI > prevHeat = prevMetadata->m_heatMaps;
     std::map< std::string, float, StringCmpCaseI >::iterator prevIter = prevHeat.begin();
 
     while( prevIter != prevHeat.end() ) {
@@ -327,7 +349,7 @@ Strings MapWindow::GetTileChanges( const IntVec2& tileCoord ) const {
 
         if( prevValue != currentValue ) { // Changed
             std::string heatChange = Stringf( "Heat Map (%s): %.1f --> %.1f", mapName.c_str(), prevValue, currentValue );
-            tileChanges.push_back( heatChange );
+            changeList.push_back( heatChange );
         }
 
         currentHeat.erase( prevIter->first );
@@ -338,17 +360,91 @@ Strings MapWindow::GetTileChanges( const IntVec2& tileCoord ) const {
 
     while( newHeatIter != currentHeat.end() ) {
         std::string heatChange = Stringf( "Heat Map (%s): -.- --> %.1f", newHeatIter->first.c_str(), newHeatIter->second );
-        tileChanges.push_back( heatChange );
+        changeList.push_back( heatChange );
 
         newHeatIter++;
     }
+}
 
 
-    // Actors?
+void MapWindow::GetActorChanges( Strings& changeList, const Map* currentMap, const Map* prevMap, const Tile& currentTile ) const {
+    std::string actorType = "";
+    std::string controller = "";
 
-    // Items?
+    std::string mapType = currentMap->GetMapType();
+    const EditorMapDef* mapDef = EditorMapDef::GetDefinition( mapType );
+    const MapGenStep* currentStep = mapDef->GetStep( m_stepIndex );
+    const std::vector< MapGenStep::CustomEvent > results = currentStep->GetCustomResults();
 
-    return tileChanges;
+    // Find actor type from custom events
+    int numResults = (int)results.size();
+
+    for( int resultIndex = 0; resultIndex < numResults; resultIndex++ ) {
+        const MapGenStep::CustomEvent& result = results[resultIndex];
+
+        if( StringICmp( result.name, "SpawnActor" ) ) {
+            if( StringICmp( result.attrNames[0], "SpawnActor" ) ) {
+                actorType = result.attrValues[0];
+                controller = result.attrValues[1];
+            } else {
+                actorType = result.attrValues[1];
+                controller = result.attrValues[0];
+            }
+
+            break;
+        }
+    }
+
+    // See if actor was spawned
+    if( actorType != "" ) {
+        Vec2 tileCenter = currentTile.GetWorldBounds().GetCenter();
+        Actor* currentActor = currentMap->GetActorInRange( actorType, tileCenter, 0.2f );
+        Actor* prevActor = prevMap->GetActorInRange( actorType, tileCenter, 0.2f );
+
+        if( currentActor != nullptr && currentActor != prevActor ) {
+            std::string actorChange = Stringf( "Spawned: (%s) Actor", actorType.c_str() );
+            changeList.push_back( actorChange );
+
+            if( controller != "" ) {
+                std::string controllerChange = Stringf( "   with (%s) Controller", controller.c_str() );
+                changeList.push_back( controllerChange );
+            }
+        }
+    }
+}
+
+
+void MapWindow::GetItemChanges( Strings& changeList, const Map* currentMap, const Map* prevMap, const Tile& currentTile ) const {
+    std::string itemType = "";
+
+    std::string mapType = currentMap->GetMapType();
+    const EditorMapDef* mapDef = EditorMapDef::GetDefinition( mapType );
+    const MapGenStep* currentStep = mapDef->GetStep( m_stepIndex );
+    const std::vector< MapGenStep::CustomEvent > results = currentStep->GetCustomResults();
+
+    // Find item type from custom events
+    int numResults = (int)results.size();
+
+    for( int resultIndex = 0; resultIndex < numResults; resultIndex++ ) {
+        const MapGenStep::CustomEvent& result = results[resultIndex];
+
+        if( StringICmp( result.name, "SpawnItem" ) ) {
+            itemType = result.attrValues[0];
+            break;
+        }
+    }
+
+    // See if item was spawned
+    if( itemType != "" ) {
+        Vec2 tileCenter = currentTile.GetWorldBounds().GetCenter();
+        Item* currentItem = currentMap->GetMapInventory()->GetClosestItemInRange( tileCenter, 0.2f );
+        Item* prevItem = prevMap->GetMapInventory()->GetClosestItemInRange( tileCenter, 0.2f );
+
+        if( currentItem != nullptr && currentItem != prevItem ) {
+            std::string actorChange = Stringf( "Spawned: (%s) Item", itemType.c_str() );
+            changeList.push_back( actorChange );
+        }
+    }
 }
 
 #endif
