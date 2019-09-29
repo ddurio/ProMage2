@@ -422,6 +422,11 @@ bool Map::SpawnNewActor( EventArgs& args ) {
         return false;
     }
 
+    if( ActorDef::GetDefinition( actorType ) == nullptr ) {
+        g_theDevConsole->PrintString( Stringf( "(SpawnActor): WARNING - Unrecognized actor type %s", actorType.c_str() ), DevConsole::CHANNEL_WARNING );
+        return false;
+    }
+
 #if defined(_EDITOR)
     controller = "";
 #endif
@@ -443,6 +448,11 @@ bool Map::SpawnNewItem( EventArgs& args ) {
     }
 
     if( callingMap != this ) {
+        return false;
+    }
+
+    if( ItemDef::GetDefinition( itemType ) == nullptr ) {
+        g_theDevConsole->PrintString( Stringf( "(SpawnItem): WARNING - Unrecognized item type %s", itemType.c_str() ), DevConsole::CHANNEL_WARNING );
         return false;
     }
 
