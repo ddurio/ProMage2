@@ -125,7 +125,12 @@ void EditorMapGenStep::RenderConditions_FromImage( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderConditions_PerlinNoise( MapGenStep* genStep ) {
+    MGS_PerlinNoise* noiseStep = (MGS_PerlinNoise*)genStep;
 
+    RenderIntRange( noiseStep->m_gridSize, "Grid Size", 1, 50 );
+    RenderIntRange( noiseStep->m_numOctaves, "Octaves", 1 );
+    RenderFloatRange( noiseStep->m_octavePersistence, "Persistence", 0.f, 1.f );
+    RenderFloatRange( noiseStep->m_octaveScale, "Scale", 0.f, 5.f );
 }
 
 
@@ -187,7 +192,7 @@ void EditorMapGenStep::RenderResults_FromImage( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderResults_PerlinNoise( MapGenStep* genStep ) {
-
+    UNUSED( genStep );
 }
 
 
@@ -424,7 +429,12 @@ void EditorMapGenStep::RenderHeatMaps( std::map< std::string, FloatRange, String
     int mapIndex = 0;
 
     while( heatIter != currentHeatMaps.end() ) {
-        RenderFloatRange( heatIter->second, heatIter->first );
+        if( StringICmp( heatIter->first, "Noise" ) ) {
+            RenderFloatRange( heatIter->second, heatIter->first, -1.f, 1.f );
+        } else {
+            RenderFloatRange( heatIter->second, heatIter->first );
+        }
+
         ImGui::SameLine();
         ImGui::PushID( mapIndex );
 

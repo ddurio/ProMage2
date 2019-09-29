@@ -5,6 +5,8 @@
 
 
 class MGS_PerlinNoise : public MapGenStep {
+    friend class EditorMapGenStep;
+
     public:
     MGS_PerlinNoise( const XMLElement& element );
 
