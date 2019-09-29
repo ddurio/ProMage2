@@ -3,7 +3,6 @@
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/WindowContext.hpp"
 
-#include "Game/MapGen/GenSteps/MapGenStep.hpp"
 #include "Game/MapGen/GenSteps/MGS_CellularAutomata.hpp"
 #include "Game/MapGen/GenSteps/MGS_DistanceField.hpp"
 #include "Game/MapGen/GenSteps/MGS_FromImage.hpp"
@@ -54,8 +53,9 @@ void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
     RenderIntRange( genStep->m_numIterations, "Iterations" );
     ImGui::Separator();
     RenderTileDropDown( genStep->m_ifIsType );
-    RenderTags( genStep->m_ifHasTags, "Tile" );
-    RenderHeatMaps( genStep->m_ifHeatMap );
+    RenderTags( "baseCond", genStep->m_ifHasTags, "Tile" );
+    RenderHeatMaps( "conditions", genStep->m_ifHeatMap );
+    RenderEventList( "Conditions", genStep->s_customConditions, genStep->m_customConditions );
 }
 
 
@@ -66,7 +66,7 @@ void EditorMapGenStep::RenderConditions_CellularAutomata( MapGenStep* genStep ) 
     RenderIntRange( caStep->m_radius, "Tile Radius", 1 );
     ImGui::Separator();
     RenderTileDropDown( caStep->m_ifNeighborType, "Neighbor Type" );
-    RenderTags( caStep->m_ifNeighborHasTags, "Neighbor" );
+    RenderTags( "caCond", caStep->m_ifNeighborHasTags, "Neighbor" );
 
     int tileWidth = (2 * caStep->m_radius.max) + 1;
     int maxNeighbors = (tileWidth * tileWidth) - 1;
@@ -82,7 +82,7 @@ void EditorMapGenStep::RenderConditions_DistanceField( MapGenStep* genStep ) {
 
     if( ImGui::BeginCombo( "Movement Type", initialType.c_str(), ImGuiComboFlags_None ) ) {
         for( int typeIndex = 0; typeIndex < movementTypes.size(); typeIndex++ ) {
-            ImGui::PushID( typeIndex );
+            ImGui::PushID( typeIndex ); // ThesisFIXME: typeIndex isn't unique
 
             const std::string& defType = movementTypes[typeIndex];
             bool isSelected = StringICmp( initialType, defType );
@@ -173,8 +173,9 @@ void EditorMapGenStep::RenderResults( MapGenStep* genStep ) {
 
 void EditorMapGenStep::RenderResults_BaseClass( MapGenStep* genStep ) {
     RenderTileDropDown( genStep->m_setType );
-    RenderTags( genStep->m_setTags );
-    RenderHeatMaps( genStep->m_setHeatMap );
+    RenderTags( "baseResult", genStep->m_setTags, "Tile" );
+    RenderHeatMaps( "results", genStep->m_setHeatMap );
+    RenderEventList( "Results", genStep->s_customResults, genStep->m_customResults );
 }
 
 
@@ -274,7 +275,7 @@ void EditorMapGenStep::RenderTileDropDown( std::string& currentType, const std::
 
     if( ImGui::BeginCombo( label.c_str(), initialType.c_str(), ImGuiComboFlags_None ) ) {
         for( int typeIndex = 0; typeIndex < tileTypes.size(); typeIndex++ ) {
-            ImGui::PushID( typeIndex );
+            ImGui::PushID( Stringf( "%s_%d", label.c_str(), typeIndex ).c_str() );
 
             const std::string& defType = tileTypes[typeIndex];
             bool isSelected = StringICmp( initialType, defType );
@@ -295,21 +296,23 @@ void EditorMapGenStep::RenderTileDropDown( std::string& currentType, const std::
 }
 
 
-void EditorMapGenStep::RenderTags( Strings& currentTags, const std::string& label /*= "" */ ) {
+void EditorMapGenStep::RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::string& label /*= "" */ ) {
     std::string labelPref = Stringf( "%s%s", label.c_str(), (label == "") ? "" : " " );
-    std::string hasTagLabel = Stringf( "%sHas Tag:", labelPref.c_str() );
-    std::string missingTagLabel = Stringf( "%sMissing Tag:", labelPref.c_str() );
+    std::string hasTagLabel = Stringf( "%s Has Tag:", labelPref.c_str() );
+    std::string missingTagLabel = Stringf( "%s Missing Tag:", labelPref.c_str() );
+
+    std::string hasTagID = Stringf( "hasTag_%s", uniqueKey.c_str() );
+    std::string missingTagID = Stringf( "missingTag_%s", uniqueKey.c_str() );
 
     ImGui::Text( hasTagLabel.c_str() );
     ImGui::SameLine();
     bool focusLastAdd = false;
 
-    ImGui::PushID( "addHasTag" );
+    ImGui::PushID( hasTagID.c_str() );
     if( ImGui::Button( "+" ) ) {
         currentTags.push_back( "" );
         focusLastAdd = true;
     }
-    ImGui::PopID();
 
     std::vector< int > tagsToRemove;
     int numTags = (int)currentTags.size();
@@ -335,10 +338,12 @@ void EditorMapGenStep::RenderTags( Strings& currentTags, const std::string& labe
         ImGui::PopID();
     }
 
+    ImGui::PopID();
+
     // Missing Tags
     ImGui::Text( missingTagLabel.c_str() );
     ImGui::SameLine();
-    ImGui::PushID( "addMissingTag" );
+    ImGui::PushID( missingTagID.c_str() );
     bool focusLastMissing = false;
 
     if( ImGui::Button( "+" ) ) {
@@ -346,11 +351,10 @@ void EditorMapGenStep::RenderTags( Strings& currentTags, const std::string& labe
         focusLastMissing = true;
     }
 
-    ImGui::PopID();
     numTags = (int)currentTags.size();
 
     for( int tagIndex = 0; tagIndex < numTags; tagIndex++ ) {
-        ImGui::PushID( tagIndex );
+        ImGui::PushID( Stringf( "%s_%d", missingTagLabel.c_str(), tagIndex ).c_str() );
         std::string& tag = currentTags[tagIndex];
 
         if( tag[0] == '!' ) {
@@ -374,58 +378,74 @@ void EditorMapGenStep::RenderTags( Strings& currentTags, const std::string& labe
         ImGui::PopID();
     }
 
+    ImGui::PopID();
+
     // Remove tags if necessary
-    Strings::iterator tagIter = currentTags.begin();
-    int tagIndex = 0;
+    if( !tagsToRemove.empty() ) {
+        Strings::iterator tagIter = currentTags.begin();
+        int tagIndex = 0;
 
-    while( tagIter != currentTags.end() ) {
-        if( EngineCommon::VectorContains( tagsToRemove, tagIndex ) ) {
-            tagIter = currentTags.erase( tagIter );
-        } else {
-            tagIter++;
+        while( tagIter != currentTags.end() ) {
+            if( EngineCommon::VectorContains( tagsToRemove, tagIndex ) ) {
+                tagIter = currentTags.erase( tagIter );
+            } else {
+                tagIter++;
+            }
+
+            tagIndex++;
         }
-
-        tagIndex++;
     }
 }
 
 
-void EditorMapGenStep::RenderHeatMaps( std::map< std::string, FloatRange, StringCmpCaseI >& currentHeatMaps ) {
+void EditorMapGenStep::RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatRange, StringCmpCaseI >& currentHeatMaps ) {
     ImGui::Text( "Heat Maps" );
     ImGui::SameLine();
 
+    std::string plusButtonID = Stringf( "addHeatMap_Button0_%s", uniqueKey.c_str() );
+    std::string addButtonID  = Stringf( "addHeatMap_Button1_%s", uniqueKey.c_str() );
+    std::string popupID      = Stringf( "addHeatMap_Popup_%s", uniqueKey.c_str() );
+
     static std::string heatMapName = "";
+    static int newHeatMap = -1;
     bool addHeatMap = false;
 
     // Add heat map popup
-    ImGui::PushID( "addNewHeatMap" );
+    ImGui::PushID( plusButtonID.c_str() );
     if( ImGui::Button( "+" ) ) {
         heatMapName = "";
-        ImGui::OpenPopup( "addHeatMap" );
+        newHeatMap = 2;
+        ImGui::OpenPopup( popupID.c_str() );
     }
 
-    if( ImGui::BeginPopup( "addHeatMap" ) ) {
+    if( ImGui::BeginPopup( popupID.c_str() ) ) {
         ImGui::Text( "New Heat Map" );
         ImGui::Separator();
 
-        if( heatMapName == "" ) {
-            // Focus prevents button from being pressed
+        --newHeatMap;
+        if( newHeatMap == 0 ) {
+            // Counter required because of ImGui bug #343 -- SKFH doesn't work on first frame of popup existing
+            // https://github.com/ocornut/imgui/issues/343
             ImGui::SetKeyboardFocusHere();
         }
 
-        if( ImGui::InputText( "Name", &heatMapName, ImGuiInputTextFlags_CharsNoBlank | ImGuiInputTextFlags_EnterReturnsTrue )
-            && heatMapName != "" ) {
-
-            addHeatMap = true;
-            ImGui::CloseCurrentPopup();
+        if( ImGui::InputText( "Name", &heatMapName, ImGuiInputTextFlags_CharsNoBlank | ImGuiInputTextFlags_EnterReturnsTrue ) ) {
+            if( heatMapName != "" ) {
+                addHeatMap = true;
+                ImGui::CloseCurrentPopup();
+            }
         }
 
         ImGui::SameLine();
+        ImGui::PushID( addButtonID.c_str() );
         if( ImGui::Button( "Add" ) ) {
-            addHeatMap = true;
-            ImGui::CloseCurrentPopup();
+            if( heatMapName != "" ) {
+                addHeatMap = true;
+                ImGui::CloseCurrentPopup();
+            }
         }
 
+        ImGui::PopID();
         ImGui::EndPopup();
     }
 
@@ -453,7 +473,7 @@ void EditorMapGenStep::RenderHeatMaps( std::map< std::string, FloatRange, String
         }
 
         ImGui::SameLine();
-        ImGui::PushID( mapIndex );
+        ImGui::PushID( Stringf( "removeHeatMap_%s_%d", uniqueKey.c_str(), mapIndex ).c_str() );
 
         if( ImGui::Button( "X" ) ) {
             mapsToRemove.push_back( heatIter->first );
@@ -472,4 +492,143 @@ void EditorMapGenStep::RenderHeatMaps( std::map< std::string, FloatRange, String
         const std::string& nameToRemove = mapsToRemove[removeIndex];
         currentHeatMaps.erase( nameToRemove );
     }
+}
+
+
+void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< MapGenStep::CustomEvent >& allEvents, std::vector< MapGenStep::CustomEvent >& currentEvents ) {
+    std::string fullLabel = Stringf( "Other %s", label.c_str() );
+    std::string addButtonID = Stringf( "customEvent_Button_%s", label.c_str() );
+    std::string popupID = Stringf( "customEvent_Popup_%s", label.c_str() );
+
+    Strings allNames = GetEventNames( allEvents );
+
+    // Double check something exist
+    if( allNames.empty() ) {
+        return;
+    }
+
+    Strings currentNames = GetEventNames( currentEvents );
+    Strings unselectedNames;
+    Strings::iterator nameIter = allNames.begin();
+
+    while( nameIter != allNames.end() ) {
+        if( !EngineCommon::VectorContains( currentNames, *nameIter ) &&
+            !StringICmp( *nameIter, "ChangeTile" ) ) {
+
+            unselectedNames.push_back( *nameIter );
+        }
+
+        nameIter++;
+    }
+
+    // Start drawing
+    std::string newName = "";
+
+    ImGui::Text( fullLabel.c_str() );
+    ImGui::PushID( addButtonID.c_str() );
+
+    if( !unselectedNames.empty() ) {
+        ImGui::SameLine();
+
+        if( ImGui::Button( "+" ) ) {
+            ImGui::OpenPopup( popupID.c_str() );
+        }
+    }
+
+    // Add event pop up
+    if( ImGui::BeginPopup( popupID.c_str() ) ) {
+        ImGui::Text( label.c_str() );
+        ImGui::Separator();
+
+        int numNames = (int)unselectedNames.size();
+
+        for( int nameIndex = 0; nameIndex < numNames; nameIndex++ ) {
+            bool unused = false;
+
+            if( ImGui::Selectable( unselectedNames[nameIndex].c_str(), &unused ) ) {
+                newName = unselectedNames[nameIndex];
+            }
+        }
+
+        ImGui::EndPopup();
+    }
+
+    ImGui::PopID();
+
+    // Add new name if necessary
+    if( newName != "" ) {
+        int numEvents = (int)allEvents.size();
+
+        for( int eventIndex = 0; eventIndex < numEvents; eventIndex++ ) {
+            if( StringICmp( allEvents[eventIndex].name, newName ) ) {
+                currentEvents.push_back( allEvents[eventIndex] );
+                break;
+            }
+        }
+    }
+
+    // Draw current events
+    std::vector< int > eventsToRemove;
+    int numEvents = (int)currentEvents.size();
+
+    for( int eventIndex = 0; eventIndex < numEvents; eventIndex++ ) {
+        MapGenStep::CustomEvent& event = currentEvents[eventIndex];
+
+        if( StringICmp( event.name, "ChangeTile" ) ) {
+            // Used by editor.. no need to show this
+            continue;
+        }
+
+        if( eventIndex > 0 ) {
+            ImGui::Separator();
+        }
+
+        ImGui::Text( event.name.c_str() );
+        ImGui::SameLine();
+        ImGui::PushID( eventIndex );
+        
+        if( ImGui::Button( "X" ) ) {
+            eventsToRemove.push_back( eventIndex );
+        }
+
+        int numAttrs = (int)event.attrNames.size();
+
+        for( int attrIndex = 0; attrIndex < numAttrs; attrIndex++ ) {
+            std::string& name = event.attrNames[attrIndex];
+            std::string& value = event.attrValues[attrIndex];
+
+            ImGui::InputText( name.c_str(), &value );
+        }
+
+        ImGui::PopID();
+    }
+
+    // Remove events if necessary
+    if( !eventsToRemove.empty() ) {
+        std::vector< MapGenStep::CustomEvent >::iterator currentIter = currentEvents.begin();
+        int eventIndex = 0;
+
+        while( currentIter != currentEvents.end() ) {
+            if( EngineCommon::VectorContains( eventsToRemove, eventIndex ) ) {
+                currentIter = currentEvents.erase( currentIter );
+            } else {
+                currentIter++;
+            }
+
+            eventIndex++;
+        }
+    }
+}
+
+
+Strings EditorMapGenStep::GetEventNames( const std::vector< MapGenStep::CustomEvent >& eventList ) {
+    Strings names;
+    int numEvents = (int)eventList.size();
+
+    for( int eventIndex = 0; eventIndex < numEvents; eventIndex++ ) {
+        const MapGenStep::CustomEvent& event = eventList[eventIndex];
+        names.push_back( event.name );
+    }
+
+    return names;
 }
