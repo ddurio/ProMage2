@@ -170,7 +170,7 @@ void MapWindow::RenderTileChangeTooltip() {
                 Vec2 tooltipDims = Vec2( 0.2f * m_windowDimensions.x, 0.1f * m_windowDimensions.y );
                 ImGuiWindowFlags tooltipFlags = ImGuiWindowFlags_ChildWindow | ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar;
 
-                g_theEditor->CreateWindow( tooltipDims, Vec2( 0.758f, 0.115f ), "modifiedTooltip", tooltipFlags );
+                g_theEditor->CreateWindow( tooltipDims, Vec2( 0.703f, 0.115f ), "modifiedTooltip", tooltipFlags );
 
                 Strings tileChanges = GetTileChanges( cursorTileCoord );
                 Strings::const_iterator changeIter = tileChanges.begin();
