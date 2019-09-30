@@ -1,14 +1,14 @@
 #if defined(_EDITOR)
 #include "Editor/StepWindow.hpp"
 
+#include "Editor/Editor.hpp"
 #include "Editor/MapWindow.hpp"
 
 #include "Engine/Core/ImGuiSystem.hpp"
 
 
-StepWindow::StepWindow( const MapWindow& mapEditor, const Vec2& normDimensions /*= Vec2( 0.8f, 0.1f )*/, const Vec2& alignment /*= Vec2::ZERO */ ) :
-    EditorWindow( normDimensions, alignment ),
-    m_mapEditor( mapEditor ) {
+StepWindow::StepWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.1f )*/, const Vec2& alignment /*= Vec2::ZERO */ ) :
+    EditorWindow( normDimensions, alignment ) {
     // ThesisFIXME: Choose better name for this window
     m_windowName = "StepEditor";
 }
@@ -22,7 +22,8 @@ StepWindow::~StepWindow() {
 void StepWindow::UpdateChild( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
-    Strings stepNames = m_mapEditor.GetStepNames();
+    MapWindow* mapWindow = g_theEditor->GetMapWindow();
+    Strings stepNames = mapWindow->GetStepNames();
 
     int numSteps = (int)stepNames.size();
     ImGui::BeginChild( "scrollingSteps", ImVec2( 0.f, 0.f ), false, ImGuiWindowFlags_HorizontalScrollbar );

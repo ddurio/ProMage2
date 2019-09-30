@@ -46,10 +46,34 @@ void XmlWindow::UpdateChild( float deltaSeconds ) {
     std::string mapType = mapWindow->GetMapType();
     const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( mapType );
 
-    int stepIndex = mapWindow->GetStepIndex();
-    MapGenStep* genStep = eMapDef->GetStep( stepIndex );
+    Strings stepNames = mapWindow->GetStepNames();
+    int currentIndex = mapWindow->GetStepIndex();
 
-    EditorMapGenStep::RenderStepParms( genStep );
+    int numSteps = (int)stepNames.size();
+    m_stepHeaderOpen.resize( numSteps, false );
+
+    // Draw headers
+    for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
+        ImGui::SetNextTreeNodeOpen( (stepIndex == currentIndex) );
+
+        if( ImGui::CollapsingHeader( stepNames[stepIndex].c_str(), ImGuiTreeNodeFlags_None ) ) {
+            MapGenStep* genStep = eMapDef->GetStep( currentIndex );
+
+            ImGui::TreePush( stepNames[stepIndex].c_str() );
+            EditorMapGenStep::RenderStepParms( genStep );
+            ImGui::TreePop();
+
+            if( stepIndex != currentIndex ) {
+                // User opened a new tab.. change map
+                m_stepHeaderOpen[currentIndex] = false;
+
+                EventArgs args;
+                args.SetValue( "stepIndex", stepIndex );
+
+                g_theEventSystem->FireEvent( EVENT_EDITOR_STEP_INDEX, args );
+            }
+        }
+    }
 }
 
 #endif

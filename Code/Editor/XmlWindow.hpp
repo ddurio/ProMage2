@@ -16,6 +16,7 @@ class XmlWindow : public EditorWindow {
 
     private:
     bool m_highlightChanges = true;
+    std::vector< bool > m_stepHeaderOpen;
 
 
     void UpdateChild( float deltaSeconds ) override;
