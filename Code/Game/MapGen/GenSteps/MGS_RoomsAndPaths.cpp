@@ -239,8 +239,8 @@ void MGS_RoomsAndPaths::GeneratePaths( Map& theMap, std::vector<IntVec2>& roomCe
             int absRemainX = abs( remainingDistance.x );
             int absRemainY = abs( remainingDistance.y );
 
-            int pathSizeX = ClampInt( (int)subPathX, -absRemainX, absRemainX );
-            int pathSizeY = ClampInt( (int)subPathY, -absRemainY, absRemainY );
+            int pathSizeX = ClampInt( (int)ceil(subPathX), -absRemainX, absRemainX );
+            int pathSizeY = ClampInt( (int)ceil(subPathY), -absRemainY, absRemainY );
             IntVec2 pathSize( pathSizeX, pathSizeY );
 
             ChangePathTiles( theMap, subPathStart, pathSize );
