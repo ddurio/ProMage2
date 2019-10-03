@@ -324,6 +324,89 @@ Tile& MapGenStep::GetTile( Map& map, int tileX, int tileY ) const {
 }
 
 
+void MapGenStep::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+    UNUSED( document );
+
+    // Conditions
+    if( m_chanceToRun != 1.f ) {
+        element.SetAttribute( "chanceToRun", m_chanceToRun );
+    }
+
+    if( m_numIterations != IntRange::ONE ) {
+        element.SetAttribute( "numIterations", m_numIterations.GetAsString().c_str() );
+    }
+
+    if( m_ifIsType != "" ) {
+        element.SetAttribute( "ifIsType", m_ifIsType.c_str() );
+    }
+
+    if( !m_ifHasTags.empty() ) {
+        std::string ifHasTagsCSV = JoinStrings( m_ifHasTags, "," );
+        element.SetAttribute( "ifHasTags", ifHasTagsCSV.c_str() );
+    }
+
+    std::map< std::string, FloatRange, StringCmpCaseI >::const_iterator ifHeatIter = m_ifHeatMap.begin();
+
+    while( ifHeatIter != m_ifHeatMap.end() ) {
+        std::string attrName = Stringf( "ifHeatMap%s", ifHeatIter->first.c_str() );
+        element.SetAttribute( attrName.c_str(), ifHeatIter->second.GetAsString().c_str() );
+
+        ifHeatIter++;
+    }
+
+    int numConditions = (int)m_customConditions.size();
+
+    for( int condIndex = 0; condIndex < numConditions; condIndex++ ) {
+        const CustomEvent& condition = m_customConditions[condIndex];
+
+        if( condition.isEnabled ) {
+            int numAttr = (int)condition.attrNames.size();
+
+            for( int attrIndex = 0; attrIndex < numAttr; attrIndex++ ) {
+                std::string name = condition.attrNames[attrIndex];
+                std::string value = condition.attrValues[attrIndex];
+                element.SetAttribute( name.c_str(), value.c_str() );
+            }
+        }
+    }
+
+    // Results
+    if( m_setType != "" ) {
+        element.SetAttribute( "setType", m_setType.c_str() );
+    }
+
+    if( !m_setTags.empty() ) {
+        std::string setTagsCSV = JoinStrings( m_setTags, "," );
+        element.SetAttribute( "setTags", setTagsCSV.c_str() );
+    }
+
+    std::map< std::string, FloatRange, StringCmpCaseI >::const_iterator setHeatIter = m_setHeatMap.begin();
+
+    while( setHeatIter != m_setHeatMap.end() ) {
+        std::string attrName = Stringf( "setHeatMap%s", setHeatIter->first.c_str() );
+        element.SetAttribute( attrName.c_str(), setHeatIter->second.GetAsString().c_str() );
+
+        setHeatIter++;
+    }
+
+    int numResults = (int)m_customResults.size();
+
+    for( int resultIndex = 0; resultIndex < numResults; resultIndex++ ) {
+        const CustomEvent& result = m_customResults[resultIndex];
+
+        if( result.isEnabled ) {
+            int numAttr = (int)result.attrNames.size();
+
+            for( int attrIndex = 0; attrIndex < numAttr; attrIndex++ ) {
+                std::string name = result.attrNames[attrIndex];
+                std::string value = result.attrValues[attrIndex];
+                element.SetAttribute( name.c_str(), value.c_str() );
+            }
+        }
+    }
+}
+
+
 // PRIVATE -------------------------------------------------
 MapGenStep::CustomEvent::CustomEvent( const CustomEvent& event, const Strings& parsedValues ) :
     name( event.name ),

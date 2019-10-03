@@ -10,6 +10,9 @@ class MGS_PerlinNoise : public MapGenStep {
     public:
     MGS_PerlinNoise( const XMLElement& element );
 
+    void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+
+
     private:
     IntRange   m_gridSize           = IntRange( 10, 30 );
     IntRange   m_numOctaves         = IntRange( 1, 3 );

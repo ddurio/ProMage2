@@ -21,6 +21,34 @@ MGS_CellularAutomata::MGS_CellularAutomata( const XMLElement& element ) :
 }
 
 
+void MGS_CellularAutomata::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+    element.SetName( "CellularAutomata" );
+    MapGenStep::SaveToXml( document, element );
+
+    if( m_radius != IntRange::ONE ) {
+        std::string radiusStr = SaveCustomIntRange( m_radius );
+        element.SetAttribute( "radius", radiusStr.c_str() );
+    }
+
+    if( m_chancePerTile != 1.f ) {
+        element.SetAttribute( "chancePerTile", m_chancePerTile );
+    }
+
+    if( m_ifNeighborType != "" ) {
+        element.SetAttribute( "ifNeighborType", m_ifNeighborType.c_str() );
+    }
+
+    if( m_ifNumNeighbors != IntRange( 1, 8 ) ) {
+        element.SetAttribute( "ifNumNeighbors", m_ifNumNeighbors.GetAsString().c_str() );
+    }
+
+    if( !m_ifNeighborHasTags.empty() ) {
+        std::string ifTagsCSV = JoinStrings( m_ifNeighborHasTags, "," );
+        element.SetAttribute( "ifNeighborHasTags", ifTagsCSV.c_str() );
+    }
+}
+
+
 void MGS_CellularAutomata::RunOnce( Map& theMap ) const {
     RNG* mapRNG = theMap.GetMapRNG();
     IntVec2 mapDimensions = theMap.GetMapDimensions();
@@ -140,4 +168,13 @@ IntRange MGS_CellularAutomata::ParseCustomIntRange( const std::string& rangeAsSt
     }
 
     return IntRange( minRange, maxRange );
+}
+
+
+std::string MGS_CellularAutomata::SaveCustomIntRange( const IntRange& range ) const {
+    if( range.min == 1 ) {
+        return Stringf( "%d", range.max );
+    } else {
+        return Stringf( "%d~%d", range.min, range.max );
+    }
 }

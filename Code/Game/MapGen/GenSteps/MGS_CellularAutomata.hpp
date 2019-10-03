@@ -11,6 +11,8 @@ class MGS_CellularAutomata : public MapGenStep {
     MGS_CellularAutomata( const XMLElement& element );
     ~MGS_CellularAutomata() {};
 
+    void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+
 
     private:
     IntRange m_radius               = IntRange::ONE;
@@ -34,4 +36,5 @@ class MGS_CellularAutomata : public MapGenStep {
     int CountMatchingNeighbors( int homeTileX, int homeTileY, Map& theMap, std::vector< TileValidity >& tileValidities ) const;
 
     IntRange ParseCustomIntRange( const std::string& rangeAsStr ) const;
+    std::string SaveCustomIntRange( const IntRange& range ) const;
 };

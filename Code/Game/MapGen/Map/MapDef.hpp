@@ -19,6 +19,8 @@ class MapDef : public Definition< Map, MapDef > {
     public:
     virtual void DefineObject( Map& theMap ) const override;
 
+    virtual void SaveToXml( XmlDocument& document, XMLElement& element ) const;
+
 
     protected:
     std::string m_tileFillType = "";

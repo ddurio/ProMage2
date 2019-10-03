@@ -9,6 +9,16 @@ MGS_DistanceField::MGS_DistanceField( const XMLElement& element ) :
 }
 
 
+void MGS_DistanceField::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+    element.SetName( "DistanceField" );
+    MapGenStep::SaveToXml( document, element );
+
+    if( m_movementType != "" ) {
+        element.SetAttribute( "movementType", m_movementType.c_str() );
+    }
+}
+
+
 void MGS_DistanceField::RunOnce( Map& theMap ) const {
     IntVec2 mapDimensions = theMap.GetMapDimensions();
     int numTiles = mapDimensions.x * mapDimensions.y;

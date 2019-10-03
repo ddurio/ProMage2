@@ -24,6 +24,26 @@ MGS_FromImage::~MGS_FromImage() {
 }
 
 
+void MGS_FromImage::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+    element.SetName( "FromImage" );
+    MapGenStep::SaveToXml( document, element );
+
+    element.SetAttribute( "imageFilePath", m_imageFilePath.c_str() );
+
+    if( m_alignX != FloatRange::ZEROTOONE ) {
+        element.SetAttribute( "alignX", m_alignX.GetAsString().c_str() );
+    }
+
+    if( m_alignY != FloatRange::ZEROTOONE ) {
+        element.SetAttribute( "alignY", m_alignY.GetAsString().c_str() );
+    }
+
+    if( m_numRotations != IntRange::ZERO ) {
+        element.SetAttribute( "numRotations", m_numRotations.GetAsString().c_str() );
+    }
+}
+
+
 // PRIVATE ---------------------------------------------
 std::map< std::string, const TileDef* > MGS_FromImage::s_tileDefsByTexelColor;
 

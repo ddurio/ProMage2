@@ -13,6 +13,16 @@ MGS_Sprinkle::MGS_Sprinkle( const XMLElement& element ) :
 }
 
 
+void MGS_Sprinkle::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+    element.SetName( "Sprinkle" );
+    MapGenStep::SaveToXml( document, element );
+
+    if( m_countRange != IntRange::ONE ) {
+        element.SetAttribute( "count", m_countRange.GetAsString().c_str() );
+    }
+}
+
+
 void MGS_Sprinkle::RunOnce( Map& theMap ) const {
     RNG* mapRNG = theMap.GetMapRNG();
     int numSprinkles = mapRNG->GetRandomIntInRange( m_countRange );

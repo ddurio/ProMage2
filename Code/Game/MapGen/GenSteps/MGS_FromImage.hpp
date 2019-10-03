@@ -19,6 +19,9 @@ class MGS_FromImage : public MapGenStep {
     MGS_FromImage( const XMLElement& element );
     ~MGS_FromImage();
 
+    void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+
+
     private:
     static std::map< std::string, const TileDef* > s_tileDefsByTexelColor;
 

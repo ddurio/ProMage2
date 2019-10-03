@@ -10,6 +10,9 @@ class MGS_DistanceField : public MapGenStep {
     public:
     explicit MGS_DistanceField( const XMLElement& element );
 
+    void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+
+
     private:
     std::string m_movementType = "";
 

@@ -10,6 +10,9 @@ class MGS_RoomsAndPaths : public MapGenStep {
     public:
     MGS_RoomsAndPaths( const XMLElement& element );
 
+    void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+
+
     private:
     // Rooms
     IntRange    m_numRooms           = IntRange::ZERO;

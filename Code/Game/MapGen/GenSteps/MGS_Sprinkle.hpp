@@ -11,6 +11,8 @@ class MGS_Sprinkle : public MapGenStep {
     explicit MGS_Sprinkle( const XMLElement& element );
     ~MGS_Sprinkle() {};
 
+    void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+
 
     private:
     IntRange m_countRange = IntRange::ZERO;

@@ -22,20 +22,49 @@ void MapDef::DefineObject( Map& theMap ) const {
 }
 
 
+void MapDef::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+    element.SetAttribute( "name", m_defType.c_str() );
+    element.SetAttribute( "fillTile", m_tileFillType.c_str() );
+
+    if( m_tileEdgeType != "" ) {
+        element.SetAttribute( "edgeTile", m_tileEdgeType.c_str() );
+    }
+
+    if( m_width != IntRange::ZERO ) {
+        element.SetAttribute( "width", m_width.GetAsString().c_str() );
+    }
+
+    if( m_height != IntRange::ZERO ) {
+        element.SetAttribute( "height", m_height.GetAsString().c_str() );
+    }
+
+    int numSteps = (int)m_mapGenSteps.size();
+
+    for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
+        const MapGenStep* step = m_mapGenSteps[stepIndex];
+
+        XMLElement* stepEle = document.NewElement( step->GetName().c_str() );
+        element.InsertEndChild( stepEle );
+
+        step->SaveToXml( document, *stepEle );
+    }
+}
+
+
 MapDef::MapDef( const XMLElement& element ) {
     // Name
     s_defClass = "MapDef";
-    m_defType = ParseXMLAttribute( element, "name", "" );
+    m_defType = ParseXMLAttribute( element, "name", m_defType );
     GUARANTEE_OR_DIE( m_defType != "", "(MapDef) Map missing required attribute 'name'" );
 
     // Tile Types
-    m_tileFillType = ParseXMLAttribute( element, "fillTile", "" );
+    m_tileFillType = ParseXMLAttribute( element, "fillTile", m_tileFillType );
     GUARANTEE_OR_DIE( m_tileFillType != "", "(MapDef) Map missing required attribute 'fillType'" );
-    m_tileEdgeType = ParseXMLAttribute( element, "edgeTile", "UNKNOWN" );
+    m_tileEdgeType = ParseXMLAttribute( element, "edgeTile", m_tileEdgeType );
 
     // Size
-    m_width = ParseXMLAttribute( element, "width", IntRange::ZERO );
-    m_height = ParseXMLAttribute( element, "height", IntRange::ZERO );
+    m_width = ParseXMLAttribute( element, "width", m_width );
+    m_height = ParseXMLAttribute( element, "height", m_height );
 
     // GenSteps
     const XMLElement* stepsRoot = element.FirstChildElement( "GenerationSteps" );
@@ -87,7 +116,7 @@ void MapDef::DefineFillAndEdge( Map& map ) const {
         for( int tileY = 0; tileY < mapWidth; tileY++ ) {
             std::string tileType = m_tileFillType;
 
-            if( m_tileEdgeType != "UNKNOWN" && IsEdgeTile( tileY, tileX, mapWidth, mapHeight ) ) {
+            if( m_tileEdgeType != "" && IsEdgeTile( tileY, tileX, mapWidth, mapHeight ) ) {
                 tileType = m_tileEdgeType;
             }
 

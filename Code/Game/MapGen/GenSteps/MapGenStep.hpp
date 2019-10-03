@@ -55,6 +55,8 @@ class MapGenStep {
     virtual std::string GetName() const;
     std::vector< CustomEvent > GetCustomResults() const;
 
+    virtual void SaveToXml( XmlDocument& document, XMLElement& element ) const;
+
 
     protected:
     static DevConsoleChannel s_mgsChannel;

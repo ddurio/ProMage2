@@ -30,6 +30,60 @@ MGS_RoomsAndPaths::MGS_RoomsAndPaths( const XMLElement& element ) :
 }
 
 
+void MGS_RoomsAndPaths::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+    element.SetName( "RoomsAndPaths" );
+    MapGenStep::SaveToXml( document, element );
+
+    XMLElement* roomsEle = document.NewElement( "Rooms" );
+    XMLElement* pathsEle = document.NewElement( "Paths" );
+
+    // Rooms
+    if( m_numRooms != IntRange::ZERO ) {
+        roomsEle->SetAttribute( "count", m_numRooms.GetAsString().c_str() );
+    }
+
+    if( m_roomWidth != IntRange::ZERO ) {
+        roomsEle->SetAttribute( "width", m_roomWidth.GetAsString().c_str() );
+    }
+
+    if( m_roomHeight != IntRange::ZERO ) {
+        roomsEle->SetAttribute( "height", m_roomHeight.GetAsString().c_str() );
+    }
+
+    if( m_roomFloor != "" ) {
+        roomsEle->SetAttribute( "floor", m_roomFloor.c_str() );
+    }
+
+    if( m_roomWall != "" ) {
+        roomsEle->SetAttribute( "wall", m_roomWall.c_str() );
+    }
+
+    if( m_numOverlaps != IntRange::ZERO ) {
+        roomsEle->SetAttribute( "numOverlaps", m_numOverlaps.GetAsString().c_str() );
+    }
+
+    // Paths
+    if( m_pathFloor != "" ) {
+        pathsEle->SetAttribute( "floor", m_pathFloor.c_str() );
+    }
+
+    if( !m_pathLoop ) {
+        pathsEle->SetAttribute( "loop", m_pathLoop );
+    }
+
+    if( m_numExtraPaths != IntRange::ZERO ) {
+        pathsEle->SetAttribute( "extraCount", m_numExtraPaths.GetAsString().c_str() );
+    }
+
+    if( m_pathStraightChance != FloatRange::ZERO ) {
+        pathsEle->SetAttribute( "straightChance", m_pathStraightChance.GetAsString().c_str() );
+    }
+
+    element.InsertFirstChild( roomsEle );
+    element.InsertEndChild( pathsEle );
+}
+
+
 void MGS_RoomsAndPaths::RunOnce( Map& theMap ) const {
     std::vector<IntVec2> roomPositions;
     std::vector<IntVec2> roomSizes;
