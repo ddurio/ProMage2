@@ -71,6 +71,8 @@ void Editor::Startup() {
     m_customResultIndex.push_back( EditorMapDef::SetupChangeTileMGS() );
     EditorMapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
 
+    g_theEventSystem->Subscribe( "saveAll", &EditorMapDef::SaveAllToXml );
+
     // Setup Editor
     m_mapWindow  = new MapWindow(  Vec2( 0.75f, 0.9f ) );
     m_stepWindow = new StepWindow( Vec2( 0.75f, 0.1f ) );
@@ -94,6 +96,8 @@ void Editor::Shutdown() {
     ActorDef::DestroyDefs();
     ItemDef::DestroyDefs();
     TileDef::DestroyDefs();
+
+    g_theEventSystem->Unsubscribe( "saveAll", &EditorMapDef::SaveAllToXml );
     EditorMapDef::DestroyDefs();
 }
 

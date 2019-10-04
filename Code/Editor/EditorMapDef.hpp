@@ -14,6 +14,7 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     void DefineObject( Map& theMap ) const override;
 
     using Definition< Map, EditorMapDef >::LoadFromFile;
+    using Definition< Map, EditorMapDef >::SaveToFile;
     using Definition< Map, EditorMapDef >::GetDefinition;
     using Definition< Map, EditorMapDef >::DestroyDefs;
 
@@ -21,6 +22,7 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     Strings GetStepNames( int indexOffset = 0 ) const;
 
     static int SetupChangeTileMGS();
+    static bool SaveAllToXml( EventArgs& args );
 
 
     private:
@@ -55,4 +57,6 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     void ProcessWorkerPayloads() const;
     void ProcessMainPayloads() const;
     void SpinDownThreads() const;
+
+    bool SaveOneToXml( EventArgs& args );
 };

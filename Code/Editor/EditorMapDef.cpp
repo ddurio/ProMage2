@@ -60,6 +60,13 @@ int EditorMapDef::SetupChangeTileMGS() {
 }
 
 
+bool EditorMapDef::SaveAllToXml( EventArgs& args ) {
+    std::string filePath = args.GetValue( "filePath", DATA_MAP_DEFS );
+    EditorMapDef::SaveToFile( filePath, "MapDefinition" );
+    return true;
+}
+
+
 // PRIVATE -------------------------------------------
 EditorMapDef::EditorMapDef( const XMLElement& element ) :
     MapDef( element ) {
@@ -201,6 +208,17 @@ void EditorMapDef::SpinDownThreads() const {
     }
 
     m_threads.clear();
+}
+
+
+bool EditorMapDef::SaveOneToXml( EventArgs& args ) {
+    // should open windows save file 
+
+    // Create XmlDocument and root element(s)
+
+    // call MapDef::SaveToXml
+
+    return false;
 }
 
 #endif
