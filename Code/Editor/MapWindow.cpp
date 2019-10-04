@@ -22,7 +22,7 @@
 MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const Vec2& alignment /*= Vec2( 0.f, 1.f ) */ ) :
     EditorWindow( normDimensions, alignment ) {
     m_windowName = "MapEditor";
-    g_theEventSystem->Subscribe( EVENT_EDITOR_STEP_INDEX, this, &MapWindow::SetVisibleMapStep );
+    g_theEventSystem->Subscribe( EVENT_EDITOR_CHANGE_STEP, this, &MapWindow::SetVisibleMapStep );
     g_theEventSystem->Subscribe( EVENT_EDITOR_GENERATE_MAP, this, &MapWindow::GenerateMaps );
 
     Rgba tileHighlight = Rgba::RED;
@@ -36,7 +36,7 @@ MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const
 
 
 MapWindow::~MapWindow() {
-    g_theEventSystem->Unsubscribe( EVENT_EDITOR_STEP_INDEX, this, &MapWindow::SetVisibleMapStep );
+    g_theEventSystem->Unsubscribe( EVENT_EDITOR_CHANGE_STEP, this, &MapWindow::SetVisibleMapStep );
     g_theEventSystem->Unsubscribe( EVENT_EDITOR_GENERATE_MAP, this, &MapWindow::GenerateMaps );
 
     Shutdown();

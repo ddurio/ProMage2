@@ -70,7 +70,7 @@ void XmlWindow::UpdateChild( float deltaSeconds ) {
                 EventArgs args;
                 args.SetValue( "stepIndex", stepIndex );
 
-                g_theEventSystem->FireEvent( EVENT_EDITOR_STEP_INDEX, args );
+                g_theEventSystem->FireEvent( EVENT_EDITOR_CHANGE_STEP, args );
             }
         }
     }

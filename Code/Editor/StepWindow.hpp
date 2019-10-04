@@ -16,5 +16,11 @@ class StepWindow : public EditorWindow {
 
 
     private:
+    int m_sliderIndex = -1;
+
+
     void UpdateChild( float deltaSeconds ) override;
+
+    void RenderStepButtons() const;
+    void RenderStepSlider();
 };

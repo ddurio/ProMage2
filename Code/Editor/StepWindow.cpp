@@ -21,7 +21,12 @@ StepWindow::~StepWindow() {
 
 void StepWindow::UpdateChild( float deltaSeconds ) {
     UNUSED( deltaSeconds );
+    //RenderStepButtons();
+    RenderStepSlider();
+}
 
+
+void StepWindow::RenderStepButtons() const {
     MapWindow* mapWindow = g_theEditor->GetMapWindow();
     Strings stepNames = mapWindow->GetStepNames();
 
@@ -36,13 +41,35 @@ void StepWindow::UpdateChild( float deltaSeconds ) {
             EventArgs args;
             args.SetValue( "stepIndex", stepIndex );
 
-            g_theEventSystem->FireEvent( EVENT_EDITOR_STEP_INDEX, args );
+            g_theEventSystem->FireEvent( EVENT_EDITOR_CHANGE_STEP, args );
         }
 
         ImGui::SameLine();
     }
 
     ImGui::EndChild();
+}
+
+
+void StepWindow::RenderStepSlider() {
+    MapWindow* mapWindow = g_theEditor->GetMapWindow();
+    Strings stepNames = mapWindow->GetStepNames();
+
+    int numSteps = (int)stepNames.size();
+
+    if( m_sliderIndex < 0 || m_sliderIndex >= numSteps ) {
+        m_sliderIndex = numSteps - 1;
+    }
+
+    std::string indexStr = Stringf( "%d", m_sliderIndex + 1 ); // displayed as 1 indexed values
+
+    if( ImGui::SliderInt( "Step Index", &m_sliderIndex, 0, numSteps - 1, indexStr.c_str() ) ) {
+        // Slider changed
+        EventArgs args;
+        args.SetValue( "stepIndex", m_sliderIndex );
+
+        g_theEventSystem->FireEvent( EVENT_EDITOR_CHANGE_STEP, args );
+    }
 }
 
 #endif
