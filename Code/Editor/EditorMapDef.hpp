@@ -10,7 +10,7 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     friend class Definition< Map, EditorMapDef >;
 
     public:
-    void DefineObject( std::vector< Map* >* mapSteps ) const;
+    void DefineObject( std::vector< Map* >* mapSteps, bool useCustomSeed = false, unsigned int customSeed = 0 ) const;
     void DefineObject( Map& theMap ) const override;
 
     using Definition< Map, EditorMapDef >::LoadFromFile;
@@ -18,8 +18,11 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     using Definition< Map, EditorMapDef >::GetDefinition;
     using Definition< Map, EditorMapDef >::DestroyDefs;
 
+    void RenderMapDefParams();
+
     MapGenStep* GetStep( int stepIndex ) const; // Gets a NON-CONST version for editor changes
     Strings GetStepNames( int indexOffset = 0 ) const;
+    Strings GetMapTypes() const;
 
     static int SetupChangeTileMGS();
     static bool SaveAllToXml( EventArgs& args );
@@ -53,7 +56,7 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     bool CompleteStep( AsyncPayload& payload ) const;
 
     void SpinUpThreads() const;
-    void LaunchJobs() const;
+    void LaunchJobs( bool useCustomSeed, unsigned int customSeed ) const;
     void ProcessWorkerPayloads() const;
     void ProcessMainPayloads() const;
     void SpinDownThreads() const;

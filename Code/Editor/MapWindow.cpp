@@ -9,6 +9,7 @@
 #include "Engine/Core/Time.hpp"
 #include "Engine/Debug/DebugDraw.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/RNG.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
@@ -61,6 +62,15 @@ int MapWindow::GetStepIndex() const {
 }
 
 
+unsigned int MapWindow::GetMapSeed() const {
+    Map* theMap = m_mapPerStep[m_stepIndex];
+    RNG* mapRNG = theMap->GetMapRNG();
+    unsigned int mapSeed = mapRNG->GetSeed();
+
+    return mapSeed;
+}
+
+
 std::string MapWindow::GetMapType() const {
     Map* theMap = m_mapPerStep[m_stepIndex];
     return theMap->GetMapType();
@@ -69,7 +79,7 @@ std::string MapWindow::GetMapType() const {
 
 Strings MapWindow::GetStepNames() const {
     Strings stepNames;
-    stepNames.push_back( "1: Fill And Edge" );
+    stepNames.push_back( "1: Map Initialization" );
 
     // Gen Steps
     std::string defType = m_mapPerStep[0]->GetMapType();
@@ -200,10 +210,15 @@ bool MapWindow::GenerateMaps( EventArgs& args ) {
     std::string mapType = args.GetValue( "mapType", "Island" );
     //std::string mapType = args.GetValue( "mapType", "DD1" );
 
+    bool useCustomSeed = args.GetValue( "useCustomSeed", false );
+    unsigned int customSeed = args.GetValue( "customSeed", 0 );
+
     const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( mapType );
-    eMapDef->DefineObject( &m_mapPerStep );
+    eMapDef->DefineObject( &m_mapPerStep, useCustomSeed, customSeed );
 
     m_stepIndex = (int)m_mapPerStep.size() - 1;
+    m_stepIndex = args.GetValue( "stepIndex", m_stepIndex );
+
     m_sizeIsCalculated = false;
 
     // Setup camera

@@ -462,6 +462,7 @@
     <ClCompile Include="..\Editor\EditorMapDef.cpp" />
     <ClCompile Include="..\Editor\EditorMapGenStep.cpp" />
     <ClCompile Include="..\Editor\EditorWindow.cpp" />
+    <ClCompile Include="..\Editor\ImGuiUtils.cpp" />
     <ClCompile Include="..\Editor\MapWindow.cpp" />
     <ClCompile Include="..\Editor\StepWindow.cpp" />
     <ClCompile Include="..\Editor\XmlWindow.cpp" />
@@ -509,6 +510,7 @@
     <ClInclude Include="..\Editor\EditorMapDef.hpp" />
     <ClInclude Include="..\Editor\EditorMapGenStep.hpp" />
     <ClInclude Include="..\Editor\EditorWindow.hpp" />
+    <ClInclude Include="..\Editor\ImGuiUtils.hpp" />
     <ClInclude Include="..\Editor\MapWindow.hpp" />
     <ClInclude Include="..\Editor\StepWindow.hpp" />
     <ClInclude Include="..\Editor\XmlWindow.hpp" />

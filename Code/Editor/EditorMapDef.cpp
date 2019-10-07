@@ -1,13 +1,15 @@
 #if defined(_EDITOR)
 #include "Editor/EditorMapDef.hpp"
 
+#include "Editor/ImGuiUtils.hpp"
+
 #include "Engine/Math/RNG.hpp"
 
 #include "Game/MapGen/GenSteps/MapGenStep.hpp"
 #include "Game/MapGen/Map/Map.hpp"
 
 
-void EditorMapDef::DefineObject( std::vector< Map* >* mapSteps ) const {
+void EditorMapDef::DefineObject( std::vector< Map* >* mapSteps, bool useCustomSeed /*= false*/, unsigned int customSeed /*= 0 */ ) const {
     m_mapPerStep     = mapSteps;
     m_mapPerStep->resize( m_numSteps, nullptr );
 
@@ -15,7 +17,7 @@ void EditorMapDef::DefineObject( std::vector< Map* >* mapSteps ) const {
     m_numJobsRunning = 0;
 
     SpinUpThreads();
-    LaunchJobs();
+    LaunchJobs( useCustomSeed, customSeed );
     ProcessMainPayloads();
     SpinDownThreads();
 }
@@ -23,6 +25,14 @@ void EditorMapDef::DefineObject( std::vector< Map* >* mapSteps ) const {
 
 void EditorMapDef::DefineObject( Map& theMap ) const {
     MapDef::DefineObject( theMap );
+}
+
+
+void EditorMapDef::RenderMapDefParams() {
+    RenderIntRange( m_width, "Map Width", 3, 100 );
+    RenderIntRange( m_height, "Map Height", 3, 100 );
+    RenderTileDropDown( "emdFill", m_tileFillType, "Fill Type", false );
+    RenderTileDropDown( "emdEdge", m_tileEdgeType, "Edge Type" );
 }
 
 
@@ -50,6 +60,19 @@ Strings EditorMapDef::GetStepNames( int indexOffset /*= 0 */ ) const {
     }
 
     return stepNames;
+}
+
+
+Strings EditorMapDef::GetMapTypes() const {
+    std::map< std::string, EditorMapDef*, StringCmpCaseI >::const_iterator mapDefIter = s_definitions.begin();
+    Strings mapTypes;
+
+    while( mapDefIter != s_definitions.end() ) {
+        mapTypes.push_back( mapDefIter->first );
+        mapDefIter++;
+    }
+
+    return mapTypes;
 }
 
 
@@ -108,8 +131,8 @@ void EditorMapDef::SpinUpThreads() const {
 }
 
 
-void EditorMapDef::LaunchJobs() const {
-    unsigned int mapSeed = g_RNG->GetRandomSeed();
+void EditorMapDef::LaunchJobs( bool useCustomSeed, unsigned int customSeed ) const {
+    unsigned int mapSeed = (useCustomSeed) ? customSeed : g_RNG->GetRandomSeed();
 
     for( int stepIndex = 1; stepIndex <= m_numSteps; stepIndex++ ) {
         std::string mapName = Stringf( "%s: Step %d", m_defType.c_str(), stepIndex );

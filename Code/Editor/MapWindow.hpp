@@ -18,6 +18,7 @@ class MapWindow : public EditorWindow {
     void Shutdown();
 
     int GetStepIndex() const;
+    unsigned int GetMapSeed() const;
     std::string GetMapType() const;
     Strings GetStepNames() const;
 
