@@ -15,7 +15,7 @@ class MGS_Sprinkle : public MapGenStep {
 
 
     private:
-    IntRange m_countRange = IntRange::ZERO;
+    IntRange m_countRange = IntRange::ONE;
 
     void RunOnce( Map& map ) const;
 };

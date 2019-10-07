@@ -1,112 +1,69 @@
-<MapDefinitions>
-    <MapDefinition name="Island" width="20~32" height="10~18" fillTile="EdgedGrass" edgeTile="EdgedWater">
-        <GenerationSteps>
-            <CellularAutomata ifIsType="EdgedGrass" ifNeighborType="EdgedWater" setType="CliffGrass"/>
-            <RoomsAndPaths>
-                <Rooms count="3" width="2~5" height="3~6" floor="HardWoodFloor" wall="StoneWall"/>
-                <Paths floor="EdgedSand" loop="false"/>
-            </RoomsAndPaths>
-
-            <Sprinkle ifIsType="HardWoodFloor" setType="StairsDown" setTags="stairsDown" count="1"/>
-            <CellularAutomata ifNeighborType="StairsDown" setTags="stairsDownAccess"/>
-
-            <Sprinkle ifIsType="HardWoodFloor" spawnActor="HumanFemale" controller="Player" count="1"/>
-            <!--
-            <Sprinkle ifIsType="HardWoodFloor" spawnActor="SkeletonMale" controller="Enemy" count="1"/>
-
-            <Sprinkle ifIsType="Grass" setType="Stone" count="0~4"/>
-            <CellularAutomata ifIsType="Grass" ifNeighborType="Stone" setType="Stone"/>
-            <DistanceField ifIsType="Water" movementType="Walk"/>
-            <CellularAutomata ifHeatMapDistance="4~5" setType="Stone"/>
-            <FromImage imageFilePath="Data/Images/MGS_FromImage_Test.png" numRotations="0~3" alignX="0.9" alignY="0.9"/>
-            <CellularAutomata ifHeatMapDistance="4~5" spawnActor="Girl"/>
-            <CellularAutomata ifHeatMapDistance="4~5" spawnItem="ShortSword"/>
-            <CellularAutomata ifIsType="Stone" ifNeighborType="Stone" ifNumNeighbors="3" setType="Water"/>
-            <CellularAutomata ifIsType="Grass" ifNeighborType="Water" setType="Stone" chancePerTile="0.5"/>
-            <CellularAutomata ifIsType="Stone" ifNeighborType="Water" ifNumNeighbors="4" setType="Grass"/>
-            <PerlinNoise ifIsType="Grass" ifHeatMapNoise="-0.1~0.1" octaves="1" gridSize="20" setType="Stone"/>
-            -->
-        </GenerationSteps>
+<EditorMapDefs>
+    <MapDefinition name="Cave" fillTile="FakeStone" width="50~100" height="50~100">
+        <RoomsAndPaths>
+            <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWall"/>
+            <Paths floor="CaveDirtFloor"/>
+        </RoomsAndPaths>
+        <CellularAutomata ifIsType="FakeStone" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor"/>
+        <CellularAutomata ifIsType="StoneWall" setType="CaveDirtFloor" ifNeighborType="FakeStone" ifNumNeighbors="1"/>
+        <CellularAutomata ifIsType="FakeStone" setType="StoneWall" ifNeighborType="CaveDirtFloor"/>
+        <Sprinkle ifIsType="CaveDirtFloor" setType="StairsDown" setTags="stairsDown"/>
+        <CellularAutomata ifIsType="CaveDirtFloor" setTags="stairsDownAccess" ifNeighborType="StairsDown"/>
+        <Sprinkle ifIsType="CaveDirtFloor" setType="StairsUp" setTags="stairsUp"/>
+        <CellularAutomata ifIsType="CaveDirtFloor" setTags="stairsUpAccess" ifNeighborType="StairsUp"/>
+        <Sprinkle chanceToRun="0.5" ifIsType="CaveDirtFloor" ifHasTags="stairsDownAccess" setTags="merchant" spawnActor="Merchant" controller=""/>
+        <CellularAutomata setTags="merchantAccess" ifNeighborHasTags="merchant"/>
+        <Sprinkle ifIsType="CaveDirtFloor" spawnActor="SkeletonMale" controller="" count="20"/>
     </MapDefinition>
-    <MapDefinition name="Cave" width="50~100" height="50~100" fillTile="FakeStone">
-        <GenerationSteps>
-            <RoomsAndPaths>
-                <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWall"/>
-                <Paths floor="CaveDirtFloor" loop="true"/>
-            </RoomsAndPaths>
-            <!-- Walls -->
-            <CellularAutomata ifIsType="FakeStone" ifNeighborType="CaveDirtFloor" setType="CaveDirtFloor"/>
-            <CellularAutomata ifIsType="StoneWall" ifNeighborType="FakeStone" ifNumNeighbors="1" setType="CaveDirtFloor"/>
-            <CellularAutomata ifIsType="FakeStone" ifNeighborType="CaveDirtFloor" setType="StoneWall"/>
-            <!-- Stairs -->
-            <Sprinkle ifIsType="CaveDirtFloor" setType="StairsDown" setTags="stairsDown" count="1"/>
-            <CellularAutomata ifIsType="CaveDirtFloor" ifNeighborType="StairsDown" setTags="stairsDownAccess"/>
-            <Sprinkle ifIsType="CaveDirtFloor" setType="StairsUp" setTags="stairsUp" count="1"/>
-            <CellularAutomata ifIsType="CaveDirtFloor" ifNeighborType="StairsUp" setTags="stairsUpAccess"/>
-            <!-- Merchant -->
-            <Sprinkle chanceToRun="0.5" ifHasTags="stairsDownAccess" ifIsType="CaveDirtFloor" spawnActor="Merchant" setTags="merchant" count="1"/>
-            <CellularAutomata ifNeighborHasTags="merchant" setTags="merchantAccess"/>
-            <!-- Skeletons -->
-            <Sprinkle ifIsType="CaveDirtFloor" spawnActor="SkeletonMale" count="20"/>
-        </GenerationSteps>
+    <MapDefinition name="Cavern" fillTile="EdgedSand" edgeTile="EdgedWater" width="100" height="100">
+        <PerlinNoise ifIsType="EdgedSand" ifHeatMapNoise="0.800000~1.000000" setType="EdgedWater" setTags="Lake" gridSize="20" octaves="1"/>
+        <PerlinNoise ifIsType="EdgedSand" ifHeatMapNoise="-1.000000~-0.800000" setType="EdgedWater" setTags="Lake" gridSize="20" octaves="1"/>
+        <DistanceField ifHasTags="Lake" movementType="Walk"/>
+        <CellularAutomata ifHeatMapDistance="1.000000~2.000000" setTags="NearLake"/>
+        <PerlinNoise ifIsType="EdgedSand" ifHeatMapNoise="-0.100000~0.100000" setType="EdgedWater" setTags="River" gridSize="30" octaves="1"/>
+        <DistanceField ifHasTags="River" movementType="Walk"/>
+        <CellularAutomata ifHeatMapDistance="1.000000~2.000000" setTags="NearRiver"/>
+        <CellularAutomata ifIsType="EdgedSand" ifHasTags="NearLake,NearRiver" setType="EdgedWater"/>
+        <CellularAutomata numIterations="5" ifIsType="EdgedSand" setType="EdgedWater" ifNeighborType="EdgedWater" ifNumNeighbors="7~8"/>
+        <CellularAutomata ifIsType="EdgedWater" setType="EdgedSand" ifNeighborType="EdgedSand" ifNumNeighbors="8"/>
+        <RoomsAndPaths ifIsType="EdgedSand">
+            <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWall"/>
+            <Paths floor="CaveDirtFloor"/>
+        </RoomsAndPaths>
+        <CellularAutomata numIterations="2" ifIsType="EdgedSand" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor" ifNumNeighbors="3~8"/>
+        <CellularAutomata numIterations="2" ifIsType="EdgedWater" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor" ifNumNeighbors="3~8"/>
+        <CellularAutomata numIterations="2" ifIsType="StoneWall" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor" ifNumNeighbors="7~8"/>
+        <DistanceField ifIsType="EdgedWater" movementType="Walk"/>
+        <CellularAutomata ifHeatMapDistance="1.000000" setType="CliffGrass" ifNeighborType="EdgedWater"/>
+        <DistanceField ifIsType="CliffGrass" movementType="Walk"/>
+        <CellularAutomata ifIsType="EdgedSand" ifHeatMapDistance="0.000000~3.000000" setType="EdgedGrass"/>
+        <Sprinkle ifIsType="EdgedSand" setType="StairsDown" setTags="stairsDown"/>
+        <CellularAutomata setTags="stairsDownAccess" ifNeighborType="StairsDown"/>
+        <DistanceField ifIsType="StairsDown" movementType="Walk"/>
+        <Sprinkle ifIsType="EdgedSand" ifHeatMapDistance="0.000000~999998.000000" setType="StairsUp" setTags="stairsUp"/>
+        <CellularAutomata setTags="stairsUpAccess" ifNeighborType="StairsUp"/>
     </MapDefinition>
-    <MapDefinition name="DD1" width="26" height="14" fillTile="FakeStone">
-        <GenerationSteps>
-            <FromImage imageFilePath="Data/Images/DD1.png" numRotations="0" alignX="0.5" alignY="0.5"/>
-            <!-- Stairs -->
-            <CellularAutomata ifIsType="StairsUp" ifNeighborType="Grass" setTags="stairsUp"/>
-            <CellularAutomata ifIsType="Grass" setType="CaveDirtFloor" setTags="stairsUpAccess"/>
-            <CellularAutomata ifIsType="StairsDown" setTags="stairsDown"/>
-            <CellularAutomata ifIsType="Water" setType="CaveDirtFloor" setTags="stairsDownAccess"/>
-        </GenerationSteps>
+    <MapDefinition name="DD1" fillTile="FakeStone" width="26" height="14">
+        <FromImage imageFilePath="Data/Images/DD1.png" alignX="0.500000" alignY="0.500000"/>
+        <CellularAutomata ifIsType="StairsUp" setTags="stairsUp" ifNeighborType="Grass"/>
+        <CellularAutomata ifIsType="Grass" setType="CaveDirtFloor" setTags="stairsUpAccess"/>
+        <CellularAutomata ifIsType="StairsDown" setTags="stairsDown"/>
+        <CellularAutomata ifIsType="Water" setType="CaveDirtFloor" setTags="stairsDownAccess"/>
     </MapDefinition>
-    <MapDefinition name="DD2" width="26" height="14" fillTile="FakeStone">
-        <GenerationSteps>
-            <FromImage imageFilePath="Data/Images/DD2.png" numRotations="0" alignX="0.5" alignY="0.5"/>
-            <!-- Stairs -->
-            <CellularAutomata ifIsType="StairsUp" ifNeighborType="Grass" setTags="stairsUp"/>
-            <CellularAutomata ifIsType="Grass" setType="CaveDirtFloor" setTags="stairsUpAccess"/>
-            <!-- Credits -->
-            <CellularAutomata ifIsType="Water" setType="CaveDirtFloor" spawnActor="Credits" controller="Credits" setTags="credits"/>
-            <!--
-            <CellularAutomata ifIsType="CaveDirtFloor" ifNeighborHasTags="credits" setTags="creditsAccess"/>
-            -->
-        </GenerationSteps>
+    <MapDefinition name="DD2" fillTile="FakeStone" width="26" height="14">
+        <FromImage imageFilePath="Data/Images/DD2.png" alignX="0.500000" alignY="0.500000"/>
+        <CellularAutomata ifIsType="StairsUp" setTags="stairsUp" ifNeighborType="Grass"/>
+        <CellularAutomata ifIsType="Grass" setType="CaveDirtFloor" setTags="stairsUpAccess"/>
+        <CellularAutomata ifIsType="Water" setType="CaveDirtFloor" setTags="credits" spawnActor="Credits" controller="Credits"/>
     </MapDefinition>
-    <MapDefinition name="Cavern" width="100" height="100" fillTile="EdgedSand" edgeTile="EdgedWater">
-        <GenerationSteps>
-            <!-- Lake -->
-            <PerlinNoise ifIsType="EdgedSand" ifHeatMapNoise="0.8~1" octaves="1" gridSize="20" setType="EdgedWater" setTags="Lake"/>
-            <PerlinNoise ifIsType="EdgedSand" ifHeatMapNoise="-1~-0.8" octaves="1" gridSize="20" setType="EdgedWater" setTags="Lake"/>
-            <DistanceField ifHasTags="Lake" movementType="Walk"/>
-            <CellularAutomata ifHeatMapDistance="1~2" setTags="NearLake"/>
-            <!-- River -->
-            <PerlinNoise ifIsType="EdgedSand" ifHeatMapNoise="-0.1~0.1" octaves="1" gridSize="30" setType="EdgedWater" setTags="River"/>
-            <DistanceField ifHasTags="River" movementType="Walk"/>
-            <CellularAutomata ifHeatMapDistance="1~2" setTags="NearRiver"/>
-            <CellularAutomata ifHasTags="NearLake,NearRiver" ifIsType="EdgedSand" setType="EdgedWater"/>
-            <CellularAutomata ifIsType="EdgedSand" ifNeighborType="EdgedWater" ifNumNeighbors="7~8" setType="EdgedWater" numIterations="5"/>
-            <CellularAutomata ifIsType="EdgedWater" ifNeighborType="EdgedSand" ifNumNeighbors="8" setType="EdgedSand"/>
-            <!-- Rooms -->
-            <RoomsAndPaths ifIsType="EdgedSand">
-                <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWall"/>
-                <Paths floor="CaveDirtFloor" loop="true"/>
-            </RoomsAndPaths>
-            <CellularAutomata ifIsType="EdgedSand" ifNeighborType="CaveDirtFloor" ifNumNeighbors="3~8" setType="CaveDirtFloor" numIterations="2"/>
-            <CellularAutomata ifIsType="EdgedWater" ifNeighborType="CaveDirtFloor" ifNumNeighbors="3~8" setType="CaveDirtFloor" numIterations="2"/>
-            <CellularAutomata ifIsType="StoneWall" ifNeighborType="CaveDirtFloor" ifNumNeighbors="7~8" setType="CaveDirtFloor" numIterations="2"/>
-            <!-- Cliff -->
-            <DistanceField ifIsType="EdgedWater" movementType="Walk"/>
-            <CellularAutomata ifHeatMapDistance="1" ifNeighborType="EdgedWater" setType="CliffGrass"/>
-            <DistanceField ifIsType="CliffGrass" movementType="Walk"/>
-            <CellularAutomata ifIsType="EdgedSand" ifHeatMapDistance="0~3" setType="EdgedGrass"/>
-            <!-- Stairs -->
-            <Sprinkle ifIsType="EdgedSand" setType="StairsDown" setTags="stairsDown" count="1"/>
-            <CellularAutomata ifNeighborType="StairsDown" setTags="stairsDownAccess"/>
-
-            <DistanceField ifIsType="StairsDown" movementType="Walk"/>
-            <Sprinkle ifIsType="EdgedSand" ifHeatMapDistance="0~999998" setType="StairsUp" setTags="stairsUp" count="1"/>
-            <CellularAutomata ifNeighborType="StairsUp" setTags="stairsUpAccess"/>
-        </GenerationSteps>
+    <MapDefinition name="Island" fillTile="EdgedGrass" edgeTile="EdgedWater" width="20~32" height="10~18">
+        <CellularAutomata ifIsType="EdgedGrass" setType="CliffGrass" ifNeighborType="EdgedWater"/>
+        <RoomsAndPaths>
+            <Rooms count="3" width="2~5" height="3~6" floor="HardWoodFloor" wall="StoneWall"/>
+            <Paths floor="EdgedSand" loop="false"/>
+        </RoomsAndPaths>
+        <Sprinkle ifIsType="HardWoodFloor" setType="StairsDown" setTags="stairsDown"/>
+        <CellularAutomata setTags="stairsDownAccess" ifNeighborType="StairsDown"/>
+        <Sprinkle ifIsType="HardWoodFloor" spawnActor="HumanFemale" controller="Player"/>
     </MapDefinition>
-</MapDefinitions>
+</EditorMapDefs>

@@ -67,8 +67,7 @@ MapDef::MapDef( const XMLElement& element ) {
     m_height = ParseXMLAttribute( element, "height", m_height );
 
     // GenSteps
-    const XMLElement* stepsRoot = element.FirstChildElement( "GenerationSteps" );
-    const XMLElement* genStep = stepsRoot->FirstChildElement();
+    const XMLElement* genStep = element.FirstChildElement();
 
     for( genStep; genStep != nullptr; genStep = genStep->NextSiblingElement() ) {
         MapGenStep* step = MapGenStep::CreateMapGenStep( *genStep );

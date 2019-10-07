@@ -212,6 +212,8 @@ void EditorMapDef::SpinDownThreads() const {
 
 
 bool EditorMapDef::SaveOneToXml( EventArgs& args ) {
+    UNUSED( args );
+    // ThesisFIXME:  Need to implement save for single mapDef
     // should open windows save file 
 
     // Create XmlDocument and root element(s)
