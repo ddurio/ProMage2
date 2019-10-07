@@ -14,6 +14,7 @@
 
 void EditorMapGenStep::RenderStepParms( MapGenStep* genStep ) {
     if( genStep == nullptr ) {
+        ImGui::Text( "Internal step... No modifiable values" );
         return;
     }
 

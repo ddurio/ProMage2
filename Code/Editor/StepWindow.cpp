@@ -11,43 +11,18 @@ StepWindow::StepWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.1f )*/, con
     EditorWindow( normDimensions, alignment ) {
     // ThesisFIXME: Choose better name for this window
     m_windowName = "StepEditor";
+    g_theEventSystem->Subscribe( EVENT_EDITOR_CHANGE_STEP, this, &StepWindow::HandleStepChange );
 }
 
 
 StepWindow::~StepWindow() {
-
+    g_theEventSystem->Unsubscribe( EVENT_EDITOR_CHANGE_STEP, this, &StepWindow::HandleStepChange );
 }
 
 
 void StepWindow::UpdateChild( float deltaSeconds ) {
     UNUSED( deltaSeconds );
-    //RenderStepButtons();
     RenderStepSlider();
-}
-
-
-void StepWindow::RenderStepButtons() const {
-    MapWindow* mapWindow = g_theEditor->GetMapWindow();
-    Strings stepNames = mapWindow->GetStepNames();
-
-    int numSteps = (int)stepNames.size();
-    ImGui::BeginChild( "scrollingSteps", ImVec2( 0.f, 0.f ), false, ImGuiWindowFlags_HorizontalScrollbar );
-
-    for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
-        const std::string& stepName = stepNames[stepIndex];
-
-        if( ImGui::Button( stepName.c_str() ) ) {
-            // Button click
-            EventArgs args;
-            args.SetValue( "stepIndex", stepIndex );
-
-            g_theEventSystem->FireEvent( EVENT_EDITOR_CHANGE_STEP, args );
-        }
-
-        ImGui::SameLine();
-    }
-
-    ImGui::EndChild();
 }
 
 
@@ -70,6 +45,13 @@ void StepWindow::RenderStepSlider() {
 
         g_theEventSystem->FireEvent( EVENT_EDITOR_CHANGE_STEP, args );
     }
+}
+
+
+bool StepWindow::HandleStepChange( EventArgs& args ) {
+    m_sliderIndex = args.GetValue( "stepIndex", m_sliderIndex );
+
+    return false;
 }
 
 #endif

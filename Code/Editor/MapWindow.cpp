@@ -235,7 +235,7 @@ bool MapWindow::SetVisibleMapStep( EventArgs& args ) {
     }
 
     m_stepIndex = newIndex;
-    return true; // ThesisFIXME: be careful other things don't also need this event
+    return false;
 }
 
 

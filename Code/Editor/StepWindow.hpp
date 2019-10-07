@@ -1,8 +1,9 @@
 #pragma once
 #include "Editor/EditorCommon.hpp"
 
-#include "Editor//EditorWindow.hpp"
+#include "Editor/EditorWindow.hpp"
 
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
 
 
@@ -21,6 +22,7 @@ class StepWindow : public EditorWindow {
 
     void UpdateChild( float deltaSeconds ) override;
 
-    void RenderStepButtons() const;
     void RenderStepSlider();
+
+    bool HandleStepChange( EventArgs& args );
 };
