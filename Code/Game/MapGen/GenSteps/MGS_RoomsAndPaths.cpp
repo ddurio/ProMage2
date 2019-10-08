@@ -331,7 +331,8 @@ void MGS_RoomsAndPaths::ChangePathTilesX( Map& theMap, const IntVec2& pathStart,
     for( int stepIndex = 1; stepIndex <= pathLength; stepIndex++ ) {
         int tileX = pathStart.x + (offset * stepIndex);
         Tile& tile = GetTile( theMap, tileX, pathStart.y );
-        tile.SetTileType( m_pathFloor );
+        ChangeTileType( tile, m_pathFloor );
+        ChangeTilesCustomResults( theMap, tile );
     }
 }
 
@@ -343,6 +344,7 @@ void MGS_RoomsAndPaths::ChangePathTilesY( Map& theMap, const IntVec2& pathStart,
     for( int stepIndex = 1; stepIndex <= pathLength; stepIndex++ ) {
         int tileY = pathStart.y + (offset * stepIndex);
         Tile& tile = GetTile( theMap, pathStart.x, tileY );
-        tile.SetTileType( m_pathFloor );
+        ChangeTileType( tile, m_pathFloor );
+        ChangeTilesCustomResults( theMap, tile );
     }
 }

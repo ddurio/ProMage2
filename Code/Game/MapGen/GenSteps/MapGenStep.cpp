@@ -402,21 +402,43 @@ void MapGenStep::ChangeTile( Map& theMap, int tileIndex ) const {
     RNG* mapRNG = theMap.GetMapRNG();
     Tile& tile = theMap.m_tiles[tileIndex];
 
-    // Tile Type
-    if( m_setType != "" ) {
-        tile.SetTileType( m_setType );
-    }
+    ChangeTileType( tile );
+    ChangeTileTags( tile );
+    ChangeTileHeatMaps( mapRNG, tile );
+    ChangeTilesCustomResults( theMap, tile );
+}
 
-    // Tags
-    if( !m_setTags.empty() ) {
+
+void MapGenStep::ChangeTile( Map& theMap, int tileX, int tileY ) const {
+    int tileIndex = theMap.GetTileIndex( tileX, tileY );
+    ChangeTile( theMap, tileIndex );
+}
+
+
+void MapGenStep::ChangeTileType( Tile& tile, const std::string& customType /*= "" */ ) const {
+    std::string newType = (customType == "") ? m_setType : customType;
+
+    if( newType != "" ) {
+        tile.SetTileType( newType );
+    }
+}
+
+
+void MapGenStep::ChangeTileTags( Tile& tile, const Strings& customTags /*= Strings() */ ) const {
+    const Strings& tagsToSet = (customTags.empty()) ? m_setTags : customTags;
+
+    if( !tagsToSet.empty() ) {
         Metadata* tileMetadata = tile.GetMetadata();
         Tags& tileTags = tileMetadata->m_tagData;
 
-        tileTags.SetTags( m_setTags );
+        tileTags.SetTags( tagsToSet );
     }
+}
 
-    // Heat Maps
-    std::map< std::string, FloatRange, StringCmpCaseI >::const_iterator heatMapIter = m_setHeatMap.begin();
+
+void MapGenStep::ChangeTileHeatMaps( RNG* mapRNG, Tile& tile, const HeatMaps& customHeatMaps /*= HeatMaps() */ ) const {
+    const HeatMaps& heatMapToSet = (customHeatMaps.empty()) ? m_setHeatMap : customHeatMaps;
+    std::map< std::string, FloatRange, StringCmpCaseI >::const_iterator heatMapIter = heatMapToSet.begin();
 
     for( heatMapIter; heatMapIter != m_setHeatMap.end(); heatMapIter++ ) {
         const std::string& heatMapName = heatMapIter->first;
@@ -425,8 +447,10 @@ void MapGenStep::ChangeTile( Map& theMap, int tileIndex ) const {
         float heatMapValue = mapRNG->GetRandomFloatInRange( heatMapRange );
         tile.SetHeatMap( heatMapName, heatMapValue );
     }
+}
 
-    // Custom Results
+
+void MapGenStep::ChangeTilesCustomResults( Map& theMap, Tile& tile ) const {
     int numCustomResults = (int)m_customResults.size();
 
     for( int resultIndex = 0; resultIndex < numCustomResults; resultIndex++ ) {
@@ -442,12 +466,6 @@ void MapGenStep::ChangeTile( Map& theMap, int tileIndex ) const {
 
         g_theEventSystem->FireEvent( event.name, args );
     }
-}
-
-
-void MapGenStep::ChangeTile( Map& theMap, int tileX, int tileY ) const {
-    int tileIndex = theMap.GetTileIndex( tileX, tileY );
-    ChangeTile( theMap, tileIndex );
 }
 
 

@@ -7,9 +7,13 @@
 #include "Engine/Utils/XMLUtils.hpp"
 
 
+typedef std::map< std::string, FloatRange, StringCmpCaseI > HeatMaps;
+
+
 class Map;
 class RNG;
 class Tile;
+
 
 enum CustomAttrRequirement {
     REQUIRE_ALL,
@@ -67,14 +71,14 @@ class MapGenStep {
     // Conditions
     std::string m_ifIsType          = "";
     Strings m_ifHasTags;
-    std::map< std::string, FloatRange, StringCmpCaseI > m_ifHeatMap;
+    HeatMaps m_ifHeatMap;
     static std::vector< CustomEvent > s_customConditions;
     std::vector< CustomEvent > m_customConditions;
     
     // Results
     std::string m_setType           = "";
     Strings m_setTags;
-    std::map< std::string, FloatRange, StringCmpCaseI > m_setHeatMap;
+    HeatMaps m_setHeatMap;
     static std::vector< CustomEvent > s_customResults;
     std::vector< CustomEvent > m_customResults;
 
@@ -86,6 +90,11 @@ class MapGenStep {
     virtual bool IsTileValid( Map& theMap, const Tile& tile ) const;
     virtual void ChangeTile( Map& theMap, int tileIndex ) const;
     virtual void ChangeTile( Map& theMap, int tileX, int tileY ) const;
+
+    void ChangeTileType( Tile& tile, const std::string& customType = "" ) const;
+    void ChangeTileTags( Tile& tile, const Strings& customTags = Strings() ) const;
+    void ChangeTileHeatMaps( RNG* mapRNG, Tile& tile, const HeatMaps& customHeatMaps = HeatMaps() ) const;
+    void ChangeTilesCustomResults( Map& theMap, Tile& tile ) const;
 
     Tile& GetTile( Map& map, int tileIndex ) const;
     Tile& GetTile( Map& map, int tileX, int tileY ) const;

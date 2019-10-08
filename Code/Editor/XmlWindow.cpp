@@ -106,8 +106,15 @@ void XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
 
         if( ImGui::Button( "Generate New Map", ImVec2( -1, 0 ) ) ) {
             EventArgs args;
-            args.SetValue( "stepIndex", stepIndex );
             args.SetValue( "mapType", m_mapType );
+
+            MapWindow* mapWindow = g_theEditor->GetMapWindow();
+            std::string currentMapType = mapWindow->GetMapType();
+
+            if( currentMapType == m_mapType ) { // Only keep current step if it's the same map type
+                args.SetValue( "stepIndex", stepIndex );
+            }
+
             g_theEventSystem->FireEvent( EVENT_EDITOR_GENERATE_MAP, args );
         }
 
