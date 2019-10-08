@@ -103,6 +103,8 @@ void EditorMapGenStep::RenderConditions_DistanceField( MapGenStep* genStep ) {
 
         ImGui::EndCombo();
     }
+
+    ImGui::InputInt( "Max Distance", &dfStep->m_maxDistance );
 }
 
 

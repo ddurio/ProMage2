@@ -6,6 +6,7 @@
 MGS_DistanceField::MGS_DistanceField( const XMLElement& element ) :
     MapGenStep(element) {
     m_movementType = ParseXMLAttribute( element, "movementType", m_movementType );
+    m_maxDistance  = ParseXMLAttribute( element, "maxDistance",  m_maxDistance );
 }
 
 
@@ -49,25 +50,33 @@ void MGS_DistanceField::SetupDistanceField( Map& theMap, std::vector<IntVec2>& o
     // For each tile (by X and Y) set initial distanceField value
     for( int tileY = 0; tileY < mapDimensions.y; tileY++ ) {
         for( int tileX = 0; tileX < mapDimensions.x; tileX++ ) {
+            if( !theMap.IsValidTileCoords( IntVec2( tileX, tileY ) ) ) {
+                continue;
+            }
+
             Tile& tile = GetTile( theMap, tileX, tileY );
 
             if( IsTileValid( theMap, tile ) ) {
                 tile.SetHeatMap( "Distance", 0.f );
                 openTiles.push_back( IntVec2( tileX, tileY ) );
             } else {
-                tile.SetHeatMap( "Distance", 999999.f );
+                tile.SetHeatMap( "Distance", INVALID_DISTANCE );
             }
         }
     }
 }
 
 
-void MGS_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& openTiles, std::vector<bool>& openedTiles, const IntVec2& tileCoords ) const {
-    Tile& tile = GetTile( map, tileCoords.x, tileCoords.y );
+void MGS_DistanceField::OpenNeighbors( Map& theMap, std::vector<IntVec2>& openTiles, std::vector<bool>& openedTiles, const IntVec2& tileCoords ) const {
+    Tile& tile = GetTile( theMap, tileCoords.x, tileCoords.y );
 
-    float distance;
+    float distance = INVALID_DISTANCE;
     tile.GetHeatMap( "Distance", distance );
     distance += 1.f;
+
+    if( distance > m_maxDistance ) {
+        return;
+    }
 
     IntVec2 neighborOffsets[4] = {
         IntVec2( -1,  0 ), // Left
@@ -80,15 +89,15 @@ void MGS_DistanceField::OpenNeighbors( Map& map, std::vector<IntVec2>& openTiles
     for( int offsetIndex = 0; offsetIndex < 4; offsetIndex++ ) {
         IntVec2 neighborCoords = tileCoords + neighborOffsets[offsetIndex];
 
-        if( map.IsValidTileCoords( neighborCoords ) ) {
-            int neighborIndex = map.GetTileIndex( neighborCoords );
-            Tile& neighbor = GetTile( map, neighborIndex );
+        if( theMap.IsValidTileCoords( neighborCoords ) ) {
+            int neighborIndex = theMap.GetTileIndex( neighborCoords );
+            Tile& neighbor = GetTile( theMap, neighborIndex );
 
             float neighborDist;
             neighbor.GetHeatMap( "Distance", neighborDist );
 
             if( IsNeighborTileValid( neighbor ) && distance < neighborDist ) {
-                neighbor.SetHeatMap( "Distance", distance );
+                ChangeTileDistance( theMap, neighborIndex, distance );
 
                 if( !openedTiles[neighborIndex] ) {
                     openTiles.push_back( neighborCoords );
@@ -115,6 +124,14 @@ bool MGS_DistanceField::IsNeighborTileValid( const Tile& tile ) const {
     }
 
     return false;
+}
+
+
+void MGS_DistanceField::ChangeTileDistance( Map& theMap, int tileIndex, float distance ) const {
+    Tile& tile = GetTile( theMap, tileIndex );
+
+    tile.SetHeatMap( "Distance", distance ); // more easily done directly, but important for editor to get custom results called too
+    ChangeTile( theMap, tileIndex );
 }
 
 

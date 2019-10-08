@@ -93,6 +93,64 @@ MapGenStep::MapGenStep( const XMLElement& element ) {
 }
 
 
+// Custom Event ----------------------------------------------------------------------
+MapGenStep::CustomEvent::CustomEvent( const CustomEvent& event, const Strings& parsedValues ) :
+    name( event.name ),
+    requirement( event.requirement ),
+    attrNames( event.attrNames ),
+    attrValues( parsedValues ) {
+}
+
+
+Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element ) const {
+    int numAttrs = (int)attrNames.size();
+    int numParsed = 0;
+
+    Strings parsedValues;
+    parsedValues.resize( numAttrs );
+
+    for( int nameIndex = 0; nameIndex < numAttrs; nameIndex++ ) {
+        const std::string& attrName = attrNames[nameIndex];
+        parsedValues[nameIndex] = ParseXMLAttribute( element, attrName.c_str(), "" );
+
+        if( parsedValues[nameIndex] != "" ) {
+            numParsed++;
+        }
+    }
+
+    switch( requirement ) {
+        case( REQUIRE_ALL ): {
+            return (numParsed == numAttrs) ? parsedValues : Strings();
+        } case( REQUIRE_ONE ): {
+            return (numParsed > 0) ? parsedValues : Strings();
+        } case( REQUIRE_NONE ): {
+            return parsedValues;
+        }
+    }
+
+    return Strings();
+}
+
+
+
+EventArgs MapGenStep::CustomEvent::CreateEventArgs() const {
+    EventArgs args;
+    int numNames = (int)attrNames.size();
+    int numValues = (int)attrValues.size();
+    GUARANTEE_OR_DIE( numNames == numValues, "(MapGenStep) Number of custom event attribute names and events must match!" );
+
+    for( int attrIndex = 0; attrIndex < numNames; attrIndex++ ) {
+        const std::string& attrName = attrNames[attrIndex];
+        const std::string& attrValue = attrValues[attrIndex];
+
+        args.SetValue( attrName, attrValue );
+    }
+
+    return args;
+}
+
+
+// Static --------------------------------------------------------------------
 int MapGenStep::AddCustomCondition( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement /*= REQUIRE_ALL */ ) {
     CustomEvent newCondition;
     newCondition.name = eventName;
@@ -179,6 +237,7 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element ) {
 }
 
 
+// Public ----------------------------------------------------
 void MapGenStep::Run( Map& theMap ) const {
     RNG* mapRNG = theMap.GetMapRNG();
     int numIterations = mapRNG->GetRandomIntInRange( m_numIterations );
@@ -198,6 +257,89 @@ std::string MapGenStep::GetName() const {
 
 std::vector< MapGenStep::CustomEvent > MapGenStep::GetCustomResults() const {
     return m_customResults;
+}
+
+
+void MapGenStep::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+    UNUSED( document );
+
+    // Conditions
+    if( m_chanceToRun != 1.f ) {
+        element.SetAttribute( "chanceToRun", m_chanceToRun );
+    }
+
+    if( m_numIterations != IntRange::ONE ) {
+        element.SetAttribute( "numIterations", m_numIterations.GetAsString().c_str() );
+    }
+
+    if( m_ifIsType != "" ) {
+        element.SetAttribute( "ifIsType", m_ifIsType.c_str() );
+    }
+
+    if( !m_ifHasTags.empty() ) {
+        std::string ifHasTagsCSV = JoinStrings( m_ifHasTags, "," );
+        element.SetAttribute( "ifHasTags", ifHasTagsCSV.c_str() );
+    }
+
+    std::map< std::string, FloatRange, StringCmpCaseI >::const_iterator ifHeatIter = m_ifHeatMap.begin();
+
+    while( ifHeatIter != m_ifHeatMap.end() ) {
+        std::string attrName = Stringf( "ifHeatMap%s", ifHeatIter->first.c_str() );
+        element.SetAttribute( attrName.c_str(), ifHeatIter->second.GetAsString().c_str() );
+
+        ifHeatIter++;
+    }
+
+    int numConditions = (int)m_customConditions.size();
+
+    for( int condIndex = 0; condIndex < numConditions; condIndex++ ) {
+        const CustomEvent& condition = m_customConditions[condIndex];
+
+        if( condition.isEnabled ) {
+            int numAttr = (int)condition.attrNames.size();
+
+            for( int attrIndex = 0; attrIndex < numAttr; attrIndex++ ) {
+                std::string name = condition.attrNames[attrIndex];
+                std::string value = condition.attrValues[attrIndex];
+                element.SetAttribute( name.c_str(), value.c_str() );
+            }
+        }
+    }
+
+    // Results
+    if( m_setType != "" ) {
+        element.SetAttribute( "setType", m_setType.c_str() );
+    }
+
+    if( !m_setTags.empty() ) {
+        std::string setTagsCSV = JoinStrings( m_setTags, "," );
+        element.SetAttribute( "setTags", setTagsCSV.c_str() );
+    }
+
+    std::map< std::string, FloatRange, StringCmpCaseI >::const_iterator setHeatIter = m_setHeatMap.begin();
+
+    while( setHeatIter != m_setHeatMap.end() ) {
+        std::string attrName = Stringf( "setHeatMap%s", setHeatIter->first.c_str() );
+        element.SetAttribute( attrName.c_str(), setHeatIter->second.GetAsString().c_str() );
+
+        setHeatIter++;
+    }
+
+    int numResults = (int)m_customResults.size();
+
+    for( int resultIndex = 0; resultIndex < numResults; resultIndex++ ) {
+        const CustomEvent& result = m_customResults[resultIndex];
+
+        if( result.isEnabled ) {
+            int numAttr = (int)result.attrNames.size();
+
+            for( int attrIndex = 0; attrIndex < numAttr; attrIndex++ ) {
+                std::string name = result.attrNames[attrIndex];
+                std::string value = result.attrValues[attrIndex];
+                element.SetAttribute( name.c_str(), value.c_str() );
+            }
+        }
+    }
 }
 
 
@@ -321,144 +463,4 @@ Tile& MapGenStep::GetTile( Map& map, int tileIndex ) const {
 Tile& MapGenStep::GetTile( Map& map, int tileX, int tileY ) const {
     int tileIndex = map.GetTileIndex( tileX, tileY );
     return GetTile( map, tileIndex );
-}
-
-
-void MapGenStep::SaveToXml( XmlDocument& document, XMLElement& element ) const {
-    UNUSED( document );
-
-    // Conditions
-    if( m_chanceToRun != 1.f ) {
-        element.SetAttribute( "chanceToRun", m_chanceToRun );
-    }
-
-    if( m_numIterations != IntRange::ONE ) {
-        element.SetAttribute( "numIterations", m_numIterations.GetAsString().c_str() );
-    }
-
-    if( m_ifIsType != "" ) {
-        element.SetAttribute( "ifIsType", m_ifIsType.c_str() );
-    }
-
-    if( !m_ifHasTags.empty() ) {
-        std::string ifHasTagsCSV = JoinStrings( m_ifHasTags, "," );
-        element.SetAttribute( "ifHasTags", ifHasTagsCSV.c_str() );
-    }
-
-    std::map< std::string, FloatRange, StringCmpCaseI >::const_iterator ifHeatIter = m_ifHeatMap.begin();
-
-    while( ifHeatIter != m_ifHeatMap.end() ) {
-        std::string attrName = Stringf( "ifHeatMap%s", ifHeatIter->first.c_str() );
-        element.SetAttribute( attrName.c_str(), ifHeatIter->second.GetAsString().c_str() );
-
-        ifHeatIter++;
-    }
-
-    int numConditions = (int)m_customConditions.size();
-
-    for( int condIndex = 0; condIndex < numConditions; condIndex++ ) {
-        const CustomEvent& condition = m_customConditions[condIndex];
-
-        if( condition.isEnabled ) {
-            int numAttr = (int)condition.attrNames.size();
-
-            for( int attrIndex = 0; attrIndex < numAttr; attrIndex++ ) {
-                std::string name = condition.attrNames[attrIndex];
-                std::string value = condition.attrValues[attrIndex];
-                element.SetAttribute( name.c_str(), value.c_str() );
-            }
-        }
-    }
-
-    // Results
-    if( m_setType != "" ) {
-        element.SetAttribute( "setType", m_setType.c_str() );
-    }
-
-    if( !m_setTags.empty() ) {
-        std::string setTagsCSV = JoinStrings( m_setTags, "," );
-        element.SetAttribute( "setTags", setTagsCSV.c_str() );
-    }
-
-    std::map< std::string, FloatRange, StringCmpCaseI >::const_iterator setHeatIter = m_setHeatMap.begin();
-
-    while( setHeatIter != m_setHeatMap.end() ) {
-        std::string attrName = Stringf( "setHeatMap%s", setHeatIter->first.c_str() );
-        element.SetAttribute( attrName.c_str(), setHeatIter->second.GetAsString().c_str() );
-
-        setHeatIter++;
-    }
-
-    int numResults = (int)m_customResults.size();
-
-    for( int resultIndex = 0; resultIndex < numResults; resultIndex++ ) {
-        const CustomEvent& result = m_customResults[resultIndex];
-
-        if( result.isEnabled ) {
-            int numAttr = (int)result.attrNames.size();
-
-            for( int attrIndex = 0; attrIndex < numAttr; attrIndex++ ) {
-                std::string name = result.attrNames[attrIndex];
-                std::string value = result.attrValues[attrIndex];
-                element.SetAttribute( name.c_str(), value.c_str() );
-            }
-        }
-    }
-}
-
-
-// PRIVATE -------------------------------------------------
-MapGenStep::CustomEvent::CustomEvent( const CustomEvent& event, const Strings& parsedValues ) :
-    name( event.name ),
-    requirement( event.requirement ),
-    attrNames( event.attrNames ),
-    attrValues( parsedValues ) {
-}
-
-
-Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element ) const {
-    int numAttrs = (int)attrNames.size();
-    int numParsed = 0;
-
-    Strings parsedValues;
-    parsedValues.resize( numAttrs );
-
-    for( int nameIndex = 0; nameIndex < numAttrs; nameIndex++ ) {
-        const std::string& attrName = attrNames[nameIndex];
-        parsedValues[nameIndex] = ParseXMLAttribute( element, attrName.c_str(), "" );
-
-        if( parsedValues[nameIndex] != "" ) {
-            numParsed++;
-        }
-    }
-
-    switch( requirement ) {
-        case( REQUIRE_ALL ): {
-            return (numParsed == numAttrs) ? parsedValues : Strings();
-        } case( REQUIRE_ONE ): {
-            return (numParsed > 0) ? parsedValues : Strings();
-        } case( REQUIRE_NONE ): {
-            return parsedValues;
-        }
-    }
-
-    return Strings();
-}
-
-
-
-EventArgs MapGenStep::CustomEvent::CreateEventArgs() const {
-    EventArgs args;
-    int numNames = (int)attrNames.size();
-    int numValues = (int)attrValues.size();
-    GUARANTEE_OR_DIE( numNames == numValues, "(MapGenStep) Number of custom event attribute names and events must match!" );
-
-    for( int attrIndex = 0; attrIndex < numNames; attrIndex++ ) {
-        const std::string& attrName = attrNames[attrIndex];
-        const std::string& attrValue = attrValues[attrIndex];
-
-        args.SetValue( attrName, attrValue );
-    }
-
-    return args;
 }

@@ -473,7 +473,12 @@ bool Map::TrackModifiedTiles( EventArgs& args ) {
         return false;
     }
 
-    m_modifiedTiles.push_back( callingTile->GetTileCoords() );
+    IntVec2 tileCoords = callingTile->GetTileCoords();
+
+    if( !EngineCommon::VectorContains( m_modifiedTiles, tileCoords ) ) {
+        m_modifiedTiles.push_back( callingTile->GetTileCoords() );
+    }
+
     return true;
 }
 

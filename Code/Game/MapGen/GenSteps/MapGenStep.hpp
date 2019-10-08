@@ -59,19 +59,6 @@ class MapGenStep {
 
 
     protected:
-    static DevConsoleChannel s_mgsChannel;
-
-
-    virtual bool IsTileValid( Map& theMap, const Tile& tile ) const;
-    virtual void ChangeTile( Map& theMap, int tileIndex ) const;
-    virtual void ChangeTile( Map& theMap, int tileX, int tileY ) const;
-
-    Tile& GetTile( Map& map, int tileIndex ) const;
-    Tile& GetTile( Map& map, int tileX, int tileY ) const;
-
-
-
-    private:
     // General
     std::string m_stepType          = "";
     float m_chanceToRun             = 1.f;
@@ -91,6 +78,15 @@ class MapGenStep {
     static std::vector< CustomEvent > s_customResults;
     std::vector< CustomEvent > m_customResults;
 
+    static DevConsoleChannel s_mgsChannel;
+
 
     virtual void RunOnce( Map& map ) const = 0;
+
+    virtual bool IsTileValid( Map& theMap, const Tile& tile ) const;
+    virtual void ChangeTile( Map& theMap, int tileIndex ) const;
+    virtual void ChangeTile( Map& theMap, int tileX, int tileY ) const;
+
+    Tile& GetTile( Map& map, int tileIndex ) const;
+    Tile& GetTile( Map& map, int tileX, int tileY ) const;
 };
