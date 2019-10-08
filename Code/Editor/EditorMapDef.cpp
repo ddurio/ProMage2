@@ -234,6 +234,24 @@ void EditorMapDef::SpinDownThreads() const {
 }
 
 
+void EditorMapDef::DefineFromContextTiles( Map& theMap ) const {
+    IntVec2 mapDimensions = theMap.GetMapDimensions();
+    int numTiles = mapDimensions.x * mapDimensions.y;
+
+    for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
+        Tile& tile = GetTile( theMap, tileIndex );
+
+        if( tile.AddTypesFromNeighbors( theMap ) ) {
+            EventArgs args;
+            args.SetValue( "callingMap", &theMap );
+            args.SetValue( "callingTile", &tile );
+
+            theMap.TrackModifiedTiles( args );
+        }
+    }
+}
+
+
 bool EditorMapDef::SaveOneToXml( EventArgs& args ) {
     UNUSED( args );
     // ThesisFIXME:  Need to implement save for single mapDef

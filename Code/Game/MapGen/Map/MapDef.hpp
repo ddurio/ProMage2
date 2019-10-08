@@ -11,6 +11,7 @@
 class Map;
 class MapGenStep;
 class RNG;
+class Tile;
 
 
 class MapDef : public Definition< Map, MapDef > {
@@ -34,13 +35,14 @@ class MapDef : public Definition< Map, MapDef > {
     ~MapDef();
 
     RNG* GetMapRNG( const Map& theMap ) const;
+    Tile& GetTile( Map& theMap, int tileIndex ) const;
 
     void SetMapDimensions( Map& theMap, const IntVec2& dimensions ) const;
     void SetMapDef( Map& theMap ) const;
 
     void DefineFillAndEdge( Map& theMap ) const;
     void DefineFromMGS( Map& theMap ) const;
-    void DefineFromContextTiles( Map& theMap ) const;
+    virtual void DefineFromContextTiles( Map& theMap ) const;
     void DefineTileColliders( Map& theMap ) const;
 
     bool IsEdgeTile( int tileX, int tileY, int mapWidth, int mapHeight ) const;

@@ -29,6 +29,7 @@ class Tile {
 
     IntVec2 GetTileCoords() const;
     Metadata* GetMetadata() const;
+    Strings GetRenderTypes() const;
     bool GetHeatMap( const std::string& heatMapName, float& outHeatMapValue ) const;
     
     bool AllowsSight() const;
@@ -42,7 +43,7 @@ class Tile {
 
     void AddRenderType( const std::string& tileType );
     void AddRenderType( const TileDef* tileDef );
-    void AddTypesFromNeighbors( const Map& map );
+    bool AddTypesFromNeighbors( const Map& map );
 
     void AddVertsToMesh( CPUMesh& builder ) const;
 
@@ -56,5 +57,5 @@ class Tile {
     AABB2 GetUVs() const;
     Rgba GetTint() const;
     void GetEdgedNeighborByType( const Map& map, std::map< std::string, NeighborFlag >& edgedNeighbors ) const;
-    void AddEdgesFromNeighborFlags( std::map< std::string, NeighborFlag >& edgedNeighbors );
+    bool AddEdgesFromNeighborFlags( std::map< std::string, NeighborFlag >& edgedNeighbors );
 };

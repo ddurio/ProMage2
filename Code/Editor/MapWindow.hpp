@@ -55,4 +55,5 @@ class MapWindow : public EditorWindow {
     void GetHeatMapChanges( Strings& changeList, const Metadata* currentMetadata, const Metadata* prevMetadata ) const;
     void GetActorChanges( Strings& changeList, const Map* currentMap, const Map* prevMap, const Tile& currentTile ) const;
     void GetItemChanges( Strings& changeList, const Map* currentMap, const Map* prevMap, const Tile& currentTile ) const;
+    void GetTileRenderChanges( Strings& changeList, const Tile& currentTile, const Tile& prevTile ) const;
 };

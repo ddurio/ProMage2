@@ -61,5 +61,7 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     void ProcessMainPayloads() const;
     void SpinDownThreads() const;
 
+    void DefineFromContextTiles( Map& theMap ) const override;
+
     bool SaveOneToXml( EventArgs& args );
 };

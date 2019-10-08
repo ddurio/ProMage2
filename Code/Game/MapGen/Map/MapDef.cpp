@@ -90,6 +90,11 @@ RNG* MapDef::GetMapRNG( const Map& theMap ) const {
 }
 
 
+Tile& MapDef::GetTile( Map& theMap, int tileIndex ) const {
+    return theMap.m_tiles[tileIndex];
+}
+
+
 void MapDef::SetMapDimensions( Map& theMap, const IntVec2& dimensions ) const {
     theMap.m_mapDimensions = dimensions;
 }

@@ -115,6 +115,19 @@ Metadata* Tile::GetMetadata() const {
 }
 
 
+Strings Tile::GetRenderTypes() const {
+    TileQueue typeDefs = m_metadata->m_renderTypes;
+    Strings typeStrs;
+
+    while( !typeDefs.empty() ) {
+        typeStrs.push_back( typeDefs.top()->GetDefintionType() );
+        typeDefs.pop();
+    }
+
+    return typeStrs;
+}
+
+
 bool Tile::GetHeatMap( const std::string& heatMapName, float& out_HeatMapValue ) const {
     bool heatMapExists = m_metadata->IsHeatMapSet( heatMapName );
 
@@ -175,10 +188,11 @@ void Tile::AddRenderType( const TileDef* tileDef ) {
 }
 
 
-void Tile::AddTypesFromNeighbors( const Map& map ) {
+bool Tile::AddTypesFromNeighbors( const Map& map ) {
     std::map< std::string, NeighborFlag > edgedNeighbors;
     GetEdgedNeighborByType( map, edgedNeighbors );
-    AddEdgesFromNeighborFlags( edgedNeighbors );
+
+    return AddEdgesFromNeighborFlags( edgedNeighbors );
 }
 
 
@@ -253,7 +267,8 @@ void Tile::GetEdgedNeighborByType( const Map& map, std::map< std::string, Neighb
 }
 
 
-void Tile::AddEdgesFromNeighborFlags( std::map< std::string, NeighborFlag >& edgedNeighbors ) {
+bool Tile::AddEdgesFromNeighborFlags( std::map< std::string, NeighborFlag >& edgedNeighbors ) {
+    bool addedRenderType = false;
     std::map< std::string, NeighborFlag >::const_iterator neighborIter = edgedNeighbors.begin();
 
     for( neighborIter; neighborIter != edgedNeighbors.end(); neighborIter++ ) {
@@ -269,10 +284,13 @@ void Tile::AddEdgesFromNeighborFlags( std::map< std::string, NeighborFlag >& edg
 
                     // Clear flags from neighborFlag
                     neighborFlag &= ~g_neighborFlagClears[caseIndex];
+                    addedRenderType = true;
 
                     break;
                 }
             }
         }
     }
+
+    return addedRenderType;
 }

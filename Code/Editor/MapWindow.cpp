@@ -300,6 +300,7 @@ Strings MapWindow::GetTileChanges( const IntVec2& tileCoord ) const {
     GetHeatMapChanges( tileChanges, currentData, prevData );
     GetActorChanges( tileChanges, currentMap, prevMap, currentTile );
     GetItemChanges( tileChanges, currentMap, prevMap, currentTile );
+    GetTileRenderChanges( tileChanges, currentTile, prevTile );
 
     return tileChanges;
 }
@@ -328,6 +329,8 @@ void MapWindow::GetTagChanges( Strings& changeList, Strings currentTags, Strings
                 foundTag = true;
                 break;
             }
+
+            prevIter++;
         }
 
         if( !foundTag ) {
@@ -389,6 +392,11 @@ void MapWindow::GetActorChanges( Strings& changeList, const Map* currentMap, con
     std::string mapType = currentMap->GetMapType();
     const EditorMapDef* mapDef = EditorMapDef::GetDefinition( mapType );
     const MapGenStep* currentStep = mapDef->GetStep( m_stepIndex );
+
+    if( currentStep == nullptr ) {
+        return;
+    }
+
     const std::vector< MapGenStep::CustomEvent > results = currentStep->GetCustomResults();
 
     // Find actor type from custom events
@@ -435,6 +443,11 @@ void MapWindow::GetItemChanges( Strings& changeList, const Map* currentMap, cons
     std::string mapType = currentMap->GetMapType();
     const EditorMapDef* mapDef = EditorMapDef::GetDefinition( mapType );
     const MapGenStep* currentStep = mapDef->GetStep( m_stepIndex );
+
+    if( currentStep == nullptr ) {
+        return;
+    }
+
     const std::vector< MapGenStep::CustomEvent > results = currentStep->GetCustomResults();
 
     // Find item type from custom events
@@ -459,6 +472,51 @@ void MapWindow::GetItemChanges( Strings& changeList, const Map* currentMap, cons
             std::string actorChange = Stringf( "Spawned: (%s) Item", itemType.c_str() );
             changeList.push_back( actorChange );
         }
+    }
+}
+
+
+void MapWindow::GetTileRenderChanges( Strings& changeList, const Tile& currentTile, const Tile& prevTile ) const {
+    Strings currentTypes = currentTile.GetRenderTypes();
+    Strings prevTypes = prevTile.GetRenderTypes();
+
+    Strings::iterator currentIter = currentTypes.begin();
+
+    while( currentIter != currentTypes.end() ) {
+        Strings::iterator prevIter = prevTypes.begin();
+        bool foundTag = false;
+
+        while( prevIter != prevTypes.end() ) {
+            if( StringICmp( *currentIter, *prevIter ) ) {
+                currentIter = currentTypes.erase( currentIter );
+                prevIter = prevTypes.erase( prevIter );
+                foundTag = true;
+
+                break;
+            }
+
+            prevIter++;
+        }
+
+        if( !foundTag ) {
+            currentIter++;
+        }
+    }
+
+    // Added render type
+    if( !currentTypes.empty() ) {
+        std::string pluralStr = (currentTypes.size() > 1) ? "s" : "";
+        std::string newTagStr = JoinStrings( currentTypes, ", " );
+        std::string addedRenderChange = Stringf( "Render Type%s Added: %s", pluralStr.c_str(), newTagStr.c_str() );
+        changeList.push_back( addedRenderChange );
+    }
+
+    // Removed render type
+    if( !prevTypes.empty() ) {
+        std::string pluralStr = (prevTypes.size() > 1) ? "s" : "";
+        std::string removedTypes = JoinStrings( prevTypes, ", " );
+        std::string removedRenderChange = Stringf( "Render Type%s Removed: %s", pluralStr.c_str(), removedTypes.c_str() );
+        changeList.push_back( removedRenderChange );
     }
 }
 
