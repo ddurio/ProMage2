@@ -10,6 +10,7 @@
 #include "Engine/Debug/DebugDraw.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RNG.hpp"
+#include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
@@ -110,6 +111,11 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
 
 
 void MapWindow::RenderMap( float deltaSeconds ) {
+    int numSteps = (int)m_mapPerStep.size();
+
+    XmlWindow* xmlWindow = g_theEditor->GetXmlWindow();
+    bool showModified = xmlWindow->ShouldHighlightTiles();
+
     Map*& theMap = m_mapPerStep[m_stepIndex];
     m_windowName = theMap->GetMapName();
 
@@ -117,11 +123,16 @@ void MapWindow::RenderMap( float deltaSeconds ) {
     theMap->Update( deltaSeconds );
     g_theRenderer->BeginCamera( m_mapCamera );
     theMap->Render();
+
+    if( showModified && m_stepIndex == (numSteps - 1) ) {
+        g_thePhysicsSystem->RenderDebug();
+    }
+
     g_theRenderer->EndCamera( m_mapCamera );
 
+    // Render map to Editor
     void* mapView = m_mapCamera->GetRenderTarget()->GetShaderView();
 
-    // Actually render the map
     ImGui::Image( mapView, m_mapBounds.GetDimensions().GetAsImGui() ); // Map render
     //ImGui::GetForegroundDrawList()->AddRect( contentBounds.mins.GetAsImGui(), contentBounds.maxs.GetAsImGui(), 0xFFFF'FF00 );
     ImGui::GetForegroundDrawList()->AddRect( m_mapBounds.mins.GetAsImGui(), m_mapBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
@@ -182,7 +193,7 @@ void MapWindow::RenderTileChangeTooltip() {
                 Vec2 tooltipDims = Vec2( 0.2f * m_windowDimensions.x, 0.1f * m_windowDimensions.y );
                 ImGuiWindowFlags tooltipFlags = ImGuiWindowFlags_ChildWindow | ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar;
 
-                g_theEditor->CreateWindow( tooltipDims, Vec2( 0.703f, 0.115f ), "modifiedTooltip", tooltipFlags );
+                g_theEditor->CreateWindow( tooltipDims, Vec2( 0.647f, 0.115f ), "modifiedTooltip", tooltipFlags );
 
                 Strings tileChanges = GetTileChanges( cursorTileCoord );
                 Strings::const_iterator changeIter = tileChanges.begin();

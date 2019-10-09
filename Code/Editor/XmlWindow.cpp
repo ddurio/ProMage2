@@ -53,17 +53,18 @@ void XmlWindow::UpdateChild( float deltaSeconds ) {
 
     // Draw headers
     for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
+        std::string stepName = stepNames[stepIndex];
         ImGui::SetNextTreeNodeOpen( (stepIndex == currentIndex) );
 
-        if( ImGui::CollapsingHeader( stepNames[stepIndex].c_str(), ImGuiTreeNodeFlags_None ) ) {
+        if( ImGui::CollapsingHeader( stepName.c_str(), ImGuiTreeNodeFlags_None ) ) {
             MapGenStep* genStep = eMapDef->GetStep( currentIndex );
 
-            ImGui::TreePush( stepNames[stepIndex].c_str() );
+            ImGui::TreePush( stepName.c_str() );
 
             if( stepIndex == 0 ) {
                 eMapDef->RenderMapDefParams();
             } else {
-                EditorMapGenStep::RenderStepParms( genStep );
+                EditorMapGenStep::RenderStepParms( genStep, stepName );
             }
 
             ImGui::TreePop();

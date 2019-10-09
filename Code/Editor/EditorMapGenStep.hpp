@@ -12,12 +12,12 @@ class EditorMapGenStep {
     EditorMapGenStep() {};
     ~EditorMapGenStep() {};
 
-    static void RenderStepParms( MapGenStep* genStep );
+    static void RenderStepParms( MapGenStep* genStep, const std::string& stepName );
 
 
     private:
     // Conditions
-    static void RenderConditions( MapGenStep* genStep );
+    static void RenderConditions( MapGenStep* genStep, const std::string& stepName );
     static void RenderConditions_BaseClass( MapGenStep* genStep );
     static void RenderConditions_CellularAutomata( MapGenStep* genStep );
     static void RenderConditions_DistanceField( MapGenStep* genStep );
@@ -27,7 +27,7 @@ class EditorMapGenStep {
     static void RenderConditions_Sprinkle( MapGenStep* genStep );
 
     // Results
-    static void RenderResults( MapGenStep* genStep );
+    static void RenderResults( MapGenStep* genStep, const std::string& stepName );
     static void RenderResults_BaseClass( MapGenStep* genStep );
     static void RenderResults_CellularAutomata( MapGenStep* genStep );
     static void RenderResults_DistanceField( MapGenStep* genStep );

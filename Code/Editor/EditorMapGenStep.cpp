@@ -14,19 +14,22 @@
 #include "Game/MapGen/Map/TileDef.hpp"
 
 
-void EditorMapGenStep::RenderStepParms( MapGenStep* genStep ) {
+void EditorMapGenStep::RenderStepParms( MapGenStep* genStep, const std::string& stepName ) {
     if( genStep == nullptr ) {
         ImGui::Text( "Internal step... No modifiable values" );
         return;
     }
 
-    RenderConditions( genStep );
-    RenderResults( genStep );
+    RenderConditions( genStep, stepName );
+    RenderResults( genStep, stepName );
 }
 
 
-void EditorMapGenStep::RenderConditions( MapGenStep* genStep ) {
+void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string& stepName ) {
     if( ImGui::CollapsingHeader( "Conditions", ImGuiTreeNodeFlags_DefaultOpen ) ) {
+        std::string stepCondStr = Stringf( "%s_Conditions", stepName.c_str() );
+        ImGui::TreePush( stepCondStr.c_str() );
+
         RenderConditions_BaseClass( genStep );
         ImGui::Separator();
 
@@ -47,6 +50,8 @@ void EditorMapGenStep::RenderConditions( MapGenStep* genStep ) {
         } else {
             ERROR_RECOVERABLE( Stringf( "(EditorMapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
         }
+
+        ImGui::TreePop();
     }
 }
 
@@ -150,8 +155,11 @@ void EditorMapGenStep::RenderConditions_Sprinkle( MapGenStep* genStep ) {
 }
 
 
-void EditorMapGenStep::RenderResults( MapGenStep* genStep ) {
+void EditorMapGenStep::RenderResults( MapGenStep* genStep, const std::string& stepName ) {
     if( ImGui::CollapsingHeader( "Results", ImGuiTreeNodeFlags_DefaultOpen ) ) {
+        std::string stepResultStr = Stringf( "%s_Results", stepName.c_str() );
+        ImGui::TreePush( stepResultStr.c_str() );
+
         RenderResults_BaseClass( genStep );
         ImGui::Separator();
 
@@ -172,6 +180,8 @@ void EditorMapGenStep::RenderResults( MapGenStep* genStep ) {
         } else {
             ERROR_RECOVERABLE( Stringf( "(EditorMapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
         }
+
+        ImGui::TreePop();
     }
 }
 
