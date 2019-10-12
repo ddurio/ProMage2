@@ -41,5 +41,32 @@ class EditorMapGenStep {
 
     
     private:
+    static void SetTextColor( bool isDefaultValue );
     static Strings GetEventNames( const std::vector< MapGenStep::CustomEvent >& eventList );
+
+    // Base Class Condition Defaults
+    static bool IsDefaultChanceToRun( float currentChance );
+    static bool IsDefaultNumIterations( const IntRange& currentRange );
+    static bool IsDefaultIfIsType( const std::string& currentIsType );
+    static bool IsDefaultIfHasTags( const Strings& currentHasTags );
+    static bool IsDefaultIfHeatMap( const HeatMaps& currentHeatMaps );
+    static bool IsDefaultCustomConditions( std::vector< MapGenStep::CustomEvent > currentEvents );
+
+    // CellularAutomata Condition Defaults
+    static bool IsDefaultChancePerTile( float currentChance );
+    static bool IsDefaultRadius( const IntRange& currentRange );
+    static bool IsDefaultNeighborType( const std::string& currentType );
+    static bool IsDefaultNeighborTags( const Strings& currentHasTags );
+    static bool IsDefaultNumNeighbors( const IntRange& currentRange );
+
+    // DistanceField Condition Defaults
+
+    // FromImage Condition Defaults
+
+    // PerlinNoise Condition Defaults
+
+    // RoomsAndPaths Condition Defaults
+
+    // Sprinkle Condition Defaults
+
 };

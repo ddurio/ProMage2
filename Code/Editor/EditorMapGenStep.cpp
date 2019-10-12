@@ -26,6 +26,9 @@ void EditorMapGenStep::RenderStepParms( MapGenStep* genStep, const std::string& 
 
 
 void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string& stepName ) {
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
+
     if( ImGui::CollapsingHeader( "Conditions", ImGuiTreeNodeFlags_DefaultOpen ) ) {
         std::string stepCondStr = Stringf( "%s_Conditions", stepName.c_str() );
         ImGui::TreePush( stepCondStr.c_str() );
@@ -57,12 +60,23 @@ void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string&
 
 
 void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
+    SetTextColor( IsDefaultChanceToRun( genStep->m_chanceToRun ) );
     RenderPercent( genStep->m_chanceToRun, "Chance to Run" );
+
+    SetTextColor( IsDefaultNumIterations( genStep->m_numIterations ) );
     RenderIntRange( genStep->m_numIterations, "Iterations" );
     ImGui::Separator();
+
+    SetTextColor( IsDefaultIfIsType( genStep->m_ifIsType ) );
     RenderTileDropDown( "baseCond", genStep->m_ifIsType );
+
+    SetTextColor( IsDefaultIfHasTags( genStep->m_ifHasTags ) );
     RenderTags( "baseCond", genStep->m_ifHasTags, "Tile" );
+
+    SetTextColor( IsDefaultIfHeatMap( genStep->m_ifHeatMap ) );
     RenderHeatMaps( "conditions", genStep->m_ifHeatMap );
+
+    SetTextColor( IsDefaultCustomConditions( genStep->m_customConditions ) );
     RenderEventList( "Conditions", genStep->s_customConditions, genStep->m_customConditions );
 }
 
@@ -70,14 +84,23 @@ void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
 void EditorMapGenStep::RenderConditions_CellularAutomata( MapGenStep* genStep ) {
     MGS_CellularAutomata* caStep = (MGS_CellularAutomata*)genStep;
 
+    SetTextColor( IsDefaultChancePerTile( caStep->m_chancePerTile ) );
     RenderPercent( caStep->m_chancePerTile, "Chance per Tile" );
+
+    SetTextColor( IsDefaultRadius( caStep->m_radius ) );
     RenderIntRange( caStep->m_radius, "Tile Radius", 1 );
     ImGui::Separator();
+
+    SetTextColor( IsDefaultNeighborType( caStep->m_ifNeighborType ) );
     RenderTileDropDown( "neighborCond", caStep->m_ifNeighborType, "Neighbor Type" );
+
+    SetTextColor( IsDefaultNeighborTags( caStep->m_ifNeighborHasTags ) );
     RenderTags( "caCond", caStep->m_ifNeighborHasTags, "Neighbor" );
 
     int tileWidth = (2 * caStep->m_radius.max) + 1;
     int maxNeighbors = (tileWidth * tileWidth) - 1;
+
+    SetTextColor( IsDefaultNumNeighbors( caStep->m_ifNumNeighbors ) );
     RenderIntRange( caStep->m_ifNumNeighbors, "Num Neighbors", 0, maxNeighbors );
 }
 
@@ -156,6 +179,9 @@ void EditorMapGenStep::RenderConditions_Sprinkle( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderResults( MapGenStep* genStep, const std::string& stepName ) {
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
+
     if( ImGui::CollapsingHeader( "Results", ImGuiTreeNodeFlags_DefaultOpen ) ) {
         std::string stepResultStr = Stringf( "%s_Results", stepName.c_str() );
         ImGui::TreePush( stepResultStr.c_str() );
@@ -368,6 +394,15 @@ void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
     }
 }
 
+
+void EditorMapGenStep::SetTextColor( bool isDefaultValue ) {
+    Rgba textColor = isDefaultValue ? Rgba::ORGANIC_GRAY : Rgba::WHITE;
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_Text] = textColor.GetAsImGui();
+}
+
+
 Strings EditorMapGenStep::GetEventNames( const std::vector< MapGenStep::CustomEvent >& eventList ) {
     Strings names;
     int numEvents = (int)eventList.size();
@@ -379,3 +414,61 @@ Strings EditorMapGenStep::GetEventNames( const std::vector< MapGenStep::CustomEv
 
     return names;
 }
+
+
+// Base Class
+bool EditorMapGenStep::IsDefaultChanceToRun( float currentChance ) {
+    return (currentChance == 1.f);
+}
+
+
+bool EditorMapGenStep::IsDefaultNumIterations( const IntRange& currentRange ) {
+    return (currentRange == IntRange::ONE);
+}
+
+
+bool EditorMapGenStep::IsDefaultIfIsType( const std::string& currentIsType ) {
+    return (currentIsType == "");
+}
+
+
+bool EditorMapGenStep::IsDefaultIfHasTags( const Strings& currentHasTags ) {
+    return currentHasTags.empty();
+}
+
+
+bool EditorMapGenStep::IsDefaultIfHeatMap( const HeatMaps& currentHeatMaps ) {
+    return currentHeatMaps.empty();
+}
+
+
+bool EditorMapGenStep::IsDefaultCustomConditions( std::vector< MapGenStep::CustomEvent > currentEvents ) {
+    return (currentEvents.size() > 1); // ThesisFIXME: This could be wrong.. Exclude editor modifiedTiles condition
+}
+
+
+// CellularAutomata
+bool EditorMapGenStep::IsDefaultChancePerTile( float currentChance ) {
+    return (currentChance == 1.f);
+}
+
+
+bool EditorMapGenStep::IsDefaultRadius( const IntRange& currentRange ) {
+    return (currentRange == IntRange::ONE);
+}
+
+
+bool EditorMapGenStep::IsDefaultNeighborType( const std::string& currentType ) {
+    return (currentType == "");
+}
+
+
+bool EditorMapGenStep::IsDefaultNeighborTags( const Strings& currentHasTags ) {
+    return currentHasTags.empty();
+}
+
+
+bool EditorMapGenStep::IsDefaultNumNeighbors( const IntRange& currentRange ) {
+    return (currentRange == IntRange( 1, 8 ));
+}
+

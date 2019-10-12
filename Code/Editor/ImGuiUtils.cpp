@@ -61,12 +61,15 @@ void RenderTileDropDown( const std::string& uniqueKey, std::string& currentType,
 
 
 void RenderDropDown( const std::string& uniqueKey, std::string& currentType, const Strings& ddOptions, const std::string& label, bool addNoneOptions ) {
-    std::string comboID = Stringf( "dropdown_%s", uniqueKey.c_str() );
+    ImGuiStyle& style = ImGui::GetStyle();
+    ImVec4 origColor = style.Colors[ImGuiCol_Text];
+    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
 
     std::string initialType = currentType;
+    std::string comboID = Stringf( "dropdown_%s", uniqueKey.c_str() );
     ImGui::PushID( comboID.c_str() );
 
-    if( ImGui::BeginCombo( label.c_str(), initialType.c_str(), ImGuiComboFlags_None ) ) {
+    if( ImGui::BeginCombo( "", initialType.c_str(), ImGuiComboFlags_None ) ) {
         if( addNoneOptions ) {
             ImGui::PushID( "empty" );
 
@@ -103,6 +106,10 @@ void RenderDropDown( const std::string& uniqueKey, std::string& currentType, con
     }
 
     ImGui::PopID();
+
+    style.Colors[ImGuiCol_Text] = origColor;
+    ImGui::SameLine();
+    ImGui::Text( label.c_str() );
 }
 
 
@@ -114,8 +121,31 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
     std::string hasTagID = Stringf( "hasTag_%s", uniqueKey.c_str() );
     std::string missingTagID = Stringf( "missingTag_%s", uniqueKey.c_str() );
 
+    int numHasTags = 0;
+    int numMissingTags = 0;
+    int numTags = (int)currentTags.size();
+
+    for( int tagIndex = 0; tagIndex < numTags; tagIndex++ ) {
+        const std::string& tag = currentTags[tagIndex];
+
+        if( tag[0] == '!' ) {
+            numMissingTags++;
+        } else {
+            numHasTags++;
+        }
+
+        if( numMissingTags && numHasTags ) {
+            break;
+        }
+    }
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_Text] = (numHasTags == 0) ? Rgba::ORGANIC_GRAY.GetAsImGui() : Rgba::WHITE.GetAsImGui();
+
     ImGui::Text( hasTagLabel.c_str() );
     ImGui::SameLine();
+
+    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
     bool focusLastAdd = false;
 
     ImGui::PushID( hasTagID.c_str() );
@@ -125,7 +155,7 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
     }
 
     std::vector< int > tagsToRemove;
-    int numTags = (int)currentTags.size();
+    numTags = (int)currentTags.size();
 
     // Required existing tags
     for( int tagIndex = 0; tagIndex < numTags; tagIndex++ ) {
@@ -151,8 +181,11 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
     ImGui::PopID();
 
     // Missing Tags
+    style.Colors[ImGuiCol_Text] = (numMissingTags == 0) ? Rgba::ORGANIC_GRAY.GetAsImGui() : Rgba::WHITE.GetAsImGui();
     ImGui::Text( missingTagLabel.c_str() );
     ImGui::SameLine();
+
+    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
     ImGui::PushID( missingTagID.c_str() );
     bool focusLastMissing = false;
 
@@ -221,7 +254,10 @@ void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
     bool addHeatMap = false;
 
     // Add heat map popup
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
     ImGui::PushID( plusButtonID.c_str() );
+
     if( ImGui::Button( "+" ) ) {
         heatMapName = "";
         newHeatMap = 2;
