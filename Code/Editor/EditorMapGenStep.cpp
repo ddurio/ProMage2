@@ -37,11 +37,21 @@ bool EditorMapGenStep::ResetChangedParams( EventArgs& args ) {
 }
 
 
+bool EditorMapGenStep::IsChanged( MapGenStep* genStep ) {
+    bool condChanged = IsChangedConditions( genStep );
+    bool resultChanged = IsChangedResults( genStep );
+
+    return condChanged || resultChanged;
+}
+
+
 // PRIVATE ----------------------------------------------------------------------
 void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string& stepName ) {
-    SetImGuiTextColor( false );
+    bool condChanged = IsChangedConditions( genStep );
+    std::string headerStr = Stringf( "Conditions%s", condChanged ? " *" : "" );
+    SetImGuiTextColor( condChanged ? Rgba::ORGANIC_YELLOW : Rgba::WHITE );
 
-    if( ImGui::CollapsingHeader( "Conditions", ImGuiTreeNodeFlags_DefaultOpen ) ) {
+    if( ImGui::CollapsingHeader( headerStr.c_str(), ImGuiTreeNodeFlags_DefaultOpen ) ) {
         std::string stepCondStr = Stringf( "%s_Conditions", stepName.c_str() );
         ImGui::TreePush( stepCondStr.c_str() );
 
@@ -289,9 +299,11 @@ void EditorMapGenStep::RenderConditions_Sprinkle( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderResults( MapGenStep* genStep, const std::string& stepName ) {
-    SetImGuiTextColor( false );
+    bool resultsChanged = IsChangedResults( genStep );
+    std::string headerStr = Stringf( "Results%s", resultsChanged ? " *" : "" );
+    SetImGuiTextColor( resultsChanged ? Rgba::ORGANIC_YELLOW : Rgba::WHITE );
 
-    if( ImGui::CollapsingHeader( "Results", ImGuiTreeNodeFlags_DefaultOpen ) ) {
+    if( ImGui::CollapsingHeader( headerStr.c_str(), ImGuiTreeNodeFlags_DefaultOpen ) ) {
         std::string stepResultStr = Stringf( "%s_Results", stepName.c_str() );
         ImGui::TreePush( stepResultStr.c_str() );
 
@@ -426,6 +438,19 @@ void EditorMapGenStep::RenderResults_RoomsAndPaths( MapGenStep* genStep ) {
 
 void EditorMapGenStep::RenderResults_Sprinkle( MapGenStep* genStep ) {
     UNUSED( genStep );
+}
+
+
+Strings EditorMapGenStep::GetEventNames( const std::vector< MapGenStep::CustomEvent >& eventList ) {
+    Strings names;
+    int numEvents = (int)eventList.size();
+
+    for( int eventIndex = 0; eventIndex < numEvents; eventIndex++ ) {
+        const MapGenStep::CustomEvent& event = eventList[eventIndex];
+        names.push_back( event.name );
+    }
+
+    return names;
 }
 
 
@@ -568,14 +593,30 @@ bool EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
 }
 
 
-Strings EditorMapGenStep::GetEventNames( const std::vector< MapGenStep::CustomEvent >& eventList ) {
-    Strings names;
-    int numEvents = (int)eventList.size();
+bool EditorMapGenStep::IsChangedConditions( MapGenStep* genStep ) {
+    const std::vector< bool >& conditions = s_conditionChangelist[genStep];
+    int numParms = (int)conditions.size();
 
-    for( int eventIndex = 0; eventIndex < numEvents; eventIndex++ ) {
-        const MapGenStep::CustomEvent& event = eventList[eventIndex];
-        names.push_back( event.name );
+    for( int paramIndex = 0; paramIndex < numParms; paramIndex++ ) {
+        if( conditions[paramIndex] ) {
+            return true;
+        }
     }
 
-    return names;
+    return false;
 }
+
+
+bool EditorMapGenStep::IsChangedResults( MapGenStep* genStep ) {
+    const std::vector< bool >& results = s_resultChangelist[genStep];
+    int numParms = (int)results.size();
+
+    for( int paramIndex = 0; paramIndex < numParms; paramIndex++ ) {
+        if( results[paramIndex] ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+

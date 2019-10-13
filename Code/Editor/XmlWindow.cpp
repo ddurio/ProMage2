@@ -55,13 +55,18 @@ void XmlWindow::UpdateChild( float deltaSeconds ) {
 
     // Draw headers
     for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
+        MapGenStep* genStep = eMapDef->GetStep( stepIndex );
         std::string stepName = stepNames[stepIndex];
+        SetImGuiTextColor( Rgba::WHITE );
+
+        if( stepIndex != 0 && EditorMapGenStep::IsChanged( genStep ) ) {
+            stepName = Stringf( "%s%s", stepName.c_str(), " *" );
+            SetImGuiTextColor( Rgba::ORGANIC_YELLOW );
+        }
+
         ImGui::SetNextTreeNodeOpen( (stepIndex == currentIndex) );
-        SetImGuiTextColor( false );
 
         if( ImGui::CollapsingHeader( stepName.c_str(), ImGuiTreeNodeFlags_None ) ) {
-            MapGenStep* genStep = eMapDef->GetStep( currentIndex );
-
             ImGui::TreePush( stepName.c_str() );
 
             if( stepIndex == 0 ) {

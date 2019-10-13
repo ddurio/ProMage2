@@ -19,6 +19,8 @@ class EditorMapGenStep {
     static void RenderStepParams( MapGenStep* genStep, const std::string& stepName );
     static bool ResetChangedParams( EventArgs& args );
 
+    static bool IsChanged( MapGenStep* genStep );
+
 
     private:
     static std::map< MapGenStep*, std::vector< bool > > s_conditionChangelist;
@@ -49,4 +51,6 @@ class EditorMapGenStep {
     static Strings GetEventNames( const std::vector< MapGenStep::CustomEvent >& eventList );
     static bool RenderEventList( const std::string& label, std::vector< MapGenStep::CustomEvent >& allEvents, std::vector< MapGenStep::CustomEvent >& currentEvents );
 
+    static bool IsChangedConditions( MapGenStep* genStep );
+    static bool IsChangedResults( MapGenStep* genStep );
 };
