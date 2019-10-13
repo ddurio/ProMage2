@@ -7,7 +7,8 @@
 #include "Game/MapGen/Map/TileDef.hpp"
 
 
-void RenderPercent( float& value, const std::string& label /*= ""*/ ) {
+void RenderPercent( float& value, const std::string& label /*= ""*/, float defaultValue /*= 1.f */ ) {
+    SetImGuiTextColor( value == defaultValue );
     std::string percentFormat = Stringf( "%.0f%%%%", value * 100.f );
 
     if( ImGui::SliderFloat( label.c_str(), &value, 0.f, 1.f, percentFormat.c_str() ) ) {
@@ -18,7 +19,8 @@ void RenderPercent( float& value, const std::string& label /*= ""*/ ) {
 }
 
 
-void RenderIntRange( IntRange& range, const std::string& label /*= ""*/, int minValue /*= 0*/, int maxValue /*= 10 */ ) {
+void RenderIntRange( IntRange& range, const std::string& label /*= ""*/, int minValue /*= 0*/, int maxValue /*= 10*/, const IntRange& defaultValue /*= IntRange::ONE */ ) {
+    SetImGuiTextColor( range == defaultValue );
     IntRange initialIters = range;
 
     if( ImGui::SliderInt2( label.c_str(), (int*)&(range), minValue, maxValue ) ) {
@@ -35,7 +37,8 @@ void RenderIntRange( IntRange& range, const std::string& label /*= ""*/, int min
 }
 
 
-void RenderFloatRange( FloatRange& range, const std::string& label /*= ""*/, float minValue /*= 0.f*/, float maxValue /*= 10.f */ ) {
+void RenderFloatRange( FloatRange& range, const std::string& label /*= ""*/, float minValue /*= 0.f*/, float maxValue /*= 10.f*/, const FloatRange& defaultValue /*= FloatRange::ONE */ ) {
+    SetImGuiTextColor( range == defaultValue );
     FloatRange initialIters = range;
 
     if( ImGui::SliderFloat2( label.c_str(), (float*)&(range), minValue, maxValue ) ) {
@@ -52,19 +55,16 @@ void RenderFloatRange( FloatRange& range, const std::string& label /*= ""*/, flo
 }
 
 
-void RenderTileDropDown( const std::string& uniqueKey, std::string& currentType, const std::string& label /*= "Tile Type"*/, bool addNoneOption /*= true */ ) {
+void RenderTileDropDown( const std::string& uniqueKey, std::string& currentType, const std::string& label /*= "Tile Type"*/, bool addNoneOption /*= true*/, const std::string& defaultValue /*= "" */ ) {
     std::string comboID = Stringf( "tile_%s", uniqueKey.c_str() );
     static const Strings tileTypes = TileDef::GetAllTypes();
 
-    RenderDropDown( comboID, currentType, tileTypes, label, addNoneOption );
+    RenderDropDown( comboID, currentType, tileTypes, label, addNoneOption, defaultValue );
 }
 
 
-void RenderDropDown( const std::string& uniqueKey, std::string& currentType, const Strings& ddOptions, const std::string& label, bool addNoneOptions ) {
-    ImGuiStyle& style = ImGui::GetStyle();
-    ImVec4 origColor = style.Colors[ImGuiCol_Text];
-    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
-
+void RenderDropDown( const std::string& uniqueKey, std::string& currentType, const Strings& ddOptions, const std::string& label, bool addNoneOptions, const std::string& defaultValue ) {
+    SetImGuiTextColor( false );
     std::string initialType = currentType;
     std::string comboID = Stringf( "dropdown_%s", uniqueKey.c_str() );
     ImGui::PushID( comboID.c_str() );
@@ -107,7 +107,7 @@ void RenderDropDown( const std::string& uniqueKey, std::string& currentType, con
 
     ImGui::PopID();
 
-    style.Colors[ImGuiCol_Text] = origColor;
+    SetImGuiTextColor( currentType == defaultValue );
     ImGui::SameLine();
     ImGui::Text( label.c_str() );
 }
@@ -139,13 +139,11 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
         }
     }
 
-    ImGuiStyle& style = ImGui::GetStyle();
-    style.Colors[ImGuiCol_Text] = (numHasTags == 0) ? Rgba::ORGANIC_GRAY.GetAsImGui() : Rgba::WHITE.GetAsImGui();
-
+    SetImGuiTextColor( numHasTags == 0 );
     ImGui::Text( hasTagLabel.c_str() );
     ImGui::SameLine();
 
-    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
+    SetImGuiTextColor( false );
     bool focusLastAdd = false;
 
     ImGui::PushID( hasTagID.c_str() );
@@ -181,11 +179,11 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
     ImGui::PopID();
 
     // Missing Tags
-    style.Colors[ImGuiCol_Text] = (numMissingTags == 0) ? Rgba::ORGANIC_GRAY.GetAsImGui() : Rgba::WHITE.GetAsImGui();
+    SetImGuiTextColor( numMissingTags == 0 );
     ImGui::Text( missingTagLabel.c_str() );
     ImGui::SameLine();
 
-    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
+    SetImGuiTextColor( false );
     ImGui::PushID( missingTagID.c_str() );
     bool focusLastMissing = false;
 
@@ -242,6 +240,7 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
 
 
 void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatRange, StringCmpCaseI >& currentHeatMaps ) {
+    SetImGuiTextColor( currentHeatMaps.empty() );
     ImGui::Text( "Heat Maps" );
     ImGui::SameLine();
 
@@ -254,8 +253,7 @@ void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
     bool addHeatMap = false;
 
     // Add heat map popup
-    ImGuiStyle& style = ImGui::GetStyle();
-    style.Colors[ImGuiCol_Text] = Rgba::WHITE.GetAsImGui();
+    SetImGuiTextColor( false );
     ImGui::PushID( plusButtonID.c_str() );
 
     if( ImGui::Button( "+" ) ) {
@@ -338,4 +336,12 @@ void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
         const std::string& nameToRemove = mapsToRemove[removeIndex];
         currentHeatMaps.erase( nameToRemove );
     }
+}
+
+
+void SetImGuiTextColor( bool isDefaultValue ) {
+    Rgba textColor = isDefaultValue ? Rgba::ORGANIC_GRAY : Rgba::WHITE;
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_Text] = textColor.GetAsImGui();
 }

@@ -31,7 +31,7 @@ void EditorMapDef::DefineObject( Map& theMap ) const {
 void EditorMapDef::RenderMapDefParams() {
     RenderIntRange( m_width, "Map Width", 3, 100 );
     RenderIntRange( m_height, "Map Height", 3, 100 );
-    RenderTileDropDown( "emdFill", m_tileFillType, "Fill Type", false );
+    RenderTileDropDown( "emdFill", m_tileFillType, "Fill Type", false, "__HOPEFULLY_NOT_USED__" );
     RenderTileDropDown( "emdEdge", m_tileEdgeType, "Edge Type" );
 }
 

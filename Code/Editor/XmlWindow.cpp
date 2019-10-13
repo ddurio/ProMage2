@@ -55,6 +55,7 @@ void XmlWindow::UpdateChild( float deltaSeconds ) {
     for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
         std::string stepName = stepNames[stepIndex];
         ImGui::SetNextTreeNodeOpen( (stepIndex == currentIndex) );
+        SetImGuiTextColor( false );
 
         if( ImGui::CollapsingHeader( stepName.c_str(), ImGuiTreeNodeFlags_None ) ) {
             MapGenStep* genStep = eMapDef->GetStep( currentIndex );
@@ -88,7 +89,7 @@ void XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
         ImGui::TreePush( "General Options" );
 
         Strings mapTypes = eMapDef->GetMapTypes();
-        RenderDropDown( "emdMapTypes", m_mapType, mapTypes, "Map Type", false );
+        RenderDropDown( "emdMapTypes", m_mapType, mapTypes, "Map Type", false, "__HOPEFULLY_NOT_USED__" );
         ImGui::Columns( 2, nullptr, true, ImGuiColumnsFlags_NoResize ); // ThesisFIXME: Potentially dangerous.. modified imGui to expose this flag
 
         if( ImGui::Button( "Regenerate Current Map", ImVec2( -1, 0 ) ) ) {
