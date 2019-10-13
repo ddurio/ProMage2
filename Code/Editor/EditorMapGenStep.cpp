@@ -14,7 +14,11 @@
 #include "Game/MapGen/Map/TileDef.hpp"
 
 
-void EditorMapGenStep::RenderStepParms( MapGenStep* genStep, const std::string& stepName ) {
+std::map< MapGenStep*, std::vector< bool > > EditorMapGenStep::s_conditionChangelist;   // PRIVATE
+std::map< MapGenStep*, std::vector< bool > > EditorMapGenStep::s_resultChangelist;      // PRIVATE
+
+
+void EditorMapGenStep::RenderStepParams( MapGenStep* genStep, const std::string& stepName ) {
     if( genStep == nullptr ) {
         ImGui::Text( "Internal step... No modifiable values" );
         return;
@@ -25,6 +29,15 @@ void EditorMapGenStep::RenderStepParms( MapGenStep* genStep, const std::string& 
 }
 
 
+bool EditorMapGenStep::ResetChangedParams( EventArgs& args ) {
+    UNUSED( args );
+    s_conditionChangelist.clear();
+    s_resultChangelist.clear();
+    return false;
+}
+
+
+// PRIVATE ----------------------------------------------------------------------
 void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string& stepName ) {
     SetImGuiTextColor( false );
 
@@ -59,39 +72,92 @@ void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string&
 
 
 void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
-    RenderPercent( genStep->m_chanceToRun, "Chance to Run" );
-    RenderIntRange( genStep->m_numIterations, "Iterations" );
+    std::vector< bool >& paramsChanged = s_conditionChangelist[genStep];
+
+    if( paramsChanged.empty() ) {
+        paramsChanged.resize( 7, false );
+    }
+
+    RenderChangeText( paramsChanged[0] );
+    bool change0 = RenderPercent( genStep->m_chanceToRun, "Chance to Run" );
+
+    RenderChangeText( paramsChanged[1] );
+    bool change1 = RenderIntRange( genStep->m_numIterations, "Iterations" );
     ImGui::Separator();
 
-    RenderTileDropDown( "baseCond", genStep->m_ifIsType );
-    RenderTags( "baseCond", genStep->m_ifHasTags, "Tile" );
-    RenderHeatMaps( "conditions", genStep->m_ifHeatMap );
-    RenderEventList( "Conditions", genStep->s_customConditions, genStep->m_customConditions );
+    RenderChangeText( paramsChanged[2] );
+    bool change2 = RenderTileDropDown( "baseCond", genStep->m_ifIsType );
+
+    RenderChangeText( paramsChanged[3] );
+    std::array< bool, 2 > change3and4 = RenderTags( "baseCond", genStep->m_ifHasTags, paramsChanged[4], "Tile" );
+
+    RenderChangeText( paramsChanged[5] );
+    bool change5 = RenderHeatMaps( "conditions", genStep->m_ifHeatMap );
+
+    RenderChangeText( paramsChanged[6] );
+    bool change6 = RenderEventList( "Conditions", genStep->s_customConditions, genStep->m_customConditions );
+
+    paramsChanged[0] = paramsChanged[0] || change0;
+    paramsChanged[1] = paramsChanged[1] || change1;
+    paramsChanged[2] = paramsChanged[2] || change2;
+    paramsChanged[3] = paramsChanged[3] || change3and4[0];
+    paramsChanged[4] = paramsChanged[4] || change3and4[1];
+    paramsChanged[5] = paramsChanged[5] || change5;
+    paramsChanged[6] = paramsChanged[6] || change6;
 }
 
 
 void EditorMapGenStep::RenderConditions_CellularAutomata( MapGenStep* genStep ) {
+    std::vector< bool >& paramsChanged = s_conditionChangelist[genStep];
+
+    if( paramsChanged.size() <= 7 ) {
+        paramsChanged.resize( 7 + 6, false );
+    }
+
     MGS_CellularAutomata* caStep = (MGS_CellularAutomata*)genStep;
 
-    RenderPercent( caStep->m_chancePerTile, "Chance per Tile" );
-    RenderIntRange( caStep->m_radius, "Tile Radius", 1 );
+    RenderChangeText( paramsChanged[7] );
+    bool change7 = RenderPercent( caStep->m_chancePerTile, "Chance per Tile" );
+
+    RenderChangeText( paramsChanged[8] );
+    bool change8 = RenderIntRange( caStep->m_radius, "Tile Radius", 1 );
     ImGui::Separator();
 
-    RenderTileDropDown( "neighborCond", caStep->m_ifNeighborType, "Neighbor Type" );
-    RenderTags( "caCond", caStep->m_ifNeighborHasTags, "Neighbor" );
+    RenderChangeText( paramsChanged[9] );
+    bool change9 = RenderTileDropDown( "neighborCond", caStep->m_ifNeighborType, "Neighbor Type" );
+
+    RenderChangeText( paramsChanged[10] );
+    std::array< bool, 2 > change10and11 = RenderTags( "caCond", caStep->m_ifNeighborHasTags, paramsChanged[11], "Neighbor" ); // FIXME: hard coded changed value
 
     int tileWidth = (2 * caStep->m_radius.max) + 1;
     int maxNeighbors = (tileWidth * tileWidth) - 1;
-    RenderIntRange( caStep->m_ifNumNeighbors, "Num Neighbors", 0, maxNeighbors, IntRange( 1, 8 ) );
+
+    RenderChangeText( paramsChanged[12] );
+    bool change12 = RenderIntRange( caStep->m_ifNumNeighbors, "Num Neighbors", 0, maxNeighbors, IntRange( 1, 8 ) );
+
+    paramsChanged[7]  = paramsChanged[7]  || change7;
+    paramsChanged[8]  = paramsChanged[8]  || change8;
+    paramsChanged[9]  = paramsChanged[9]  || change9;
+    paramsChanged[10] = paramsChanged[10] || change10and11[0];
+    paramsChanged[11] = paramsChanged[11] || change10and11[1];
+    paramsChanged[12] = paramsChanged[12] || change12;
 }
 
 
 void EditorMapGenStep::RenderConditions_DistanceField( MapGenStep* genStep ) {
+    std::vector< bool >& paramsChanged = s_conditionChangelist[genStep];
+
+    if( paramsChanged.size() <= 7 ) {
+        paramsChanged.resize( 7 + 2, false );
+    }
+
     MGS_DistanceField* dfStep = (MGS_DistanceField*)genStep;
 
     SetImGuiTextColor( false );
     static const Strings movementTypes = MGS_DistanceField::GetMovementTypes();
     std::string initialType = dfStep->m_movementType;
+    RenderChangeText( paramsChanged[7] );
+    bool change7 = false;
 
     if( ImGui::BeginCombo( "Movement Type", initialType.c_str(), ImGuiComboFlags_None ) ) {
         for( int typeIndex = 0; typeIndex < movementTypes.size(); typeIndex++ ) {
@@ -102,6 +168,10 @@ void EditorMapGenStep::RenderConditions_DistanceField( MapGenStep* genStep ) {
 
             if( ImGui::Selectable( defType.c_str(), isSelected ) ) {
                 dfStep->m_movementType = defType;
+
+                if( !isSelected ) {
+                    change7 = true;
+                }
             }
 
             if( isSelected ) {
@@ -114,17 +184,29 @@ void EditorMapGenStep::RenderConditions_DistanceField( MapGenStep* genStep ) {
         ImGui::EndCombo();
     }
 
+    RenderChangeText( paramsChanged[8] );
     SetImGuiTextColor( dfStep->m_maxDistance == dfStep->INVALID_DISTANCE );
-    ImGui::InputInt( "Max Distance", &dfStep->m_maxDistance );
+    bool change8 = ImGui::InputInt( "Max Distance", &dfStep->m_maxDistance );
+
+    paramsChanged[7] = paramsChanged[7] || change7;
+    paramsChanged[8] = paramsChanged[8] || change8;
 }
 
 
 void EditorMapGenStep::RenderConditions_FromImage( MapGenStep* genStep ) {
+    std::vector< bool >& paramsChanged = s_conditionChangelist[genStep];
+
+    if( paramsChanged.size() <= 7 ) {
+        paramsChanged.resize( 7 + 4, false );
+    }
+
     MGS_FromImage* imageStep = (MGS_FromImage*)genStep;
 
+    RenderChangeText( paramsChanged[7] );
     SetImGuiTextColor( false );
     ImGui::Text( imageStep->m_imageFilePath.c_str() );
     ImGui::SameLine();
+    bool change7 = false;
     
     if( ImGui::Button( "Open File" ) ) {
         Strings filter = {
@@ -132,22 +214,56 @@ void EditorMapGenStep::RenderConditions_FromImage( MapGenStep* genStep ) {
             "PNG",  "*.png"
         };
 
-        imageStep->m_imageFilePath = g_theWindow->OpenFileDialog( "Data/Images", filter, "MGS_FromImage: Open File" );
+        std::string newFilePath = g_theWindow->OpenFileDialog( "Data/Images", filter, "MGS_FromImage: Open File" );
+
+        if( imageStep->m_imageFilePath != newFilePath ) {
+            change7 = true;
+        }
+
+        imageStep->m_imageFilePath = newFilePath;
     }
 
-    RenderFloatRange( imageStep->m_alignX, "X Alignment", 0.f, 1.f, FloatRange::ZEROTOONE );
-    RenderFloatRange( imageStep->m_alignY, "Y Alignment", 0.f, 1.f, FloatRange::ZEROTOONE );
-    RenderIntRange( imageStep->m_numRotations, "Rotations", 0, 3, IntRange::ZERO );
+    RenderChangeText( paramsChanged[8] );
+    bool change8  = RenderFloatRange( imageStep->m_alignX, "X Alignment", 0.f, 1.f, FloatRange::ZEROTOONE );
+
+    RenderChangeText( paramsChanged[9] );
+    bool change9  = RenderFloatRange( imageStep->m_alignY, "Y Alignment", 0.f, 1.f, FloatRange::ZEROTOONE );
+
+    RenderChangeText( paramsChanged[10] );
+    bool change10 = RenderIntRange( imageStep->m_numRotations, "Rotations", 0, 3, IntRange::ZERO );
+
+    paramsChanged[7]  = paramsChanged[7]  || change7;
+    paramsChanged[8]  = paramsChanged[8]  || change8;
+    paramsChanged[9]  = paramsChanged[9]  || change9;
+    paramsChanged[10] = paramsChanged[10] || change10;
 }
 
 
 void EditorMapGenStep::RenderConditions_PerlinNoise( MapGenStep* genStep ) {
+    std::vector< bool >& paramsChanged = s_conditionChangelist[genStep];
+
+    if( paramsChanged.size() <= 7 ) {
+        paramsChanged.resize( 7 + 4, false );
+    }
+
     MGS_PerlinNoise* noiseStep = (MGS_PerlinNoise*)genStep;
 
-    RenderIntRange( noiseStep->m_gridSize, "Grid Size", 1, 50, IntRange( 10, 30 ) );
-    RenderIntRange( noiseStep->m_numOctaves, "Octaves", 1, 10, IntRange( 1, 3 ) );
-    RenderFloatRange( noiseStep->m_octavePersistence, "Persistence", 0.f, 1.f, FloatRange( 0.4f, 0.6f ) );
-    RenderFloatRange( noiseStep->m_octaveScale, "Scale", 0.f, 5.f, FloatRange( 1.5f, 2.5f ) );
+    RenderChangeText( paramsChanged[7] );
+    bool change7  = RenderIntRange( noiseStep->m_gridSize, "Grid Size", 1, 50, IntRange( 10, 30 ) );
+
+    RenderChangeText( paramsChanged[8] );
+    bool change8  = RenderIntRange( noiseStep->m_numOctaves, "Octaves", 1, 10, IntRange( 1, 3 ) );
+
+    RenderChangeText( paramsChanged[9] );
+    bool change9  = RenderFloatRange( noiseStep->m_octavePersistence, "Persistence", 0.f, 1.f, FloatRange( 0.4f, 0.6f ) );
+
+    RenderChangeText( paramsChanged[10] );
+    bool change10 = RenderFloatRange( noiseStep->m_octaveScale, "Scale", 0.f, 5.f, FloatRange( 1.5f, 2.5f ) );
+
+    paramsChanged[7]  = paramsChanged[7]  || change7;
+    paramsChanged[8]  = paramsChanged[8]  || change8;
+    paramsChanged[9]  = paramsChanged[9]  || change9;
+    paramsChanged[10] = paramsChanged[10] || change10;
 }
 
 
@@ -157,8 +273,18 @@ void EditorMapGenStep::RenderConditions_RoomsAndPaths( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderConditions_Sprinkle( MapGenStep* genStep ) {
+    std::vector< bool >& paramsChanged = s_conditionChangelist[genStep];
+
+    if( paramsChanged.size() <= 7 ) {
+        paramsChanged.resize( 7 + 1, false );
+    }
+
     MGS_Sprinkle* sprinkleStep = (MGS_Sprinkle*)genStep;
-    RenderIntRange( sprinkleStep->m_countRange, "Sprinkles", 1 );
+
+    RenderChangeText( paramsChanged[7] );
+    bool change7 = RenderIntRange( sprinkleStep->m_countRange, "Sprinkles", 1 );
+
+    paramsChanged[7] = paramsChanged[7] || change7;
 }
 
 
@@ -196,10 +322,29 @@ void EditorMapGenStep::RenderResults( MapGenStep* genStep, const std::string& st
 
 
 void EditorMapGenStep::RenderResults_BaseClass( MapGenStep* genStep ) {
-    RenderTileDropDown( "baseResult", genStep->m_setType );
-    RenderTags( "baseResult", genStep->m_setTags, "Tile" );
-    RenderHeatMaps( "results", genStep->m_setHeatMap );
-    RenderEventList( "Results", genStep->s_customResults, genStep->m_customResults );
+    std::vector< bool >& paramsChanged = s_resultChangelist[genStep];
+
+    if( paramsChanged.empty() ) {
+        paramsChanged.resize( 5, false );
+    }
+
+    RenderChangeText( paramsChanged[0] );
+    bool change0 = RenderTileDropDown( "baseResult", genStep->m_setType );
+
+    RenderChangeText( paramsChanged[1] );
+    std::array< bool, 2 > change1and2 = RenderTags( "baseResult", genStep->m_setTags, paramsChanged[2], "Tile" ); // FIXME: hard coded changed value
+
+    RenderChangeText( paramsChanged[3] );
+    bool change3 = RenderHeatMaps( "results", genStep->m_setHeatMap );
+
+    RenderChangeText( paramsChanged[4] );
+    bool change4 = RenderEventList( "Results", genStep->s_customResults, genStep->m_customResults );
+
+    paramsChanged[0] = paramsChanged[0] || change0;
+    paramsChanged[1] = paramsChanged[1] || change1and2[0];
+    paramsChanged[2] = paramsChanged[2] || change1and2[1];
+    paramsChanged[3] = paramsChanged[3] || change3;
+    paramsChanged[4] = paramsChanged[4] || change4;
 }
 
 
@@ -224,23 +369,58 @@ void EditorMapGenStep::RenderResults_PerlinNoise( MapGenStep* genStep ) {
 
 
 void EditorMapGenStep::RenderResults_RoomsAndPaths( MapGenStep* genStep ) {
+    std::vector< bool >& paramsChanged = s_resultChangelist[genStep];
+
+    if( paramsChanged.size() <= 5 ) {
+        paramsChanged.resize( 5 + 10, false );
+    }
+
     MGS_RoomsAndPaths* rnpStep = (MGS_RoomsAndPaths*)genStep;
 
     // Rooms
-    RenderIntRange( rnpStep->m_numRooms, "Rooms", 1, 50, IntRange::ZERO );
-    RenderIntRange( rnpStep->m_roomWidth, "Width in Tiles", 1, 30, IntRange::ZERO );
-    RenderIntRange( rnpStep->m_roomHeight, "Height in Tiles", 1, 30, IntRange::ZERO );
-    RenderTileDropDown( "rnpRoomFloor", rnpStep->m_roomFloor, "Room Floor Tiles" );
-    RenderTileDropDown( "rnpRoomWall", rnpStep->m_roomWall, "Room Wall Tiles" );
-    RenderIntRange( rnpStep->m_numOverlaps, "Allowed Overlaps", 0, 10, IntRange::ZERO );
+    RenderChangeText( paramsChanged[5] );
+    bool change5  = RenderIntRange( rnpStep->m_numRooms, "Rooms", 1, 50, IntRange::ZERO );
+
+    RenderChangeText( paramsChanged[6] );
+    bool change6  = RenderIntRange( rnpStep->m_roomWidth, "Width in Tiles", 1, 30, IntRange::ZERO );
+
+    RenderChangeText( paramsChanged[7] );
+    bool change7  = RenderIntRange( rnpStep->m_roomHeight, "Height in Tiles", 1, 30, IntRange::ZERO );
+
+    RenderChangeText( paramsChanged[8] );
+    bool change8  = RenderTileDropDown( "rnpRoomFloor", rnpStep->m_roomFloor, "Room Floor Tiles" );
+
+    RenderChangeText( paramsChanged[9] );
+    bool change9  = RenderTileDropDown( "rnpRoomWall", rnpStep->m_roomWall, "Room Wall Tiles" );
+
+    RenderChangeText( paramsChanged[10] );
+    bool change10 = RenderIntRange( rnpStep->m_numOverlaps, "Allowed Overlaps", 0, 10, IntRange::ZERO );
     ImGui::Separator();
 
     // Paths
+    RenderChangeText( paramsChanged[11] );
     SetImGuiTextColor( rnpStep->m_pathLoop == true );
-    ImGui::Checkbox( "Make Paths Loop", &rnpStep->m_pathLoop );
-    RenderTileDropDown( "rnPPath", rnpStep->m_pathFloor, "Path Tiles" );
-    RenderIntRange( rnpStep->m_numExtraPaths, "Extra Paths", 0, 10, IntRange::ZERO );
-    RenderFloatRange( rnpStep->m_pathStraightChance, "Path Straightness", 0.f, 1.f, FloatRange::ZERO );
+    bool change11 = ImGui::Checkbox( "Make Paths Loop", &rnpStep->m_pathLoop );
+
+    RenderChangeText( paramsChanged[12] );
+    bool change12 = RenderTileDropDown( "rnPPath", rnpStep->m_pathFloor, "Path Tiles" );
+
+    RenderChangeText( paramsChanged[13] );
+    bool change13 = RenderIntRange( rnpStep->m_numExtraPaths, "Extra Paths", 0, 10, IntRange::ZERO );
+
+    RenderChangeText( paramsChanged[14] );
+    bool change14 = RenderFloatRange( rnpStep->m_pathStraightChance, "Path Straightness", 0.f, 1.f, FloatRange::ZERO );
+
+    paramsChanged[5]  = paramsChanged[5]  || change5;
+    paramsChanged[6]  = paramsChanged[6]  || change6;
+    paramsChanged[7]  = paramsChanged[7]  || change7;
+    paramsChanged[8]  = paramsChanged[8]  || change8;
+    paramsChanged[9]  = paramsChanged[9]  || change9;
+    paramsChanged[10] = paramsChanged[10] || change10;
+    paramsChanged[11] = paramsChanged[11] ^  change11; // XOR for checkbox
+    paramsChanged[12] = paramsChanged[12] || change12;
+    paramsChanged[13] = paramsChanged[13] || change13;
+    paramsChanged[14] = paramsChanged[14] || change14;
 }
 
 
@@ -249,7 +429,7 @@ void EditorMapGenStep::RenderResults_Sprinkle( MapGenStep* genStep ) {
 }
 
 
-void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< MapGenStep::CustomEvent >& allEvents, std::vector< MapGenStep::CustomEvent >& currentEvents ) {
+bool EditorMapGenStep::RenderEventList( const std::string& label, std::vector< MapGenStep::CustomEvent >& allEvents, std::vector< MapGenStep::CustomEvent >& currentEvents ) {
     std::string fullLabel = Stringf( "Other %s", label.c_str() );
     std::string addButtonID = Stringf( "customEvent_Button_%s", label.c_str() );
     std::string popupID = Stringf( "customEvent_Popup_%s", label.c_str() );
@@ -258,7 +438,7 @@ void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
 
     // Double check something exist
     if( allNames.empty() ) {
-        return;
+        return false;
     }
 
     Strings currentNames = GetEventNames( currentEvents );
@@ -277,6 +457,7 @@ void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
 
     // Start drawing
     std::string newName = "";
+    bool wasChanged = false;
 
     SetImGuiTextColor( currentEvents.size() <= 1 );
     ImGui::Text( fullLabel.c_str() );
@@ -303,6 +484,7 @@ void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
 
             if( ImGui::Selectable( unselectedNames[nameIndex].c_str(), &unused ) ) {
                 newName = unselectedNames[nameIndex];
+                wasChanged = true;
             }
         }
 
@@ -345,6 +527,7 @@ void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
         
         if( ImGui::Button( "X" ) ) {
             eventsToRemove.push_back( eventIndex );
+            wasChanged = true;
         }
 
         int numAttrs = (int)event.attrNames.size();
@@ -357,7 +540,9 @@ void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
             std::string& name = event.attrNames[attrIndex];
             std::string& value = event.attrValues[attrIndex];
 
-            ImGui::InputText( name.c_str(), &value, ImGuiInputTextFlags_CharsNoBlank );
+            if( ImGui::InputText( name.c_str(), &value, ImGuiInputTextFlags_CharsNoBlank ) ) {
+                wasChanged = true;
+            }
         }
 
         ImGui::PopID();
@@ -378,6 +563,8 @@ void EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
             eventIndex++;
         }
     }
+
+    return wasChanged;
 }
 
 

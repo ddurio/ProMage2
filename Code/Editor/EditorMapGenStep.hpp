@@ -1,6 +1,8 @@
 #pragma once
 #include "Editor/EditorCommon.hpp"
 
+#include "Engine/Core/EventSystem.hpp"
+
 #include "Game/MapGen/GenSteps/MapGenStep.hpp"
 
 struct FloatRange;
@@ -12,10 +14,17 @@ class EditorMapGenStep {
     EditorMapGenStep() {};
     ~EditorMapGenStep() {};
 
-    static void RenderStepParms( MapGenStep* genStep, const std::string& stepName );
+    virtual void DontImplement() = 0; // Safety net to insure EMGS is not instantiated.. use only as static class/namespace
+
+    static void RenderStepParams( MapGenStep* genStep, const std::string& stepName );
+    static bool ResetChangedParams( EventArgs& args );
 
 
     private:
+    static std::map< MapGenStep*, std::vector< bool > > s_conditionChangelist;
+    static std::map< MapGenStep*, std::vector< bool > > s_resultChangelist;
+
+
     // Conditions
     static void RenderConditions( MapGenStep* genStep, const std::string& stepName );
     static void RenderConditions_BaseClass( MapGenStep* genStep );
@@ -37,9 +46,7 @@ class EditorMapGenStep {
     static void RenderResults_Sprinkle( MapGenStep* genStep );
 
     // Helpers
-    static void RenderEventList( const std::string& label, std::vector< MapGenStep::CustomEvent >& allEvents, std::vector< MapGenStep::CustomEvent >& currentEvents );
-
-    
-    private:
     static Strings GetEventNames( const std::vector< MapGenStep::CustomEvent >& eventList );
+    static bool RenderEventList( const std::string& label, std::vector< MapGenStep::CustomEvent >& allEvents, std::vector< MapGenStep::CustomEvent >& currentEvents );
+
 };

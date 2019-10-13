@@ -1,7 +1,7 @@
 #pragma once
 #include "Editor/EditorCommon.hpp"
 
-#include "Engine/Memory/AsyncQueue.hpp"
+#include "Engine/Async/AsyncQueue.hpp"
 
 #include "Game/MapGen/Map/MapDef.hpp"
 

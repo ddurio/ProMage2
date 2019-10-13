@@ -7,7 +7,7 @@
 #include "Game/MapGen/Map/TileDef.hpp"
 
 
-void RenderPercent( float& value, const std::string& label /*= ""*/, float defaultValue /*= 1.f */ ) {
+bool RenderPercent( float& value, const std::string& label /*= ""*/, float defaultValue /*= 1.f */ ) {
     SetImGuiTextColor( value == defaultValue );
     std::string percentFormat = Stringf( "%.0f%%%%", value * 100.f );
 
@@ -15,11 +15,15 @@ void RenderPercent( float& value, const std::string& label /*= ""*/, float defau
         if( value > 1.f ) {
             value /= 100.f;
         }
+
+        return true;
     }
+
+    return false;
 }
 
 
-void RenderIntRange( IntRange& range, const std::string& label /*= ""*/, int minValue /*= 0*/, int maxValue /*= 10*/, const IntRange& defaultValue /*= IntRange::ONE */ ) {
+bool RenderIntRange( IntRange& range, const std::string& label /*= ""*/, int minValue /*= 0*/, int maxValue /*= 10*/, const IntRange& defaultValue /*= IntRange::ONE */ ) {
     SetImGuiTextColor( range == defaultValue );
     IntRange initialIters = range;
 
@@ -33,11 +37,15 @@ void RenderIntRange( IntRange& range, const std::string& label /*= ""*/, int min
                 range.min = range.max;
             }
         }
+
+        return true;
     }
+
+    return false;
 }
 
 
-void RenderFloatRange( FloatRange& range, const std::string& label /*= ""*/, float minValue /*= 0.f*/, float maxValue /*= 10.f*/, const FloatRange& defaultValue /*= FloatRange::ONE */ ) {
+bool RenderFloatRange( FloatRange& range, const std::string& label /*= ""*/, float minValue /*= 0.f*/, float maxValue /*= 10.f*/, const FloatRange& defaultValue /*= FloatRange::ONE */ ) {
     SetImGuiTextColor( range == defaultValue );
     FloatRange initialIters = range;
 
@@ -51,19 +59,25 @@ void RenderFloatRange( FloatRange& range, const std::string& label /*= ""*/, flo
                 range.min = range.max;
             }
         }
+
+        return true;
     }
+
+    return false;
 }
 
 
-void RenderTileDropDown( const std::string& uniqueKey, std::string& currentType, const std::string& label /*= "Tile Type"*/, bool addNoneOption /*= true*/, const std::string& defaultValue /*= "" */ ) {
+bool RenderTileDropDown( const std::string& uniqueKey, std::string& currentType, const std::string& label /*= "Tile Type"*/, bool addNoneOption /*= true*/, const std::string& defaultValue /*= "" */ ) {
     std::string comboID = Stringf( "tile_%s", uniqueKey.c_str() );
     static const Strings tileTypes = TileDef::GetAllTypes();
 
-    RenderDropDown( comboID, currentType, tileTypes, label, addNoneOption, defaultValue );
+    return RenderDropDown( comboID, currentType, tileTypes, label, addNoneOption, defaultValue );
 }
 
 
-void RenderDropDown( const std::string& uniqueKey, std::string& currentType, const Strings& ddOptions, const std::string& label, bool addNoneOptions, const std::string& defaultValue ) {
+bool RenderDropDown( const std::string& uniqueKey, std::string& currentType, const Strings& ddOptions, const std::string& label, bool addNoneOptions, const std::string& defaultValue ) {
+    bool wasChanged = false;
+
     SetImGuiTextColor( false );
     std::string initialType = currentType;
     std::string comboID = Stringf( "dropdown_%s", uniqueKey.c_str() );
@@ -75,6 +89,7 @@ void RenderDropDown( const std::string& uniqueKey, std::string& currentType, con
 
             if( ImGui::Selectable( "<NONE>", (initialType == "") ) ) {
                 currentType = "";
+                wasChanged = true;
             }
 
             if( initialType == "" ) {
@@ -93,6 +108,7 @@ void RenderDropDown( const std::string& uniqueKey, std::string& currentType, con
 
             if( ImGui::Selectable( option.c_str(), isSelected ) ) {
                 currentType = option;
+                wasChanged = true;
             }
 
             if( isSelected ) {
@@ -110,16 +126,19 @@ void RenderDropDown( const std::string& uniqueKey, std::string& currentType, con
     SetImGuiTextColor( currentType == defaultValue );
     ImGui::SameLine();
     ImGui::Text( label.c_str() );
+
+    return wasChanged;
 }
 
 
-void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::string& label /*= "" */ ) {
+std::array< bool, 2> RenderTags( const std::string& uniqueKey, Strings& currentTags, bool missingHasChanged, const std::string& label /*= "" */ ) {
     std::string labelPref = Stringf( "%s%s", label.c_str(), (label == "") ? "" : " " );
     std::string hasTagLabel = Stringf( "%s Has Tag:", labelPref.c_str() );
     std::string missingTagLabel = Stringf( "%s Missing Tag:", labelPref.c_str() );
 
     std::string hasTagID = Stringf( "hasTag_%s", uniqueKey.c_str() );
     std::string missingTagID = Stringf( "missingTag_%s", uniqueKey.c_str() );
+    std::array< bool, 2 > wasChanged = { false, false };
 
     int numHasTags = 0;
     int numMissingTags = 0;
@@ -150,6 +169,7 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
     if( ImGui::Button( "+" ) ) {
         currentTags.push_back( "" );
         focusLastAdd = true;
+        wasChanged[0] = true;
     }
 
     std::vector< int > tagsToRemove;
@@ -165,11 +185,15 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
                 ImGui::SetKeyboardFocusHere( 0 );
             }
 
-            ImGui::InputText( "", &tag, ImGuiInputTextFlags_CharsNoBlank );
+            if( ImGui::InputText( "", &tag, ImGuiInputTextFlags_CharsNoBlank ) ) {
+                wasChanged[0] = true;
+            }
+
             ImGui::SameLine();
 
             if( ImGui::Button( "X" ) ) {
                 tagsToRemove.push_back( tagIndex );
+                wasChanged[0] = true;
             }
         }
 
@@ -179,6 +203,7 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
     ImGui::PopID();
 
     // Missing Tags
+    RenderChangeText( missingHasChanged );
     SetImGuiTextColor( numMissingTags == 0 );
     ImGui::Text( missingTagLabel.c_str() );
     ImGui::SameLine();
@@ -190,6 +215,7 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
     if( ImGui::Button( "+" ) ) {
         currentTags.push_back( "!" );
         focusLastMissing = true;
+        wasChanged[1] = true;
     }
 
     numTags = (int)currentTags.size();
@@ -207,12 +233,14 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
 
             if( ImGui::InputText( "", &subTag, ImGuiInputTextFlags_CharsNoBlank ) ) {
                 tag = Stringf( "!%s", subTag.c_str() );
+                wasChanged[1] = true;
             }
 
             ImGui::SameLine();
 
             if( ImGui::Button( "X" ) ) {
                 tagsToRemove.push_back( tagIndex );
+                wasChanged[1] = true;
             }
         }
 
@@ -236,10 +264,12 @@ void RenderTags( const std::string& uniqueKey, Strings& currentTags, const std::
             tagIndex++;
         }
     }
+
+    return wasChanged;
 }
 
 
-void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatRange, StringCmpCaseI >& currentHeatMaps ) {
+bool RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatRange, StringCmpCaseI >& currentHeatMaps ) {
     SetImGuiTextColor( currentHeatMaps.empty() );
     ImGui::Text( "Heat Maps" );
     ImGui::SameLine();
@@ -251,6 +281,7 @@ void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
     static std::string heatMapName = "";
     static int newHeatMap = -1;
     bool addHeatMap = false;
+    bool wasChanged = false;
 
     // Add heat map popup
     SetImGuiTextColor( false );
@@ -276,6 +307,7 @@ void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
         if( ImGui::InputText( "Name", &heatMapName, ImGuiInputTextFlags_CharsNoBlank | ImGuiInputTextFlags_EnterReturnsTrue ) ) {
             if( heatMapName != "" ) {
                 addHeatMap = true;
+                wasChanged = true;
                 ImGui::CloseCurrentPopup();
             }
         }
@@ -285,6 +317,7 @@ void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
         if( ImGui::Button( "Add" ) ) {
             if( heatMapName != "" ) {
                 addHeatMap = true;
+                wasChanged = true;
                 ImGui::CloseCurrentPopup();
             }
         }
@@ -311,9 +344,9 @@ void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
 
     while( heatIter != currentHeatMaps.end() ) {
         if( StringICmp( heatIter->first, "Noise" ) ) {
-            RenderFloatRange( heatIter->second, heatIter->first, -1.f, 1.f );
+            wasChanged |= RenderFloatRange( heatIter->second, heatIter->first, -1.f, 1.f, FloatRange( 1.f, -1.f ) ); // invalid default.. should always be white
         } else {
-            RenderFloatRange( heatIter->second, heatIter->first );
+            wasChanged |= RenderFloatRange( heatIter->second, heatIter->first, 0.f, 10.f, FloatRange( 1.f, -1.f ) );
         }
 
         ImGui::SameLine();
@@ -321,6 +354,7 @@ void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
 
         if( ImGui::Button( "X" ) ) {
             mapsToRemove.push_back( heatIter->first );
+            wasChanged = true;
         }
 
         ImGui::PopID();
@@ -336,12 +370,45 @@ void RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
         const std::string& nameToRemove = mapsToRemove[removeIndex];
         currentHeatMaps.erase( nameToRemove );
     }
+
+    return wasChanged;
+}
+
+
+void RenderChangeText( bool hasChanged ) {
+    SetImGuiTextColor( Rgba::ORGANIC_YELLOW );
+
+    if( hasChanged ) {
+        ImGui::Text( "*" );
+
+        if( ImGui::IsItemHovered() ) {
+            ImGui::BeginTooltip();
+            ImGui::PushTextWrapPos( ImGui::GetFontSize() * 35.0f );
+
+            std::string changeStr = "Value has changed since map generation.";
+            ImGui::TextUnformatted( changeStr.c_str() );
+
+            std::string regenStr = "Please regenerate map to apply these changes.";
+            ImGui::TextUnformatted( regenStr.c_str() );
+
+            ImGui::PopTextWrapPos();
+            ImGui::EndTooltip();
+        }
+    } else {
+        ImGui::Text( " " );
+    }
+
+    ImGui::SameLine();
 }
 
 
 void SetImGuiTextColor( bool isDefaultValue ) {
     Rgba textColor = isDefaultValue ? Rgba::ORGANIC_GRAY : Rgba::WHITE;
+    SetImGuiTextColor( textColor );
+}
 
+
+void SetImGuiTextColor( const Rgba& newColor ) {
     ImGuiStyle& style = ImGui::GetStyle();
-    style.Colors[ImGuiCol_Text] = textColor.GetAsImGui();
+    style.Colors[ImGuiCol_Text] = newColor.GetAsImGui();
 }

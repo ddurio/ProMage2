@@ -21,11 +21,13 @@ XmlWindow::XmlWindow( const Vec2& normDimensions /*= Vec2( 0.2f, 1.f )*/, const 
 
     MapWindow* mapWindow = g_theEditor->GetMapWindow();
     m_mapType = mapWindow->GetMapType();
+
+    g_theEventSystem->Subscribe( EVENT_EDITOR_GENERATE_MAP, &EditorMapGenStep::ResetChangedParams );
 }
 
 
 XmlWindow::~XmlWindow() {
-
+    g_theEventSystem->Unsubscribe( EVENT_EDITOR_GENERATE_MAP, &EditorMapGenStep::ResetChangedParams );
 }
 
 
@@ -65,7 +67,7 @@ void XmlWindow::UpdateChild( float deltaSeconds ) {
             if( stepIndex == 0 ) {
                 eMapDef->RenderMapDefParams();
             } else {
-                EditorMapGenStep::RenderStepParms( genStep, stepName );
+                EditorMapGenStep::RenderStepParams( genStep, stepName );
             }
 
             ImGui::TreePop();
