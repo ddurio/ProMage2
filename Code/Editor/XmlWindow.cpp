@@ -101,9 +101,12 @@ void XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
 
         if( ImGui::Button( "Regenerate Current Map", ImVec2( -1, 0 ) ) ) {
             MapWindow* mapWindow = g_theEditor->GetMapWindow();
-
             EventArgs args;
-            args.SetValue( "stepIndex", stepIndex );
+
+            if( mapWindow->GetMapType() == m_mapType ) {
+                args.SetValue( "stepIndex", stepIndex );
+            }
+
             args.SetValue( "mapType", m_mapType );
             args.SetValue( "useCustomSeed", true );
             args.SetValue( "customSeed", mapWindow->GetMapSeed() );

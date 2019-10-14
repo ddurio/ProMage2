@@ -47,8 +47,14 @@ class MapWindow : public EditorWindow {
     float m_minZoomT = 0.f;
     float m_zoomIncrement = 0.1f;
 
+    // Drag info
+    Vec2 m_cameraPosition = Vec2::ZERO;
+    bool m_isDragging = false;
+
 
     void UpdateChild( float deltaSeconds ) override;
+    void UpdateMapCamera( float deltaSeconds );
+    Vec2 GetClampedMouseDelta( float pixelsPerTile ) const;
 
     void RenderMap( float deltaSeconds );
     void RenderTileChangeHighlight();
@@ -62,6 +68,7 @@ class MapWindow : public EditorWindow {
     void CalculateZoomIncrement();
     void CalculateMapSizes();
 
+    // Tile Changes
     Strings GetTileChanges( const IntVec2& tileCoord ) const;
     void GetTileTypeChanges( Strings& changeList, const Tile& currentTile, const Tile& prevTile ) const;
     void GetTagChanges( Strings& changeList, Strings currentTags, Strings prevTags ) const;

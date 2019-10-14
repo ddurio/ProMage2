@@ -73,6 +73,12 @@ bool MapWindow::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f 
         m_currentZoom = Clamp( m_currentZoom, 0.f, 1.f );
         //m_currentZoom = Max( m_currentZoom, 0.f );
         return true;
+    } else if( event == MOUSE_EVENT_RBUTTON_UP ) {
+        m_isDragging = false;
+        g_theWindow->UnlockMouse();
+    } else if( event == MOUSE_EVENT_RBUTTON_DOWN ) {
+        m_isDragging = true;
+        g_theWindow->LockMouse();
     }
 
     return false;
@@ -131,14 +137,9 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
 }
 
 
-void MapWindow::RenderMap( float deltaSeconds ) {
-    int numSteps = (int)m_mapPerStep.size();
-
-    XmlWindow* xmlWindow = g_theEditor->GetXmlWindow();
-    bool showModified = xmlWindow->ShouldHighlightTiles();
-
+void MapWindow::UpdateMapCamera( float deltaSeconds ) {
+    UNUSED( deltaSeconds );
     Map*& theMap = m_mapPerStep[m_stepIndex];
-    m_windowName = theMap->GetMapName();
 
     // Window sizes
     Vec2 contentMin = ImGui::GetWindowContentRegionMin();
@@ -165,11 +166,52 @@ void MapWindow::RenderMap( float deltaSeconds ) {
     float heightTiles = mapSizePixels.y / zoomPixelsPerTile;
     m_mapCamera->SetOrthoProjection( heightTiles, -100.f, 100.f, m_mapBounds.GetAspectRatio() );
 
+    // Apply drag
+    if( m_isDragging ) {
+        Vec2 worldDelta = GetClampedMouseDelta( zoomPixelsPerTile );
+        m_mapCamera->Translate( worldDelta );
+    }
+}
+
+
+Vec2 MapWindow::GetClampedMouseDelta( float pixelsPerTile ) const {
+    IntVec2 mouseDelta = g_theWindow->GetMouseClientDisplacement();
+    mouseDelta.y = -mouseDelta.y; // Invert client y
+    Vec2 worldDelta = mouseDelta / pixelsPerTile;
+    worldDelta = -worldDelta;
+
+
+    Map* theMap = m_mapPerStep[m_stepIndex];
+    IntVec2 mapDims = theMap->GetMapDimensions();
+    Vec2 cameraDims = m_mapCamera->GetDimensions();
+    Vec2 cameraPos  = m_mapCamera->GetCenter();
+
+    Vec2 halfCameraDims = cameraDims * 0.5f;
+
+    Vec2 minDelta = halfCameraDims - cameraPos;
+    Vec2 maxDelta = Vec2( mapDims ) - halfCameraDims - cameraPos;
+
+    float clampedX = Clamp( worldDelta.x, minDelta.x, maxDelta.x );
+    float clampedY = Clamp( worldDelta.y, minDelta.y, maxDelta.y );
+
+    return Vec2( clampedX, clampedY );
+}
+
+
+void MapWindow::RenderMap( float deltaSeconds ) {
+    Map*& theMap = m_mapPerStep[m_stepIndex];
+    m_windowName = theMap->GetMapName();
 
     // Update and draw to textureView
+    UpdateMapCamera( deltaSeconds );
     theMap->Update( deltaSeconds );
     g_theRenderer->BeginCamera( m_mapCamera );
+    g_theRenderer->ClearRenderTarget( Rgba::BLACK );
     theMap->Render();
+
+    XmlWindow* xmlWindow = g_theEditor->GetXmlWindow();
+    bool showModified = xmlWindow->ShouldHighlightTiles();
+    int numSteps = (int)m_mapPerStep.size();
 
     if( showModified && m_stepIndex == (numSteps - 1) ) {
         g_thePhysicsSystem->RenderDebug();
@@ -180,11 +222,7 @@ void MapWindow::RenderMap( float deltaSeconds ) {
     // Render map to Editor
     void* mapView = m_mapCamera->GetRenderTarget()->GetShaderView();
 
-
-
-
     ImGui::Image( mapView, m_mapBounds.GetDimensions().GetAsImGui() ); // Map render
-    //ImGui::GetWindowDrawList()->AddRect( contentBounds.mins.GetAsImGui(), contentBounds.maxs.GetAsImGui(), 0xFFFF'FF00 );
     ImGui::GetWindowDrawList()->AddRect( m_mapBounds.mins.GetAsImGui(), m_mapBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
 }
 
@@ -287,11 +325,12 @@ bool MapWindow::GenerateMaps( EventArgs& args ) {
     float mapAspect = (float)mapDims.x / (float)mapDims.y;
 
     m_mapCamera = new Camera();
-    //m_mapCamera->SetOrthoProjection( (float)mapDims.y, -100.f, 100.f, mapAspect );
     m_mapCamera->SetOrthoProjection( (float)mapDims.y, -100.f, 100.f, mapAspect );
 
     Vec2 halfDims = mapDims * 0.5f;
     m_mapCamera->Translate( halfDims );
+
+    m_currentZoom = 0.f;
 
     // Setup render target
     TextureView2D* mapView = g_theRenderer->GetOrCreateRenderTarget( m_mapViewName );
