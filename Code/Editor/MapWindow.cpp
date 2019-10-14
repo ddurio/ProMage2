@@ -24,6 +24,8 @@
 MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const Vec2& alignment /*= Vec2( 0.f, 1.f ) */ ) :
     EditorWindow( normDimensions, alignment ) {
     m_windowName = "MapEditor";
+    m_extraFlags |= ImGuiWindowFlags_NoMouseInputs;
+
     g_theEventSystem->Subscribe( EVENT_EDITOR_CHANGE_STEP, this, &MapWindow::SetVisibleMapStep );
     g_theEventSystem->Subscribe( EVENT_EDITOR_GENERATE_MAP, this, &MapWindow::GenerateMaps );
 
@@ -55,6 +57,25 @@ void MapWindow::Shutdown() {
     m_stepIndex = -1;
     CLEAR_POINTER( m_mapCamera );
     EngineCommon::ClearVector( m_mapPerStep );
+}
+
+
+bool MapWindow::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f */ ) {
+    if( event == MOUSE_EVENT_SCROLL ) {
+        if( scrollAmount > 0.f ) {
+            //m_currentZoom += m_zoomIncrement;
+            m_currentZoom += 0.1f;
+        } else {
+            //m_currentZoom -= m_zoomIncrement;
+            m_currentZoom -= 0.1f;
+        }
+
+        m_currentZoom = Clamp( m_currentZoom, 0.f, 1.f );
+        //m_currentZoom = Max( m_currentZoom, 0.f );
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -119,6 +140,32 @@ void MapWindow::RenderMap( float deltaSeconds ) {
     Map*& theMap = m_mapPerStep[m_stepIndex];
     m_windowName = theMap->GetMapName();
 
+    // Window sizes
+    Vec2 contentMin = ImGui::GetWindowContentRegionMin();
+    Vec2 contentMax = ImGui::GetWindowContentRegionMax();
+
+    AABB2 contentBounds = AABB2( contentMin, contentMax );
+    Vec2 contentDims = contentBounds.GetDimensions();
+
+    // Apply zoom
+    //float minZoomFactor = SmoothStop2( m_minZoomT );
+    float zoomFactor = SmoothStart5( m_currentZoom );
+    zoomFactor = RangeMap( m_currentZoom, 0.f, 1.f, 0.f, m_maxZoom );
+    float zoomPixelsPerTile = m_minPixelsPerTile * (1.f + zoomFactor);
+
+    IntVec2 mapDims = theMap->GetMapDimensions();
+    Vec2 mapSizePixels = zoomPixelsPerTile * mapDims;
+
+    mapSizePixels.x = Min( mapSizePixels.x, contentDims.x );
+    mapSizePixels.y = Min( mapSizePixels.y, contentDims.y );
+
+    // Get aligned position
+    m_mapBounds = contentBounds.GetBoxWithin( mapSizePixels, ALIGN_BOTTOM_LEFT ); // Y is inverted.. actually means top left
+
+    float heightTiles = mapSizePixels.y / zoomPixelsPerTile;
+    m_mapCamera->SetOrthoProjection( heightTiles, -100.f, 100.f, m_mapBounds.GetAspectRatio() );
+
+
     // Update and draw to textureView
     theMap->Update( deltaSeconds );
     g_theRenderer->BeginCamera( m_mapCamera );
@@ -133,9 +180,12 @@ void MapWindow::RenderMap( float deltaSeconds ) {
     // Render map to Editor
     void* mapView = m_mapCamera->GetRenderTarget()->GetShaderView();
 
+
+
+
     ImGui::Image( mapView, m_mapBounds.GetDimensions().GetAsImGui() ); // Map render
-    //ImGui::GetForegroundDrawList()->AddRect( contentBounds.mins.GetAsImGui(), contentBounds.maxs.GetAsImGui(), 0xFFFF'FF00 );
-    ImGui::GetForegroundDrawList()->AddRect( m_mapBounds.mins.GetAsImGui(), m_mapBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
+    //ImGui::GetWindowDrawList()->AddRect( contentBounds.mins.GetAsImGui(), contentBounds.maxs.GetAsImGui(), 0xFFFF'FF00 );
+    ImGui::GetWindowDrawList()->AddRect( m_mapBounds.mins.GetAsImGui(), m_mapBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
 }
 
 
@@ -158,8 +208,8 @@ void MapWindow::RenderTileChangeHighlight() {
         IntVec2 invertedTileCoord = modifiedTiles[modifyIndex];
         invertedTileCoord.y = (mapSizeTiles.y - 1) - invertedTileCoord.y;
 
-        Vec2 tileMin = mapOrigin + (m_pixelsPerTile * invertedTileCoord);
-        Vec2 tileMax = tileMin + Vec2( m_pixelsPerTile );
+        Vec2 tileMin = mapOrigin + (m_minPixelsPerTile * invertedTileCoord);
+        Vec2 tileMax = tileMin + Vec2( m_minPixelsPerTile );
 
         ImGui::GetForegroundDrawList()->AddRectFilled( tileMin.GetAsImGui(), tileMax.GetAsImGui(), m_highlightColor );
     }
@@ -179,12 +229,12 @@ void MapWindow::RenderTileChangeTooltip() {
         if( m_mapBounds.IsPointInside( cursorPos ) ) {
             Vec2 cursorOffset = cursorPos - mapOrigin;
 
-            Vec2 cursorTileFloat = cursorOffset / m_pixelsPerTile;
+            Vec2 cursorTileFloat = cursorOffset / m_minPixelsPerTile;
             IntVec2 cursorInvertedTileCoord = IntVec2( (int)cursorTileFloat.x, (int)cursorTileFloat.y );
             IntVec2 cursorTileCoord = IntVec2( cursorInvertedTileCoord.x, (mapSizeTiles.y - 1) - cursorInvertedTileCoord.y );
             
-            Vec2 tileMin = mapOrigin + (m_pixelsPerTile * cursorInvertedTileCoord);
-            Vec2 tileMax = tileMin + Vec2( m_pixelsPerTile );
+            Vec2 tileMin = mapOrigin + (m_minPixelsPerTile * cursorInvertedTileCoord);
+            Vec2 tileMax = tileMin + Vec2( m_minPixelsPerTile );
 
             ImGui::GetForegroundDrawList()->AddRect( tileMin.GetAsImGui(), tileMax.GetAsImGui(), 0xFFFF'FFFF );
 
@@ -193,7 +243,7 @@ void MapWindow::RenderTileChangeTooltip() {
                 Vec2 tooltipDims = Vec2( 0.2f * m_windowDimensions.x, 0.1f * m_windowDimensions.y );
                 ImGuiWindowFlags tooltipFlags = ImGuiWindowFlags_ChildWindow | ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar;
 
-                g_theEditor->CreateWindow( tooltipDims, Vec2( 0.647f, 0.115f ), "modifiedTooltip", tooltipFlags );
+                g_theGui->CreateStaticWindow( tooltipDims, Vec2( 0.647f, 0.115f ), "modifiedTooltip", tooltipFlags );
 
                 Strings tileChanges = GetTileChanges( cursorTileCoord );
                 Strings::const_iterator changeIter = tileChanges.begin();
@@ -213,7 +263,7 @@ void MapWindow::RenderTileChangeTooltip() {
 
 
 bool MapWindow::GenerateMaps( EventArgs& args ) {
-    if( m_mapPerStep.size() > 0 ) { // Already generated maps
+    if( m_mapPerStep.size() > 0 ) { // Previously generated maps.. delete them
         Shutdown();
     }
 
@@ -237,6 +287,7 @@ bool MapWindow::GenerateMaps( EventArgs& args ) {
     float mapAspect = (float)mapDims.x / (float)mapDims.y;
 
     m_mapCamera = new Camera();
+    //m_mapCamera->SetOrthoProjection( (float)mapDims.y, -100.f, 100.f, mapAspect );
     m_mapCamera->SetOrthoProjection( (float)mapDims.y, -100.f, 100.f, mapAspect );
 
     Vec2 halfDims = mapDims * 0.5f;
@@ -265,6 +316,52 @@ bool MapWindow::SetVisibleMapStep( EventArgs& args ) {
 }
 
 
+// Expects to be called with m_minPixelsPerTile set at ZERO ZOOM
+void MapWindow::CalculateMaxZoom() {
+    // Calculate Pixel Sizes
+    Vec2 contentMin = ImGui::GetWindowContentRegionMin();
+    Vec2 contentMax = ImGui::GetWindowContentRegionMax();
+    Vec2 contentSize = contentMax - contentMin;
+
+    Vec2 maxPixelsPerTile2D = contentSize / 10.f;
+    float maxPixelsPerTile = Min( maxPixelsPerTile2D.x, maxPixelsPerTile2D.y );
+
+    // Calculate zoom factor
+    m_maxZoom = maxPixelsPerTile / m_minPixelsPerTile;
+
+    CalculateZoomRange();
+}
+
+
+void MapWindow::CalculateZoomRange() {
+    Map* theMap = m_mapPerStep[m_stepIndex];
+
+    IntVec2 mapSizeTiles2D = theMap->GetMapDimensions();
+    int maxMapSizeTiles = Max( mapSizeTiles2D.x, mapSizeTiles2D.y );
+
+    int numZooms = maxMapSizeTiles / 10;
+    numZooms = Clamp( numZooms, 0, 10 );
+
+    m_minZoomT = 1 - ((float)numZooms * 0.1f);
+    //m_currentZoom = m_minZoomT;
+
+    CalculateZoomIncrement();
+}
+
+
+void MapWindow::CalculateZoomIncrement() {
+    Map* theMap = m_mapPerStep[m_stepIndex];
+
+    IntVec2 mapSizeTiles2D = theMap->GetMapDimensions();
+    int maxMapSizeTiles = Max( mapSizeTiles2D.x, mapSizeTiles2D.y );
+
+    int numZooms = maxMapSizeTiles / 10;
+    numZooms = Clamp( numZooms, 0, 10 );
+
+    m_zoomIncrement = 1.f / numZooms;
+}
+
+
 void MapWindow::CalculateMapSizes() {
     if( m_sizeIsCalculated ) {
         return;
@@ -280,12 +377,10 @@ void MapWindow::CalculateMapSizes() {
     IntVec2 mapSizeTiles = theMap->GetMapDimensions();
 
     Vec2 pixelsPerTile2D = contentSize / mapSizeTiles;
-    m_pixelsPerTile = Min( pixelsPerTile2D.x, pixelsPerTile2D.y ); // Tile size in pixels
-    Vec2 mapSizePixels = m_pixelsPerTile * mapSizeTiles;
+    m_minPixelsPerTile = Min( pixelsPerTile2D.x, pixelsPerTile2D.y ); // Tile size in pixels
 
-    // Get aligned position
-    AABB2 contentBounds = AABB2( contentMin, contentMax );
-    m_mapBounds = contentBounds.GetBoxWithin( mapSizePixels, ALIGN_BOTTOM_LEFT ); // Y is inverted.. actually means top left
+    CalculateMaxZoom();
+    m_sizeIsCalculated = true;
 }
 
 

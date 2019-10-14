@@ -54,8 +54,8 @@ Vec2 TopDownFollowCamera::GetClampedPosition( const Vec2& targetPosition ) const
     Vec2 minPosition = halfCameraDims;
     Vec2 maxPosition = Vec2( mapDims ) - halfCameraDims;
 
-    float clampedX = ClampFloat( targetPosition.x, minPosition.x, maxPosition.x );
-    float clampedY = ClampFloat( targetPosition.y, minPosition.y, maxPosition.y );
+    float clampedX = Clamp( targetPosition.x, minPosition.x, maxPosition.x );
+    float clampedY = Clamp( targetPosition.y, minPosition.y, maxPosition.y );
 
     return Vec2( clampedX, clampedY );
 }

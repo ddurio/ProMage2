@@ -145,8 +145,8 @@ Inventory* Map::GetMapInventory() const {
 
 
 const IntVec2 Map::GetTileCoords( const Vec2& worldCoords ) const {
-    int tempX = ClampInt( (int)worldCoords.x, 0, m_mapDimensions.x - 1 );
-    int tempY = ClampInt( (int)worldCoords.y, 0, m_mapDimensions.y - 1 );
+    int tempX = Clamp( (int)worldCoords.x, 0, m_mapDimensions.x - 1 );
+    int tempY = Clamp( (int)worldCoords.y, 0, m_mapDimensions.y - 1 );
 
     return IntVec2( tempX, tempY );
 }
@@ -172,7 +172,7 @@ const IntVec2 Map::GetTileCoordsForStairs( bool getStairsDown ) const {
 int Map::GetTileIndex( const IntVec2& tileCoords ) const {
     int numTiles = (int)m_tiles.size();
     int tileIndex = (tileCoords.y * m_mapDimensions.x) + tileCoords.x;
-    return ClampInt( tileIndex, 0, numTiles - 1 );
+    return Clamp( tileIndex, 0, numTiles - 1 );
 }
 
 
@@ -318,8 +318,8 @@ Actor* Map::GetActorInCone( const Vec2& coneCenter, const Vec2& coneDirection, f
 
             // Valid hit actor, but is it the best so far?
             if( actorWithinRadius && actorWithinAngle ) {
-                float radiusFactor = RangeMapFloat( dispLengthSqr, 0.f, coneRadiusSqr, 1.f, 0.f );
-                float angleFactor = RangeMapFloat( dispDotCone, coneMinDot, 1.f, 0.f, 1.f );
+                float radiusFactor = RangeMap( dispLengthSqr, 0.f, coneRadiusSqr, 1.f, 0.f );
+                float angleFactor = RangeMap( dispDotCone, coneMinDot, 1.f, 0.f, 1.f );
 
                 float actorFactor = radiusFactor * angleFactor;
 
@@ -659,11 +659,11 @@ void Map::CreateLootTable() {
 
         // Map floor range into 0 -> 1 based on bias
         if( StringICmp( bias, "early" ) ) {
-            itemPercent = RangeMapFloat( (float)m_floorIndex, (float)floorRange.min, (float)floorRange.max, 1.f, 0.001f );
+            itemPercent = RangeMap( (float)m_floorIndex, (float)floorRange.min, (float)floorRange.max, 1.f, 0.001f );
         } else if( StringICmp( bias, "late" ) ) {
-            itemPercent = RangeMapFloat( (float)m_floorIndex, (float)floorRange.min, (float)floorRange.max, 0.001f, 1.f );
+            itemPercent = RangeMap( (float)m_floorIndex, (float)floorRange.min, (float)floorRange.max, 0.001f, 1.f );
         } else if( StringICmp( bias, "middle" ) ) {
-            itemPercent = RangeMapFloat( (float)m_floorIndex, (float)floorRange.min, (float)floorRange.max, -1.f, 1.f );
+            itemPercent = RangeMap( (float)m_floorIndex, (float)floorRange.min, (float)floorRange.max, -1.f, 1.f );
             itemPercent = abs( itemPercent ); // Valley at middle
             itemPercent = 1.f - itemPercent;  // Peak at middle
         } else {
@@ -681,7 +681,7 @@ void Map::CreateLootTable() {
 
     for( int itemIndex = 0; itemIndex < numItems; itemIndex++ ) {
         float itemPercent = itemPercents[itemIndex] / totalUnscaledPercents;
-        cumulativePercent = ClampFloat( cumulativePercent - itemPercent, 0.f, 1.f );
+        cumulativePercent = Clamp( cumulativePercent - itemPercent, 0.f, 1.f );
 
         m_lootPercents.push_back( cumulativePercent );
     }

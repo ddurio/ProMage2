@@ -32,8 +32,6 @@ class Editor {
     MapWindow* GetMapWindow() const;
     XmlWindow* GetXmlWindow() const;
 
-    Vec2 CreateWindow( const Vec2& normDimensions, const Vec2& alignment, const char* name = "", ImGuiWindowFlags extraFlags = ImGuiWindowFlags_None ) const;
-
 
     private:
 

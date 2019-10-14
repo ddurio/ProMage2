@@ -255,7 +255,7 @@ void GameStatePlay::Render() {
         g_theRenderer->EndCamera( m_uiCamera );
 
         float fadeFraction[4];
-        fadeFraction[0] = ClampFloat( m_fadeTimer->GetNormalizedElapsedTime(), 0.f, 1.f );
+        fadeFraction[0] = Clamp( m_fadeTimer->GetNormalizedElapsedTime(), 0.f, 1.f );
         fadeFraction[0] = m_fadeOut ? 1 - fadeFraction[0] : fadeFraction[0];
 
         m_pauseUBO->CopyCPUToGPU( &fadeFraction, 4 * sizeof( float ) );

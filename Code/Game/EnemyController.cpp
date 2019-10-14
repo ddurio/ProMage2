@@ -69,9 +69,9 @@ EnemyController::EnemyController( Actor* myActor ) :
     IntRange rangeMin = g_mobGearValues[keyIndex - 1];
     IntRange rangeMax = g_mobGearValues[keyIndex];
 
-    float scaledFloor = RangeMapFloat( (float)floorIndex, (float)floorMin, (float)floorMax, 0.f, 1.f );
-    float scaledMin = RangeMapFloat( scaledFloor, 0.f, 1.f, (float)rangeMin.min, (float)rangeMax.min );
-    float scaledMax = RangeMapFloat( scaledFloor, 0.f, 1.f, (float)rangeMin.max, (float)rangeMax.max );
+    float scaledFloor = RangeMap( (float)floorIndex, (float)floorMin, (float)floorMax, 0.f, 1.f );
+    float scaledMin = RangeMap( scaledFloor, 0.f, 1.f, (float)rangeMin.min, (float)rangeMax.min );
+    float scaledMax = RangeMap( scaledFloor, 0.f, 1.f, (float)rangeMin.max, (float)rangeMax.max );
 
     int scaledMinInt = RoundToInt( scaledMin );
     scaledMinInt = Max( scaledMinInt, 0 );

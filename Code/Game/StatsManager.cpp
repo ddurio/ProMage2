@@ -71,7 +71,7 @@ void StatsManager::TakeDamage( float damageToTake ) {
         return;
     }
 
-    m_health = ClampFloat( m_health - damageToTake, 0.f, m_maxHealth );
+    m_health = Clamp( m_health - damageToTake, 0.f, m_maxHealth );
 
     if( m_health <= 0.f ) {
         m_myActor->Die();

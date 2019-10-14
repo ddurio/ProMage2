@@ -368,7 +368,7 @@ bool MapGenStep::IsTileValid( Map& theMap, const Tile& tile ) const {
         float heatMapValue;
 
         if( !tile.GetHeatMap( heatMapName, heatMapValue ) ||
-            !IsFloatInRange( heatMapValue, heatMapRange ) ) {
+            !IsInRange( heatMapValue, heatMapRange ) ) {
             return false;
         }
     }

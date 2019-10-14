@@ -3,6 +3,8 @@
 
 #include "Editor/EditorWindow.hpp"
 
+#include "Engine/Core/WindowContext.hpp"
+
 #include "Game/MapGen/Map/Map.hpp"
 
 
@@ -16,6 +18,8 @@ class MapWindow : public EditorWindow {
 
     void Startup();
     void Shutdown();
+
+    bool HandleMouseButton( MouseEvent event, float scrollAmount = 0.f );
 
     int GetStepIndex() const;
     unsigned int GetMapSeed() const;
@@ -34,8 +38,14 @@ class MapWindow : public EditorWindow {
 
     // Map sizes
     bool m_sizeIsCalculated = false;
+    float m_minPixelsPerTile = -1;
     AABB2 m_mapBounds = AABB2::ZEROTOONE;
-    float m_pixelsPerTile = -1;
+
+    // Zoom info
+    float m_currentZoom = 0.f;
+    float m_maxZoom = 1.f;
+    float m_minZoomT = 0.f;
+    float m_zoomIncrement = 0.1f;
 
 
     void UpdateChild( float deltaSeconds ) override;
@@ -47,6 +57,9 @@ class MapWindow : public EditorWindow {
     bool GenerateMaps( EventArgs& args );
     bool SetVisibleMapStep( EventArgs& args );
 
+    void CalculateMaxZoom();
+    void CalculateZoomRange();
+    void CalculateZoomIncrement();
     void CalculateMapSizes();
 
     Strings GetTileChanges( const IntVec2& tileCoord ) const;

@@ -281,11 +281,11 @@ void MGS_RoomsAndPaths::GeneratePaths( Map& theMap, std::vector<IntVec2>& roomCe
         float subPathY = (float)remainingDistance.y * straightness;
 
         if( subPathX == 0 && remainingDistance.x != 0 ) {
-            subPathX = ClampFloat( (float)remainingDistance.x, -1.f, 1.f );
+            subPathX = Clamp( (float)remainingDistance.x, -1.f, 1.f );
         }
 
         if( subPathY == 0 && remainingDistance.y != 0 ) {
-            subPathY = ClampFloat( (float)remainingDistance.y, -1.f, 1.f );
+            subPathY = Clamp( (float)remainingDistance.y, -1.f, 1.f );
         }
 
         // Change Paths Tiles
@@ -293,8 +293,8 @@ void MGS_RoomsAndPaths::GeneratePaths( Map& theMap, std::vector<IntVec2>& roomCe
             int absRemainX = abs( remainingDistance.x );
             int absRemainY = abs( remainingDistance.y );
 
-            int pathSizeX = ClampInt( RoundUpToInt(subPathX), -absRemainX, absRemainX );
-            int pathSizeY = ClampInt( RoundUpToInt(subPathY), -absRemainY, absRemainY );
+            int pathSizeX = Clamp( RoundUpToInt(subPathX), -absRemainX, absRemainX );
+            int pathSizeY = Clamp( RoundUpToInt(subPathY), -absRemainY, absRemainY );
             IntVec2 pathSize( pathSizeX, pathSizeY );
 
             ChangePathTiles( theMap, subPathStart, pathSize );

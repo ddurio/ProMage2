@@ -123,10 +123,7 @@ bool Editor::HandleKeyReleased( unsigned char keyCode ) {
 
 
 bool Editor::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f */ ) {
-    UNUSED( event );
-    UNUSED( scrollAmount );
-    // ThesisFIXME: Implement mouse event
-    return false;
+    return m_mapWindow->HandleMouseButton( event, scrollAmount );
 }
 
 
@@ -163,29 +160,6 @@ MapWindow* Editor::GetMapWindow() const {
 
 XmlWindow* Editor::GetXmlWindow() const {
     return m_xmlWindow;
-}
-
-
-Vec2 Editor::CreateWindow( const Vec2& normDimensions, const Vec2& alignment, const char* name /*= ""*/, ImGuiWindowFlags extraFlags /*= ImGuiWindowFlags_None */ ) const {
-    // Setup Window
-    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoMove
-                                 | ImGuiWindowFlags_NoResize
-                                 | ImGuiWindowFlags_NoCollapse
-                                 | ImGuiWindowFlags_NoSavedSettings
-                                 | extraFlags;
-
-    AABB2 clientBounds = g_theWindow->GetClientBoundsInverted();
-    Vec2 clientDimensions = clientBounds.GetDimensions();
-
-    Vec2 windowSize = normDimensions * clientDimensions;
-    AABB2 windowBounds = clientBounds.GetBoxWithin( windowSize, alignment );
-    Vec2 windowOrigin = Vec2( windowBounds.mins.x, -windowBounds.maxs.y );
-
-    ImGui::SetNextWindowPos( ImVec2( windowOrigin.x, windowOrigin.y ), ImGuiCond_Always );
-    ImGui::SetNextWindowSize( ImVec2( windowSize.x, windowSize.y ), ImGuiCond_Always );
-    ImGui::Begin( name, nullptr, windowFlags );
-
-    return windowSize;
 }
 
 

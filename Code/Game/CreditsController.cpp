@@ -113,7 +113,7 @@ void CreditsController::RenderCredits() const {
 
     if( m_fadeIn || m_fadeOut ) {
         float percentComplete = m_fadeTimer->GetNormalizedElapsedTime();
-        percentComplete = ClampFloat( percentComplete, 0.f, 1.f );
+        percentComplete = Clamp( percentComplete, 0.f, 1.f );
 
         if( m_fadeIn ) {
             fadeFraction[0] = percentComplete;

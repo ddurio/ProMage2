@@ -90,20 +90,20 @@ void ItemDef::DefineObject( Item& theObject ) const {
         float* percentMin = g_qualityPercents[keyIndex - 1];
         float* percentMax = g_qualityPercents[keyIndex];
 
-        float scaledFloor = RangeMapFloat( (float)floorIndex, (float)floorMin, (float)floorMax, 0.f, 1.f );
+        float scaledFloor = RangeMap( (float)floorIndex, (float)floorMin, (float)floorMax, 0.f, 1.f );
         float scaledPercent[5] = {
-            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[0], percentMax[0] ),
-            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[1], percentMax[1] ),
-            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[2], percentMax[2] ),
-            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[3], percentMax[3] ),
-            RangeMapFloat( scaledFloor, 0.f, 1.f, percentMin[4], percentMax[4] )
+            RangeMap( scaledFloor, 0.f, 1.f, percentMin[0], percentMax[0] ),
+            RangeMap( scaledFloor, 0.f, 1.f, percentMin[1], percentMax[1] ),
+            RangeMap( scaledFloor, 0.f, 1.f, percentMin[2], percentMax[2] ),
+            RangeMap( scaledFloor, 0.f, 1.f, percentMin[3], percentMax[3] ),
+            RangeMap( scaledFloor, 0.f, 1.f, percentMin[4], percentMax[4] )
         };
 
-        scaledPercent[0] = ClampFloat( scaledPercent[0], 0.f, 1.f );
-        scaledPercent[1] = ClampFloat( scaledPercent[1], 0.f, 1.f );
-        scaledPercent[2] = ClampFloat( scaledPercent[2], 0.f, 1.f );
-        scaledPercent[3] = ClampFloat( scaledPercent[3], 0.f, 1.f );
-        scaledPercent[4] = ClampFloat( scaledPercent[4], 0.f, 1.f );
+        scaledPercent[0] = Clamp( scaledPercent[0], 0.f, 1.f );
+        scaledPercent[1] = Clamp( scaledPercent[1], 0.f, 1.f );
+        scaledPercent[2] = Clamp( scaledPercent[2], 0.f, 1.f );
+        scaledPercent[3] = Clamp( scaledPercent[3], 0.f, 1.f );
+        scaledPercent[4] = Clamp( scaledPercent[4], 0.f, 1.f );
 
         float requiredRoll = 0.f;
         float diceRoll = rng->GetRandomFloatZeroToOne();
