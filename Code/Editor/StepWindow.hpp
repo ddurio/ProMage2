@@ -8,6 +8,7 @@
 
 
 class MapWindow;
+class Timer;
 
 
 class StepWindow : public EditorWindow {
@@ -19,10 +20,20 @@ class StepWindow : public EditorWindow {
     private:
     int m_sliderIndex = -1;
 
+    // Media info
+    Timer* m_stepTimer = nullptr;
+    float m_secondsPerStep = 1.f;
+
+    bool m_isPlaying = false;
+    bool m_isLooping = false;
+
 
     void UpdateChild( float deltaSeconds ) override;
+    void UpdatePlaying( float deltaSeconds );
 
+    void RenderMediaButtons();
     void RenderStepSlider();
 
+    void ChangeStepIndex() const;
     bool HandleStepChange( EventArgs& args );
 };

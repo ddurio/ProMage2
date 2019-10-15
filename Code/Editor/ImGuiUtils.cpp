@@ -3,6 +3,8 @@
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/IntRange.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/TextureView2D.hpp"
 
 #include "Game/MapGen/Map/TileDef.hpp"
 
@@ -411,4 +413,13 @@ void SetImGuiTextColor( bool isDefaultValue ) {
 void SetImGuiTextColor( const Rgba& newColor ) {
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_Text] = newColor.GetAsImGui();
+}
+
+
+bool RenderImageButton( const char* textureStr, const ImVec2& buttonSize, const Rgba& bgColor /*= Rgba::CLEAR_BLACK*/ ) {
+    const TextureView2D* imageView = g_theRenderer->GetOrCreateTextureView2D( textureStr );
+    void* shaderView = imageView->GetShaderView();
+
+    bool wasPressed = ImGui::ImageButton( shaderView, buttonSize, Vec2::ZERO.GetAsImGui(), Vec2::ONE.GetAsImGui(), -1, bgColor.GetAsImGui() );
+    return wasPressed;
 }

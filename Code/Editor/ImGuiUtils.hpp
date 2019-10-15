@@ -1,15 +1,19 @@
 #pragma once
 #include "Editor/EditorCommon.hpp"
 
+#include "Engine/Core/Rgba.hpp"
+
 #include "Game/MapGen/GenSteps/MapGenStep.hpp"
 
 #include "array"
 
 
 struct FloatRange;
+struct ImVec2;
 struct IntRange;
 
 
+// Return value is if the value has been changed
 bool RenderPercent( float& value, const std::string& label = "", float defaultValue = 1.f );
 bool RenderIntRange( IntRange& range, const std::string& label = "", int minValue = 0, int maxValue = 10, const IntRange& defaultValue = IntRange::ONE );
 bool RenderFloatRange( FloatRange& range, const std::string& label = "", float minValue = 0.f, float maxValue = 10.f, const FloatRange& defaultValue = FloatRange::ONE );
@@ -21,3 +25,7 @@ bool RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
 void RenderChangeText( bool hasChanged );
 void SetImGuiTextColor( bool isDefaultValue );
 void SetImGuiTextColor( const Rgba& newColor );
+
+
+// Return value is if the button was pressed
+bool RenderImageButton( const char* textureStr, const ImVec2& buttonSize, const Rgba& bgColor = Rgba::CLEAR_BLACK );

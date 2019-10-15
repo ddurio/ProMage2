@@ -22,8 +22,10 @@ class MapWindow : public EditorWindow {
     bool HandleMouseButton( MouseEvent event, float scrollAmount = 0.f );
 
     int GetStepIndex() const;
+    int GetNumSteps() const;
     unsigned int GetMapSeed() const;
     std::string GetMapType() const;
+    std::string GetStepName() const;
     Strings GetStepNames() const;
 
 

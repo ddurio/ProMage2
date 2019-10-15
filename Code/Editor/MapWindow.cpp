@@ -91,6 +91,12 @@ int MapWindow::GetStepIndex() const {
 }
 
 
+int MapWindow::GetNumSteps() const {
+    int numSteps = (int)m_mapPerStep.size();
+    return numSteps;
+}
+
+
 unsigned int MapWindow::GetMapSeed() const {
     Map* theMap = m_mapPerStep[m_stepIndex];
     RNG* mapRNG = theMap->GetMapRNG();
@@ -106,24 +112,49 @@ std::string MapWindow::GetMapType() const {
 }
 
 
+std::string MapWindow::GetStepName() const {
+    std::string stepName = "";
+    int numSteps = (int)m_mapPerStep.size();
+
+    if( m_stepIndex == 0 ) {
+        stepName = "Map Initialization";
+    } else if( m_stepIndex == numSteps - 2 ) {
+        stepName = "Edged Tiles";
+    } else if( m_stepIndex == numSteps - 1 ) {
+        stepName = "Phys. Colliders";
+    } else {
+        std::string defType = m_mapPerStep[0]->GetMapType();
+        const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( defType );
+        MapGenStep* genStep = eMapDef->GetStep( m_stepIndex );
+
+        stepName = genStep->GetName();
+    }
+
+    std::string stepIndexStr = Stringf( "%d:", m_stepIndex + 1 );
+    stepName = Stringf( "%s %s", stepIndexStr.c_str(), stepName.c_str() );
+
+    return stepName;
+}
+
+
 Strings MapWindow::GetStepNames() const {
     Strings stepNames;
     stepNames.push_back( "1: Map Initialization" );
 
     // Gen Steps
     std::string defType = m_mapPerStep[0]->GetMapType();
-    const EditorMapDef* mapDef = EditorMapDef::GetDefinition( defType );
-    Strings genStepNames = mapDef->GetStepNames( 2 ); // One step and make it not zero indexed
+    const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( defType );
+    Strings genStepNames = eMapDef->GetStepNames( 2 ); // One step and make it not zero indexed
 
     stepNames.insert( stepNames.end(), genStepNames.begin(), genStepNames.end() );
 
     // Edged
-    int stepIndex = (int)stepNames.size();
-    std::string edgedName = Stringf( "%d: Edged Tiles", stepIndex + 1 );
+    int numSteps = (int)stepNames.size();
+    std::string edgedName = Stringf( "%d: Edged Tiles", numSteps + 1 );
     stepNames.push_back( edgedName );
 
     // Colliders
-    std::string colliderName = Stringf( "%d: Phys. Colliders", stepIndex + 2 );
+    std::string colliderName = Stringf( "%d: Phys. Colliders", numSteps + 2 );
     stepNames.push_back( colliderName );
 
     return stepNames;

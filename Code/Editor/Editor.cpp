@@ -169,6 +169,11 @@ XmlWindow* Editor::GetXmlWindow() const {
 }
 
 
+const Clock* Editor::GetEditorClock() const {
+    return &m_editorClock;
+}
+
+
 // PRIVATE -------------------------------
 bool Editor::UpdateIsLoaded() {
     if( m_loadState == LOAD_STATE_DONE ) {

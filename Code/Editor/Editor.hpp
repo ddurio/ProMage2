@@ -33,6 +33,8 @@ class Editor {
     MapWindow* GetMapWindow() const;
     XmlWindow* GetXmlWindow() const;
 
+    const Clock* GetEditorClock() const;
+
 
     private:
 
