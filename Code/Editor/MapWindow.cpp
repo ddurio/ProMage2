@@ -280,6 +280,7 @@ void MapWindow::RenderMap( float deltaSeconds ) {
     // Update and draw to textureView
     UpdateMapCamera( deltaSeconds );
     theMap->Update( deltaSeconds );
+
     g_theRenderer->BeginCamera( m_mapCamera );
     g_theRenderer->ClearRenderTarget( Rgba::BLACK );
     theMap->Render();
