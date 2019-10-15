@@ -144,7 +144,6 @@ void MapWindow::UpdateMapCamera( float deltaSeconds ) {
     if( m_isZooming ) {
         // Track mouse before zoom
         Vec2 mouseWorldPre = GetMouseWorldPosition();
-        DebuggerPrintf( "%s\n", mouseWorldPre.GetAsString().c_str() );
 
         // Apply zoom
         UpdateZoom( deltaSeconds );
@@ -152,11 +151,9 @@ void MapWindow::UpdateMapCamera( float deltaSeconds ) {
 
         // Track mouse after zoom
         Vec2 mouseWorldPost = GetMouseWorldPosition();
-        DebuggerPrintf( "%s\n", mouseWorldPost.GetAsString().c_str() );
 
         // Translate to match starting position
         Vec2 worldDisp = mouseWorldPre - mouseWorldPost;
-        DebuggerPrintf( "%s\n\n", worldDisp.GetAsString().c_str() );
 
         Vec2 clampedDisp = GetClampedDisplacement( worldDisp );
         m_mapCamera->Translate( clampedDisp );
@@ -284,19 +281,20 @@ void MapWindow::RenderTileChangeHighlight() {
     Map* theMap = m_mapPerStep[m_stepIndex];
 
     Vec2 mapOrigin = m_imageBounds.mins;
-    IntVec2 mapSizeTiles = theMap->GetMapDimensions();
+    Vec2 cameraOrigin = m_mapCamera->GetBounds().mins;
+    float imageHeightTiles = m_imageBounds.GetDimensions().y / m_zoomPixelsPerTile;
 
     std::vector< IntVec2 > modifiedTiles = theMap->GetModifiedTiles();
     int numModifies = (int)modifiedTiles.size();
 
     for( int modifyIndex = 0; modifyIndex < numModifies; modifyIndex++ ) {
-        IntVec2 invertedTileCoord = modifiedTiles[modifyIndex];
-        invertedTileCoord.y = (mapSizeTiles.y - 1) - invertedTileCoord.y;
+        Vec2 invertedTileCoord = Vec2( modifiedTiles[modifyIndex] ) - cameraOrigin;
+        invertedTileCoord.y = (imageHeightTiles - 1) - invertedTileCoord.y;
 
-        Vec2 tileMin = mapOrigin + (m_minPixelsPerTile * invertedTileCoord);
-        Vec2 tileMax = tileMin + Vec2( m_minPixelsPerTile );
+        Vec2 tileMin = mapOrigin + (m_zoomPixelsPerTile * invertedTileCoord);
+        Vec2 tileMax = tileMin + Vec2( m_zoomPixelsPerTile );
 
-        ImGui::GetForegroundDrawList()->AddRectFilled( tileMin.GetAsImGui(), tileMax.GetAsImGui(), m_highlightColor );
+        ImGui::GetWindowDrawList()->AddRectFilled( tileMin.GetAsImGui(), tileMax.GetAsImGui(), m_highlightColor );
     }
 }
 
