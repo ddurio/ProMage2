@@ -1,6 +1,7 @@
 #pragma once
 #include "Editor/EditorCommon.hpp"
 
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/WindowContext.hpp"
@@ -56,10 +57,14 @@ class Editor {
     StepWindow* m_stepWindow    = nullptr;
     XmlWindow* m_xmlWindow      = nullptr;
 
+    bool m_demoIsShown = false;
+
 
     bool UpdateIsLoaded();
     bool RenderIsLoaded() const;
 
     void BuildLoadingMesh();
     void BuildLoadedMesh();
+
+    bool ToggleDemo( EventArgs& args );
 };

@@ -30,6 +30,8 @@ Editor::Editor() {
     BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
     g_theRenderer->BindTexture( font->GetTexturePath() );
 
+    g_theEventSystem->Subscribe( "guiDemo", this, &Editor::ToggleDemo );
+
     BuildLoadingMesh();
 }
 
@@ -43,6 +45,8 @@ Editor::~Editor() {
     CLEAR_POINTER( m_xmlWindow );
 
     Map::ResetMaterialCreated();
+
+    g_theEventSystem->Unsubscribe( "guiDemo", this, &Editor::ToggleDemo );
 }
 
 
@@ -138,7 +142,9 @@ void Editor::Update() {
     m_stepWindow->Update( deltaSeconds );
     m_xmlWindow->Update( deltaSeconds );
 
-    ImGui::ShowDemoWindow(); // ThesisFIXME: Needs to be disabled
+    if( m_demoIsShown ) {
+        ImGui::ShowDemoWindow();
+    }
 }
 
 
@@ -250,6 +256,14 @@ void Editor::BuildLoadedMesh() {
     // Create Mesh
     m_loadedMesh = new GPUMesh( g_theRenderer );
     m_loadedMesh->CopyVertsFromCPUMesh( &builder );
+}
+
+
+bool Editor::ToggleDemo( EventArgs& args ) {
+    UNUSED( args );
+    m_demoIsShown = !m_demoIsShown;
+
+    return true;
 }
 
 #endif

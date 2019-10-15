@@ -39,22 +39,27 @@ class MapWindow : public EditorWindow {
     // Map sizes
     bool m_sizeIsCalculated = false;
     float m_minPixelsPerTile = -1;
-    AABB2 m_mapBounds = AABB2::ZEROTOONE;
+    AABB2 m_imageBounds = AABB2::ZEROTOONE;
 
     // Zoom info
     float m_currentZoom = 0.f;
     float m_maxZoom = 1.f;
     float m_minZoomT = 0.f;
     float m_zoomIncrement = 0.1f;
+    float m_zoomPixelsPerTile = 0.f;
 
     // Drag info
     Vec2 m_cameraPosition = Vec2::ZERO;
     bool m_isDragging = false;
+    bool m_isZooming = true;
 
 
     void UpdateChild( float deltaSeconds ) override;
     void UpdateMapCamera( float deltaSeconds );
-    Vec2 GetClampedMouseDelta( float pixelsPerTile ) const;
+    void UpdateZoom( float deltaSeconds );
+
+    Vec2 GetClampedDisplacement( const Vec2& worldDisp ) const;
+    Vec2 GetMouseWorldPosition() const;
 
     void RenderMap( float deltaSeconds );
     void RenderTileChangeHighlight();

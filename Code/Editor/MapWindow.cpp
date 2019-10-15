@@ -72,6 +72,7 @@ bool MapWindow::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f 
 
         m_currentZoom = Clamp( m_currentZoom, 0.f, 1.f );
         //m_currentZoom = Max( m_currentZoom, 0.f );
+        m_isZooming = true;
         return true;
     } else if( event == MOUSE_EVENT_RBUTTON_UP ) {
         m_isDragging = false;
@@ -139,6 +140,44 @@ void MapWindow::UpdateChild( float deltaSeconds ) {
 
 void MapWindow::UpdateMapCamera( float deltaSeconds ) {
     UNUSED( deltaSeconds );
+
+    if( m_isZooming ) {
+        // Track mouse before zoom
+        Vec2 mouseWorldPre = GetMouseWorldPosition();
+        DebuggerPrintf( "%s\n", mouseWorldPre.GetAsString().c_str() );
+
+        // Apply zoom
+        UpdateZoom( deltaSeconds );
+        m_isZooming = false;
+
+        // Track mouse after zoom
+        Vec2 mouseWorldPost = GetMouseWorldPosition();
+        DebuggerPrintf( "%s\n", mouseWorldPost.GetAsString().c_str() );
+
+        // Translate to match starting position
+        Vec2 worldDisp = mouseWorldPre - mouseWorldPost;
+        DebuggerPrintf( "%s\n\n", worldDisp.GetAsString().c_str() );
+
+        Vec2 clampedDisp = GetClampedDisplacement( worldDisp );
+        m_mapCamera->Translate( clampedDisp );
+    }
+
+    // Apply drag
+    if( m_isDragging ) {
+        // Get mouse delta in world space
+        IntVec2 mouseDelta = g_theWindow->GetMouseClientDisplacement();
+        mouseDelta.y = -mouseDelta.y; // Invert client y
+        Vec2 worldDelta = mouseDelta / m_zoomPixelsPerTile;
+        worldDelta = -worldDelta;
+
+        Vec2 clampedDelta = GetClampedDisplacement( worldDelta );
+        m_mapCamera->Translate( clampedDelta );
+    }
+}
+
+
+void MapWindow::UpdateZoom( float deltaSeconds ) {
+    UNUSED( deltaSeconds );
     Map*& theMap = m_mapPerStep[m_stepIndex];
 
     // Window sizes
@@ -148,39 +187,28 @@ void MapWindow::UpdateMapCamera( float deltaSeconds ) {
     AABB2 contentBounds = AABB2( contentMin, contentMax );
     Vec2 contentDims = contentBounds.GetDimensions();
 
-    // Apply zoom
+    // Apply Zoom
     //float minZoomFactor = SmoothStop2( m_minZoomT );
     float zoomFactor = SmoothStart5( m_currentZoom );
     zoomFactor = RangeMap( m_currentZoom, 0.f, 1.f, 0.f, m_maxZoom );
-    float zoomPixelsPerTile = m_minPixelsPerTile * (1.f + zoomFactor);
+    m_zoomPixelsPerTile = m_minPixelsPerTile * (1.f + zoomFactor);
 
     IntVec2 mapDims = theMap->GetMapDimensions();
-    Vec2 mapSizePixels = zoomPixelsPerTile * mapDims;
+    Vec2 mapSizePixels = m_zoomPixelsPerTile * mapDims;
 
     mapSizePixels.x = Min( mapSizePixels.x, contentDims.x );
     mapSizePixels.y = Min( mapSizePixels.y, contentDims.y );
 
-    // Get aligned position
-    m_mapBounds = contentBounds.GetBoxWithin( mapSizePixels, ALIGN_BOTTOM_LEFT ); // Y is inverted.. actually means top left
+    // Get image position & set camera ortho
+    m_imageBounds = contentBounds.GetBoxWithin( mapSizePixels, ALIGN_BOTTOM_LEFT ); // Y is inverted.. actually means top left
 
-    float heightTiles = mapSizePixels.y / zoomPixelsPerTile;
-    m_mapCamera->SetOrthoProjection( heightTiles, -100.f, 100.f, m_mapBounds.GetAspectRatio() );
-
-    // Apply drag
-    if( m_isDragging ) {
-        Vec2 worldDelta = GetClampedMouseDelta( zoomPixelsPerTile );
-        m_mapCamera->Translate( worldDelta );
-    }
+    float heightTiles = mapSizePixels.y / m_zoomPixelsPerTile;
+    m_mapCamera->SetOrthoProjection( heightTiles, -100.f, 100.f, m_imageBounds.GetAspectRatio() );
 }
 
 
-Vec2 MapWindow::GetClampedMouseDelta( float pixelsPerTile ) const {
-    IntVec2 mouseDelta = g_theWindow->GetMouseClientDisplacement();
-    mouseDelta.y = -mouseDelta.y; // Invert client y
-    Vec2 worldDelta = mouseDelta / pixelsPerTile;
-    worldDelta = -worldDelta;
-
-
+Vec2 MapWindow::GetClampedDisplacement( const Vec2& worldDisp ) const {
+    // Clamp to map dimensions
     Map* theMap = m_mapPerStep[m_stepIndex];
     IntVec2 mapDims = theMap->GetMapDimensions();
     Vec2 cameraDims = m_mapCamera->GetDimensions();
@@ -191,10 +219,29 @@ Vec2 MapWindow::GetClampedMouseDelta( float pixelsPerTile ) const {
     Vec2 minDelta = halfCameraDims - cameraPos;
     Vec2 maxDelta = Vec2( mapDims ) - halfCameraDims - cameraPos;
 
-    float clampedX = Clamp( worldDelta.x, minDelta.x, maxDelta.x );
-    float clampedY = Clamp( worldDelta.y, minDelta.y, maxDelta.y );
+    float clampedX = Clamp( worldDisp.x, minDelta.x, maxDelta.x );
+    float clampedY = Clamp( worldDisp.y, minDelta.y, maxDelta.y );
 
     return Vec2( clampedX, clampedY );
+}
+
+
+Vec2 MapWindow::GetMouseWorldPosition() const {
+    ImVec2 mouseClientFloat = ImGui::GetMousePos();
+    IntVec2 mouseClient = IntVec2( (int)mouseClientFloat.x, (int)mouseClientFloat.y );
+
+    IntVec2 mapOrigin = IntVec2( (int)m_imageBounds.mins.x, (int)m_imageBounds.mins.y );
+    IntVec2 mouseMapClient = mouseClient - mapOrigin;
+
+    Vec2 mouseInvertedWorld = mouseMapClient / m_zoomPixelsPerTile;
+
+    float imageHeightTiles = m_imageBounds.GetDimensions().y / m_zoomPixelsPerTile;
+    Vec2 mouseWorldRelative = Vec2( mouseInvertedWorld.x, imageHeightTiles - mouseInvertedWorld.y );
+
+    AABB2 cameraBounds = m_mapCamera->GetBounds();
+    Vec2 mouseWorld = mouseWorldRelative + cameraBounds.mins;
+
+    return mouseWorld;
 }
 
 
@@ -222,8 +269,8 @@ void MapWindow::RenderMap( float deltaSeconds ) {
     // Render map to Editor
     void* mapView = m_mapCamera->GetRenderTarget()->GetShaderView();
 
-    ImGui::Image( mapView, m_mapBounds.GetDimensions().GetAsImGui() ); // Map render
-    ImGui::GetWindowDrawList()->AddRect( m_mapBounds.mins.GetAsImGui(), m_mapBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
+    ImGui::Image( mapView, m_imageBounds.GetDimensions().GetAsImGui() ); // Map render
+    ImGui::GetWindowDrawList()->AddRect( m_imageBounds.mins.GetAsImGui(), m_imageBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
 }
 
 
@@ -236,7 +283,7 @@ void MapWindow::RenderTileChangeHighlight() {
 
     Map* theMap = m_mapPerStep[m_stepIndex];
 
-    Vec2 mapOrigin = m_mapBounds.mins;
+    Vec2 mapOrigin = m_imageBounds.mins;
     IntVec2 mapSizeTiles = theMap->GetMapDimensions();
 
     std::vector< IntVec2 > modifiedTiles = theMap->GetModifiedTiles();
@@ -257,14 +304,14 @@ void MapWindow::RenderTileChangeHighlight() {
 void MapWindow::RenderTileChangeTooltip() {
     Map* theMap = m_mapPerStep[m_stepIndex];
 
-    Vec2 mapOrigin = m_mapBounds.mins;
+    Vec2 mapOrigin = m_imageBounds.mins;
     IntVec2 mapSizeTiles = theMap->GetMapDimensions();
     std::vector< IntVec2 > modifiedTiles = theMap->GetModifiedTiles();
 
     if( ImGui::IsItemHovered() ) {
         ImVec2 cursorPos = ImGui::GetMousePos();
 
-        if( m_mapBounds.IsPointInside( cursorPos ) ) {
+        if( m_imageBounds.IsPointInside( cursorPos ) ) {
             Vec2 cursorOffset = cursorPos - mapOrigin;
 
             Vec2 cursorTileFloat = cursorOffset / m_minPixelsPerTile;
@@ -331,6 +378,7 @@ bool MapWindow::GenerateMaps( EventArgs& args ) {
     m_mapCamera->Translate( halfDims );
 
     m_currentZoom = 0.f;
+    m_isZooming = true;
 
     // Setup render target
     TextureView2D* mapView = g_theRenderer->GetOrCreateRenderTarget( m_mapViewName );
