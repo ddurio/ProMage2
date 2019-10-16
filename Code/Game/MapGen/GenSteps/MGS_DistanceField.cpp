@@ -17,6 +17,10 @@ void MGS_DistanceField::SaveToXml( XmlDocument& document, XMLElement& element ) 
     if( m_movementType != "" ) {
         element.SetAttribute( "movementType", m_movementType.c_str() );
     }
+
+    if( m_maxDistance != INVALID_DISTANCE ) {
+        element.SetAttribute( "maxDistance", m_maxDistance );
+    }
 }
 
 

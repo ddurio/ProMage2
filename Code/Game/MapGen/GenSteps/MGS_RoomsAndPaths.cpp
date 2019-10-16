@@ -130,10 +130,13 @@ void MGS_RoomsAndPaths::GenerateRooms( Map& theMap, std::vector<IntVec2>& roomPo
             if( !roomIsValid && --attemptsRemaining < 0 ) {
                 std::string warningMsg = "(MGS_RoomsAndPaths) WARNING: Failed to place rooms as requested";
                 g_theDevConsole->PrintString( warningMsg, s_mgsChannel | DevConsole::CHANNEL_WARNING );
+                GUARANTEE_OR_DIE( roomPositions.size() > 0, "(RoomsAndPaths): ERROR - No rooms were generated!" );
                 return;
             }
         } while( !roomIsValid );
     }
+
+    GUARANTEE_OR_DIE( roomPositions.size() > 0, "(RoomsAndPaths): ERROR - No rooms were generated!" );
 }
 
 

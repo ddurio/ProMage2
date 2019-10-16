@@ -18,23 +18,20 @@
     <MapDefinition name="Cavern" fillTile="EdgedSand" edgeTile="EdgedWater" width="100" height="100">
         <PerlinNoise ifIsType="EdgedSand" ifHeatMapNoise="0.800000~1.000000" setType="EdgedWater" setTags="Lake" gridSize="20" octaves="1"/>
         <PerlinNoise ifIsType="EdgedSand" ifHeatMapNoise="-1.000000~-0.800000" setType="EdgedWater" setTags="Lake" gridSize="20" octaves="1"/>
-        <DistanceField ifHasTags="Lake" movementType="Walk" maxDistance="2" setTags="NearLake"/>
-      <!--CellularAutomata ifHeatMapDistance="1.000000~2.000000" setTags="NearLake"/-->
+        <DistanceField ifHasTags="Lake" setTags="NearLake" movementType="Walk" maxDistance="2"/>
         <PerlinNoise ifIsType="EdgedSand" ifHeatMapNoise="-0.100000~0.100000" setType="EdgedWater" setTags="River" gridSize="30" octaves="1"/>
-        <DistanceField ifHasTags="River" movementType="Walk" maxDistance="2" setTags="NearRiver"/>
-      <!--CellularAutomata ifHeatMapDistance="1.000000~2.000000" setTags="NearRiver"/-->
+        <DistanceField ifHasTags="River" setTags="NearRiver" movementType="Walk" maxDistance="2"/>
         <CellularAutomata ifIsType="EdgedSand" ifHasTags="NearLake,NearRiver" setType="EdgedWater"/>
         <CellularAutomata numIterations="5" ifIsType="EdgedSand" setType="EdgedWater" ifNeighborType="EdgedWater" ifNumNeighbors="7~8"/>
         <CellularAutomata ifIsType="EdgedWater" setType="EdgedSand" ifNeighborType="EdgedSand" ifNumNeighbors="8"/>
         <RoomsAndPaths ifIsType="EdgedSand">
-            <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWall"/>
-            <Paths floor="CaveDirtFloor"/>
+            <Rooms count="5~15" width="10~20" height="10~20" floor="EdgedCaveDirt" wall="StoneWall"/>
+            <Paths floor="EdgedCaveDirt"/>
         </RoomsAndPaths>
-        <CellularAutomata numIterations="2" ifIsType="EdgedSand" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor" ifNumNeighbors="3~8"/>
-        <CellularAutomata numIterations="2" ifIsType="EdgedWater" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor" ifNumNeighbors="3~8"/>
-        <CellularAutomata numIterations="2" ifIsType="StoneWall" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor" ifNumNeighbors="7~8"/>
-        <DistanceField ifIsType="EdgedWater" movementType="Walk" maxDistance="1" setType="CliffGrass"/>
-      <!--CellularAutomata ifHeatMapDistance="1.000000" setType="CliffGrass" ifNeighborType="EdgedWater"/-->
+        <CellularAutomata numIterations="2" ifIsType="EdgedSand" setType="EdgedCaveDirt" ifNeighborType="EdgedCaveDirt" ifNumNeighbors="3~8"/>
+        <CellularAutomata numIterations="2" ifIsType="EdgedWater" setType="EdgedCaveDirt" ifNeighborType="EdgedCaveDirt" ifNumNeighbors="3~8"/>
+        <CellularAutomata numIterations="2" ifIsType="StoneWall" setType="EdgedCaveDirt" ifNeighborType="EdgedCaveDirt" ifNumNeighbors="7~8"/>
+        <DistanceField ifIsType="EdgedWater" setType="CliffGrass" movementType="Walk" maxDistance="1"/>
         <DistanceField ifIsType="CliffGrass" movementType="Walk" maxDistance="3"/>
         <CellularAutomata ifIsType="EdgedSand" ifHeatMapDistance="1.000000~3.000000" setType="EdgedGrass"/>
         <Sprinkle ifIsType="EdgedSand" setType="StairsDown" setTags="stairsDown"/>
