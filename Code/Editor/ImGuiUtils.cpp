@@ -187,6 +187,9 @@ std::array< bool, 2> RenderTags( const std::string& uniqueKey, Strings& currentT
                 ImGui::SetKeyboardFocusHere( 0 );
             }
 
+            RenderChangeText( false ); // Always false, but keep the object aligned correctly
+            SetImGuiTextColor( Rgba::WHITE );
+
             if( ImGui::InputText( "", &tag, ImGuiInputTextFlags_CharsNoBlank ) ) {
                 wasChanged[0] = true;
             }
@@ -232,6 +235,9 @@ std::array< bool, 2> RenderTags( const std::string& uniqueKey, Strings& currentT
             if( focusLastMissing && tagIndex == (numTags - 1) ) {
                 ImGui::SetKeyboardFocusHere( 0 );
             }
+
+            RenderChangeText( false ); // Always false, but keep the object aligned correctly
+            SetImGuiTextColor( Rgba::WHITE );
 
             if( ImGui::InputText( "", &subTag, ImGuiInputTextFlags_CharsNoBlank ) ) {
                 tag = Stringf( "!%s", subTag.c_str() );
