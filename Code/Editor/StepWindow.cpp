@@ -119,10 +119,14 @@ void StepWindow::RenderStepSlider() {
     }
 
     std::string indexStr = Stringf( "%d", m_sliderIndex + 1 ); // displayed as 1 indexed values
-    ImGui::SliderInt( "Step Index", &m_sliderIndex, 0, numSteps - 1, indexStr.c_str() );
+
+    if( ImGui::SliderInt( "Step Index", &m_sliderIndex, 0, numSteps - 1, indexStr.c_str() ) ) {
+        // Slider manually changed
+        m_isPlaying = false;
+    }
 
     if( m_sliderIndex != mapWindow->GetStepIndex() ) {
-        // Slider changed
+        // Someone updated stepIndex (manually, via Event call, etc...)
         ChangeStepIndex();
     }
 }

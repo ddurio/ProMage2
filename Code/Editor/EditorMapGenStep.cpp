@@ -163,11 +163,12 @@ void EditorMapGenStep::RenderConditions_DistanceField( MapGenStep* genStep ) {
 
     MGS_DistanceField* dfStep = (MGS_DistanceField*)genStep;
 
-    SetImGuiTextColor( false );
     static const Strings movementTypes = MGS_DistanceField::GetMovementTypes();
     std::string initialType = dfStep->m_movementType;
+
     RenderChangeText( paramsChanged[7] );
     bool change7 = false;
+    SetImGuiTextColor( false );
 
     if( ImGui::BeginCombo( "Movement Type", initialType.c_str(), ImGuiComboFlags_None ) ) {
         for( int typeIndex = 0; typeIndex < movementTypes.size(); typeIndex++ ) {

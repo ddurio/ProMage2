@@ -254,7 +254,7 @@ Vec2 MapWindow::GetClampedDisplacement( const Vec2& worldDisp ) const {
 }
 
 
-Vec2 MapWindow::GetMouseWorldPosition() const {
+Vec2 MapWindow::GetMouseWorldInverted() const {
     ImVec2 mouseClientFloat = ImGui::GetMousePos();
     IntVec2 mouseClient = IntVec2( (int)mouseClientFloat.x, (int)mouseClientFloat.y );
 
@@ -262,6 +262,13 @@ Vec2 MapWindow::GetMouseWorldPosition() const {
     IntVec2 mouseMapClient = mouseClient - mapOrigin;
 
     Vec2 mouseInvertedWorld = mouseMapClient / m_zoomPixelsPerTile;
+
+    return mouseInvertedWorld;
+}
+
+
+Vec2 MapWindow::GetMouseWorldPosition() const {
+    Vec2 mouseInvertedWorld = GetMouseWorldInverted();
 
     float imageHeightTiles = m_imageBounds.GetDimensions().y / m_zoomPixelsPerTile;
     Vec2 mouseWorldRelative = Vec2( mouseInvertedWorld.x, imageHeightTiles - mouseInvertedWorld.y );
@@ -337,41 +344,38 @@ void MapWindow::RenderTileChangeTooltip() {
     Vec2 mapOrigin = m_imageBounds.mins;
     IntVec2 mapSizeTiles = theMap->GetMapDimensions();
     std::vector< IntVec2 > modifiedTiles = theMap->GetModifiedTiles();
+    ImVec2 cursorPos = ImGui::GetMousePos();
 
-    if( ImGui::IsItemHovered() ) {
-        ImVec2 cursorPos = ImGui::GetMousePos();
+    if( m_imageBounds.IsPointInside( cursorPos ) ) {
+        Vec2 mouseRelativeInverted = GetMouseWorldInverted();
+        IntVec2 mouseRelativeInvertedTileCoord = IntVec2( (int)mouseRelativeInverted.x, (int)mouseRelativeInverted.y );
 
-        if( m_imageBounds.IsPointInside( cursorPos ) ) {
-            Vec2 cursorOffset = cursorPos - mapOrigin;
+        Vec2 tileMin = mapOrigin + (m_zoomPixelsPerTile * mouseRelativeInvertedTileCoord);
+        Vec2 tileMax = tileMin + Vec2( m_zoomPixelsPerTile );
 
-            Vec2 cursorTileFloat = cursorOffset / m_minPixelsPerTile;
-            IntVec2 cursorInvertedTileCoord = IntVec2( (int)cursorTileFloat.x, (int)cursorTileFloat.y );
-            IntVec2 cursorTileCoord = IntVec2( cursorInvertedTileCoord.x, (mapSizeTiles.y - 1) - cursorInvertedTileCoord.y );
-            
-            Vec2 tileMin = mapOrigin + (m_minPixelsPerTile * cursorInvertedTileCoord);
-            Vec2 tileMax = tileMin + Vec2( m_minPixelsPerTile );
+        ImGui::GetForegroundDrawList()->AddRect( tileMin.GetAsImGui(), tileMax.GetAsImGui(), 0xFFFF'FFFF );
 
-            ImGui::GetForegroundDrawList()->AddRect( tileMin.GetAsImGui(), tileMax.GetAsImGui(), 0xFFFF'FFFF );
+        Vec2 mouseWorld = GetMouseWorldPosition();
+        IntVec2 mouseTileCoord = IntVec2( (int)mouseWorld.x, (int)mouseWorld.y );
 
-            // Actual tooltip if it was changed
-            if( EngineCommon::VectorContains( modifiedTiles, cursorTileCoord ) ) {
-                Vec2 tooltipDims = Vec2( 0.2f * m_windowDimensions.x, 0.1f * m_windowDimensions.y );
-                ImGuiWindowFlags tooltipFlags = ImGuiWindowFlags_ChildWindow | ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar;
+        // Actual tooltip if it was changed
+        if( EngineCommon::VectorContains( modifiedTiles, mouseTileCoord ) ) {
+            Vec2 tooltipDims = Vec2( 0.2f * m_windowDimensions.x, 0.1f * m_windowDimensions.y );
+            ImGuiWindowFlags tooltipFlags = ImGuiWindowFlags_ChildWindow | ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar;
 
-                g_theGui->CreateStaticWindow( tooltipDims, Vec2( 0.647f, 0.115f ), "modifiedTooltip", tooltipFlags );
+            g_theGui->CreateStaticWindow( tooltipDims, Vec2( 0.647f, 0.115f ), "modifiedTooltip", tooltipFlags );
 
-                Strings tileChanges = GetTileChanges( cursorTileCoord );
-                Strings::const_iterator changeIter = tileChanges.begin();
+            Strings tileChanges = GetTileChanges( mouseTileCoord );
+            Strings::const_iterator changeIter = tileChanges.begin();
 
-                while( changeIter != tileChanges.end() ) {
-                    ImGui::Text( changeIter->c_str() );
+            while( changeIter != tileChanges.end() ) {
+                ImGui::Text( changeIter->c_str() );
 
-                    changeIter++;
-                }
-
-
-                ImGui::End();
+                changeIter++;
             }
+
+
+            ImGui::End();
         }
     }
 }

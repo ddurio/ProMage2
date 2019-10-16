@@ -61,6 +61,7 @@ class MapWindow : public EditorWindow {
     void UpdateZoom( float deltaSeconds );
 
     Vec2 GetClampedDisplacement( const Vec2& worldDisp ) const;
+    Vec2 GetMouseWorldInverted() const;
     Vec2 GetMouseWorldPosition() const;
 
     void RenderMap( float deltaSeconds );
