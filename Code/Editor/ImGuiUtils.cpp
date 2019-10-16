@@ -351,6 +351,9 @@ bool RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
     int mapIndex = 0;
 
     while( heatIter != currentHeatMaps.end() ) {
+        RenderChangeText( false );
+        SetImGuiTextColor( Rgba::WHITE );
+
         if( StringICmp( heatIter->first, "Noise" ) ) {
             wasChanged |= RenderFloatRange( heatIter->second, heatIter->first, -1.f, 1.f, FloatRange( 1.f, -1.f ) ); // invalid default.. should always be white
         } else {
