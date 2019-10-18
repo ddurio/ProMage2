@@ -44,10 +44,9 @@ class MapWindow : public EditorWindow {
     AABB2 m_imageBounds = AABB2::ZEROTOONE;
 
     // Zoom info
-    float m_currentZoom = 0.f;
+    float m_currentZoom = 1.f;
     float m_maxZoom = 1.f;
-    float m_minZoomT = 0.f;
-    float m_zoomIncrement = 0.1f;
+    float m_zoomIncrement = (4.f / 3.f);
     float m_zoomPixelsPerTile = 0.f;
 
     // Drag info
@@ -61,7 +60,6 @@ class MapWindow : public EditorWindow {
     void UpdateZoom( float deltaSeconds );
 
     Vec2 GetClampedDisplacement( const Vec2& worldDisp ) const;
-    Vec2 GetMouseWorldInverted() const;
     Vec2 GetMouseWorldPosition() const;
 
     void RenderMap( float deltaSeconds );
@@ -71,10 +69,8 @@ class MapWindow : public EditorWindow {
     bool GenerateMaps( EventArgs& args );
     bool SetVisibleMapStep( EventArgs& args );
 
-    void CalculateMaxZoom();
-    void CalculateZoomRange();
-    void CalculateZoomIncrement();
     void CalculateMapSizes();
+    void CalculateMaxZoom();
 
     // Tile Changes
     Strings GetTileChanges( const IntVec2& tileCoord ) const;

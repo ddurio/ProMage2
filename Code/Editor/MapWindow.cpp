@@ -63,15 +63,12 @@ void MapWindow::Shutdown() {
 bool MapWindow::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f */ ) {
     if( event == MOUSE_EVENT_SCROLL ) {
         if( scrollAmount > 0.f ) {
-            //m_currentZoom += m_zoomIncrement;
-            m_currentZoom += 0.1f;
+            m_currentZoom *= m_zoomIncrement;
         } else {
-            //m_currentZoom -= m_zoomIncrement;
-            m_currentZoom -= 0.1f;
+            m_currentZoom /= m_zoomIncrement;
         }
 
-        m_currentZoom = Clamp( m_currentZoom, 0.f, 1.f );
-        //m_currentZoom = Max( m_currentZoom, 0.f );
+        m_currentZoom = Clamp( m_currentZoom, 1.f, m_maxZoom );
         m_isZooming = true;
         return true;
     } else if( event == MOUSE_EVENT_RBUTTON_UP ) {
@@ -216,10 +213,7 @@ void MapWindow::UpdateZoom( float deltaSeconds ) {
     Vec2 contentDims = contentBounds.GetDimensions();
 
     // Apply Zoom
-    //float minZoomFactor = SmoothStop2( m_minZoomT );
-    float zoomFactor = SmoothStart5( m_currentZoom );
-    zoomFactor = RangeMap( m_currentZoom, 0.f, 1.f, 0.f, m_maxZoom );
-    m_zoomPixelsPerTile = m_minPixelsPerTile * (1.f + zoomFactor);
+    m_zoomPixelsPerTile = m_minPixelsPerTile * m_currentZoom;
 
     IntVec2 mapDims = theMap->GetMapDimensions();
     Vec2 mapSizePixels = m_zoomPixelsPerTile * mapDims;
@@ -254,7 +248,7 @@ Vec2 MapWindow::GetClampedDisplacement( const Vec2& worldDisp ) const {
 }
 
 
-Vec2 MapWindow::GetMouseWorldInverted() const {
+Vec2 MapWindow::GetMouseWorldPosition() const {
     ImVec2 mouseClientFloat = ImGui::GetMousePos();
     IntVec2 mouseClient = IntVec2( (int)mouseClientFloat.x, (int)mouseClientFloat.y );
 
@@ -262,13 +256,6 @@ Vec2 MapWindow::GetMouseWorldInverted() const {
     IntVec2 mouseMapClient = mouseClient - mapOrigin;
 
     Vec2 mouseInvertedWorld = mouseMapClient / m_zoomPixelsPerTile;
-
-    return mouseInvertedWorld;
-}
-
-
-Vec2 MapWindow::GetMouseWorldPosition() const {
-    Vec2 mouseInvertedWorld = GetMouseWorldInverted();
 
     float imageHeightTiles = m_imageBounds.GetDimensions().y / m_zoomPixelsPerTile;
     Vec2 mouseWorldRelative = Vec2( mouseInvertedWorld.x, imageHeightTiles - mouseInvertedWorld.y );
@@ -347,16 +334,19 @@ void MapWindow::RenderTileChangeTooltip() {
     ImVec2 cursorPos = ImGui::GetMousePos();
 
     if( m_imageBounds.IsPointInside( cursorPos ) ) {
-        Vec2 mouseRelativeInverted = GetMouseWorldInverted();
-        IntVec2 mouseRelativeInvertedTileCoord = IntVec2( (int)mouseRelativeInverted.x, (int)mouseRelativeInverted.y );
-
-        Vec2 tileMin = mapOrigin + (m_zoomPixelsPerTile * mouseRelativeInvertedTileCoord);
-        Vec2 tileMax = tileMin + Vec2( m_zoomPixelsPerTile );
-
-        ImGui::GetForegroundDrawList()->AddRect( tileMin.GetAsImGui(), tileMax.GetAsImGui(), 0xFFFF'FFFF );
-
         Vec2 mouseWorld = GetMouseWorldPosition();
         IntVec2 mouseTileCoord = IntVec2( (int)mouseWorld.x, (int)mouseWorld.y );
+
+        AABB2 cameraBounds = m_mapCamera->GetBounds();
+        Vec2 mouseTileLocal = Vec2( mouseTileCoord ) - cameraBounds.mins;
+
+        float imageHeightTiles = m_imageBounds.GetDimensions().y / m_zoomPixelsPerTile;
+        Vec2 mouseLocalTileInverted = Vec2( mouseTileLocal.x, imageHeightTiles - 1.f - mouseTileLocal.y );
+
+        Vec2 tileMin = mapOrigin + (m_zoomPixelsPerTile * mouseLocalTileInverted);
+        Vec2 tileMax = tileMin + Vec2( m_zoomPixelsPerTile );
+
+        ImGui::GetWindowDrawList()->AddRect( tileMin.GetAsImGui(), tileMax.GetAsImGui(), 0xFFFF'FFFF );
 
         // Actual tooltip if it was changed
         if( EngineCommon::VectorContains( modifiedTiles, mouseTileCoord ) ) {
@@ -411,7 +401,7 @@ bool MapWindow::GenerateMaps( EventArgs& args ) {
     Vec2 halfDims = mapDims * 0.5f;
     m_mapCamera->Translate( halfDims );
 
-    m_currentZoom = 0.f;
+    m_currentZoom = 1.f;
     m_isZooming = true;
 
     // Setup render target
@@ -437,52 +427,6 @@ bool MapWindow::SetVisibleMapStep( EventArgs& args ) {
 }
 
 
-// Expects to be called with m_minPixelsPerTile set at ZERO ZOOM
-void MapWindow::CalculateMaxZoom() {
-    // Calculate Pixel Sizes
-    Vec2 contentMin = ImGui::GetWindowContentRegionMin();
-    Vec2 contentMax = ImGui::GetWindowContentRegionMax();
-    Vec2 contentSize = contentMax - contentMin;
-
-    Vec2 maxPixelsPerTile2D = contentSize / 10.f;
-    float maxPixelsPerTile = Min( maxPixelsPerTile2D.x, maxPixelsPerTile2D.y );
-
-    // Calculate zoom factor
-    m_maxZoom = maxPixelsPerTile / m_minPixelsPerTile;
-
-    CalculateZoomRange();
-}
-
-
-void MapWindow::CalculateZoomRange() {
-    Map* theMap = m_mapPerStep[m_stepIndex];
-
-    IntVec2 mapSizeTiles2D = theMap->GetMapDimensions();
-    int maxMapSizeTiles = Max( mapSizeTiles2D.x, mapSizeTiles2D.y );
-
-    int numZooms = maxMapSizeTiles / 10;
-    numZooms = Clamp( numZooms, 0, 10 );
-
-    m_minZoomT = 1 - ((float)numZooms * 0.1f);
-    //m_currentZoom = m_minZoomT;
-
-    CalculateZoomIncrement();
-}
-
-
-void MapWindow::CalculateZoomIncrement() {
-    Map* theMap = m_mapPerStep[m_stepIndex];
-
-    IntVec2 mapSizeTiles2D = theMap->GetMapDimensions();
-    int maxMapSizeTiles = Max( mapSizeTiles2D.x, mapSizeTiles2D.y );
-
-    int numZooms = maxMapSizeTiles / 10;
-    numZooms = Clamp( numZooms, 0, 10 );
-
-    m_zoomIncrement = 1.f / numZooms;
-}
-
-
 void MapWindow::CalculateMapSizes() {
     if( m_sizeIsCalculated ) {
         return;
@@ -502,6 +446,15 @@ void MapWindow::CalculateMapSizes() {
 
     CalculateMaxZoom();
     m_sizeIsCalculated = true;
+}
+
+
+void MapWindow::CalculateMaxZoom() {
+    Map* theMap = m_mapPerStep[m_stepIndex];
+
+    IntVec2 mapSizeTiles2D = theMap->GetMapDimensions();
+    float mapSizeTiles = (float)Min( mapSizeTiles2D.x, mapSizeTiles2D.y );
+    m_maxZoom = mapSizeTiles * 0.2f; // Max of 5 tiles (1 / 5 == .2)
 }
 
 
