@@ -1,0 +1,10 @@
+<Motifs>
+    <Motif name="Castle">
+        <WallType  value="StoneWall"/>
+        <FloorType value="HardWoodFloor"/>
+    </Motif>
+    <Motif name="Farm">
+        <WallType  value="WoodWall"/>
+        <FloorType value="EdgedDirtFloor"/>
+    </Motif>
+</Motifs>

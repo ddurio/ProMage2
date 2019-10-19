@@ -169,6 +169,9 @@
     <ClCompile Include="..\Editor\ImGuiUtils.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MotifDef.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -312,6 +315,9 @@
     <ClInclude Include="..\Editor\ImGuiUtils.hpp">
       <Filter>Editor</Filter>
     </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MotifDef.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\ProjectConfig.xml">
@@ -342,6 +348,9 @@
       <Filter>Data</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\Progression.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\Motifs.xml">
       <Filter>Data</Filter>
     </Xml>
   </ItemGroup>

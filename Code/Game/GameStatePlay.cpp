@@ -33,6 +33,7 @@
 #include "Game/Item.hpp"
 #include "Game/ItemDef.hpp"
 #include "Game/MapGen/GenSteps/MapGenStep.hpp"
+#include "Game/MapGen/GenSteps/MotifDef.hpp"
 #include "Game/MapGen/Map/Map.hpp"
 #include "Game/MapGen/Map/MapDef.hpp"
 #include "Game/MapGen/Map/TileDef.hpp"
@@ -107,6 +108,7 @@ void GameStatePlay::Startup() {
 
     m_spawnActorIndex = Actor::SetupSpawnActorMGS();
     m_spawnItemIndex  = Item::SetupSpawnItemMGS();
+    MotifDef::LoadFromFile( DATA_MOTIF_DEFS, "Motif" );
     MapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
     ParseMapProgression();
 

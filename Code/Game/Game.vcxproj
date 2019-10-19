@@ -489,6 +489,7 @@
     <ClCompile Include="MapGen\GenSteps\MGS_DistanceField.cpp" />
     <ClCompile Include="MapGen\GenSteps\MGS_FromImage.cpp" />
     <ClCompile Include="MapGen\GenSteps\MGS_Sprinkle.cpp" />
+    <ClCompile Include="MapGen\GenSteps\MotifDef.cpp" />
     <ClCompile Include="MapGen\Map\Map.cpp" />
     <ClCompile Include="MapGen\Map\MapDef.cpp" />
     <ClCompile Include="MapGen\Map\Metadata.cpp" />
@@ -539,6 +540,7 @@
     <ClInclude Include="MapGen\GenSteps\MGS_DistanceField.hpp" />
     <ClInclude Include="MapGen\GenSteps\MGS_FromImage.hpp" />
     <ClInclude Include="MapGen\GenSteps\MGS_Sprinkle.hpp" />
+    <ClInclude Include="MapGen\GenSteps\MotifDef.hpp" />
     <ClInclude Include="MapGen\Map\Map.hpp" />
     <ClInclude Include="MapGen\Map\MapDef.hpp" />
     <ClInclude Include="MapGen\Map\Metadata.hpp" />
@@ -565,6 +567,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\IsoAnims.xml" />
+    <Xml Include="..\..\Run\Data\Gameplay\Motifs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\Progression.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\SpriteAnims.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\SpriteSheets.xml" />

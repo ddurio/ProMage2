@@ -33,7 +33,7 @@ MapGenStep::MapGenStep( const XMLElement& element ) {
     // Conditions
     m_ifIsType                  = ParseXMLAttribute( element, "ifIsType",         m_ifIsType );
     std::string ifHasTagsCSV    = ParseXMLAttribute( element, "ifHasTags",        "" );
-    m_ifHasTags = SplitStringOnDelimeter( ifHasTagsCSV, ',', false );
+    m_ifHasTags                 = SplitStringOnDelimeter( ifHasTagsCSV, ',', false );
 
     int numCustomConditions = (int)s_customConditions.size();
 

@@ -20,6 +20,7 @@
 #include "Game/Item.hpp"
 #include "Game/ItemDef.hpp"
 #include "Game/MapGen/GenSteps/MapGenStep.hpp"
+#include "Game/MapGen/GenSteps/MotifDef.hpp"
 #include "Game/MapGen/Map/TileDef.hpp"
 
 
@@ -73,6 +74,7 @@ void Editor::Startup() {
     m_customResultIndex.push_back( Actor::SetupSpawnActorMGS() );
     m_customResultIndex.push_back( Item::SetupSpawnItemMGS() );
     m_customResultIndex.push_back( EditorMapDef::SetupChangeTileMGS() );
+    MotifDef::LoadFromFile( DATA_MOTIF_DEFS, "Motif" );
     EditorMapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
 
     g_theEventSystem->Subscribe( "saveAll", &EditorMapDef::SaveAllToXml );

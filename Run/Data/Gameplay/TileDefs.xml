@@ -213,4 +213,13 @@
         allowsFlying="false"
         allowsSwimming="false"
     />
+    <TileDefinition
+        name="WoodWall"
+        spriteCoords="29,1"
+        texelColor="200,20,20"
+        allowsSight="false"
+        allowsWalking="false"
+        allowsFlying="false"
+        allowsSwimming="false"
+    />
 </TileDefinitions>
