@@ -389,6 +389,10 @@ bool MapWindow::GenerateMaps( EventArgs& args ) {
     m_stepIndex = (int)m_mapPerStep.size() - 1;
     m_stepIndex = args.GetValue( "stepIndex", m_stepIndex );
 
+    EventArgs stepArgs;
+    stepArgs.SetValue( "stepIndex", m_stepIndex );
+    g_theEventSystem->FireEvent( EVENT_EDITOR_CHANGE_STEP, stepArgs );
+
     m_sizeIsCalculated = false;
 
     // Setup camera
