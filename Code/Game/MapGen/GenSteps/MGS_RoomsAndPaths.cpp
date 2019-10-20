@@ -9,24 +9,24 @@
 #include "Game/MapGen/Map/Tile.hpp"
 
 
-MGS_RoomsAndPaths::MGS_RoomsAndPaths( const XMLElement& element ) :
-    MapGenStep(element) {
+MGS_RoomsAndPaths::MGS_RoomsAndPaths( const XMLElement& element, const std::string& mapMotif ) :
+    MapGenStep( element, mapMotif ) {
 
     // Rooms
     const XMLElement* roomElement    = element.FirstChildElement( "Rooms" );
-    m_numRooms           = ParseXMLAttribute( *roomElement, "count",          m_numRooms );
-    m_roomWidth          = ParseXMLAttribute( *roomElement, "width",          m_roomWidth );
-    m_roomHeight         = ParseXMLAttribute( *roomElement, "height",         m_roomHeight );
-    m_roomFloor          = ParseXMLAttribute( *roomElement, "floor",          m_roomFloor );
-    m_roomWall           = ParseXMLAttribute( *roomElement, "wall",           m_roomWall );
-    m_numOverlaps        = ParseXMLAttribute( *roomElement, "numOverlaps",    m_numOverlaps );
+    m_numRooms           = ParseXMLAttribute( *roomElement, "count",          m_motifHeirarchy, m_numRooms );
+    m_roomWidth          = ParseXMLAttribute( *roomElement, "width",          m_motifHeirarchy, m_roomWidth );
+    m_roomHeight         = ParseXMLAttribute( *roomElement, "height",         m_motifHeirarchy, m_roomHeight );
+    m_roomFloor          = ParseXMLAttribute( *roomElement, "floor",          m_motifHeirarchy, m_roomFloor );
+    m_roomWall           = ParseXMLAttribute( *roomElement, "wall",           m_motifHeirarchy, m_roomWall );
+    m_numOverlaps        = ParseXMLAttribute( *roomElement, "numOverlaps",    m_motifHeirarchy, m_numOverlaps );
 
     // Paths
     const XMLElement* pathElement    = element.FirstChildElement( "Paths" );
-    m_pathFloor          = ParseXMLAttribute( *pathElement, "floor",          m_pathFloor );
-    m_pathLoop           = ParseXMLAttribute( *pathElement, "loop",           m_pathLoop );
-    m_numExtraPaths      = ParseXMLAttribute( *pathElement, "extraCount",     m_numExtraPaths );
-    m_pathStraightChance = ParseXMLAttribute( *pathElement, "straightChance", m_pathStraightChance );
+    m_pathFloor          = ParseXMLAttribute( *pathElement, "floor",          m_motifHeirarchy, m_pathFloor );
+    m_pathLoop           = ParseXMLAttribute( *pathElement, "loop",           m_motifHeirarchy, m_pathLoop );
+    m_numExtraPaths      = ParseXMLAttribute( *pathElement, "extraCount",     m_motifHeirarchy, m_numExtraPaths );
+    m_pathStraightChance = ParseXMLAttribute( *pathElement, "straightChance", m_motifHeirarchy, m_pathStraightChance );
 }
 
 

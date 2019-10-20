@@ -7,9 +7,9 @@
 #include "Game/MapGen/Map/Map.hpp"
 
 
-MGS_Sprinkle::MGS_Sprinkle( const XMLElement& element ) :
-    MapGenStep( element ) {
-    m_countRange = ParseXMLAttribute( element, "count", m_countRange );
+MGS_Sprinkle::MGS_Sprinkle( const XMLElement& element, const std::string& mapMotif ) :
+    MapGenStep( element, mapMotif ) {
+    m_countRange = ParseXMLAttribute( element, "count", m_motifHeirarchy, m_countRange );
 }
 
 

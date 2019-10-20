@@ -21,25 +21,28 @@ std::vector< MapGenStep::CustomEvent > MapGenStep::s_customConditions;
 std::vector< MapGenStep::CustomEvent > MapGenStep::s_customResults;
 
 
-MapGenStep::MapGenStep( const XMLElement& element ) {
+MapGenStep::MapGenStep( const XMLElement& element, const std::string& mapMotif ) {
     if( s_mgsChannel == DevConsole::CHANNEL_UNDEFINED ) {
         s_mgsChannel = g_theDevConsole->AddChannel( "MapGen", Rgba::ORGANIC_GREEN );
     }
 
-    m_stepType = element.Name();
-    m_chanceToRun               = ParseXMLAttribute( element, "chanceToRun",      m_chanceToRun );
-    m_numIterations             = ParseXMLAttribute( element, "numIterations",    m_numIterations );
+    m_stepType                  = element.Name();
+    std::string stepMotif       = ParseXMLAttribute( element, "motif", "" );
+    m_motifHeirarchy            = { stepMotif, mapMotif };
+
+    m_chanceToRun               = ParseXMLAttribute( element, "chanceToRun",      m_motifHeirarchy,   m_chanceToRun );
+    m_numIterations             = ParseXMLAttribute( element, "numIterations",    m_motifHeirarchy,   m_numIterations );
 
     // Conditions
-    m_ifIsType                  = ParseXMLAttribute( element, "ifIsType",         m_ifIsType );
-    std::string ifHasTagsCSV    = ParseXMLAttribute( element, "ifHasTags",        "" );
+    m_ifIsType                  = ParseXMLAttribute( element, "ifIsType",         m_motifHeirarchy,   m_ifIsType );
+    std::string ifHasTagsCSV    = ParseXMLAttribute( element, "ifHasTags",        m_motifHeirarchy,   "" );
     m_ifHasTags                 = SplitStringOnDelimeter( ifHasTagsCSV, ',', false );
 
     int numCustomConditions = (int)s_customConditions.size();
 
     for( int conditionIndex = 0; conditionIndex < numCustomConditions; conditionIndex++ ) {
         const CustomEvent& event = s_customConditions[conditionIndex];
-        Strings values = event.ParseCustomEvent( element );
+        Strings values = event.ParseCustomEvent( element, this );
         int numNames = (int)event.attrNames.size();
         int numValues = (int)values.size();
 
@@ -49,15 +52,15 @@ MapGenStep::MapGenStep( const XMLElement& element ) {
     }
 
     // Results
-    m_setType               = ParseXMLAttribute( element, "setType", m_setType );
-    std::string setTagsCSV  = ParseXMLAttribute( element, "setTags", "" );
+    m_setType               = ParseXMLAttribute( element, "setType", m_motifHeirarchy,    m_setType );
+    std::string setTagsCSV  = ParseXMLAttribute( element, "setTags", m_motifHeirarchy,    "" );
     m_setTags = SplitStringOnDelimeter( setTagsCSV, ',', false );
 
     int numCustomResults = (int)s_customResults.size();
 
     for( int resultIndex = 0; resultIndex < numCustomResults; resultIndex++ ) {
         const CustomEvent& event = s_customResults[resultIndex];
-        Strings values = event.ParseCustomEvent( element );
+        Strings values = event.ParseCustomEvent( element, this );
 
         int numNames = (int)event.attrNames.size();
         int numValues = (int)values.size();
@@ -68,9 +71,9 @@ MapGenStep::MapGenStep( const XMLElement& element ) {
     }
 
     // Heat Maps (expected format:  ifHeatMapDefault="2~5" or setHeatMapMyHeatMapName="4~10")
-    const XMLAttribute* attribute = element.FirstAttribute();
     std::regex ifHeatMapRegex( "ifHeatMap(.+)", std::regex_constants::icase );
     std::regex setHeatMapRegex( "setHeatMap(.+)", std::regex_constants::icase );
+    const XMLAttribute* attribute = element.FirstAttribute();
 
     for( attribute; attribute != nullptr; attribute = attribute->Next() ) {
         std::string attrName = attribute->Name();
@@ -102,7 +105,7 @@ MapGenStep::CustomEvent::CustomEvent( const CustomEvent& event, const Strings& p
 }
 
 
-Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element ) const {
+Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element, const MapGenStep* genStep ) const {
     int numAttrs = (int)attrNames.size();
     int numParsed = 0;
 
@@ -111,7 +114,7 @@ Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element ) c
 
     for( int nameIndex = 0; nameIndex < numAttrs; nameIndex++ ) {
         const std::string& attrName = attrNames[nameIndex];
-        parsedValues[nameIndex] = ParseXMLAttribute( element, attrName.c_str(), "" );
+        parsedValues[nameIndex] = ParseXMLAttribute( element, attrName.c_str(), genStep->m_motifHeirarchy, "" );
 
         if( parsedValues[nameIndex] != "" ) {
             numParsed++;
@@ -213,22 +216,22 @@ void MapGenStep::RemoveCustomResult( int resultIndex ) {
 }
 
 
-MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element ) {
+MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element, const std::string& mapMotif ) {
     std::string stepType = element.Name();
     MapGenStep* step = nullptr;
 
     if( StringICmp( stepType, "Sprinkle" ) ) {
-        step = new MGS_Sprinkle( element );
+        step = new MGS_Sprinkle( element, mapMotif );
     } else if( StringICmp( stepType, "FromImage" ) ) {
-        step = new MGS_FromImage( element );
+        step = new MGS_FromImage( element, mapMotif );
     } else if( StringICmp( stepType, "CellularAutomata" ) ) {
-        step = new MGS_CellularAutomata( element );
+        step = new MGS_CellularAutomata( element, mapMotif );
     } else if( StringICmp( stepType, "DistanceField" ) ) {
-        step = new MGS_DistanceField( element );
+        step = new MGS_DistanceField( element, mapMotif );
     } else if( StringICmp( stepType, "PerlinNoise" ) ) {
-        step = new MGS_PerlinNoise( element );
+        step = new MGS_PerlinNoise( element, mapMotif );
     } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
-        step = new MGS_RoomsAndPaths( element );
+        step = new MGS_RoomsAndPaths( element, mapMotif );
     } else {
         ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
     }

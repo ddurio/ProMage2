@@ -12,11 +12,11 @@ class MotifDef : public Definition< Motif, MotifDef > {
     friend class Definition< Motif, MotifDef >;
 
     public:
-    std::string GetValue( const std::string& key, const std::string& defaultValue ) const;
+    const NamedProperties& GetVariables() const;
 
 
     private:
-    NamedStrings m_variables;
+    NamedProperties m_variables;
 
 
     MotifDef( const XMLElement& element );

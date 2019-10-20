@@ -6,12 +6,12 @@
 #include "Game/MapGen/Map/Map.hpp"
 
 
-MGS_PerlinNoise::MGS_PerlinNoise( const XMLElement& element ) :
-    MapGenStep( element ) {
-    m_gridSize          = ParseXMLAttribute( element, "gridSize",    m_gridSize );
-    m_numOctaves        = ParseXMLAttribute( element, "octaves",     m_numOctaves );
-    m_octavePersistence = ParseXMLAttribute( element, "persistence", m_octavePersistence );
-    m_octaveScale       = ParseXMLAttribute( element, "scale",       m_octaveScale );
+MGS_PerlinNoise::MGS_PerlinNoise( const XMLElement& element, const std::string& mapMotif ) :
+    MapGenStep( element, mapMotif ) {
+    m_gridSize          = ParseXMLAttribute( element, "gridSize",    m_motifHeirarchy,  m_gridSize );
+    m_numOctaves        = ParseXMLAttribute( element, "octaves",     m_motifHeirarchy,  m_numOctaves );
+    m_octavePersistence = ParseXMLAttribute( element, "persistence", m_motifHeirarchy,  m_octavePersistence );
+    m_octaveScale       = ParseXMLAttribute( element, "scale",       m_motifHeirarchy,  m_octaveScale );
 }
 
 

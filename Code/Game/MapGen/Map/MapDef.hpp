@@ -24,6 +24,8 @@ class MapDef : public Definition< Map, MapDef > {
 
 
     protected:
+    std::string m_motif = "";
+
     std::string m_tileFillType = "";
     std::string m_tileEdgeType = "";
     IntRange m_width = IntRange::ZERO;

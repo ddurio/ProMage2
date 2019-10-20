@@ -25,3 +25,8 @@ ItemSlot ParseXMLAttribute( const XMLElement& element, const char* attributeName
 
     return slot;
 }
+
+
+std::string ParseXMLAttribute( const XMLElement& element, const char* attributeName, const Strings& motifHeirarchy, const char* defaultValue ) {
+    return ParseXMLAttribute( element, attributeName, motifHeirarchy, std::string( defaultValue ) );
+}

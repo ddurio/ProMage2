@@ -4,7 +4,8 @@
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/IntRange.hpp"
-#include "Engine/Utils/XMLUtils.hpp"
+
+#include "Game/XMLUtils.hpp"
 
 
 typedef std::map< std::string, FloatRange, StringCmpCaseI > HeatMaps;
@@ -26,6 +27,28 @@ class MapGenStep {
     friend class EditorMapGenStep;
 
     public:
+    explicit MapGenStep( const XMLElement& element, const std::string& mapMotif );
+    virtual ~MapGenStep() {};
+
+    static int AddCustomCondition( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
+    static int AddCustomResult( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
+
+    static void RemoveCustomCondition( int conditionIndex );
+    static void RemoveCustomResult( int resultIndex );
+
+    static MapGenStep* CreateMapGenStep( const XMLElement& element, const std::string& mapMotif );
+
+
+    void Run( Map& map ) const;
+
+    virtual std::string GetName() const;
+
+    struct CustomEvent;
+    std::vector< CustomEvent > GetCustomResults() const;
+
+    virtual void SaveToXml( XmlDocument& document, XMLElement& element ) const;
+
+
     struct CustomEvent {
         public:
         std::string name = "";
@@ -37,34 +60,15 @@ class MapGenStep {
 
         CustomEvent() {};
         CustomEvent( const CustomEvent& event, const Strings& parsedValues );
-        Strings ParseCustomEvent( const XMLElement& element ) const;
+        Strings ParseCustomEvent( const XMLElement& element, const MapGenStep* genStep ) const;
         EventArgs CreateEventArgs() const;
     };
-
-
-    explicit MapGenStep( const XMLElement& element );
-    virtual ~MapGenStep() {};
-
-    static int AddCustomCondition( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
-    static int AddCustomResult( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
-
-    static void RemoveCustomCondition( int conditionIndex );
-    static void RemoveCustomResult( int resultIndex );
-
-    static MapGenStep* CreateMapGenStep( const XMLElement& element );
-
-
-    void Run( Map& map ) const;
-
-    virtual std::string GetName() const;
-    std::vector< CustomEvent > GetCustomResults() const;
-
-    virtual void SaveToXml( XmlDocument& document, XMLElement& element ) const;
 
 
     protected:
     // General
     std::string m_stepType          = "";
+    Strings m_motifHeirarchy;
     float m_chanceToRun             = 1.f;
     IntRange m_numIterations        = IntRange::ONE;
 

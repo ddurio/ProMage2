@@ -51,26 +51,29 @@ void MapDef::SaveToXml( XmlDocument& document, XMLElement& element ) const {
 }
 
 
+// PROTECTED --------------------------------------
 MapDef::MapDef( const XMLElement& element ) {
     // Name
-    s_defClass = "MapDef";
-    m_defType = ParseXMLAttribute( element, "name", m_defType );
-    GUARANTEE_OR_DIE( m_defType != "", "(MapDef) Map missing required attribute 'name'" );
+    s_defClass     = "MapDef";
+    m_defType      = ParseXMLAttribute( element, "name", m_defType );
+    GUARANTEE_OR_DIE( m_defType != "", "(MapDef) MapDef missing required attribute 'name'" );
+
+    m_motif        = ParseXMLAttribute( element, "motif", m_motif );
 
     // Tile Types
-    m_tileFillType = ParseXMLAttribute( element, "fillTile", m_tileFillType );
+    m_tileFillType = ParseXMLAttribute( element, "fillTile", { m_motif },   m_tileFillType );
     GUARANTEE_OR_DIE( m_tileFillType != "", "(MapDef) Map missing required attribute 'fillType'" );
-    m_tileEdgeType = ParseXMLAttribute( element, "edgeTile", m_tileEdgeType );
+    m_tileEdgeType = ParseXMLAttribute( element, "edgeTile", { m_motif },   m_tileEdgeType );
 
     // Size
-    m_width = ParseXMLAttribute( element, "width", m_width );
-    m_height = ParseXMLAttribute( element, "height", m_height );
+    m_width        = ParseXMLAttribute( element, "width",    { m_motif },   m_width );
+    m_height       = ParseXMLAttribute( element, "height",   { m_motif },   m_height );
 
     // GenSteps
     const XMLElement* genStep = element.FirstChildElement();
 
     for( genStep; genStep != nullptr; genStep = genStep->NextSiblingElement() ) {
-        MapGenStep* step = MapGenStep::CreateMapGenStep( *genStep );
+        MapGenStep* step = MapGenStep::CreateMapGenStep( *genStep, m_motif );
         m_mapGenSteps.push_back( step );
     }
 }

@@ -3,10 +3,9 @@
 #include "Game/XMLUtils.hpp"
 
 
-std::string MotifDef::GetValue( const std::string& key, const std::string& defaultValue ) const {
-    return m_variables.GetValue( key, defaultValue );
+const NamedProperties& MotifDef::GetVariables() const {
+    return m_variables;
 }
-
 
 // PRIVATE ------------------------------------------
 MotifDef::MotifDef( const XMLElement& element ) {

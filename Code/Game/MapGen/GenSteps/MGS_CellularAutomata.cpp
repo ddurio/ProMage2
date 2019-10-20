@@ -6,17 +6,17 @@
 #include "Game/MapGen/Map/Metadata.hpp"
 
 
-MGS_CellularAutomata::MGS_CellularAutomata( const XMLElement& element ) :
-    MapGenStep(element) {
-    std::string radius  = ParseXMLAttribute( element, "radius",            "1" );
+MGS_CellularAutomata::MGS_CellularAutomata( const XMLElement& element, const std::string& mapMotif ) :
+    MapGenStep( element, mapMotif ) {
+    std::string radius  = ParseXMLAttribute( element, "radius",            m_motifHeirarchy,    "1" );
     m_radius            = ParseCustomIntRange( radius );
 
-    m_chancePerTile     = ParseXMLAttribute( element, "chancePerTile",     m_chancePerTile );
+    m_chancePerTile     = ParseXMLAttribute( element, "chancePerTile",     m_motifHeirarchy,    m_chancePerTile );
 
-    m_ifNeighborType    = ParseXMLAttribute( element, "ifNeighborType",    m_ifNeighborType );
-    m_ifNumNeighbors    = ParseXMLAttribute( element, "ifNumNeighbors",    m_ifNumNeighbors );
+    m_ifNeighborType    = ParseXMLAttribute( element, "ifNeighborType",    m_motifHeirarchy,    m_ifNeighborType );
+    m_ifNumNeighbors    = ParseXMLAttribute( element, "ifNumNeighbors",    m_motifHeirarchy,    m_ifNumNeighbors );
 
-    std::string neighborTagCSV = ParseXMLAttribute( element, "ifNeighborHasTags", "" );
+    std::string neighborTagCSV = ParseXMLAttribute( element, "ifNeighborHasTags", m_motifHeirarchy, "" );
     m_ifNeighborHasTags = SplitStringOnDelimeter( neighborTagCSV, ',', false );
 }
 

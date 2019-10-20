@@ -7,15 +7,15 @@
 #include "Game/MapGen/Map/TileDef.hpp"
 
 
-MGS_FromImage::MGS_FromImage( const XMLElement& element ) :
-    MapGenStep(element) {
-    m_imageFilePath = ParseXMLAttribute( element, "imageFilePath", m_imageFilePath );
+MGS_FromImage::MGS_FromImage( const XMLElement& element, const std::string& mapMotif ) :
+    MapGenStep( element, mapMotif ) {
+    m_imageFilePath = ParseXMLAttribute( element, "imageFilePath",  m_motifHeirarchy,   m_imageFilePath );
     GUARANTEE_OR_DIE( m_imageFilePath != "", "ERROR: XML Attribute 'imageFilePath' missing for MapGenStep_FromImage" );
     Startup();
 
-    m_alignX       = ParseXMLAttribute( element, "alignX", m_alignX );
-    m_alignY       = ParseXMLAttribute( element, "alignY", m_alignY );
-    m_numRotations = ParseXMLAttribute( element, "numRotations", m_numRotations );
+    m_alignX       = ParseXMLAttribute( element, "alignX",          m_motifHeirarchy,   m_alignX );
+    m_alignY       = ParseXMLAttribute( element, "alignY",          m_motifHeirarchy,   m_alignY );
+    m_numRotations = ParseXMLAttribute( element, "numRotations",    m_motifHeirarchy,   m_numRotations );
 }
 
 
