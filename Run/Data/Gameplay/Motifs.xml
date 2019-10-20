@@ -5,6 +5,6 @@
     </Motif>
     <Motif name="Farm">
         <WallType  value="WoodWall"/>
-        <FloorType value="EdgedDirtFloor"/>
+        <FloorType value="EdgedCaveDirt"/>
     </Motif>
 </Motifs>

@@ -53,14 +53,14 @@
         <CellularAutomata ifIsType="Grass" setType="CaveDirtFloor" setTags="stairsUpAccess"/>
         <CellularAutomata ifIsType="Water" setType="CaveDirtFloor" setTags="credits" spawnActor="Credits" controller="Credits"/>
     </MapDefinition>
-    <MapDefinition name="Island" fillTile="EdgedGrass" edgeTile="EdgedWater" width="20~32" height="10~18">
+    <MapDefinition name="Island" motif="Castle" fillTile="EdgedGrass" edgeTile="EdgedWater" width="20~32" height="10~18">
         <CellularAutomata ifIsType="EdgedGrass" setType="CliffGrass" ifNeighborType="EdgedWater"/>
         <RoomsAndPaths>
-            <Rooms count="3" width="2~5" height="3~6" floor="HardWoodFloor" wall="StoneWall"/>
+            <Rooms count="3" width="2~5" height="3~6" floor="%FloorType%" wall="%WallType%"/>
             <Paths floor="EdgedSand" loop="false"/>
         </RoomsAndPaths>
-        <Sprinkle ifIsType="HardWoodFloor" setType="StairsDown" setTags="stairsDown"/>
+        <Sprinkle ifIsType="%flOoRtYPe%" setType="StairsDown" setTags="stairsDown"/>
         <CellularAutomata setTags="stairsDownAccess" ifNeighborType="StairsDown"/>
-        <Sprinkle ifIsType="HardWoodFloor" spawnActor="HumanFemale" controller="Player"/>
+        <Sprinkle ifIsType="%floortype%" spawnActor="HumanFemale" controller="Player"/>
     </MapDefinition>
 </EditorMapDefs>

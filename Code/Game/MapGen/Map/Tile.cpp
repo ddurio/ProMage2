@@ -161,7 +161,10 @@ bool Tile::AllowsSwimming() const {
 
 void Tile::SetTileType( const std::string& tileType ) {
     const TileDef* tileDef = TileDef::GetDefinition( tileType );
-    SetTileType( tileDef );
+
+    if( tileDef != nullptr ) {
+        SetTileType( tileDef );
+    }
 }
 
 
