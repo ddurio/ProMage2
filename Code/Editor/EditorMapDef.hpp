@@ -2,6 +2,7 @@
 #include "Editor/EditorCommon.hpp"
 
 #include "Engine/Async/AsyncQueue.hpp"
+#include "Engine/Utils/NamedStrings.hpp"
 
 #include "Game/MapGen/Map/MapDef.hpp"
 
@@ -40,6 +41,8 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     using MapDef                         ::m_defType;
 
     int m_numSteps = 3; // FillAndEdge, Context, Colliders
+    NamedStrings m_motifVars;
+
     mutable std::vector< Map* >* m_mapPerStep   = nullptr;
     mutable bool m_allJobsStarted               = false;
     mutable int m_numJobsRunning                = 0;
@@ -49,8 +52,12 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     mutable AsyncQueue< AsyncPayload > m_mainPayloads;
 
 
+
     explicit EditorMapDef( const XMLElement& element );
-    ~EditorMapDef() {};
+    ~EditorMapDef();
+
+    void FindXmlVariables( const XMLElement& element );
+    bool RecalculateMotifVars( EventArgs& args );
 
     bool IsFinished() const;
     bool CompleteStep( AsyncPayload& payload ) const;

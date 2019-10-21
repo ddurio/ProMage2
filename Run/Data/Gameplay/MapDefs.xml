@@ -55,7 +55,7 @@
     </MapDefinition>
     <MapDefinition name="Island" motif="Castle" fillTile="EdgedGrass" edgeTile="EdgedWater" width="20~32" height="10~18">
         <CellularAutomata ifIsType="EdgedGrass" setType="CliffGrass" ifNeighborType="EdgedWater"/>
-        <RoomsAndPaths>
+        <RoomsAndPaths chanceToRun="%RoomWillRun%">
             <Rooms count="3" width="2~5" height="3~6" floor="%FloorType%" wall="%WallType%"/>
             <Paths floor="EdgedSand" loop="false"/>
         </RoomsAndPaths>

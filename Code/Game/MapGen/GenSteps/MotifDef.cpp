@@ -7,6 +7,34 @@ const NamedProperties& MotifDef::GetVariables() const {
     return m_variables;
 }
 
+
+Strings MotifDef::GetVariableNames( const Strings& motifHierarchy ) {
+    Strings hierarchyVars;
+    int numMotifs = (int)motifHierarchy.size();
+
+    for( int motifIndex = 0; motifIndex < numMotifs; motifIndex++ ) {
+        const std::string& motifName = motifHierarchy[motifIndex];
+        const MotifDef* motif = MotifDef::GetDefinition( motifName );
+
+        if( motif != nullptr ) {
+            const NamedProperties& variables = motif->GetVariables();
+            Strings motifVars = variables.GetNames();
+            int numVars = (int)motifVars.size();
+
+            for( int varIndex = 0; varIndex < numVars; varIndex++ ) {
+                const std::string& varName = motifVars[varIndex];
+
+                if( !EngineCommon::VectorContains( hierarchyVars, varName ) ) {
+                    hierarchyVars.push_back( varName );
+                }
+            }
+        }
+    }
+
+    return hierarchyVars;
+}
+
+
 // PRIVATE ------------------------------------------
 MotifDef::MotifDef( const XMLElement& element ) {
     s_defClass = "MotifDef";

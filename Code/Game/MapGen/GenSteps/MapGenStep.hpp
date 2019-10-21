@@ -41,12 +41,12 @@ class MapGenStep {
 
     void Run( Map& map ) const;
 
-    virtual std::string GetName() const;
-
     struct CustomEvent;
     std::vector< CustomEvent > GetCustomResults() const;
+    virtual std::string GetName() const;
 
     virtual void SaveToXml( XmlDocument& document, XMLElement& element ) const;
+    virtual bool RecalculateMotifVars( EventArgs& args );
 
 
     struct CustomEvent {
@@ -69,6 +69,8 @@ class MapGenStep {
     // General
     std::string m_stepType          = "";
     Strings m_motifHeirarchy;
+    NamedStrings m_motifVars; // Only needed for editor
+
     float m_chanceToRun             = 1.f;
     IntRange m_numIterations        = IntRange::ONE;
 

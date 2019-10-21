@@ -1,6 +1,7 @@
 #if defined(_EDITOR)
 #include "Editor/EditorMapDef.hpp"
 
+#include "Editor/EditorMapGenStep.hpp"
 #include "Editor/ImGuiUtils.hpp"
 
 #include "Engine/Math/RNG.hpp"
@@ -94,7 +95,69 @@ bool EditorMapDef::SaveAllToXml( EventArgs& args ) {
 EditorMapDef::EditorMapDef( const XMLElement& element ) :
     MapDef( element ) {
     s_defClass = "EditorMapDef";
-    m_numSteps += (int)m_mapGenSteps.size();
+
+    int numGenSteps = (int)m_mapGenSteps.size();
+    m_numSteps += numGenSteps;
+
+    FindXmlVariables( element );
+
+    g_theEventSystem->Subscribe( EVENT_EDITOR_MOTIF_CHANGED, this, &EditorMapDef::RecalculateMotifVars );
+
+    for( int stepIndex = 0; stepIndex < numGenSteps; stepIndex++ ) {
+        MapGenStep* genStep = m_mapGenSteps[stepIndex];
+        g_theEventSystem->Subscribe( EVENT_EDITOR_MOTIF_CHANGED, genStep, &MapGenStep::RecalculateMotifVars );
+    }
+}
+
+
+EditorMapDef::~EditorMapDef() {
+    int numGenSteps = (int)m_mapGenSteps.size();
+    g_theEventSystem->Unsubscribe( EVENT_EDITOR_MOTIF_CHANGED, this, &EditorMapDef::RecalculateMotifVars );
+
+    for( int stepIndex = 0; stepIndex < numGenSteps; stepIndex++ ) {
+        MapGenStep* genStep = m_mapGenSteps[stepIndex];
+        g_theEventSystem->Unsubscribe( EVENT_EDITOR_MOTIF_CHANGED, genStep, &MapGenStep::RecalculateMotifVars );
+    }
+}
+
+
+void EditorMapDef::FindXmlVariables( const XMLElement& element ) {
+    GetXMLMotifVariable( element, "fillTile", m_motifVars );
+    GetXMLMotifVariable( element, "edgeTile", m_motifVars );
+    GetXMLMotifVariable( element, "width",    m_motifVars );
+    GetXMLMotifVariable( element, "height",   m_motifVars );
+
+    const XMLElement* stepEle = element.FirstChildElement();
+    int numSteps = (int)m_mapGenSteps.size();
+
+    for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
+        MapGenStep* genStep = m_mapGenSteps[stepIndex];
+        EditorMapGenStep::FindXmlMotifVariables( *stepEle, genStep );
+
+        stepEle = stepEle->NextSiblingElement();
+    }
+}
+
+
+bool EditorMapDef::RecalculateMotifVars( EventArgs& args ) {
+    std::string attrName = args.GetValue( "attrName", "" );
+    std::string varName = m_motifVars.GetValue( attrName, "" );
+
+    if( varName == "" ) {
+        return false;
+    }
+
+    if( StringICmp( attrName, "fillTile" ) ) {
+        m_tileFillType = MotifDef::GetVariableValue( { m_motif }, varName, m_tileFillType );
+    } else if( StringICmp( attrName, "edgeTile" ) ) {
+        m_tileEdgeType = MotifDef::GetVariableValue( { m_motif }, varName, m_tileEdgeType );
+    } else if( StringICmp( attrName, "width" ) ) {
+        m_width = MotifDef::GetVariableValue( { m_motif }, varName, m_width );
+    } else if( StringICmp( attrName, "height" ) ) {
+        m_height = MotifDef::GetVariableValue( { m_motif }, varName, m_height );
+    }
+
+    return false;
 }
 
 

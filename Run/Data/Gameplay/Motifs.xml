@@ -2,6 +2,8 @@
     <Motif name="Castle">
         <WallType  value="StoneWall"/>
         <FloorType value="HardWoodFloor"/>
+        <RoomWillRun value="1"/>
+        <RoomWontRun value="0"/>
     </Motif>
     <Motif name="Farm">
         <WallType  value="WoodWall"/>

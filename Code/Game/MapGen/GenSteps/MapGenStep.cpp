@@ -41,13 +41,14 @@ MapGenStep::MapGenStep( const XMLElement& element, const std::string& mapMotif )
     int numCustomConditions = (int)s_customConditions.size();
 
     for( int conditionIndex = 0; conditionIndex < numCustomConditions; conditionIndex++ ) {
-        const CustomEvent& event = s_customConditions[conditionIndex];
-        Strings values = event.ParseCustomEvent( element, this );
-        int numNames = (int)event.attrNames.size();
+        const CustomEvent& sEvent = s_customConditions[conditionIndex];
+        Strings values = sEvent.ParseCustomEvent( element, this );
+
+        int numNames = (int)sEvent.attrNames.size();
         int numValues = (int)values.size();
 
         if( numValues == numNames ) {
-            m_customConditions.emplace_back( event, values );
+            m_customConditions.emplace_back( sEvent, values );
         }
     }
 
@@ -220,18 +221,18 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element, const std::
     std::string stepType = element.Name();
     MapGenStep* step = nullptr;
 
-    if( StringICmp( stepType, "Sprinkle" ) ) {
-        step = new MGS_Sprinkle( element, mapMotif );
-    } else if( StringICmp( stepType, "FromImage" ) ) {
-        step = new MGS_FromImage( element, mapMotif );
-    } else if( StringICmp( stepType, "CellularAutomata" ) ) {
+    if( StringICmp( stepType, "CellularAutomata" ) ) {
         step = new MGS_CellularAutomata( element, mapMotif );
     } else if( StringICmp( stepType, "DistanceField" ) ) {
         step = new MGS_DistanceField( element, mapMotif );
+    } else if( StringICmp( stepType, "FromImage" ) ) {
+        step = new MGS_FromImage( element, mapMotif );
     } else if( StringICmp( stepType, "PerlinNoise" ) ) {
         step = new MGS_PerlinNoise( element, mapMotif );
     } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
         step = new MGS_RoomsAndPaths( element, mapMotif );
+    } else if( StringICmp( stepType, "Sprinkle" ) ) {
+        step = new MGS_Sprinkle( element, mapMotif );
     } else {
         ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
     }
@@ -253,13 +254,13 @@ void MapGenStep::Run( Map& theMap ) const {
 }
 
 
-std::string MapGenStep::GetName() const {
-    return m_stepType;
+std::vector< MapGenStep::CustomEvent > MapGenStep::GetCustomResults() const {
+    return m_customResults;
 }
 
 
-std::vector< MapGenStep::CustomEvent > MapGenStep::GetCustomResults() const {
-    return m_customResults;
+std::string MapGenStep::GetName() const {
+    return m_stepType;
 }
 
 
@@ -343,6 +344,96 @@ void MapGenStep::SaveToXml( XmlDocument& document, XMLElement& element ) const {
             }
         }
     }
+}
+
+
+bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
+    std::string attrName = args.GetValue( "attrName", "" );
+    std::string varName = m_motifVars.GetValue( attrName, "" );
+
+    if( varName == "" ) {
+        return false;
+    }
+
+    if( StringICmp( attrName, "chanceToRun" ) ) {
+        m_chanceToRun = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_chanceToRun );
+        return false;
+    } else if( StringICmp( attrName, "numIterations" ) ) {
+        m_numIterations = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numIterations );
+        return false;
+    } else if( StringICmp( attrName, "ifIsType" ) ) {
+        m_ifIsType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_ifIsType );
+        return false;
+    } else if( StringICmp( attrName, "ifHasTags" ) ) {
+        m_ifHasTags = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_ifHasTags );
+        return false;
+    }
+
+    int numCondEvents = (int)m_customConditions.size();
+
+    for( int condIndex = 0; condIndex < numCondEvents; condIndex++ ) {
+        CustomEvent&  cEvent = m_customConditions[condIndex];
+        int numNames = (int)cEvent.attrNames.size();
+
+        for( int nameIndex = 0; nameIndex < numNames; nameIndex++ ) {
+            const std::string& eventAttrName = cEvent.attrNames[nameIndex];
+            std::string& eventAttrValue = cEvent.attrValues[nameIndex];
+
+            if( StringICmp( attrName, eventAttrName ) ) {
+                eventAttrValue = MotifDef::GetVariableValue( m_motifHeirarchy, varName, eventAttrValue );
+                return false;
+            }
+        }
+    }
+
+    HeatMaps::iterator heatIter = m_ifHeatMap.begin();
+
+    for( heatIter; heatIter != m_ifHeatMap.end(); heatIter++ ) {
+        std::string heatAttrName = Stringf( "ifHeatMap%s", heatIter->first.c_str() );
+
+        if( StringICmp( attrName, heatAttrName ) ) {
+            heatIter->second = MotifDef::GetVariableValue( m_motifHeirarchy, varName, heatIter->second );
+            return false;
+        }
+    }
+
+    if( StringICmp( attrName, "setType" ) ) {
+        m_setType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_setType );
+        return false;
+    } else if( StringICmp( attrName, "setTags" ) ) {
+        m_setTags = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_setTags );
+        return false;
+    }
+
+    int numResultEvents = (int)m_customResults.size();
+
+    for( int resultIndex = 0; resultIndex < numResultEvents; resultIndex++ ) {
+        CustomEvent&  cEvent = m_customResults[resultIndex];
+        int numNames = (int)cEvent.attrNames.size();
+
+        for( int nameIndex = 0; nameIndex < numNames; nameIndex++ ) {
+            const std::string& eventAttrName = cEvent.attrNames[nameIndex];
+            std::string& eventAttrValue = cEvent.attrValues[nameIndex];
+
+            if( StringICmp( attrName, eventAttrName ) ) {
+                eventAttrValue = MotifDef::GetVariableValue( m_motifHeirarchy, varName, eventAttrValue );
+                return false;
+            }
+        }
+    }
+
+    heatIter = m_setHeatMap.begin();
+
+    for( heatIter; heatIter != m_setHeatMap.end(); heatIter++ ) {
+        std::string heatAttrName = Stringf( "setHeatMap%s", heatIter->first.c_str() );
+
+        if( StringICmp( attrName, heatAttrName ) ) {
+            heatIter->second = MotifDef::GetVariableValue( m_motifHeirarchy, varName, heatIter->second );
+            return false;
+        }
+    }
+
+    return false;
 }
 
 

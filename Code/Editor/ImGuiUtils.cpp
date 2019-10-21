@@ -386,6 +386,34 @@ bool RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
 }
 
 
+bool RenderMotifVariable( const std::string& varName, std::string& currentValue, const Strings& motifHierarchy, const std::string& uniqueKey, const std::string& label /*= "" */ ) {
+    Strings possibleVars = MotifDef::GetVariableNames( motifHierarchy );
+
+    bool motifChanged = RenderDropDown( uniqueKey, currentValue, possibleVars, label, false, "" );
+
+    if( motifChanged ) {
+        EventArgs args;
+        args.SetValue( "attrName", varName );
+
+        g_theEventSystem->FireEvent( EVENT_EDITOR_MOTIF_CHANGED, args );
+    }
+
+    return motifChanged;
+}
+
+
+bool RenderPercentOrVar( NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, const std::string& uniqueKey, float& value, const std::string& label /*= ""*/, float defaultValue /*= 1.f */ ) {
+    std::string varName = stepVars.GetValue( attrName, "" );
+
+    if( varName == "" ) {
+        return RenderPercent( value, label, defaultValue );
+    }
+
+    std::string& varRef = stepVars.GetReference( attrName );
+    return RenderMotifVariable( attrName, varRef, motifHierarchy, uniqueKey, label );
+}
+
+
 void RenderChangeText( bool hasChanged ) {
     SetImGuiTextColor( Rgba::ORGANIC_YELLOW );
 

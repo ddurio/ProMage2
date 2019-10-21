@@ -45,6 +45,31 @@ bool EditorMapGenStep::IsChanged( MapGenStep* genStep ) {
 }
 
 
+void EditorMapGenStep::FindXmlMotifVariables( const XMLElement& element, MapGenStep* genStep ) {
+    // First do base class
+    FindXmlMotifVariables_BaseClass( element, genStep );
+
+    // Then do child class
+    std::string stepType = element.Name();
+
+    if( StringICmp( stepType, "CellularAutomata" ) ) {
+        FindXmlMotifVariables_CellularAutomata( element, genStep );
+    } else if( StringICmp( stepType, "DistanceField" ) ) {
+        FindXmlMotifVariables_DistanceField( element, genStep );
+    } else if( StringICmp( stepType, "FromImage" ) ) {
+        FindXmlMotifVariables_FromImage( element, genStep );
+    } else if( StringICmp( stepType, "PerlinNoise" ) ) {
+        FindXmlMotifVariables_PerlinNoise( element, genStep );
+    } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
+        FindXmlMotifVariables_RoomsAndPaths( element, genStep );
+    } else if( StringICmp( stepType, "Sprinkle" ) ) {
+        FindXmlMotifVariables_Sprinkle( element, genStep );
+    } else {
+        ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
+    }
+}
+
+
 // PRIVATE ----------------------------------------------------------------------
 void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string& stepName ) {
     bool condChanged = IsChangedConditions( genStep );
@@ -60,18 +85,18 @@ void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string&
 
         std::string stepType = genStep->GetName();
 
-        if( StringICmp( stepType, "Sprinkle" ) ) {
-            RenderConditions_Sprinkle( genStep );
-        } else if( StringICmp( stepType, "CellularAutomata" ) ) {
+        if( StringICmp( stepType, "CellularAutomata" ) ) {
             RenderConditions_CellularAutomata( genStep );
         } else if( StringICmp( stepType, "DistanceField" ) ) {
             RenderConditions_DistanceField( genStep );
+        } else if( StringICmp( stepType, "FromImage" ) ) {
+            RenderConditions_FromImage( genStep );
         } else if( StringICmp( stepType, "PerlinNoise" ) ) {
             RenderConditions_PerlinNoise( genStep );
         } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
             RenderConditions_RoomsAndPaths( genStep );
-        } else if( StringICmp( stepType, "FromImage" ) ) {
-            RenderConditions_FromImage( genStep );
+        } else if( StringICmp( stepType, "Sprinkle" ) ) {
+            RenderConditions_Sprinkle( genStep );
         } else {
             ERROR_RECOVERABLE( Stringf( "(EditorMapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
         }
@@ -88,32 +113,38 @@ void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
         paramsChanged.resize( 7, false );
     }
 
+    std::vector< bool > localChanges;
+    localChanges.resize( 7, false );
+
+    NamedStrings& stepVars = genStep->m_motifVars;
+    std::string uniqueKey = "baseCond";
+
     RenderChangeText( paramsChanged[0] );
-    bool change0 = RenderPercent( genStep->m_chanceToRun, "Chance to Run" );
+    localChanges[0] = RenderPercentOrVar( stepVars, "chanceToRun", genStep->m_motifHeirarchy, uniqueKey, genStep->m_chanceToRun, "Chance To Run" );
 
     RenderChangeText( paramsChanged[1] );
-    bool change1 = RenderIntRange( genStep->m_numIterations, "Iterations" );
+    localChanges[1] = RenderIntRange( genStep->m_numIterations, "Iterations" );
     ImGui::Separator();
 
     RenderChangeText( paramsChanged[2] );
-    bool change2 = RenderTileDropDown( "baseCond", genStep->m_ifIsType );
+    localChanges[2] = RenderTileDropDown( uniqueKey, genStep->m_ifIsType );
 
     RenderChangeText( paramsChanged[3] );
-    std::array< bool, 2 > change3and4 = RenderTags( "baseCond", genStep->m_ifHasTags, paramsChanged[4], "Tile" );
+    std::array< bool, 2 > change3and4 = RenderTags( uniqueKey, genStep->m_ifHasTags, paramsChanged[4], "Tile" );
 
     RenderChangeText( paramsChanged[5] );
-    bool change5 = RenderHeatMaps( "conditions", genStep->m_ifHeatMap );
+    localChanges[5] = RenderHeatMaps( "conditions", genStep->m_ifHeatMap );
 
     RenderChangeText( paramsChanged[6] );
-    bool change6 = RenderEventList( "Conditions", genStep->s_customConditions, genStep->m_customConditions );
+    localChanges[6] = RenderEventList( "Conditions", genStep->s_customConditions, genStep->m_customConditions );
 
-    paramsChanged[0] = paramsChanged[0] || change0;
-    paramsChanged[1] = paramsChanged[1] || change1;
-    paramsChanged[2] = paramsChanged[2] || change2;
+    paramsChanged[0] = paramsChanged[0] || localChanges[0];
+    paramsChanged[1] = paramsChanged[1] || localChanges[1];
+    paramsChanged[2] = paramsChanged[2] || localChanges[2];
     paramsChanged[3] = paramsChanged[3] || change3and4[0];
     paramsChanged[4] = paramsChanged[4] || change3and4[1];
-    paramsChanged[5] = paramsChanged[5] || change5;
-    paramsChanged[6] = paramsChanged[6] || change6;
+    paramsChanged[5] = paramsChanged[5] || localChanges[5];
+    paramsChanged[6] = paramsChanged[6] || localChanges[6];
 }
 
 
@@ -313,18 +344,18 @@ void EditorMapGenStep::RenderResults( MapGenStep* genStep, const std::string& st
 
         std::string stepType = genStep->GetName();
 
-        if( StringICmp( stepType, "Sprinkle" ) ) {
-            RenderResults_Sprinkle( genStep );
-        } else if( StringICmp( stepType, "FromImage" ) ) {
-            RenderResults_FromImage( genStep );
-        } else if( StringICmp( stepType, "CellularAutomata" ) ) {
+        if( StringICmp( stepType, "CellularAutomata" ) ) {
             RenderResults_CellularAutomata( genStep );
         } else if( StringICmp( stepType, "DistanceField" ) ) {
             RenderResults_DistanceField( genStep );
+        } else if( StringICmp( stepType, "FromImage" ) ) {
+            RenderResults_FromImage( genStep );
         } else if( StringICmp( stepType, "PerlinNoise" ) ) {
             RenderResults_PerlinNoise( genStep );
         } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
             RenderResults_RoomsAndPaths( genStep );
+        } else if( StringICmp( stepType, "Sprinkle" ) ) {
+            RenderResults_Sprinkle( genStep );
         } else {
             ERROR_RECOVERABLE( Stringf( "(EditorMapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
         }
@@ -619,5 +650,84 @@ bool EditorMapGenStep::IsChangedResults( MapGenStep* genStep ) {
     }
 
     return false;
+}
+
+
+void EditorMapGenStep::FindXmlMotifVariables_BaseClass( const XMLElement& element, MapGenStep* genStep ) {
+    NamedStrings& stepVars = genStep->m_motifVars;
+
+    GetXMLMotifVariable( element, "chanceToRun",    stepVars );
+    GetXMLMotifVariable( element, "numIterations",  stepVars );
+    GetXMLMotifVariable( element, "ifIsType",       stepVars );
+    GetXMLMotifVariable( element, "ifHasTags",      stepVars ); // ThesisFIXME: this is wrong for tags
+    int numCondEvents = (int)genStep->m_customConditions.size();
+
+    for( int condIndex = 0; condIndex < numCondEvents; condIndex++ ) {
+        const MapGenStep::CustomEvent&  cEvent = genStep->m_customConditions[condIndex];
+        int numNames = (int)cEvent.attrNames.size();
+
+        for( int nameIndex = 0; nameIndex < numNames; nameIndex++ ) {
+            const std::string& attrName = cEvent.attrNames[nameIndex];
+            GetXMLMotifVariable( element, attrName.c_str(), stepVars );
+        }
+    }
+
+    HeatMaps::const_iterator heatIter = genStep->m_ifHeatMap.begin();
+
+    for( heatIter; heatIter != genStep->m_ifHeatMap.end(); heatIter++ ) {
+        std::string attrName = Stringf( "ifHeatMap%s", heatIter->first.c_str() );
+        GetXMLMotifVariable( element, attrName.c_str(), stepVars );
+    }
+
+    GetXMLMotifVariable( element, "setType", stepVars );
+    GetXMLMotifVariable( element, "setTags", stepVars ); // ThesisFIXME: this is wrong for tags
+    int numResultEvents = (int)genStep->m_customResults.size();
+
+    for( int resultIndex = 0; resultIndex < numResultEvents; resultIndex++ ) {
+        const MapGenStep::CustomEvent&  cEvent = genStep->m_customResults[resultIndex];
+        int numNames = (int)cEvent.attrNames.size();
+
+        for( int nameIndex = 0; nameIndex < numNames; nameIndex++ ) {
+            const std::string& attrName = cEvent.attrNames[nameIndex];
+            GetXMLMotifVariable( element, attrName.c_str(), stepVars );
+        }
+    }
+
+    heatIter = genStep->m_setHeatMap.begin();
+
+    for( heatIter; heatIter != genStep->m_setHeatMap.end(); heatIter++ ) {
+        std::string attrName = Stringf( "setHeatMap%s", heatIter->first.c_str() );
+        GetXMLMotifVariable( element, attrName.c_str(), stepVars );
+    }
+}
+
+
+void EditorMapGenStep::FindXmlMotifVariables_CellularAutomata( const XMLElement& element, MapGenStep* genStep ) {
+
+}
+
+
+void EditorMapGenStep::FindXmlMotifVariables_DistanceField( const XMLElement& element, MapGenStep* genStep ) {
+
+}
+
+
+void EditorMapGenStep::FindXmlMotifVariables_FromImage( const XMLElement& element, MapGenStep* genStep ) {
+
+}
+
+
+void EditorMapGenStep::FindXmlMotifVariables_PerlinNoise( const XMLElement& element, MapGenStep* genStep ) {
+
+}
+
+
+void EditorMapGenStep::FindXmlMotifVariables_RoomsAndPaths( const XMLElement& element, MapGenStep* genStep ) {
+
+}
+
+
+void EditorMapGenStep::FindXmlMotifVariables_Sprinkle( const XMLElement& element, MapGenStep* genStep ) {
+
 }
 
