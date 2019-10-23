@@ -120,7 +120,7 @@ void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
     std::string uniqueKey = "baseCond";
 
     RenderChangeText( paramsChanged[0] );
-    localChanges[0] = RenderPercentOrVar( stepVars, "chanceToRun", genStep->m_motifHeirarchy, uniqueKey, genStep->m_chanceToRun, "Chance To Run" );
+    localChanges[0] = RenderPercentOrVar( uniqueKey, stepVars, "chanceToRun", genStep->m_motifHeirarchy, genStep->m_chanceToRun, "Chance To Run" );
 
     RenderChangeText( paramsChanged[1] );
     localChanges[1] = RenderIntRange( genStep->m_numIterations, "Iterations" );

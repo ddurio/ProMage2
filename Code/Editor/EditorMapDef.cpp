@@ -101,11 +101,14 @@ EditorMapDef::EditorMapDef( const XMLElement& element ) :
 
     FindXmlVariables( element );
 
-    g_theEventSystem->Subscribe( EVENT_EDITOR_MOTIF_CHANGED, this, &EditorMapDef::RecalculateMotifVars );
+    std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, m_defType.c_str() );
+
+    // ThesisFIXME: This breaks because eventSystem can't handle diamond inheritance
+    //g_theEventSystem->Subscribe( eventName, this, &EditorMapDef::RecalculateMotifVars );
 
     for( int stepIndex = 0; stepIndex < numGenSteps; stepIndex++ ) {
         MapGenStep* genStep = m_mapGenSteps[stepIndex];
-        g_theEventSystem->Subscribe( EVENT_EDITOR_MOTIF_CHANGED, genStep, &MapGenStep::RecalculateMotifVars );
+        g_theEventSystem->Subscribe( eventName, genStep, &MapGenStep::RecalculateMotifVars );
     }
 }
 

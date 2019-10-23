@@ -1,5 +1,8 @@
 #include "Editor/ImGuiUtils.hpp"
 
+#include "Editor/Editor.hpp"
+#include "Editor/MapWindow.hpp"
+
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/IntRange.hpp"
@@ -11,54 +14,63 @@
 
 bool RenderPercent( float& value, const std::string& label /*= ""*/, float defaultValue /*= 1.f */ ) {
     SetImGuiTextColor( value == defaultValue );
+    bool hasChanged = false;
     std::string percentFormat = Stringf( "%.0f%%%%", value * 100.f );
 
-    if( ImGui::SliderFloat( label.c_str(), &value, 0.f, 1.f, percentFormat.c_str() ) ) {
+    if( ImGui::SliderFloat( "", &value, 0.f, 1.f, percentFormat.c_str() ) ) {
         if( value > 1.f ) {
             value /= 100.f;
         }
 
-        return true;
+        hasChanged = true;
     }
 
-    return false;
+    ImGui::SameLine();
+    ImGui::Text( label.c_str() );
+
+    return hasChanged;
 }
 
 
-bool RenderIntRange( IntRange& range, const std::string& label /*= ""*/, int minValue /*= 0*/, int maxValue /*= 10*/, const IntRange& defaultValue /*= IntRange::ONE */ ) {
-    SetImGuiTextColor( range == defaultValue );
-    IntRange initialIters = range;
+bool RenderIntRange( IntRange& currentValue, const std::string& label /*= ""*/, int minValue /*= 0*/, int maxValue /*= 10*/, const IntRange& defaultValue /*= IntRange::ONE */ ) {
+    SetImGuiTextColor( currentValue == defaultValue );
+    bool hasChanged = false;
+    IntRange initialIters = currentValue;
 
-    if( ImGui::SliderInt2( label.c_str(), (int*)&(range), minValue, maxValue ) ) {
-        bool minChanged = (initialIters.min != range.min);
+    if( ImGui::SliderInt2( "", (int*)&(currentValue), minValue, maxValue ) ) {
+        bool minChanged = (initialIters.min != currentValue.min);
 
-        if( range.min > range.max ) {
+        if( currentValue.min > currentValue.max ) {
             if( minChanged ) {
-                range.max = range.min;
+                currentValue.max = currentValue.min;
             } else {
-                range.min = range.max;
+                currentValue.min = currentValue.max;
             }
         }
 
-        return true;
+        hasChanged = true;
     }
 
-    return false;
+    ImGui::SameLine();
+    ImGui::Text( label.c_str() );
+
+    return hasChanged;
+
 }
 
 
-bool RenderFloatRange( FloatRange& range, const std::string& label /*= ""*/, float minValue /*= 0.f*/, float maxValue /*= 10.f*/, const FloatRange& defaultValue /*= FloatRange::ONE */ ) {
-    SetImGuiTextColor( range == defaultValue );
-    FloatRange initialIters = range;
+bool RenderFloatRange( FloatRange& currentValue, const std::string& label /*= ""*/, float minValue /*= 0.f*/, float maxValue /*= 10.f*/, const FloatRange& defaultValue /*= FloatRange::ONE */ ) {
+    SetImGuiTextColor( currentValue == defaultValue );
+    FloatRange initialIters = currentValue;
 
-    if( ImGui::SliderFloat2( label.c_str(), (float*)&(range), minValue, maxValue ) ) {
-        bool minChanged = (initialIters.min != range.min);
+    if( ImGui::SliderFloat2( label.c_str(), (float*)&(currentValue), minValue, maxValue ) ) {
+        bool minChanged = (initialIters.min != currentValue.min);
 
-        if( range.min > range.max ) {
+        if( currentValue.min > currentValue.max ) {
             if( minChanged ) {
-                range.max = range.min;
+                currentValue.max = currentValue.min;
             } else {
-                range.min = range.max;
+                currentValue.min = currentValue.max;
             }
         }
 
@@ -277,7 +289,7 @@ std::array< bool, 2> RenderTags( const std::string& uniqueKey, Strings& currentT
 }
 
 
-bool RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatRange, StringCmpCaseI >& currentHeatMaps ) {
+bool RenderHeatMaps( const std::string& uniqueKey, HeatMaps& currentHeatMaps ) {
     SetImGuiTextColor( currentHeatMaps.empty() );
     ImGui::Text( "Heat Maps" );
     ImGui::SameLine();
@@ -386,8 +398,12 @@ bool RenderHeatMaps( const std::string& uniqueKey, std::map< std::string, FloatR
 }
 
 
-bool RenderMotifVariable( const std::string& varName, std::string& currentValue, const Strings& motifHierarchy, const std::string& uniqueKey, const std::string& label /*= "" */ ) {
+bool RenderMotifVariable( const std::string& uniqueKey, const std::string& varName, std::string& currentValue, const Strings& motifHierarchy, const std::string& label /*= "" */ ) {
     Strings possibleVars = MotifDef::GetVariableNames( motifHierarchy );
+
+    if( currentValue == " " ) {
+        // ThesisFIXME: Can I force it open somehow?
+    }
 
     bool motifChanged = RenderDropDown( uniqueKey, currentValue, possibleVars, label, false, "" );
 
@@ -395,22 +411,59 @@ bool RenderMotifVariable( const std::string& varName, std::string& currentValue,
         EventArgs args;
         args.SetValue( "attrName", varName );
 
-        g_theEventSystem->FireEvent( EVENT_EDITOR_MOTIF_CHANGED, args );
+        std::string mapType = g_theEditor->GetMapWindow()->GetMapType();
+        std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, mapType.c_str() );
+
+        g_theEventSystem->FireEvent( eventName, args );
     }
 
     return motifChanged;
 }
 
 
-bool RenderPercentOrVar( NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, const std::string& uniqueKey, float& value, const std::string& label /*= ""*/, float defaultValue /*= 1.f */ ) {
-    std::string varName = stepVars.GetValue( attrName, "" );
+bool RenderPercentOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, float& value, const std::string& label /*= ""*/, float defaultValue /*= 1.f */ ) {
+    std::string& varRef = stepVars.GetReference( attrName );
+    bool hasChanged = false;
 
-    if( varName == "" ) {
-        return RenderPercent( value, label, defaultValue );
+    std::string guiID = Stringf( "percent_%s", uniqueKey.c_str() );
+    ImGui::PushID( guiID.c_str() );
+
+    if( varRef == "" ) {
+        hasChanged = RenderPercent( value, label, defaultValue );
+    } else {
+        hasChanged = RenderMotifVariable( uniqueKey, attrName, varRef, motifHierarchy, label );
     }
 
-    std::string& varRef = stepVars.GetReference( attrName );
-    return RenderMotifVariable( attrName, varRef, motifHierarchy, uniqueKey, label );
+    ImGui::PopID();
+    hasChanged |= RenderRightClick( varRef, guiID );
+
+    return hasChanged;
+}
+
+
+bool RenderRightClick( std::string& motifVarName, const std::string& itemID ) {
+    SetImGuiTextColor( Rgba::WHITE );
+    bool hasChanged = false;
+
+    if( ImGui::BeginPopupContextItem( itemID.c_str() ) ) {
+        if( motifVarName == "" ) { // Not currently a variable
+            if( ImGui::MenuItem( "Promote to Motif Variable" ) ) {
+                // Need a var name....
+                motifVarName = " ";
+                hasChanged = true;
+            }
+        } else { // Is currently a variable
+            if( ImGui::MenuItem( "Demote to primitive value" ) ) {
+                motifVarName = "";
+                hasChanged = true;
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        ImGui::EndPopup();
+    }
+
+    return hasChanged;
 }
 
 
