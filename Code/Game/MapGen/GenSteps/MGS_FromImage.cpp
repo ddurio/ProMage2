@@ -44,6 +44,30 @@ void MGS_FromImage::SaveToXml( XmlDocument& document, XMLElement& element ) cons
 }
 
 
+bool MGS_FromImage::RecalculateMotifVars( EventArgs& args ) {
+    MapGenStep::RecalculateMotifVars( args );
+
+    std::string attrName = args.GetValue( "attrName", "" );
+    std::string varName = m_motifVars.GetValue( attrName, "" );
+
+    if( varName == "" ) {
+        return false;
+    }
+
+    if( StringICmp( attrName, "imageFilePath" ) ) {
+        m_imageFilePath = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_imageFilePath );
+    } else if( StringICmp( attrName, "alignX" ) ) {
+        m_alignX = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_alignX );
+    } else if( StringICmp( attrName, "alignY" ) ) {
+        m_alignY = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_alignY );
+    } else if( StringICmp( attrName, "numRotations" ) ) {
+        m_numRotations = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numRotations );
+    }
+
+    return false;
+}
+
+
 // PRIVATE ---------------------------------------------
 std::map< std::string, const TileDef* > MGS_FromImage::s_tileDefsByTexelColor;
 

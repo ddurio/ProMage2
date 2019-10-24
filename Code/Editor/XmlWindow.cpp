@@ -96,7 +96,7 @@ void XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
         ImGui::TreePush( "General Options" );
 
         Strings mapTypes = eMapDef->GetMapTypes();
-        RenderDropDown( "emdMapTypes", m_mapType, mapTypes, "Map Type", false, "__HOPEFULLY_NOT_USED__" );
+        RenderDropDown( "emdMapTypes", m_mapType, mapTypes, "Map Type", false, "__HOPEFULLY_NOT_A_MAP_TYPE__" );
         ImGui::Columns( 2, nullptr, true, ImGuiColumnsFlags_NoResize ); // ThesisFIXME: Potentially dangerous.. modified imGui to expose this flag
 
         if( ImGui::Button( "Regenerate Current Map", ImVec2( -1, 0 ) ) ) {

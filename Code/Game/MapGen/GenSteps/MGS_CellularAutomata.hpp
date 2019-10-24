@@ -12,6 +12,7 @@ class MGS_CellularAutomata : public MapGenStep {
     ~MGS_CellularAutomata() {};
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+    bool RecalculateMotifVars( EventArgs& args ) override;
 
 
     private:

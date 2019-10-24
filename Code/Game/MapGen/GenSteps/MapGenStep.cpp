@@ -365,7 +365,8 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
         m_ifIsType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_ifIsType );
         return false;
     } else if( StringICmp( attrName, "ifHasTags" ) ) {
-        m_ifHasTags = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_ifHasTags );
+        std::string tagCSV = MotifDef::GetVariableValue( m_motifHeirarchy, varName, "" );
+        m_ifHasTags = SplitStringOnDelimeter( tagCSV, ',', false );
         return false;
     }
 
@@ -401,7 +402,8 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
         m_setType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_setType );
         return false;
     } else if( StringICmp( attrName, "setTags" ) ) {
-        m_setTags = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_setTags );
+        std::string tagCSV = MotifDef::GetVariableValue( m_motifHeirarchy, varName, "" );
+        m_setTags = SplitStringOnDelimeter( tagCSV, ',', false );
         return false;
     }
 

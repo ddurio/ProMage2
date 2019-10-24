@@ -20,6 +20,7 @@ class MGS_FromImage : public MapGenStep {
     ~MGS_FromImage();
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+    bool RecalculateMotifVars( EventArgs& args ) override;
 
 
     private:

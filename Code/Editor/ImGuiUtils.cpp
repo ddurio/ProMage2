@@ -62,8 +62,9 @@ bool RenderIntRange( IntRange& currentValue, const std::string& label /*= ""*/, 
 bool RenderFloatRange( FloatRange& currentValue, const std::string& label /*= ""*/, float minValue /*= 0.f*/, float maxValue /*= 10.f*/, const FloatRange& defaultValue /*= FloatRange::ONE */ ) {
     SetImGuiTextColor( currentValue == defaultValue );
     FloatRange initialIters = currentValue;
+    bool hasChanged = false;
 
-    if( ImGui::SliderFloat2( label.c_str(), (float*)&(currentValue), minValue, maxValue ) ) {
+    if( ImGui::SliderFloat2( "", (float*)&(currentValue), minValue, maxValue ) ) {
         bool minChanged = (initialIters.min != currentValue.min);
 
         if( currentValue.min > currentValue.max ) {
@@ -74,10 +75,13 @@ bool RenderFloatRange( FloatRange& currentValue, const std::string& label /*= ""
             }
         }
 
-        return true;
+        hasChanged = true;
     }
 
-    return false;
+    ImGui::SameLine();
+    ImGui::Text( label.c_str() );
+
+    return hasChanged;
 }
 
 
@@ -102,8 +106,10 @@ bool RenderDropDown( const std::string& uniqueKey, std::string& currentType, con
             ImGui::PushID( "empty" );
 
             if( ImGui::Selectable( "<NONE>", (initialType == "") ) ) {
-                currentType = "";
-                wasChanged = true;
+                if( initialType != "" ) {
+                    currentType = "";
+                    wasChanged = true;
+                }
             }
 
             if( initialType == "" ) {
@@ -121,8 +127,10 @@ bool RenderDropDown( const std::string& uniqueKey, std::string& currentType, con
             bool isSelected = StringICmp( initialType, option );
 
             if( ImGui::Selectable( option.c_str(), isSelected ) ) {
-                currentType = option;
-                wasChanged = true;
+                if( !isSelected ) { // Chose a different value
+                    currentType = option;
+                    wasChanged = true;
+                }
             }
 
             if( isSelected ) {
@@ -289,7 +297,205 @@ std::array< bool, 2> RenderTags( const std::string& uniqueKey, Strings& currentT
 }
 
 
-bool RenderHeatMaps( const std::string& uniqueKey, HeatMaps& currentHeatMaps ) {
+bool RenderFilePath( std::string& currentPath, const Strings& filter ) {
+    bool hasChanged = false;
+    SetImGuiTextColor( Rgba::WHITE );
+
+    if( ImGui::Button( "Open File" ) ) {
+
+        std::string newFilePath = g_theWindow->OpenFileDialog( "Data/Images", filter, "Open File" );
+
+        if( currentPath != newFilePath ) {
+            hasChanged = true;
+        }
+
+        currentPath = newFilePath;
+    }
+
+    ImGui::SameLine();
+    ImGui::Text( currentPath.c_str() );
+    
+    return hasChanged;
+}
+
+
+bool RenderMotifVariable( const std::string& uniqueKey, const std::string& varName, std::string& currentValue, const Strings& motifHierarchy, const std::string& label /*= "" */ ) {
+    Strings possibleVars = MotifDef::GetVariableNames( motifHierarchy );
+
+    if( currentValue == " " ) {
+        std::string dropdownID = Stringf( "dropdown_%s", uniqueKey.c_str() );
+        ImGui::OpenPopup( dropdownID.c_str() );
+    }
+
+    bool motifChanged = RenderDropDown( uniqueKey, currentValue, possibleVars, label, false, "" );
+
+    if( motifChanged ) {
+        EventArgs args;
+        args.SetValue( "attrName", varName );
+
+        std::string mapType = g_theEditor->GetMapWindow()->GetMapType();
+        std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, mapType.c_str() );
+
+        g_theEventSystem->FireEvent( eventName, args );
+    }
+
+    return motifChanged;
+}
+
+
+bool RenderIntOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, int& currentValue, const std::string& label /*= ""*/, int defaultValue /*= 1.f */ ) {
+    std::string& varRef = stepVars.GetReference( attrName );
+    bool hasChanged = false;
+
+    std::string guiID = Stringf( "%s_%s", uniqueKey.c_str(), attrName.c_str() );
+    ImGui::PushID( guiID.c_str() );
+
+    if( varRef == "" ) {
+        SetImGuiTextColor( currentValue == defaultValue );
+        hasChanged = ImGui::InputInt( "", &currentValue );
+
+        ImGui::SameLine();
+        ImGui::Text( label.c_str() );
+    } else {
+        hasChanged = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
+    }
+
+    ImGui::PopID();
+    hasChanged = RenderRightClick( varRef, guiID ) || hasChanged;
+
+    return hasChanged;
+}
+
+
+bool RenderPercentOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, float& value, const std::string& label /*= ""*/, float defaultValue /*= 1.f */ ) {
+    std::string& varRef = stepVars.GetReference( attrName );
+    bool hasChanged = false;
+
+    std::string guiID = Stringf( "%s_%s", uniqueKey.c_str(), attrName.c_str() );
+    ImGui::PushID( guiID.c_str() );
+
+    if( varRef == "" ) {
+        hasChanged = RenderPercent( value, label, defaultValue );
+    } else {
+        hasChanged = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
+    }
+
+    ImGui::PopID();
+    hasChanged = RenderRightClick( varRef, guiID ) || hasChanged;
+
+    return hasChanged;
+}
+
+
+bool RenderIntRangeOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy,
+     IntRange& currentValue, const std::string& label /*= ""*/, int minValue /*= 0*/, int maxValue /*= 10*/, const IntRange& defaultValue /*= IntRange::ONE */ )
+{
+    std::string& varRef = stepVars.GetReference( attrName );
+    bool hasChanged = false;
+
+    std::string guiID = Stringf( "%s_%s", uniqueKey.c_str(), attrName.c_str() );
+    ImGui::PushID( guiID.c_str() );
+
+    if( varRef == "" ) {
+        hasChanged = RenderIntRange( currentValue, label, minValue, maxValue, defaultValue );
+    } else {
+        hasChanged = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
+    }
+
+    ImGui::PopID();
+    hasChanged = RenderRightClick( varRef, guiID ) || hasChanged;
+
+    return hasChanged;
+}
+
+
+bool RenderFloatRangeOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy,
+    FloatRange& currentValue, const std::string& label /*= ""*/, float minValue /*= 0.f*/, float maxValue /*= 10.f*/, const FloatRange& defaultValue /*= FloatRange::ONE */ )
+{
+    std::string& varRef = stepVars.GetReference( attrName );
+    bool hasChanged = false;
+
+    std::string guiID = Stringf( "%s_%s", uniqueKey.c_str(), attrName.c_str() );
+    ImGui::PushID( guiID.c_str() );
+
+    if( varRef == "" ) {
+        hasChanged = RenderFloatRange( currentValue, label, minValue, maxValue, defaultValue );
+    } else {
+        hasChanged = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
+    }
+
+    ImGui::PopID();
+    hasChanged = RenderRightClick( varRef, guiID ) || hasChanged;
+
+    return hasChanged;
+}
+
+
+bool RenderTileDropDownOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy,
+    std::string& currentType, const std::string& label /*= "Tile Type"*/, bool addNoneOption /*= true*/, const std::string& defaultValue /*= "" */ )
+{
+    std::string& varRef = stepVars.GetReference( attrName );
+    bool hasChanged = false;
+
+    std::string guiID = Stringf( "%s_%s", uniqueKey.c_str(), attrName.c_str() );
+    ImGui::PushID( guiID.c_str() );
+
+    if( varRef == "" ) {
+        hasChanged = RenderTileDropDown( guiID, currentType, label, addNoneOption, defaultValue );
+    } else {
+        hasChanged = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
+    }
+
+    ImGui::PopID();
+    hasChanged = RenderRightClick( varRef, guiID ) || hasChanged;
+
+    return hasChanged;
+}
+
+
+bool RenderDropDownOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, std::string& currentType, const Strings& ddOptions, const std::string& label, bool addNoneOptions, const std::string& defaultValue ) {
+    std::string& varRef = stepVars.GetReference( attrName );
+    bool hasChanged = false;
+
+    std::string guiID = Stringf( "%s_%s", uniqueKey.c_str(), attrName.c_str() );
+    ImGui::PushID( guiID.c_str() );
+
+    if( varRef == "" ) {
+        hasChanged = RenderDropDown( guiID, currentType, ddOptions, label, addNoneOptions, defaultValue );
+    } else {
+        hasChanged = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
+    }
+
+    ImGui::PopID();
+    hasChanged = RenderRightClick( varRef, guiID ) || hasChanged;
+
+    return hasChanged;
+}
+
+
+std::array< bool, 2> RenderTagsOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy,
+    Strings& currentTags, bool missingHasChanged, const std::string& label /*= "" */ )
+{
+    std::string& varRef = stepVars.GetReference( attrName );
+    std::array< bool, 2 > hasChanged = { false, false };
+
+    std::string guiID = Stringf( "%s_%s", uniqueKey.c_str(), attrName.c_str() );
+    ImGui::PushID( guiID.c_str() );
+
+    if( varRef == "" ) {
+        hasChanged = RenderTags( guiID, currentTags, missingHasChanged, label );
+    } else {
+        hasChanged[0] = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
+    }
+
+    ImGui::PopID();
+    hasChanged[0] = RenderRightClick( varRef, guiID ) || hasChanged[0];
+
+    return hasChanged;
+}
+
+
+bool RenderHeatMapsOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, HeatMaps& currentHeatMaps ) {
     SetImGuiTextColor( currentHeatMaps.empty() );
     ImGui::Text( "Heat Maps" );
     ImGui::SameLine();
@@ -365,11 +571,15 @@ bool RenderHeatMaps( const std::string& uniqueKey, HeatMaps& currentHeatMaps ) {
     while( heatIter != currentHeatMaps.end() ) {
         RenderChangeText( false );
         SetImGuiTextColor( Rgba::WHITE );
+        std::string heatAttrName = Stringf( "%s%s", attrName.c_str(), heatIter->first.c_str() );
 
         if( StringICmp( heatIter->first, "Noise" ) ) {
-            wasChanged |= RenderFloatRange( heatIter->second, heatIter->first, -1.f, 1.f, FloatRange( 1.f, -1.f ) ); // invalid default.. should always be white
+            // make invalid default.. should always be white
+            bool floatChanged = RenderFloatRangeOrVar( uniqueKey, stepVars, heatAttrName, motifHierarchy, heatIter->second, heatIter->first, -1.f, 1.f, FloatRange( 1.f, -1.f ) );
+            wasChanged = wasChanged || floatChanged;
         } else {
-            wasChanged |= RenderFloatRange( heatIter->second, heatIter->first, 0.f, 10.f, FloatRange( 1.f, -1.f ) );
+            bool floatChanged = RenderFloatRangeOrVar( uniqueKey, stepVars, heatAttrName, motifHierarchy, heatIter->second, heatIter->first, 0.f, 10.f, FloatRange( 1.f, -1.f ) );
+            wasChanged = wasChanged || floatChanged;
         }
 
         ImGui::SameLine();
@@ -392,50 +602,55 @@ bool RenderHeatMaps( const std::string& uniqueKey, HeatMaps& currentHeatMaps ) {
     for( int removeIndex = 0; removeIndex < numToRemove; removeIndex++ ) {
         const std::string& nameToRemove = mapsToRemove[removeIndex];
         currentHeatMaps.erase( nameToRemove );
+
+        std::string motifNameToRemove = Stringf( "%s%s", attrName.c_str(), nameToRemove.c_str() );
+        stepVars.SetValue( motifNameToRemove, "" );
     }
 
     return wasChanged;
 }
 
 
-bool RenderMotifVariable( const std::string& uniqueKey, const std::string& varName, std::string& currentValue, const Strings& motifHierarchy, const std::string& label /*= "" */ ) {
-    Strings possibleVars = MotifDef::GetVariableNames( motifHierarchy );
-
-    if( currentValue == " " ) {
-        // ThesisFIXME: Can I force it open somehow?
-    }
-
-    bool motifChanged = RenderDropDown( uniqueKey, currentValue, possibleVars, label, false, "" );
-
-    if( motifChanged ) {
-        EventArgs args;
-        args.SetValue( "attrName", varName );
-
-        std::string mapType = g_theEditor->GetMapWindow()->GetMapType();
-        std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, mapType.c_str() );
-
-        g_theEventSystem->FireEvent( eventName, args );
-    }
-
-    return motifChanged;
-}
-
-
-bool RenderPercentOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, float& value, const std::string& label /*= ""*/, float defaultValue /*= 1.f */ ) {
+bool RenderFilePathOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy,
+    std::string& currentPath, const Strings& filter, const std::string& label /*= "" */ )
+{
     std::string& varRef = stepVars.GetReference( attrName );
     bool hasChanged = false;
 
-    std::string guiID = Stringf( "percent_%s", uniqueKey.c_str() );
+    std::string guiID = Stringf( "%s_%s", uniqueKey.c_str(), attrName.c_str() );
     ImGui::PushID( guiID.c_str() );
 
     if( varRef == "" ) {
-        hasChanged = RenderPercent( value, label, defaultValue );
+        hasChanged = RenderFilePath( currentPath, filter );
     } else {
-        hasChanged = RenderMotifVariable( uniqueKey, attrName, varRef, motifHierarchy, label );
+        hasChanged = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
     }
 
     ImGui::PopID();
-    hasChanged |= RenderRightClick( varRef, guiID );
+    hasChanged = RenderRightClick( varRef, guiID ) || hasChanged;
+
+    return hasChanged;
+}
+
+
+bool RenderCheckboxOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy,
+    bool& currentValue, const std::string& label /*= ""*/, bool defaultValue /*= true */ )
+{
+    std::string& varRef = stepVars.GetReference( attrName );
+    bool hasChanged = false;
+
+    std::string guiID = Stringf( "%s_%s", uniqueKey.c_str(), attrName.c_str() );
+    ImGui::PushID( guiID.c_str() );
+
+    if( varRef == "" ) {
+        SetImGuiTextColor( currentValue == defaultValue );
+        hasChanged = ImGui::Checkbox( "Make Paths Loop", &currentValue );
+    } else {
+        hasChanged = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
+    }
+
+    ImGui::PopID();
+    hasChanged = RenderRightClick( varRef, guiID ) || hasChanged;
 
     return hasChanged;
 }

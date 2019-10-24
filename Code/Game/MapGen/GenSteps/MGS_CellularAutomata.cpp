@@ -49,6 +49,33 @@ void MGS_CellularAutomata::SaveToXml( XmlDocument& document, XMLElement& element
 }
 
 
+bool MGS_CellularAutomata::RecalculateMotifVars( EventArgs& args ) {
+    MapGenStep::RecalculateMotifVars( args );
+
+    std::string attrName = args.GetValue( "attrName", "" );
+    std::string varName = m_motifVars.GetValue( attrName, "" );
+
+    if( varName == "" ) {
+        return false;
+    }
+
+    if( StringICmp( attrName, "radius" ) ) {
+        m_radius = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_radius );
+    } else if( StringICmp( attrName, "chancePerTile" ) ) {
+        m_chancePerTile = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_chancePerTile );
+    } else if( StringICmp( attrName, "ifNeighborType" ) ) {
+        m_ifNeighborType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_ifNeighborType );
+    } else if( StringICmp( attrName, "ifNumNeighbors" ) ) {
+        m_ifNumNeighbors = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_ifNumNeighbors );
+    } else if( StringICmp( attrName, "ifNeighborTags" ) ) {
+        std::string neighborTagCSV = MotifDef::GetVariableValue( m_motifHeirarchy, varName, "" );
+        m_ifNeighborHasTags = SplitStringOnDelimeter( neighborTagCSV, ',', false );
+    }
+
+    return false;
+}
+
+
 void MGS_CellularAutomata::RunOnce( Map& theMap ) const {
     RNG* mapRNG = theMap.GetMapRNG();
     IntVec2 mapDimensions = theMap.GetMapDimensions();

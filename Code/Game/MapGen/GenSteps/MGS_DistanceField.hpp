@@ -11,6 +11,7 @@ class MGS_DistanceField : public MapGenStep {
     explicit MGS_DistanceField( const XMLElement& element, const std::string& mapMotif );
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+    bool RecalculateMotifVars( EventArgs& args ) override;
 
 
     private:

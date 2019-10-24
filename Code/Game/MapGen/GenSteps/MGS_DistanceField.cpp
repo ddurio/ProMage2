@@ -24,6 +24,26 @@ void MGS_DistanceField::SaveToXml( XmlDocument& document, XMLElement& element ) 
 }
 
 
+bool MGS_DistanceField::RecalculateMotifVars( EventArgs& args ) {
+    MapGenStep::RecalculateMotifVars( args );
+
+    std::string attrName = args.GetValue( "attrName", "" );
+    std::string varName = m_motifVars.GetValue( attrName, "" );
+
+    if( varName == "" ) {
+        return false;
+    }
+
+    if( StringICmp( attrName, "movementType" ) ) {
+        m_movementType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_movementType );
+    } else if( StringICmp( attrName, "maxDistance" ) ) {
+        m_maxDistance = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_maxDistance );
+    }
+
+    return false;
+}
+
+
 void MGS_DistanceField::RunOnce( Map& theMap ) const {
     IntVec2 mapDimensions = theMap.GetMapDimensions();
     int numTiles = mapDimensions.x * mapDimensions.y;

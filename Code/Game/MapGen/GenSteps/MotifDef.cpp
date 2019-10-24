@@ -8,6 +8,11 @@ const NamedProperties& MotifDef::GetVariables() const {
 }
 
 
+std::string MotifDef::GetVariableValue( const Strings& motifHierarchy, const std::string& varName, const char* defaultValue ) {
+    return GetVariableValue( motifHierarchy, varName, std::string( defaultValue ) );
+}
+
+
 Strings MotifDef::GetVariableNames( const Strings& motifHierarchy ) {
     Strings hierarchyVars;
     int numMotifs = (int)motifHierarchy.size();

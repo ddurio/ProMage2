@@ -32,14 +32,15 @@ std::string ParseXMLAttribute( const XMLElement& element, const char* attributeN
 }
 
 
-bool GetXMLMotifVariable( const XMLElement& element, const char* attributeName, NamedStrings& motifVars ) {
+bool GetXMLMotifVariable( const XMLElement& element, const char* attributeName, NamedStrings& out_motifVars, const std::string& attrAlternateName /*= "" */ ) {
     std::string attrValue = ParseXMLAttribute( element, attributeName, "" );
 
     std::regex xmlVariableRegex( "^%(.+)%$", std::regex_constants::icase );
     std::smatch regexMatch;
 
     if( regex_search( attrValue, regexMatch, xmlVariableRegex ) ) {
-        motifVars.SetValue( attributeName, regexMatch[1] );
+        std::string storageName = (attrAlternateName == "") ? attributeName : attrAlternateName;
+        out_motifVars.SetValue( storageName, regexMatch[1] );
         return true;
     }
 

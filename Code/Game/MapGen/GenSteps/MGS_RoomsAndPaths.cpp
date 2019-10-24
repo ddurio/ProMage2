@@ -84,6 +84,42 @@ void MGS_RoomsAndPaths::SaveToXml( XmlDocument& document, XMLElement& element ) 
 }
 
 
+bool MGS_RoomsAndPaths::RecalculateMotifVars( EventArgs& args ) {
+    MapGenStep::RecalculateMotifVars( args );
+
+    std::string attrName = args.GetValue( "attrName", "" );
+    std::string varName = m_motifVars.GetValue( attrName, "" );
+
+    if( varName == "" ) {
+        return false;
+    }
+
+    if( StringICmp( attrName, "count" ) ) {
+        m_numRooms = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numRooms );
+    } else if( StringICmp( attrName, "width" ) ) {
+        m_roomWidth = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_roomWidth );
+    } else if( StringICmp( attrName, "height" ) ) {
+        m_roomHeight = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_roomHeight );
+    } else if( StringICmp( attrName, "roomFloor" ) ) {
+        m_roomFloor = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_roomFloor );
+    } else if( StringICmp( attrName, "wall" ) ) {
+        m_roomWall = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_roomWall );
+    } else if( StringICmp( attrName, "numOverlaps" ) ) {
+        m_numOverlaps = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numOverlaps );
+    } else if( StringICmp( attrName, "pathFloor" ) ) {
+        m_pathFloor = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_pathFloor );
+    } else if( StringICmp( attrName, "loop" ) ) {
+        m_pathLoop = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_pathLoop );
+    } else if( StringICmp( attrName, "extraCount" ) ) {
+        m_numExtraPaths = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numExtraPaths );
+    } else if( StringICmp( attrName, "straightChance" ) ) {
+        m_pathStraightChance = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_pathStraightChance );
+    }
+
+    return false;
+}
+
+
 void MGS_RoomsAndPaths::RunOnce( Map& theMap ) const {
     std::vector<IntVec2> roomPositions;
     std::vector<IntVec2> roomSizes;

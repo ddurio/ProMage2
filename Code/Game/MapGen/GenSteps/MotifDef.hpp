@@ -16,6 +16,7 @@ class MotifDef : public Definition< Motif, MotifDef > {
 
     template< typename T >
     static T GetVariableValue( const Strings& motifHierarchy, const std::string& varName, T defaultValue );
+    static std::string GetVariableValue( const Strings& motifHierarchy, const std::string& varName, const char* defaultValue );
     static Strings GetVariableNames( const Strings& motifHierarchy );
 
 

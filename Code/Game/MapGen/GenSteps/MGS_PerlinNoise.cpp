@@ -37,6 +37,30 @@ void MGS_PerlinNoise::SaveToXml( XmlDocument& document, XMLElement& element ) co
 }
 
 
+bool MGS_PerlinNoise::RecalculateMotifVars( EventArgs& args ) {
+    MapGenStep::RecalculateMotifVars( args );
+
+    std::string attrName = args.GetValue( "attrName", "" );
+    std::string varName = m_motifVars.GetValue( attrName, "" );
+
+    if( varName == "" ) {
+        return false;
+    }
+
+    if( StringICmp( attrName, "gridSize" ) ) {
+        m_gridSize = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_gridSize );
+    } else if( StringICmp( attrName, "octaves" ) ) {
+        m_numOctaves = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numOctaves );
+    } else if( StringICmp( attrName, "persistence" ) ) {
+        m_octavePersistence = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_octavePersistence );
+    } else if( StringICmp( attrName, "scale" ) ) {
+        m_octaveScale = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_octaveScale );
+    }
+
+    return false;
+}
+
+
 void MGS_PerlinNoise::RunOnce( Map& theMap ) const {
     RNG* mapRNG = theMap.GetMapRNG();
 
