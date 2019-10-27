@@ -8,7 +8,7 @@ class MGS_DistanceField : public MapGenStep {
     friend class EditorMapGenStep;
 
     public:
-    explicit MGS_DistanceField( const XMLElement& element, const std::string& mapMotif );
+    explicit MGS_DistanceField( const XMLElement& element, const Strings& motifHierarchy );
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
     bool RecalculateMotifVars( EventArgs& args ) override;

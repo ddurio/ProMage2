@@ -16,7 +16,8 @@ class MGS_FromImage : public MapGenStep {
     friend class EditorMapGenStep;
 
     public:
-    MGS_FromImage( const XMLElement& element, const std::string& mapMotif );
+    MGS_FromImage( const XMLElement& element, const Strings& motifHierarchy );
+    MGS_FromImage( const MGS_FromImage& copyFrom );
     ~MGS_FromImage();
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;

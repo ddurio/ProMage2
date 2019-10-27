@@ -8,7 +8,7 @@ class MGS_RoomsAndPaths : public MapGenStep {
     friend class EditorMapGenStep;
 
     public:
-    MGS_RoomsAndPaths( const XMLElement& element, const std::string& mapMotif );
+    MGS_RoomsAndPaths( const XMLElement& element, const Strings& motifHierarchy );
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
     bool RecalculateMotifVars( EventArgs& args ) override;

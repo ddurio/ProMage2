@@ -8,7 +8,7 @@ class MGS_PerlinNoise : public MapGenStep {
     friend class EditorMapGenStep;
 
     public:
-    MGS_PerlinNoise( const XMLElement& element, const std::string& mapMotif );
+    MGS_PerlinNoise( const XMLElement& element, const Strings& motifHierarchy );
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
     bool RecalculateMotifVars( EventArgs& args ) override;

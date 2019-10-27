@@ -172,6 +172,12 @@
     <ClCompile Include="MapGen\GenSteps\MotifDef.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MGS_Virtual.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen\GenSteps\MGS_VirtualDef.cpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -316,6 +322,12 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="MapGen\GenSteps\MotifDef.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MGS_Virtual.hpp">
+      <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGen\GenSteps\MGS_VirtualDef.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
   </ItemGroup>

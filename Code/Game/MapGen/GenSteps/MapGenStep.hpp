@@ -27,7 +27,7 @@ class MapGenStep {
     friend class EditorMapGenStep;
 
     public:
-    explicit MapGenStep( const XMLElement& element, const std::string& mapMotif );
+    explicit MapGenStep( const XMLElement& element, const Strings& motifHierarchy );
     virtual ~MapGenStep() {};
 
     static int AddCustomCondition( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
@@ -36,7 +36,8 @@ class MapGenStep {
     static void RemoveCustomCondition( int conditionIndex );
     static void RemoveCustomResult( int resultIndex );
 
-    static MapGenStep* CreateMapGenStep( const XMLElement& element, const std::string& mapMotif );
+    static MapGenStep* CreateMapGenStep( const XMLElement& element, const Strings& motifHierarchy );
+    static MapGenStep* CreateMapGenStep( const MapGenStep* stepToCopy );
 
 
     void Run( Map& map ) const;
@@ -44,9 +45,14 @@ class MapGenStep {
     struct CustomEvent;
     std::vector< CustomEvent > GetCustomResults() const;
     virtual std::string GetName() const;
+    const Strings& GetMotifs() const;
 
     virtual void SaveToXml( XmlDocument& document, XMLElement& element ) const;
     virtual bool RecalculateMotifVars( EventArgs& args );
+
+    void SetMotifs( const Strings& motifsToSet );
+    void AddParentMotifs( const Strings& parentMotifs );
+    void AddChildMotifs( const Strings& motifsToAdd );
 
 
     struct CustomEvent {
@@ -68,7 +74,7 @@ class MapGenStep {
     protected:
     // General
     std::string m_stepType          = "";
-    Strings m_motifHeirarchy;
+    Strings m_motifHierarchy;
     NamedStrings m_motifVars; // Only needed for editor
 
     float m_chanceToRun             = 1.f;
@@ -95,7 +101,7 @@ class MapGenStep {
 
     virtual bool IsTileValid( Map& theMap, const Tile& tile ) const;
     virtual void ChangeTile( Map& theMap, int tileIndex ) const;
-    virtual void ChangeTile( Map& theMap, int tileX, int tileY ) const;
+    void ChangeTile( Map& theMap, int tileX, int tileY ) const;
 
     void ChangeTileType( Tile& tile, const std::string& customType = "" ) const;
     void ChangeTileTags( Tile& tile, const Strings& customTags = Strings() ) const;

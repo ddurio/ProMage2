@@ -21,21 +21,22 @@ std::vector< MapGenStep::CustomEvent > MapGenStep::s_customConditions;
 std::vector< MapGenStep::CustomEvent > MapGenStep::s_customResults;
 
 
-MapGenStep::MapGenStep( const XMLElement& element, const std::string& mapMotif ) {
+MapGenStep::MapGenStep( const XMLElement& element, const Strings& motifHierarchy ) {
     if( s_mgsChannel == DevConsole::CHANNEL_UNDEFINED ) {
         s_mgsChannel = g_theDevConsole->AddChannel( "MapGen", Rgba::ORGANIC_GREEN );
     }
 
     m_stepType                  = element.Name();
     std::string stepMotif       = ParseXMLAttribute( element, "motif", "" );
-    m_motifHeirarchy            = { stepMotif, mapMotif };
+    AddChildMotifs( { stepMotif } );
+    AddParentMotifs( motifHierarchy );
 
-    m_chanceToRun               = ParseXMLAttribute( element, "chanceToRun",      m_motifHeirarchy,   m_chanceToRun );
-    m_numIterations             = ParseXMLAttribute( element, "numIterations",    m_motifHeirarchy,   m_numIterations );
+    m_chanceToRun               = ParseXMLAttribute( element, "chanceToRun",      m_motifHierarchy,   m_chanceToRun );
+    m_numIterations             = ParseXMLAttribute( element, "numIterations",    m_motifHierarchy,   m_numIterations );
 
     // Conditions
-    m_ifIsType                  = ParseXMLAttribute( element, "ifIsType",         m_motifHeirarchy,   m_ifIsType );
-    std::string ifHasTagsCSV    = ParseXMLAttribute( element, "ifHasTags",        m_motifHeirarchy,   "" );
+    m_ifIsType                  = ParseXMLAttribute( element, "ifIsType",         m_motifHierarchy,   m_ifIsType );
+    std::string ifHasTagsCSV    = ParseXMLAttribute( element, "ifHasTags",        m_motifHierarchy,   "" );
     m_ifHasTags                 = SplitStringOnDelimeter( ifHasTagsCSV, ',', false );
 
     int numCustomConditions = (int)s_customConditions.size();
@@ -53,8 +54,8 @@ MapGenStep::MapGenStep( const XMLElement& element, const std::string& mapMotif )
     }
 
     // Results
-    m_setType               = ParseXMLAttribute( element, "setType", m_motifHeirarchy,    m_setType );
-    std::string setTagsCSV  = ParseXMLAttribute( element, "setTags", m_motifHeirarchy,    "" );
+    m_setType               = ParseXMLAttribute( element, "setType", m_motifHierarchy,    m_setType );
+    std::string setTagsCSV  = ParseXMLAttribute( element, "setTags", m_motifHierarchy,    "" );
     m_setTags = SplitStringOnDelimeter( setTagsCSV, ',', false );
 
     int numCustomResults = (int)s_customResults.size();
@@ -115,7 +116,7 @@ Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element, co
 
     for( int nameIndex = 0; nameIndex < numAttrs; nameIndex++ ) {
         const std::string& attrName = attrNames[nameIndex];
-        parsedValues[nameIndex] = ParseXMLAttribute( element, attrName.c_str(), genStep->m_motifHeirarchy, "" );
+        parsedValues[nameIndex] = ParseXMLAttribute( element, attrName.c_str(), genStep->m_motifHierarchy, "" );
 
         if( parsedValues[nameIndex] != "" ) {
             numParsed++;
@@ -217,27 +218,63 @@ void MapGenStep::RemoveCustomResult( int resultIndex ) {
 }
 
 
-MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element, const std::string& mapMotif ) {
+MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element, const Strings& motifHierarchy ) {
     std::string stepType = element.Name();
     MapGenStep* step = nullptr;
 
     if( StringICmp( stepType, "CellularAutomata" ) ) {
-        step = new MGS_CellularAutomata( element, mapMotif );
+        step = new MGS_CellularAutomata( element, motifHierarchy );
     } else if( StringICmp( stepType, "DistanceField" ) ) {
-        step = new MGS_DistanceField( element, mapMotif );
+        step = new MGS_DistanceField( element, motifHierarchy );
     } else if( StringICmp( stepType, "FromImage" ) ) {
-        step = new MGS_FromImage( element, mapMotif );
+        step = new MGS_FromImage( element, motifHierarchy );
     } else if( StringICmp( stepType, "PerlinNoise" ) ) {
-        step = new MGS_PerlinNoise( element, mapMotif );
+        step = new MGS_PerlinNoise( element, motifHierarchy );
     } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
-        step = new MGS_RoomsAndPaths( element, mapMotif );
+        step = new MGS_RoomsAndPaths( element, motifHierarchy );
     } else if( StringICmp( stepType, "Sprinkle" ) ) {
-        step = new MGS_Sprinkle( element, mapMotif );
+        step = new MGS_Sprinkle( element, motifHierarchy );
     } else {
         ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
     }
 
     return step;
+}
+
+
+MapGenStep* MapGenStep::CreateMapGenStep( const MapGenStep* stepToCopy ) {
+    std::string stepType = stepToCopy->m_stepType;
+    MapGenStep* newStep = nullptr;
+
+    if( StringICmp( stepType, "CellularAutomata" ) ) {
+        MGS_CellularAutomata* caStepToCopy = (MGS_CellularAutomata*)stepToCopy;
+        newStep = new MGS_CellularAutomata( *caStepToCopy );
+
+    } else if( StringICmp( stepType, "DistanceField" ) ) {
+        MGS_DistanceField* dfStepToCopy = (MGS_DistanceField*)stepToCopy;
+        newStep = new MGS_DistanceField( *dfStepToCopy );
+
+    } else if( StringICmp( stepType, "FromImage" ) ) {
+        MGS_FromImage* fiStepToCopy = (MGS_FromImage*)stepToCopy;
+        newStep = new MGS_FromImage( *fiStepToCopy );
+
+    } else if( StringICmp( stepType, "PerlinNoise" ) ) {
+        MGS_PerlinNoise* pnStepToCopy = (MGS_PerlinNoise*)stepToCopy;
+        newStep = new MGS_PerlinNoise( *pnStepToCopy );
+
+    } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
+        MGS_RoomsAndPaths* rnpStepToCopy = (MGS_RoomsAndPaths*)stepToCopy;
+        newStep = new MGS_RoomsAndPaths( *rnpStepToCopy );
+
+    } else if( StringICmp( stepType, "Sprinkle" ) ) {
+        MGS_Sprinkle* sStepToCopy = (MGS_Sprinkle*)stepToCopy;
+        newStep = new MGS_Sprinkle( *sStepToCopy );
+
+    } else {
+        ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
+    }
+
+    return newStep;
 }
 
 
@@ -261,6 +298,11 @@ std::vector< MapGenStep::CustomEvent > MapGenStep::GetCustomResults() const {
 
 std::string MapGenStep::GetName() const {
     return m_stepType;
+}
+
+
+const Strings& MapGenStep::GetMotifs() const {
+    return m_motifHierarchy;
 }
 
 
@@ -356,16 +398,16 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
     }
 
     if( StringICmp( attrName, "chanceToRun" ) ) {
-        m_chanceToRun = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_chanceToRun );
+        m_chanceToRun = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_chanceToRun );
         return false;
     } else if( StringICmp( attrName, "numIterations" ) ) {
-        m_numIterations = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numIterations );
+        m_numIterations = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numIterations );
         return false;
     } else if( StringICmp( attrName, "ifIsType" ) ) {
-        m_ifIsType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_ifIsType );
+        m_ifIsType = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_ifIsType );
         return false;
     } else if( StringICmp( attrName, "ifHasTags" ) ) {
-        std::string tagCSV = MotifDef::GetVariableValue( m_motifHeirarchy, varName, "" );
+        std::string tagCSV = MotifDef::GetVariableValue( m_motifHierarchy, varName, "" );
         m_ifHasTags = SplitStringOnDelimeter( tagCSV, ',', false );
         return false;
     }
@@ -381,7 +423,7 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
             std::string& eventAttrValue = cEvent.attrValues[nameIndex];
 
             if( StringICmp( attrName, eventAttrName ) ) {
-                eventAttrValue = MotifDef::GetVariableValue( m_motifHeirarchy, varName, eventAttrValue );
+                eventAttrValue = MotifDef::GetVariableValue( m_motifHierarchy, varName, eventAttrValue );
                 return false;
             }
         }
@@ -393,16 +435,16 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
         std::string heatAttrName = Stringf( "ifHeatMap%s", heatIter->first.c_str() );
 
         if( StringICmp( attrName, heatAttrName ) ) {
-            heatIter->second = MotifDef::GetVariableValue( m_motifHeirarchy, varName, heatIter->second );
+            heatIter->second = MotifDef::GetVariableValue( m_motifHierarchy, varName, heatIter->second );
             return false;
         }
     }
 
     if( StringICmp( attrName, "setType" ) ) {
-        m_setType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_setType );
+        m_setType = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_setType );
         return false;
     } else if( StringICmp( attrName, "setTags" ) ) {
-        std::string tagCSV = MotifDef::GetVariableValue( m_motifHeirarchy, varName, "" );
+        std::string tagCSV = MotifDef::GetVariableValue( m_motifHierarchy, varName, "" );
         m_setTags = SplitStringOnDelimeter( tagCSV, ',', false );
         return false;
     }
@@ -418,7 +460,7 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
             std::string& eventAttrValue = cEvent.attrValues[nameIndex];
 
             if( StringICmp( attrName, eventAttrName ) ) {
-                eventAttrValue = MotifDef::GetVariableValue( m_motifHeirarchy, varName, eventAttrValue );
+                eventAttrValue = MotifDef::GetVariableValue( m_motifHierarchy, varName, eventAttrValue );
                 return false;
             }
         }
@@ -430,12 +472,29 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
         std::string heatAttrName = Stringf( "setHeatMap%s", heatIter->first.c_str() );
 
         if( StringICmp( attrName, heatAttrName ) ) {
-            heatIter->second = MotifDef::GetVariableValue( m_motifHeirarchy, varName, heatIter->second );
+            heatIter->second = MotifDef::GetVariableValue( m_motifHierarchy, varName, heatIter->second );
             return false;
         }
     }
 
     return false;
+}
+
+
+void MapGenStep::SetMotifs( const Strings& motifsToSet ) {
+    m_motifHierarchy = motifsToSet;
+}
+
+
+void MapGenStep::AddParentMotifs( const Strings& parentMotifs ) {
+    // Add at the back of the list (least important)
+    m_motifHierarchy.insert( m_motifHierarchy.end(),parentMotifs.begin(), parentMotifs.end() );
+}
+
+
+void MapGenStep::AddChildMotifs( const Strings& motifsToAdd ) {
+    // Add at the front of the list (most important)
+    m_motifHierarchy.insert( m_motifHierarchy.begin(), motifsToAdd.begin(), motifsToAdd.end() );
 }
 
 

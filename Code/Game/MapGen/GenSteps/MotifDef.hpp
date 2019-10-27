@@ -12,7 +12,11 @@ class MotifDef : public Definition< Motif, MotifDef > {
     friend class Definition< Motif, MotifDef >;
 
     public:
+    MotifDef( const XMLElement& element, bool addToDefList = false );
+    MotifDef( const std::string& motifNameToCopy, const std::string& nameToAppend );
+
     const NamedProperties& GetVariables() const;
+    NamedProperties& GetVariables(); // Non-const version for MGS_Virtual
 
     template< typename T >
     static T GetVariableValue( const Strings& motifHierarchy, const std::string& varName, T defaultValue );
@@ -23,8 +27,6 @@ class MotifDef : public Definition< Motif, MotifDef > {
     private:
     NamedProperties m_variables;
 
-
-    MotifDef( const XMLElement& element );
 
     void DefineObject( Motif& theObject ) const override;
 };

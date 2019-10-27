@@ -9,24 +9,24 @@
 #include "Game/MapGen/Map/Tile.hpp"
 
 
-MGS_RoomsAndPaths::MGS_RoomsAndPaths( const XMLElement& element, const std::string& mapMotif ) :
-    MapGenStep( element, mapMotif ) {
+MGS_RoomsAndPaths::MGS_RoomsAndPaths( const XMLElement& element, const Strings& motifHierarchy ) :
+    MapGenStep( element, motifHierarchy ) {
 
     // Rooms
     const XMLElement* roomElement    = element.FirstChildElement( "Rooms" );
-    m_numRooms           = ParseXMLAttribute( *roomElement, "count",          m_motifHeirarchy, m_numRooms );
-    m_roomWidth          = ParseXMLAttribute( *roomElement, "width",          m_motifHeirarchy, m_roomWidth );
-    m_roomHeight         = ParseXMLAttribute( *roomElement, "height",         m_motifHeirarchy, m_roomHeight );
-    m_roomFloor          = ParseXMLAttribute( *roomElement, "floor",          m_motifHeirarchy, m_roomFloor );
-    m_roomWall           = ParseXMLAttribute( *roomElement, "wall",           m_motifHeirarchy, m_roomWall );
-    m_numOverlaps        = ParseXMLAttribute( *roomElement, "numOverlaps",    m_motifHeirarchy, m_numOverlaps );
+    m_numRooms           = ParseXMLAttribute( *roomElement, "count",          m_motifHierarchy, m_numRooms );
+    m_roomWidth          = ParseXMLAttribute( *roomElement, "width",          m_motifHierarchy, m_roomWidth );
+    m_roomHeight         = ParseXMLAttribute( *roomElement, "height",         m_motifHierarchy, m_roomHeight );
+    m_roomFloor          = ParseXMLAttribute( *roomElement, "floor",          m_motifHierarchy, m_roomFloor );
+    m_roomWall           = ParseXMLAttribute( *roomElement, "wall",           m_motifHierarchy, m_roomWall );
+    m_numOverlaps        = ParseXMLAttribute( *roomElement, "numOverlaps",    m_motifHierarchy, m_numOverlaps );
 
     // Paths
     const XMLElement* pathElement    = element.FirstChildElement( "Paths" );
-    m_pathFloor          = ParseXMLAttribute( *pathElement, "floor",          m_motifHeirarchy, m_pathFloor );
-    m_pathLoop           = ParseXMLAttribute( *pathElement, "loop",           m_motifHeirarchy, m_pathLoop );
-    m_numExtraPaths      = ParseXMLAttribute( *pathElement, "extraCount",     m_motifHeirarchy, m_numExtraPaths );
-    m_pathStraightChance = ParseXMLAttribute( *pathElement, "straightChance", m_motifHeirarchy, m_pathStraightChance );
+    m_pathFloor          = ParseXMLAttribute( *pathElement, "floor",          m_motifHierarchy, m_pathFloor );
+    m_pathLoop           = ParseXMLAttribute( *pathElement, "loop",           m_motifHierarchy, m_pathLoop );
+    m_numExtraPaths      = ParseXMLAttribute( *pathElement, "extraCount",     m_motifHierarchy, m_numExtraPaths );
+    m_pathStraightChance = ParseXMLAttribute( *pathElement, "straightChance", m_motifHierarchy, m_pathStraightChance );
 }
 
 
@@ -95,25 +95,25 @@ bool MGS_RoomsAndPaths::RecalculateMotifVars( EventArgs& args ) {
     }
 
     if( StringICmp( attrName, "count" ) ) {
-        m_numRooms = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numRooms );
+        m_numRooms = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numRooms );
     } else if( StringICmp( attrName, "width" ) ) {
-        m_roomWidth = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_roomWidth );
+        m_roomWidth = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_roomWidth );
     } else if( StringICmp( attrName, "height" ) ) {
-        m_roomHeight = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_roomHeight );
+        m_roomHeight = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_roomHeight );
     } else if( StringICmp( attrName, "roomFloor" ) ) {
-        m_roomFloor = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_roomFloor );
+        m_roomFloor = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_roomFloor );
     } else if( StringICmp( attrName, "wall" ) ) {
-        m_roomWall = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_roomWall );
+        m_roomWall = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_roomWall );
     } else if( StringICmp( attrName, "numOverlaps" ) ) {
-        m_numOverlaps = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numOverlaps );
+        m_numOverlaps = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numOverlaps );
     } else if( StringICmp( attrName, "pathFloor" ) ) {
-        m_pathFloor = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_pathFloor );
+        m_pathFloor = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_pathFloor );
     } else if( StringICmp( attrName, "loop" ) ) {
-        m_pathLoop = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_pathLoop );
+        m_pathLoop = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_pathLoop );
     } else if( StringICmp( attrName, "extraCount" ) ) {
-        m_numExtraPaths = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numExtraPaths );
+        m_numExtraPaths = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numExtraPaths );
     } else if( StringICmp( attrName, "straightChance" ) ) {
-        m_pathStraightChance = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_pathStraightChance );
+        m_pathStraightChance = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_pathStraightChance );
     }
 
     return false;

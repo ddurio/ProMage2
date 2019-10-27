@@ -6,16 +6,26 @@
 #include "Game/MapGen/Map/Map.hpp"
 #include "Game/MapGen/Map/TileDef.hpp"
 
-
-MGS_FromImage::MGS_FromImage( const XMLElement& element, const std::string& mapMotif ) :
-    MapGenStep( element, mapMotif ) {
-    m_imageFilePath = ParseXMLAttribute( element, "imageFilePath",  m_motifHeirarchy,   m_imageFilePath );
+MGS_FromImage::MGS_FromImage( const XMLElement& element, const Strings& motifHierarchy ) :
+    MapGenStep( element, motifHierarchy ) {
+    m_imageFilePath = ParseXMLAttribute( element, "imageFilePath",  m_motifHierarchy,   m_imageFilePath );
     GUARANTEE_OR_DIE( m_imageFilePath != "", "ERROR: XML Attribute 'imageFilePath' missing for MapGenStep_FromImage" );
     Startup();
 
-    m_alignX       = ParseXMLAttribute( element, "alignX",          m_motifHeirarchy,   m_alignX );
-    m_alignY       = ParseXMLAttribute( element, "alignY",          m_motifHeirarchy,   m_alignY );
-    m_numRotations = ParseXMLAttribute( element, "numRotations",    m_motifHeirarchy,   m_numRotations );
+    m_alignX        = ParseXMLAttribute( element, "alignX",          m_motifHierarchy,   m_alignX );
+    m_alignY        = ParseXMLAttribute( element, "alignY",          m_motifHierarchy,   m_alignY );
+    m_numRotations  = ParseXMLAttribute( element, "numRotations",    m_motifHierarchy,   m_numRotations );
+}
+
+
+MGS_FromImage::MGS_FromImage( const MGS_FromImage& copyFrom ) :
+    MapGenStep( copyFrom ) {
+    m_imageFilePath = copyFrom.m_imageFilePath;
+    Startup();
+
+    m_alignX        = copyFrom.m_alignX;
+    m_alignY        = copyFrom.m_alignY;
+    m_numRotations  = copyFrom.m_numRotations;
 }
 
 
@@ -55,13 +65,13 @@ bool MGS_FromImage::RecalculateMotifVars( EventArgs& args ) {
     }
 
     if( StringICmp( attrName, "imageFilePath" ) ) {
-        m_imageFilePath = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_imageFilePath );
+        m_imageFilePath = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_imageFilePath );
     } else if( StringICmp( attrName, "alignX" ) ) {
-        m_alignX = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_alignX );
+        m_alignX = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_alignX );
     } else if( StringICmp( attrName, "alignY" ) ) {
-        m_alignY = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_alignY );
+        m_alignY = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_alignY );
     } else if( StringICmp( attrName, "numRotations" ) ) {
-        m_numRotations = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_numRotations );
+        m_numRotations = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numRotations );
     }
 
     return false;
@@ -83,7 +93,7 @@ void MGS_FromImage::Shutdown() const {
 
 
 void MGS_FromImage::RunOnce( Map& theMap ) const {
-    if( m_imageFilePath != m_image->GetImageFilePath() ) {
+    if( m_image == nullptr || m_imageFilePath != m_image->GetImageFilePath() ) {
         // Likely the editor changed the file path
         Shutdown();
         Startup();

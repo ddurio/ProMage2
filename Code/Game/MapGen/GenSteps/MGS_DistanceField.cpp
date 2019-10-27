@@ -3,10 +3,10 @@
 #include "Game/MapGen/Map/Map.hpp"
 
 
-MGS_DistanceField::MGS_DistanceField( const XMLElement& element, const std::string& mapMotif ) :
-    MapGenStep( element, mapMotif ) {
-    m_movementType = ParseXMLAttribute( element, "movementType", m_motifHeirarchy,  m_movementType );
-    m_maxDistance  = ParseXMLAttribute( element, "maxDistance",  m_motifHeirarchy,  m_maxDistance );
+MGS_DistanceField::MGS_DistanceField( const XMLElement& element, const Strings& motifHierarchy ) :
+    MapGenStep( element, motifHierarchy ) {
+    m_movementType = ParseXMLAttribute( element, "movementType", m_motifHierarchy,  m_movementType );
+    m_maxDistance  = ParseXMLAttribute( element, "maxDistance",  m_motifHierarchy,  m_maxDistance );
 }
 
 
@@ -35,9 +35,9 @@ bool MGS_DistanceField::RecalculateMotifVars( EventArgs& args ) {
     }
 
     if( StringICmp( attrName, "movementType" ) ) {
-        m_movementType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_movementType );
+        m_movementType = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_movementType );
     } else if( StringICmp( attrName, "maxDistance" ) ) {
-        m_maxDistance = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_maxDistance );
+        m_maxDistance = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_maxDistance );
     }
 
     return false;

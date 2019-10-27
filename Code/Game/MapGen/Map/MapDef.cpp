@@ -70,11 +70,11 @@ MapDef::MapDef( const XMLElement& element ) {
     m_height       = ParseXMLAttribute( element, "height",   { m_motif },   m_height );
 
     // GenSteps
-    const XMLElement* genStep = element.FirstChildElement();
+    const XMLElement* stepEle = element.FirstChildElement();
 
-    for( genStep; genStep != nullptr; genStep = genStep->NextSiblingElement() ) {
-        MapGenStep* step = MapGenStep::CreateMapGenStep( *genStep, m_motif );
-        m_mapGenSteps.push_back( step );
+    for( stepEle; stepEle != nullptr; stepEle = stepEle->NextSiblingElement() ) {
+        MapGenStep* genStep = MapGenStep::CreateMapGenStep( *stepEle, { m_motif } );
+        m_mapGenSteps.push_back( genStep );
     }
 }
 

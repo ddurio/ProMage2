@@ -8,7 +8,7 @@ class MGS_Sprinkle : public MapGenStep {
     friend class EditorMapGenStep;
 
     public:
-    explicit MGS_Sprinkle( const XMLElement& element, const std::string& mapMotif );
+    explicit MGS_Sprinkle( const XMLElement& element, const Strings& motifHierarchy );
     ~MGS_Sprinkle() {};
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;

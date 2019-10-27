@@ -6,17 +6,17 @@
 #include "Game/MapGen/Map/Metadata.hpp"
 
 
-MGS_CellularAutomata::MGS_CellularAutomata( const XMLElement& element, const std::string& mapMotif ) :
-    MapGenStep( element, mapMotif ) {
-    std::string radius  = ParseXMLAttribute( element, "radius",            m_motifHeirarchy,    "1" );
+MGS_CellularAutomata::MGS_CellularAutomata( const XMLElement& element, const Strings& motifHierarchy ) :
+    MapGenStep( element, motifHierarchy ) {
+    std::string radius  = ParseXMLAttribute( element, "radius",            m_motifHierarchy,    "1" );
     m_radius            = ParseCustomIntRange( radius );
 
-    m_chancePerTile     = ParseXMLAttribute( element, "chancePerTile",     m_motifHeirarchy,    m_chancePerTile );
+    m_chancePerTile     = ParseXMLAttribute( element, "chancePerTile",     m_motifHierarchy,    m_chancePerTile );
 
-    m_ifNeighborType    = ParseXMLAttribute( element, "ifNeighborType",    m_motifHeirarchy,    m_ifNeighborType );
-    m_ifNumNeighbors    = ParseXMLAttribute( element, "ifNumNeighbors",    m_motifHeirarchy,    m_ifNumNeighbors );
+    m_ifNeighborType    = ParseXMLAttribute( element, "ifNeighborType",    m_motifHierarchy,    m_ifNeighborType );
+    m_ifNumNeighbors    = ParseXMLAttribute( element, "ifNumNeighbors",    m_motifHierarchy,    m_ifNumNeighbors );
 
-    std::string neighborTagCSV = ParseXMLAttribute( element, "ifNeighborHasTags", m_motifHeirarchy, "" );
+    std::string neighborTagCSV = ParseXMLAttribute( element, "ifNeighborHasTags", m_motifHierarchy, "" );
     m_ifNeighborHasTags = SplitStringOnDelimeter( neighborTagCSV, ',', false );
 }
 
@@ -60,15 +60,15 @@ bool MGS_CellularAutomata::RecalculateMotifVars( EventArgs& args ) {
     }
 
     if( StringICmp( attrName, "radius" ) ) {
-        m_radius = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_radius );
+        m_radius = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_radius );
     } else if( StringICmp( attrName, "chancePerTile" ) ) {
-        m_chancePerTile = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_chancePerTile );
+        m_chancePerTile = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_chancePerTile );
     } else if( StringICmp( attrName, "ifNeighborType" ) ) {
-        m_ifNeighborType = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_ifNeighborType );
+        m_ifNeighborType = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_ifNeighborType );
     } else if( StringICmp( attrName, "ifNumNeighbors" ) ) {
-        m_ifNumNeighbors = MotifDef::GetVariableValue( m_motifHeirarchy, varName, m_ifNumNeighbors );
+        m_ifNumNeighbors = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_ifNumNeighbors );
     } else if( StringICmp( attrName, "ifNeighborTags" ) ) {
-        std::string neighborTagCSV = MotifDef::GetVariableValue( m_motifHeirarchy, varName, "" );
+        std::string neighborTagCSV = MotifDef::GetVariableValue( m_motifHierarchy, varName, "" );
         m_ifNeighborHasTags = SplitStringOnDelimeter( neighborTagCSV, ',', false );
     }
 
