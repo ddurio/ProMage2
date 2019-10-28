@@ -1,0 +1,13 @@
+<CustomSteps>
+    <Custom name="AddStairs">
+        <Sprinkle ifIsType="%groundType%" setType="StairsDown" setTags="stairsDown"/>
+        <CellularAutomata setTags="stairsDownAccess" ifNeighborType="StairsDown"/>
+        <DistanceField ifIsType="StairsDown" movementType="Walk"/>
+        <Sprinkle ifIsType="%groundType%" ifHeatMapDistance="%stairDistRange%" setType="StairsUp" setTags="stairsUp"/>
+        <CellularAutomata setTags="stairsUpAccess" ifNeighborType="StairsUp"/>
+        <Motif name="AddStairs">
+            <groundType value="EdgedSand"/>
+            <stairDistRange value="0~999998"/>
+        </Motif>
+    </Custom>
+</CustomSteps>

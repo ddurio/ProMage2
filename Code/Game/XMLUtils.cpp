@@ -27,8 +27,8 @@ ItemSlot ParseXMLAttribute( const XMLElement& element, const char* attributeName
 }
 
 
-std::string ParseXMLAttribute( const XMLElement& element, const char* attributeName, const Strings& motifHeirarchy, const char* defaultValue ) {
-    return ParseXMLAttribute( element, attributeName, motifHeirarchy, std::string( defaultValue ) );
+std::string ParseXMLAttribute( const XMLElement& element, const char* attributeName, NamedStrings& out_motifVars, const Strings& motifHeirarchy, const char* defaultValue, const std::string& attrAlternateName /*= "" */ ) {
+    return ParseXMLAttribute( element, attributeName, out_motifVars, motifHeirarchy, std::string( defaultValue ), attrAlternateName );
 }
 
 
@@ -41,21 +41,6 @@ bool GetXMLMotifVariable( const XMLElement& element, const char* attributeName, 
     if( regex_search( attrValue, regexMatch, xmlVariableRegex ) ) {
         std::string storageName = (attrAlternateName == "") ? attributeName : attrAlternateName;
         out_motifVars.SetValue( storageName, regexMatch[1] );
-        return true;
-    }
-
-    return false;
-}
-
-
-bool GetXMLMotifVariable( const XMLElement& element, const char* attributeName, std::string& out_motifVarName ) {
-    std::string attrValue = ParseXMLAttribute( element, attributeName, "" );
-
-    std::regex xmlVariableRegex( "^%(.+)%$", std::regex_constants::icase );
-    std::smatch regexMatch;
-
-    if( regex_search( attrValue, regexMatch, xmlVariableRegex ) ) {
-        out_motifVarName = regexMatch[1];
         return true;
     }
 

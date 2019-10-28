@@ -51,6 +51,29 @@ void MapDef::SaveToXml( XmlDocument& document, XMLElement& element ) const {
 }
 
 
+bool MapDef::RecalculateMotifVars( EventArgs& args ) {
+    std::string attrName = args.GetValue( "attrName", "" );
+    std::string varName = m_motifVars.GetValue( attrName, "" );
+    bool calcAllVars = StringICmp( attrName, "all" );
+
+    if( !calcAllVars && varName == "" ) {
+        return false;
+    }
+
+    if( calcAllVars || StringICmp( attrName, "fillTile" ) ) {
+        m_tileFillType = MotifDef::GetVariableValue( { m_motif }, varName, m_tileFillType );
+    } else if( calcAllVars || StringICmp( attrName, "edgeTile" ) ) {
+        m_tileEdgeType = MotifDef::GetVariableValue( { m_motif }, varName, m_tileEdgeType );
+    } else if( calcAllVars || StringICmp( attrName, "width" ) ) {
+        m_width = MotifDef::GetVariableValue( { m_motif }, varName, m_width );
+    } else if( calcAllVars || StringICmp( attrName, "height" ) ) {
+        m_height = MotifDef::GetVariableValue( { m_motif }, varName, m_height );
+    }
+
+    return false;
+}
+
+
 // PROTECTED --------------------------------------
 MapDef::MapDef( const XMLElement& element ) {
     // Name
@@ -61,13 +84,13 @@ MapDef::MapDef( const XMLElement& element ) {
     m_motif        = ParseXMLAttribute( element, "motif", m_motif );
 
     // Tile Types
-    m_tileFillType = ParseXMLAttribute( element, "fillTile", { m_motif },   m_tileFillType );
+    m_tileFillType = ParseXMLAttribute( element, "fillTile", m_motifVars, { m_motif },   m_tileFillType );
     GUARANTEE_OR_DIE( m_tileFillType != "", "(MapDef) Map missing required attribute 'fillType'" );
-    m_tileEdgeType = ParseXMLAttribute( element, "edgeTile", { m_motif },   m_tileEdgeType );
+    m_tileEdgeType = ParseXMLAttribute( element, "edgeTile", m_motifVars, { m_motif },   m_tileEdgeType );
 
     // Size
-    m_width        = ParseXMLAttribute( element, "width",    { m_motif },   m_width );
-    m_height       = ParseXMLAttribute( element, "height",   { m_motif },   m_height );
+    m_width        = ParseXMLAttribute( element, "width",    m_motifVars, { m_motif },   m_width );
+    m_height       = ParseXMLAttribute( element, "height",   m_motifVars, { m_motif },   m_height );
 
     // GenSteps
     const XMLElement* stepEle = element.FirstChildElement();

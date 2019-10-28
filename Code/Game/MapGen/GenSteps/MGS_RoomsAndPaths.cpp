@@ -14,19 +14,19 @@ MGS_RoomsAndPaths::MGS_RoomsAndPaths( const XMLElement& element, const Strings& 
 
     // Rooms
     const XMLElement* roomElement    = element.FirstChildElement( "Rooms" );
-    m_numRooms           = ParseXMLAttribute( *roomElement, "count",          m_motifHierarchy, m_numRooms );
-    m_roomWidth          = ParseXMLAttribute( *roomElement, "width",          m_motifHierarchy, m_roomWidth );
-    m_roomHeight         = ParseXMLAttribute( *roomElement, "height",         m_motifHierarchy, m_roomHeight );
-    m_roomFloor          = ParseXMLAttribute( *roomElement, "floor",          m_motifHierarchy, m_roomFloor );
-    m_roomWall           = ParseXMLAttribute( *roomElement, "wall",           m_motifHierarchy, m_roomWall );
-    m_numOverlaps        = ParseXMLAttribute( *roomElement, "numOverlaps",    m_motifHierarchy, m_numOverlaps );
+    m_numRooms           = ParseXMLAttribute( *roomElement, "count",          m_motifVars,  m_motifHierarchy, m_numRooms );
+    m_roomWidth          = ParseXMLAttribute( *roomElement, "width",          m_motifVars,  m_motifHierarchy, m_roomWidth );
+    m_roomHeight         = ParseXMLAttribute( *roomElement, "height",         m_motifVars,  m_motifHierarchy, m_roomHeight );
+    m_roomFloor          = ParseXMLAttribute( *roomElement, "floor",          m_motifVars,  m_motifHierarchy, m_roomFloor );
+    m_roomWall           = ParseXMLAttribute( *roomElement, "wall",           m_motifVars,  m_motifHierarchy, m_roomWall );
+    m_numOverlaps        = ParseXMLAttribute( *roomElement, "numOverlaps",    m_motifVars,  m_motifHierarchy, m_numOverlaps );
 
     // Paths
     const XMLElement* pathElement    = element.FirstChildElement( "Paths" );
-    m_pathFloor          = ParseXMLAttribute( *pathElement, "floor",          m_motifHierarchy, m_pathFloor );
-    m_pathLoop           = ParseXMLAttribute( *pathElement, "loop",           m_motifHierarchy, m_pathLoop );
-    m_numExtraPaths      = ParseXMLAttribute( *pathElement, "extraCount",     m_motifHierarchy, m_numExtraPaths );
-    m_pathStraightChance = ParseXMLAttribute( *pathElement, "straightChance", m_motifHierarchy, m_pathStraightChance );
+    m_pathFloor          = ParseXMLAttribute( *pathElement, "floor",          m_motifVars,  m_motifHierarchy, m_pathFloor );
+    m_pathLoop           = ParseXMLAttribute( *pathElement, "loop",           m_motifVars,  m_motifHierarchy, m_pathLoop );
+    m_numExtraPaths      = ParseXMLAttribute( *pathElement, "extraCount",     m_motifVars,  m_motifHierarchy, m_numExtraPaths );
+    m_pathStraightChance = ParseXMLAttribute( *pathElement, "straightChance", m_motifVars,  m_motifHierarchy, m_pathStraightChance );
 }
 
 
@@ -89,30 +89,59 @@ bool MGS_RoomsAndPaths::RecalculateMotifVars( EventArgs& args ) {
 
     std::string attrName = args.GetValue( "attrName", "" );
     std::string varName = m_motifVars.GetValue( attrName, "" );
+    bool calcAllVars = StringICmp( attrName, "all" );
 
-    if( varName == "" ) {
+    if( !calcAllVars && varName == "" ) {
         return false;
     }
 
-    if( StringICmp( attrName, "count" ) ) {
+    if( calcAllVars || StringICmp( attrName, "count" ) ) {
+        varName = m_motifVars.GetValue( "count", "" );
         m_numRooms = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numRooms );
-    } else if( StringICmp( attrName, "width" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "width" ) ) {
+        varName = m_motifVars.GetValue( "width", "" );
         m_roomWidth = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_roomWidth );
-    } else if( StringICmp( attrName, "height" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "height" ) ) {
+        varName = m_motifVars.GetValue( "height", "" );
         m_roomHeight = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_roomHeight );
-    } else if( StringICmp( attrName, "roomFloor" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "roomFloor" ) ) {
+        varName = m_motifVars.GetValue( "roomFloor", "" );
         m_roomFloor = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_roomFloor );
-    } else if( StringICmp( attrName, "wall" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "wall" ) ) {
+        varName = m_motifVars.GetValue( "wall", "" );
         m_roomWall = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_roomWall );
-    } else if( StringICmp( attrName, "numOverlaps" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "numOverlaps" ) ) {
+        varName = m_motifVars.GetValue( "numOverlaps", "" );
         m_numOverlaps = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numOverlaps );
-    } else if( StringICmp( attrName, "pathFloor" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "pathFloor" ) ) {
+        varName = m_motifVars.GetValue( "pathFloor", "" );
         m_pathFloor = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_pathFloor );
-    } else if( StringICmp( attrName, "loop" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "loop" ) ) {
+        varName = m_motifVars.GetValue( "loop", "" );
         m_pathLoop = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_pathLoop );
-    } else if( StringICmp( attrName, "extraCount" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "extraCount" ) ) {
+        varName = m_motifVars.GetValue( "extraCount", "" );
         m_numExtraPaths = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numExtraPaths );
-    } else if( StringICmp( attrName, "straightChance" ) ) {
+    }
+
+    if( calcAllVars || StringICmp( attrName, "straightChance" ) ) {
+        varName = m_motifVars.GetValue( "straightChance", "" );
         m_pathStraightChance = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_pathStraightChance );
     }
 

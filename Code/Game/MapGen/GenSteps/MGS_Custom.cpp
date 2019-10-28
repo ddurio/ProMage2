@@ -1,26 +1,25 @@
-#include "Game/MapGen/GenSteps/MGS_Virtual.hpp"
+#include "Game/MapGen/GenSteps/MGS_Custom.hpp"
 
-#include "Game/MapGen/GenSteps/MGS_VirtualDef.hpp"
+#include "Game/MapGen/GenSteps/MGS_CustomDef.hpp"
 
 
-MGS_Virtual::MGS_Virtual( const XMLElement& element, const Strings& motifHierarchy ) :
+MGS_Custom::MGS_Custom( const XMLElement& element, const Strings& motifHierarchy ) :
     MapGenStep( element, motifHierarchy ) {
     // Name
-    m_defType      = ParseXMLAttribute( element, "name", m_defType );
-    GUARANTEE_OR_DIE( m_defType != "", "(MGS_VirtualDef) Missing required attribute 'name'" );
-    const MGS_VirtualDef* stepDef = MGS_VirtualDef::GetDefinition( m_defType );
+    m_defType = element.Name();
+    const MGS_CustomDef* stepDef = MGS_CustomDef::GetDefinition( m_defType );
 
     SetupMotifFromXML( element, stepDef );
     stepDef->DefineObject( *this );
 }
 
 
-void MGS_Virtual::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+void MGS_Custom::SaveToXml( XmlDocument& document, XMLElement& element ) const {
 
 }
 
 
-bool MGS_Virtual::RecalculateMotifVars( EventArgs& args ) {
+bool MGS_Custom::RecalculateMotifVars( EventArgs& args ) {
     int numSteps = (int)m_genSteps.size();
 
     for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
@@ -33,10 +32,10 @@ bool MGS_Virtual::RecalculateMotifVars( EventArgs& args ) {
 
 
 // PRIVATE -----------------------------------------
-int MGS_Virtual::s_numVirtualSteps = 0;
+int MGS_Custom::s_numCustomSteps = 0;
 
 
-void MGS_Virtual::RunOnce( Map& theMap ) const {
+void MGS_Custom::RunOnce( Map& theMap ) const {
     int numSteps = (int)m_genSteps.size();
 
     for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
@@ -46,10 +45,10 @@ void MGS_Virtual::RunOnce( Map& theMap ) const {
 }
 
 
-void MGS_Virtual::SetupMotifFromXML( const XMLElement& element, const MGS_VirtualDef* virtualDef ) {
-    // Make new motif based on VirtualDef motif
+void MGS_Custom::SetupMotifFromXML( const XMLElement& element, const MGS_CustomDef* virtualDef ) {
+    // Make new motif based on CustomDef motif
     std::string motifToCopy = virtualDef->GetMotif();
-    std::string nameToAppend = Stringf( "VirtualXML.%d", s_numVirtualSteps );
+    std::string nameToAppend = Stringf( "CustomXML.%d", s_numCustomSteps );
     MotifDef* newMotif = new MotifDef( motifToCopy, nameToAppend );
 
     // Modify new motif based on XML overrides
@@ -65,6 +64,8 @@ void MGS_Virtual::SetupMotifFromXML( const XMLElement& element, const MGS_Virtua
 
         if( varValue != invalidValue ) {
             motifVars.SetValue( varName, varValue );
+        } else {
+            motifVars.ClearValue( varName );
         }
     }
 

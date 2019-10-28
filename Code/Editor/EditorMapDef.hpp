@@ -41,7 +41,6 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     using MapDef                         ::m_defType;
 
     int m_numSteps = 3; // FillAndEdge, Context, Colliders
-    NamedStrings m_motifVars;
 
     mutable std::vector< Map* >* m_mapPerStep   = nullptr;
     mutable bool m_allJobsStarted               = false;
@@ -55,9 +54,6 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
 
     explicit EditorMapDef( const XMLElement& element );
     ~EditorMapDef();
-
-    void FindXmlVariables( const XMLElement& element );
-    bool RecalculateMotifVars( EventArgs& args );
 
     bool IsFinished() const;
     bool CompleteStep( AsyncPayload& payload ) const;

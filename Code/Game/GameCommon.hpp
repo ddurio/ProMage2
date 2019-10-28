@@ -57,6 +57,7 @@ constexpr float CLIENT_ASPECT = (16.f / 9.f);
 constexpr float CLIENT_MAX_SCREEN_PERCENT = 0.9f;
 
 constexpr char  DATA_ACTOR_DEFS[]           = "Data/Gameplay/ActorDefs.xml";
+constexpr char  DATA_CUSTOM_STEPS[]         = "Data/Gameplay/CustomStepDefs.xml";
 constexpr char  DATA_INVENTORY_SPRITES[]    = "Data/Gameplay/Inventory.xml";
 constexpr char  DATA_ITEM_DEFS[]            = "Data/Gameplay/ItemDefs.xml";
 constexpr char  DATA_MAP_DEFS[]             = "Data/Gameplay/MapDefs.xml";

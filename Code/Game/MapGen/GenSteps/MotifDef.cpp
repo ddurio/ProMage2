@@ -34,10 +34,12 @@ MotifDef::MotifDef( const XMLElement& element, bool addToDefList /*= false */ ) 
 MotifDef::MotifDef( const std::string& motifNameToCopy, const std::string& nameToAppend ) {
     const MotifDef* motifToCopy = GetDefinition( motifNameToCopy );
 
-    m_defType = Stringf( "%s_%s", motifToCopy->m_defType.c_str(), nameToAppend.c_str() );
-    m_variables = motifToCopy->m_variables;
+    if( motifToCopy != nullptr ) {
+        m_defType = Stringf( "%s_%s", motifToCopy->m_defType.c_str(), nameToAppend.c_str() );
+        m_variables = NamedProperties( motifToCopy->m_variables );
 
-    AddDefinition( this );
+        AddDefinition( this );
+    }
 }
 
 

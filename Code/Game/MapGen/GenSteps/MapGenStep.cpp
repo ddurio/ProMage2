@@ -10,6 +10,8 @@
 #include "Game/MapGen/GenSteps/MGS_PerlinNoise.hpp"
 #include "Game/MapGen/GenSteps/MGS_RoomsAndPaths.hpp"
 #include "Game/MapGen/GenSteps/MGS_Sprinkle.hpp"
+#include "Game/MapGen/GenSteps/MGS_Custom.hpp"
+#include "Game/MapGen/GenSteps/MGS_CustomDef.hpp"
 #include "Game/MapGen/Map/Map.hpp"
 #include "Game/MapGen/Map/Metadata.hpp"
 #include "Game/MapGen/Map/Tile.hpp"
@@ -31,12 +33,12 @@ MapGenStep::MapGenStep( const XMLElement& element, const Strings& motifHierarchy
     AddChildMotifs( { stepMotif } );
     AddParentMotifs( motifHierarchy );
 
-    m_chanceToRun               = ParseXMLAttribute( element, "chanceToRun",      m_motifHierarchy,   m_chanceToRun );
-    m_numIterations             = ParseXMLAttribute( element, "numIterations",    m_motifHierarchy,   m_numIterations );
+    m_chanceToRun               = ParseXMLAttribute( element, "chanceToRun",      m_motifVars,  m_motifHierarchy,   m_chanceToRun );
+    m_numIterations             = ParseXMLAttribute( element, "numIterations",    m_motifVars,  m_motifHierarchy,   m_numIterations );
 
     // Conditions
-    m_ifIsType                  = ParseXMLAttribute( element, "ifIsType",         m_motifHierarchy,   m_ifIsType );
-    std::string ifHasTagsCSV    = ParseXMLAttribute( element, "ifHasTags",        m_motifHierarchy,   "" );
+    m_ifIsType                  = ParseXMLAttribute( element, "ifIsType",         m_motifVars,  m_motifHierarchy,   m_ifIsType );
+    std::string ifHasTagsCSV    = ParseXMLAttribute( element, "ifHasTags",        m_motifVars,  m_motifHierarchy,   "" );
     m_ifHasTags                 = SplitStringOnDelimeter( ifHasTagsCSV, ',', false );
 
     int numCustomConditions = (int)s_customConditions.size();
@@ -54,8 +56,8 @@ MapGenStep::MapGenStep( const XMLElement& element, const Strings& motifHierarchy
     }
 
     // Results
-    m_setType               = ParseXMLAttribute( element, "setType", m_motifHierarchy,    m_setType );
-    std::string setTagsCSV  = ParseXMLAttribute( element, "setTags", m_motifHierarchy,    "" );
+    m_setType               = ParseXMLAttribute( element, "setType", m_motifVars,  m_motifHierarchy,    m_setType );
+    std::string setTagsCSV  = ParseXMLAttribute( element, "setTags", m_motifVars,  m_motifHierarchy,    "" );
     m_setTags = SplitStringOnDelimeter( setTagsCSV, ',', false );
 
     int numCustomResults = (int)s_customResults.size();
@@ -88,9 +90,12 @@ MapGenStep::MapGenStep( const XMLElement& element, const Strings& motifHierarchy
         std::smatch heatMapMatch;
 
         if( regex_search( attrName, heatMapMatch, ifHeatMapRegex ) ) {
+            GetXMLMotifVariable( element, attrName.c_str(), m_motifVars );
             std::string heatMapName = heatMapMatch[1];
             m_ifHeatMap[heatMapName] = FloatRange( attrValue );
+
         } else if( regex_search( attrName, heatMapMatch, setHeatMapRegex ) ) {
+            GetXMLMotifVariable( element, attrName.c_str(), m_motifVars );
             std::string heatMapName = heatMapMatch[1];
             m_setHeatMap[heatMapName] = FloatRange( attrValue );
         }
@@ -107,7 +112,7 @@ MapGenStep::CustomEvent::CustomEvent( const CustomEvent& event, const Strings& p
 }
 
 
-Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element, const MapGenStep* genStep ) const {
+Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element, MapGenStep* genStep ) const {
     int numAttrs = (int)attrNames.size();
     int numParsed = 0;
 
@@ -116,7 +121,7 @@ Strings MapGenStep::CustomEvent::ParseCustomEvent( const XMLElement& element, co
 
     for( int nameIndex = 0; nameIndex < numAttrs; nameIndex++ ) {
         const std::string& attrName = attrNames[nameIndex];
-        parsedValues[nameIndex] = ParseXMLAttribute( element, attrName.c_str(), genStep->m_motifHierarchy, "" );
+        parsedValues[nameIndex] = ParseXMLAttribute( element, attrName.c_str(), genStep->m_motifVars, genStep->m_motifHierarchy, "" );
 
         if( parsedValues[nameIndex] != "" ) {
             numParsed++;
@@ -235,7 +240,13 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element, const Strin
     } else if( StringICmp( stepType, "Sprinkle" ) ) {
         step = new MGS_Sprinkle( element, motifHierarchy );
     } else {
-        ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
+        const MGS_CustomDef* virtualDef = MGS_CustomDef::GetDefinition( stepType );
+
+        if( virtualDef != nullptr ) {
+            step = new MGS_Custom( element, motifHierarchy );
+        } else {
+            ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
+        }
     }
 
     return step;
@@ -392,24 +403,31 @@ void MapGenStep::SaveToXml( XmlDocument& document, XMLElement& element ) const {
 bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
     std::string attrName = args.GetValue( "attrName", "" );
     std::string varName = m_motifVars.GetValue( attrName, "" );
+    bool calcAllVars = StringICmp( attrName, "All" );
 
-    if( varName == "" ) {
+    if( !calcAllVars && varName == "" ) {
         return false;
     }
 
-    if( StringICmp( attrName, "chanceToRun" ) ) {
+    if( calcAllVars || StringICmp( attrName, "chanceToRun" ) ) {
+        varName = m_motifVars.GetValue( "chanceToRun", "" );
         m_chanceToRun = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_chanceToRun );
-        return false;
-    } else if( StringICmp( attrName, "numIterations" ) ) {
+    }
+
+    if( calcAllVars || StringICmp( attrName, "numIterations" ) ) {
+        varName = m_motifVars.GetValue( "numIterations", "" );
         m_numIterations = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numIterations );
-        return false;
-    } else if( StringICmp( attrName, "ifIsType" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "ifIsType" ) ) {
+        varName = m_motifVars.GetValue( "ifIsType", "" );
         m_ifIsType = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_ifIsType );
-        return false;
-    } else if( StringICmp( attrName, "ifHasTags" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "ifHasTags" ) ) {
+        varName = m_motifVars.GetValue( "ifHasTags", "" );
         std::string tagCSV = MotifDef::GetVariableValue( m_motifHierarchy, varName, "" );
         m_ifHasTags = SplitStringOnDelimeter( tagCSV, ',', false );
-        return false;
     }
 
     int numCondEvents = (int)m_customConditions.size();
@@ -422,9 +440,9 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
             const std::string& eventAttrName = cEvent.attrNames[nameIndex];
             std::string& eventAttrValue = cEvent.attrValues[nameIndex];
 
-            if( StringICmp( attrName, eventAttrName ) ) {
+            if( calcAllVars || StringICmp( attrName, eventAttrName ) ) {
+                varName = m_motifVars.GetValue( eventAttrName, "" );
                 eventAttrValue = MotifDef::GetVariableValue( m_motifHierarchy, varName, eventAttrValue );
-                return false;
             }
         }
     }
@@ -434,19 +452,21 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
     for( heatIter; heatIter != m_ifHeatMap.end(); heatIter++ ) {
         std::string heatAttrName = Stringf( "ifHeatMap%s", heatIter->first.c_str() );
 
-        if( StringICmp( attrName, heatAttrName ) ) {
+        if( calcAllVars || StringICmp( attrName, heatAttrName ) ) {
+            varName = m_motifVars.GetValue( heatAttrName, "" );
             heatIter->second = MotifDef::GetVariableValue( m_motifHierarchy, varName, heatIter->second );
-            return false;
         }
     }
 
-    if( StringICmp( attrName, "setType" ) ) {
+    if( calcAllVars || StringICmp( attrName, "setType" ) ) {
+        varName = m_motifVars.GetValue( "setType", "" );
         m_setType = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_setType );
-        return false;
-    } else if( StringICmp( attrName, "setTags" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "setTags" ) ) {
+        varName = m_motifVars.GetValue( "setTags", "" );
         std::string tagCSV = MotifDef::GetVariableValue( m_motifHierarchy, varName, "" );
         m_setTags = SplitStringOnDelimeter( tagCSV, ',', false );
-        return false;
     }
 
     int numResultEvents = (int)m_customResults.size();
@@ -459,9 +479,9 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
             const std::string& eventAttrName = cEvent.attrNames[nameIndex];
             std::string& eventAttrValue = cEvent.attrValues[nameIndex];
 
-            if( StringICmp( attrName, eventAttrName ) ) {
+            if( calcAllVars || StringICmp( attrName, eventAttrName ) ) {
+                varName = m_motifVars.GetValue( eventAttrName, "" );
                 eventAttrValue = MotifDef::GetVariableValue( m_motifHierarchy, varName, eventAttrValue );
-                return false;
             }
         }
     }
@@ -471,9 +491,9 @@ bool MapGenStep::RecalculateMotifVars( EventArgs& args ) {
     for( heatIter; heatIter != m_setHeatMap.end(); heatIter++ ) {
         std::string heatAttrName = Stringf( "setHeatMap%s", heatIter->first.c_str() );
 
-        if( StringICmp( attrName, heatAttrName ) ) {
+        if( calcAllVars || StringICmp( attrName, heatAttrName ) ) {
+            varName = m_motifVars.GetValue( heatAttrName, "" );
             heatIter->second = MotifDef::GetVariableValue( m_motifHierarchy, varName, heatIter->second );
-            return false;
         }
     }
 

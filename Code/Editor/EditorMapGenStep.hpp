@@ -21,8 +21,6 @@ class EditorMapGenStep {
 
     static bool IsChanged( MapGenStep* genStep );
 
-    static void FindXmlMotifVariables( const XMLElement& element, MapGenStep* genStep );
-
 
     private:
     static std::map< MapGenStep*, std::vector< bool > > s_conditionChangelist;
@@ -55,13 +53,4 @@ class EditorMapGenStep {
 
     static bool IsChangedConditions( MapGenStep* genStep );
     static bool IsChangedResults( MapGenStep* genStep );
-
-    // Find Xml Variables
-    static void FindXmlMotifVariables_BaseClass( const XMLElement& element, MapGenStep* genStep );
-    static void FindXmlMotifVariables_CellularAutomata( const XMLElement& element, MapGenStep* genStep );
-    static void FindXmlMotifVariables_DistanceField( const XMLElement& element, MapGenStep* genStep );
-    static void FindXmlMotifVariables_FromImage( const XMLElement& element, MapGenStep* genStep );
-    static void FindXmlMotifVariables_PerlinNoise( const XMLElement& element, MapGenStep* genStep );
-    static void FindXmlMotifVariables_RoomsAndPaths( const XMLElement& element, MapGenStep* genStep );
-    static void FindXmlMotifVariables_Sprinkle( const XMLElement& element, MapGenStep* genStep );
 };

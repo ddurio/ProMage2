@@ -66,7 +66,7 @@ class MapGenStep {
 
         CustomEvent() {};
         CustomEvent( const CustomEvent& event, const Strings& parsedValues );
-        Strings ParseCustomEvent( const XMLElement& element, const MapGenStep* genStep ) const;
+        Strings ParseCustomEvent( const XMLElement& element, MapGenStep* genStep ) const;
         EventArgs CreateEventArgs() const;
     };
 

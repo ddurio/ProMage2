@@ -172,10 +172,10 @@
     <ClCompile Include="MapGen\GenSteps\MotifDef.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
-    <ClCompile Include="MapGen\GenSteps\MGS_Virtual.cpp">
+    <ClCompile Include="MapGen\GenSteps\MGS_CustomDef.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
-    <ClCompile Include="MapGen\GenSteps\MGS_VirtualDef.cpp">
+    <ClCompile Include="MapGen\GenSteps\MGS_Custom.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
   </ItemGroup>
@@ -324,10 +324,10 @@
     <ClInclude Include="MapGen\GenSteps\MotifDef.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
-    <ClInclude Include="MapGen\GenSteps\MGS_Virtual.hpp">
+    <ClInclude Include="MapGen\GenSteps\MGS_CustomDef.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
-    <ClInclude Include="MapGen\GenSteps\MGS_VirtualDef.hpp">
+    <ClInclude Include="MapGen\GenSteps\MGS_Custom.hpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
   </ItemGroup>
@@ -363,6 +363,9 @@
       <Filter>Data</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Gameplay\Motifs.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\CustomStepDefs.xml">
       <Filter>Data</Filter>
     </Xml>
   </ItemGroup>

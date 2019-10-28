@@ -8,13 +8,13 @@
 
 MGS_FromImage::MGS_FromImage( const XMLElement& element, const Strings& motifHierarchy ) :
     MapGenStep( element, motifHierarchy ) {
-    m_imageFilePath = ParseXMLAttribute( element, "imageFilePath",  m_motifHierarchy,   m_imageFilePath );
+    m_imageFilePath = ParseXMLAttribute( element, "imageFilePath",  m_motifVars, m_motifHierarchy,   m_imageFilePath );
     GUARANTEE_OR_DIE( m_imageFilePath != "", "ERROR: XML Attribute 'imageFilePath' missing for MapGenStep_FromImage" );
     Startup();
 
-    m_alignX        = ParseXMLAttribute( element, "alignX",          m_motifHierarchy,   m_alignX );
-    m_alignY        = ParseXMLAttribute( element, "alignY",          m_motifHierarchy,   m_alignY );
-    m_numRotations  = ParseXMLAttribute( element, "numRotations",    m_motifHierarchy,   m_numRotations );
+    m_alignX        = ParseXMLAttribute( element, "alignX",         m_motifVars, m_motifHierarchy,   m_alignX );
+    m_alignY        = ParseXMLAttribute( element, "alignY",         m_motifVars, m_motifHierarchy,   m_alignY );
+    m_numRotations  = ParseXMLAttribute( element, "numRotations",   m_motifVars, m_motifHierarchy,   m_numRotations );
 }
 
 
@@ -59,18 +59,29 @@ bool MGS_FromImage::RecalculateMotifVars( EventArgs& args ) {
 
     std::string attrName = args.GetValue( "attrName", "" );
     std::string varName = m_motifVars.GetValue( attrName, "" );
+    bool calcAllVars = StringICmp( attrName, "all" );
 
-    if( varName == "" ) {
+    if( !calcAllVars && varName == "" ) {
         return false;
     }
 
-    if( StringICmp( attrName, "imageFilePath" ) ) {
+    if( calcAllVars || StringICmp( attrName, "imageFilePath" ) ) {
+        varName = m_motifVars.GetValue( "imageFilePath", "" );
         m_imageFilePath = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_imageFilePath );
-    } else if( StringICmp( attrName, "alignX" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "alignX" ) ) {
+        varName = m_motifVars.GetValue( "alignX", "" );
         m_alignX = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_alignX );
-    } else if( StringICmp( attrName, "alignY" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "alignY" ) ) {
+        varName = m_motifVars.GetValue( "alignY", "" );
         m_alignY = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_alignY );
-    } else if( StringICmp( attrName, "numRotations" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "numRotations" ) ) {
+        varName = m_motifVars.GetValue( "numRotations", "" );
         m_numRotations = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numRotations );
     }
 

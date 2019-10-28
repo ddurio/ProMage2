@@ -9,7 +9,7 @@
 
 MGS_Sprinkle::MGS_Sprinkle( const XMLElement& element, const Strings& motifHierarchy ) :
     MapGenStep( element, motifHierarchy ) {
-    m_countRange = ParseXMLAttribute( element, "count", m_motifHierarchy, m_countRange );
+    m_countRange = ParseXMLAttribute( element, "count", m_motifVars, m_motifHierarchy, m_countRange );
 }
 
 
@@ -20,6 +20,26 @@ void MGS_Sprinkle::SaveToXml( XmlDocument& document, XMLElement& element ) const
     if( m_countRange != IntRange::ONE ) {
         element.SetAttribute( "count", m_countRange.GetAsString().c_str() );
     }
+}
+
+
+bool MGS_Sprinkle::RecalculateMotifVars( EventArgs& args ) {
+    MapGenStep::RecalculateMotifVars( args );
+
+    std::string attrName = args.GetValue( "attrName", "" );
+    std::string varName = m_motifVars.GetValue( attrName, "" );
+    bool calcAllVars = StringICmp( attrName, "all" );
+
+    if( !calcAllVars && varName == "" ) {
+        return false;
+    }
+
+    if( calcAllVars || StringICmp( attrName, "count" ) ) {
+        varName = m_motifVars.GetValue( "count", "" );
+        m_countRange = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_countRange );
+    }
+
+    return false;
 }
 
 

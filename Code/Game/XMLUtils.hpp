@@ -12,17 +12,18 @@ enum ItemSlot : int;
 
 
 ItemSlot ParseXMLAttribute( const XMLElement& element, const char* attributeName, ItemSlot defaultValue );
-std::string ParseXMLAttribute( const XMLElement& element, const char* attributeName, const Strings& motifHeirarchy, const char* defaultValue );
+std::string ParseXMLAttribute( const XMLElement& element, const char* attributeName, NamedStrings& out_motifVars, const Strings& motifHeirarchy, const char* defaultValue, const std::string& attrAlternateName = "" );
 
 bool GetXMLMotifVariable( const XMLElement& element, const char* attributeName, NamedStrings& out_motifVars, const std::string& attrAlternateName = "" );
-bool GetXMLMotifVariable( const XMLElement& element, const char* attributeName, std::string& out_motifVarName );
 
 
 template< typename T >
-T ParseXMLAttribute( const XMLElement& element, const char* attributeName, const Strings& motifHeirarchy, const T& defaultValue ) {
-    std::string motifVarName = "";
+T ParseXMLAttribute( const XMLElement& element, const char* attributeName, NamedStrings& out_motifVars, const Strings& motifHeirarchy, const T& defaultValue, const std::string& attrAlternateName = "" ) {
+    if( GetXMLMotifVariable( element, attributeName, out_motifVars, attrAlternateName ) ) {
+        std::string finalAttrName = (attrAlternateName == "") ? attributeName : attrAlternateName;
+        std::string motifVarName = out_motifVars.GetValue( finalAttrName, "" );
+        GUARANTEE_OR_DIE( motifVarName != "", "(XMLUtils) Motif variable name should not be empty" );
 
-    if( GetXMLMotifVariable( element, attributeName, motifVarName ) ) {
         return MotifDef::GetVariableValue( motifHeirarchy, motifVarName, defaultValue );
     }
 

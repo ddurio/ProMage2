@@ -5,8 +5,8 @@
 
 MGS_DistanceField::MGS_DistanceField( const XMLElement& element, const Strings& motifHierarchy ) :
     MapGenStep( element, motifHierarchy ) {
-    m_movementType = ParseXMLAttribute( element, "movementType", m_motifHierarchy,  m_movementType );
-    m_maxDistance  = ParseXMLAttribute( element, "maxDistance",  m_motifHierarchy,  m_maxDistance );
+    m_movementType = ParseXMLAttribute( element, "movementType", m_motifVars,  m_motifHierarchy,  m_movementType );
+    m_maxDistance  = ParseXMLAttribute( element, "maxDistance",  m_motifVars,  m_motifHierarchy,  m_maxDistance );
 }
 
 
@@ -29,14 +29,19 @@ bool MGS_DistanceField::RecalculateMotifVars( EventArgs& args ) {
 
     std::string attrName = args.GetValue( "attrName", "" );
     std::string varName = m_motifVars.GetValue( attrName, "" );
+    bool calcAllVars = StringICmp( attrName, "all" );
 
-    if( varName == "" ) {
+    if( !calcAllVars && varName == "" ) {
         return false;
     }
 
-    if( StringICmp( attrName, "movementType" ) ) {
+    if( calcAllVars || StringICmp( attrName, "movementType" ) ) {
+        varName = m_motifVars.GetValue( "movementType", "" );
         m_movementType = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_movementType );
-    } else if( StringICmp( attrName, "maxDistance" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "maxDistance" ) ) {
+        varName = m_motifVars.GetValue( "maxDistance", "" );
         m_maxDistance = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_maxDistance );
     }
 

@@ -9,4 +9,11 @@
         <WallType  value="WoodWall"/>
         <FloorType value="EdgedCaveDirt"/>
     </Motif>
+    <Motif name="CustomTestDirt">
+        <groundType value="CaveDirtFloor"/>
+        <stairDistRange value="10~12"/>
+    </Motif>
+    <Motif name="StairsClose">
+        <stairDistRange value="1~4"/>
+    </Motif>
 </Motifs>

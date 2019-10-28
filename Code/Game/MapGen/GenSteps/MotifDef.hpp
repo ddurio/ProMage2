@@ -16,7 +16,7 @@ class MotifDef : public Definition< Motif, MotifDef > {
     MotifDef( const std::string& motifNameToCopy, const std::string& nameToAppend );
 
     const NamedProperties& GetVariables() const;
-    NamedProperties& GetVariables(); // Non-const version for MGS_Virtual
+    NamedProperties& GetVariables(); // Non-const version for MGS_Custom
 
     template< typename T >
     static T GetVariableValue( const Strings& motifHierarchy, const std::string& varName, T defaultValue );

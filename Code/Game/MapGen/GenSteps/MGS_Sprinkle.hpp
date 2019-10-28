@@ -12,6 +12,7 @@ class MGS_Sprinkle : public MapGenStep {
     ~MGS_Sprinkle() {};
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
+    bool RecalculateMotifVars( EventArgs& args ) override;
 
 
     private:

@@ -3,6 +3,7 @@
 
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Utils/Definition.hpp"
+#include "Engine/Utils/NamedStrings.hpp"
 #include "Engine/Utils/XMLUtils.hpp"
 
 #include "map"
@@ -21,10 +22,12 @@ class MapDef : public Definition< Map, MapDef > {
     virtual void DefineObject( Map& theMap ) const override;
 
     virtual void SaveToXml( XmlDocument& document, XMLElement& element ) const;
+    bool RecalculateMotifVars( EventArgs& args );
 
 
     protected:
     std::string m_motif = "";
+    NamedStrings m_motifVars;
 
     std::string m_tileFillType = "";
     std::string m_tileEdgeType = "";

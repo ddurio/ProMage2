@@ -8,10 +8,10 @@
 
 MGS_PerlinNoise::MGS_PerlinNoise( const XMLElement& element, const Strings& motifHierarchy ) :
     MapGenStep( element, motifHierarchy ) {
-    m_gridSize          = ParseXMLAttribute( element, "gridSize",    m_motifHierarchy,  m_gridSize );
-    m_numOctaves        = ParseXMLAttribute( element, "octaves",     m_motifHierarchy,  m_numOctaves );
-    m_octavePersistence = ParseXMLAttribute( element, "persistence", m_motifHierarchy,  m_octavePersistence );
-    m_octaveScale       = ParseXMLAttribute( element, "scale",       m_motifHierarchy,  m_octaveScale );
+    m_gridSize          = ParseXMLAttribute( element, "gridSize",    m_motifVars,  m_motifHierarchy,  m_gridSize );
+    m_numOctaves        = ParseXMLAttribute( element, "octaves",     m_motifVars,  m_motifHierarchy,  m_numOctaves );
+    m_octavePersistence = ParseXMLAttribute( element, "persistence", m_motifVars,  m_motifHierarchy,  m_octavePersistence );
+    m_octaveScale       = ParseXMLAttribute( element, "scale",       m_motifVars,  m_motifHierarchy,  m_octaveScale );
 }
 
 
@@ -42,18 +42,29 @@ bool MGS_PerlinNoise::RecalculateMotifVars( EventArgs& args ) {
 
     std::string attrName = args.GetValue( "attrName", "" );
     std::string varName = m_motifVars.GetValue( attrName, "" );
+    bool calcAllVars = StringICmp( attrName, "all" );
 
-    if( varName == "" ) {
+    if( !calcAllVars && varName == "" ) {
         return false;
     }
 
-    if( StringICmp( attrName, "gridSize" ) ) {
+    if( calcAllVars || StringICmp( attrName, "gridSize" ) ) {
+        varName = m_motifVars.GetValue( "gridSize", "" );
         m_gridSize = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_gridSize );
-    } else if( StringICmp( attrName, "octaves" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "octaves" ) ) {
+        varName = m_motifVars.GetValue( "octaves", "" );
         m_numOctaves = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_numOctaves );
-    } else if( StringICmp( attrName, "persistence" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "persistence" ) ) {
+        varName = m_motifVars.GetValue( "persistence", "" );
         m_octavePersistence = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_octavePersistence );
-    } else if( StringICmp( attrName, "scale" ) ) {
+    }
+    
+    if( calcAllVars || StringICmp( attrName, "scale" ) ) {
+        varName = m_motifVars.GetValue( "scale", "" );
         m_octaveScale = MotifDef::GetVariableValue( m_motifHierarchy, varName, m_octaveScale );
     }
 

@@ -489,8 +489,8 @@
     <ClCompile Include="MapGen\GenSteps\MGS_DistanceField.cpp" />
     <ClCompile Include="MapGen\GenSteps\MGS_FromImage.cpp" />
     <ClCompile Include="MapGen\GenSteps\MGS_Sprinkle.cpp" />
-    <ClCompile Include="MapGen\GenSteps\MGS_Virtual.cpp" />
-    <ClCompile Include="MapGen\GenSteps\MGS_VirtualDef.cpp" />
+    <ClCompile Include="MapGen\GenSteps\MGS_Custom.cpp" />
+    <ClCompile Include="MapGen\GenSteps\MGS_CustomDef.cpp" />
     <ClCompile Include="MapGen\GenSteps\MotifDef.cpp" />
     <ClCompile Include="MapGen\Map\Map.cpp" />
     <ClCompile Include="MapGen\Map\MapDef.cpp" />
@@ -542,8 +542,8 @@
     <ClInclude Include="MapGen\GenSteps\MGS_DistanceField.hpp" />
     <ClInclude Include="MapGen\GenSteps\MGS_FromImage.hpp" />
     <ClInclude Include="MapGen\GenSteps\MGS_Sprinkle.hpp" />
-    <ClInclude Include="MapGen\GenSteps\MGS_Virtual.hpp" />
-    <ClInclude Include="MapGen\GenSteps\MGS_VirtualDef.hpp" />
+    <ClInclude Include="MapGen\GenSteps\MGS_Custom.hpp" />
+    <ClInclude Include="MapGen\GenSteps\MGS_CustomDef.hpp" />
     <ClInclude Include="MapGen\GenSteps\MotifDef.hpp" />
     <ClInclude Include="MapGen\Map\Map.hpp" />
     <ClInclude Include="MapGen\Map\MapDef.hpp" />
@@ -578,6 +578,7 @@
     <Xml Include="..\..\Run\Data\Gameplay\TileDefs.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\CustomStepDefs.xml" />
     <Xml Include="..\..\Run\Data\ProjectConfig.xml" />
   </ItemGroup>
   <ItemGroup>
