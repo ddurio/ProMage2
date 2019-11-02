@@ -81,7 +81,8 @@ bool MGS_CellularAutomata::RecalculateMotifVars( EventArgs& args ) {
     
     if( calcAllVars || StringICmp( attrName, "ifNeighborTags" ) ) {
         varName = m_motifVars.GetValue( "ifNeighborTags", "" );
-        std::string neighborTagCSV = MotifDef::GetVariableValue( m_motifHierarchy, varName, "" );
+        std::string joinedTags = JoinStrings( m_ifNeighborHasTags );
+        std::string neighborTagCSV = MotifDef::GetVariableValue( m_motifHierarchy, varName, joinedTags );
         m_ifNeighborHasTags = SplitStringOnDelimeter( neighborTagCSV, ',', false );
     }
 

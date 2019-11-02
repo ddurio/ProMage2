@@ -1,3 +1,4 @@
+#if defined(_EDITOR)
 #include "Editor/ImGuiUtils.hpp"
 
 #include "Editor/Editor.hpp"
@@ -343,6 +344,17 @@ bool RenderMotifVariable( const std::string& uniqueKey, const std::string& varNa
 }
 
 
+bool RenderCheckbox( bool& currentValue, const std::string& label /*= ""*/, bool defaultValue /*= false */ ) {
+    SetImGuiTextColor( currentValue == defaultValue );
+    bool hasChanged = ImGui::Checkbox( "", &currentValue );
+
+    ImGui::SameLine();
+    ImGui::Text( label.c_str() );
+
+    return hasChanged;
+}
+
+
 bool RenderIntOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, int& currentValue, const std::string& label /*= ""*/, int defaultValue /*= 1.f */ ) {
     std::string& varRef = stepVars.GetReference( attrName );
     bool hasChanged = false;
@@ -643,8 +655,7 @@ bool RenderCheckboxOrVar( const std::string& uniqueKey, NamedStrings& stepVars, 
     ImGui::PushID( guiID.c_str() );
 
     if( varRef == "" ) {
-        SetImGuiTextColor( currentValue == defaultValue );
-        hasChanged = ImGui::Checkbox( "Make Paths Loop", &currentValue );
+        RenderCheckbox( currentValue, label, defaultValue );
     } else {
         hasChanged = RenderMotifVariable( guiID, attrName, varRef, motifHierarchy, label );
     }
@@ -728,3 +739,5 @@ bool RenderImageButton( const char* textureStr, const ImVec2& buttonSize, const 
     bool wasPressed = ImGui::ImageButton( shaderView, buttonSize, Vec2::ZERO.GetAsImGui(), Vec2::ONE.GetAsImGui(), -1, bgColor.GetAsImGui() );
     return wasPressed;
 }
+
+#endif

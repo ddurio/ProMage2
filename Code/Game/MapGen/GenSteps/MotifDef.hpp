@@ -15,17 +15,22 @@ class MotifDef : public Definition< Motif, MotifDef > {
     MotifDef( const XMLElement& element, bool addToDefList = false );
     MotifDef( const std::string& motifNameToCopy, const std::string& nameToAppend );
 
-    const NamedProperties& GetVariables() const;
-    NamedProperties& GetVariables(); // Non-const version for MGS_Custom
+    const NamedProperties& GetVariableValues() const;
+    NamedProperties& GetVariableValues(); // Non-const version for MGS_Custom
+
+    const NamedStrings& GetVariableTypes() const;
 
     template< typename T >
     static T GetVariableValue( const Strings& motifHierarchy, const std::string& varName, T defaultValue );
     static std::string GetVariableValue( const Strings& motifHierarchy, const std::string& varName, const char* defaultValue );
+    static std::string GetVariableType( const Strings& motifHierarchy, const std::string& varName, const std::string& defaultValue );
+
     static Strings GetVariableNames( const Strings& motifHierarchy );
 
 
     private:
-    NamedProperties m_variables;
+    NamedProperties m_variableValues;
+    NamedStrings m_variableTypes; // Optional
 
 
     void DefineObject( Motif& theObject ) const override;
@@ -40,7 +45,7 @@ T MotifDef::GetVariableValue( const Strings& motifHierarchy, const std::string& 
         const MotifDef* motif = MotifDef::GetDefinition( *motifIter );
 
         if( motif != nullptr ) {
-            const NamedProperties& motifVars = motif->GetVariables();
+            const NamedProperties& motifVars = motif->GetVariableValues();
 
             if( motifVars.IsNameSet( varName ) ) {
                 return motifVars.GetValue( varName, defaultValue );

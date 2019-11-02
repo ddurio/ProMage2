@@ -75,7 +75,7 @@ class MapGenStep {
     // General
     std::string m_stepType          = "";
     Strings m_motifHierarchy;
-    NamedStrings m_motifVars; // Only needed for editor
+    NamedStrings m_motifVars;
 
     float m_chanceToRun             = 1.f;
     IntRange m_numIterations        = IntRange::ONE;

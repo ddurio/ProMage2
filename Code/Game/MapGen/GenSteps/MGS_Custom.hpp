@@ -25,7 +25,7 @@ class MGS_Custom : public MapGenStep {
     std::string m_defType = "";
     std::vector< MapGenStep* > m_genSteps;
 
-    NamedProperties m_virtualParams;
+    MotifDef* m_motifDef = nullptr; // NON-const version for editor
 
 
     void RunOnce( Map& theMap ) const;

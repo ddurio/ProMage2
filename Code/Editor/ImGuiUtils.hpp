@@ -1,4 +1,5 @@
 #pragma once
+#if defined(_EDITOR)
 #include "Editor/EditorCommon.hpp"
 
 #include "Engine/Core/Rgba.hpp"
@@ -22,6 +23,7 @@ bool RenderDropDown( const std::string& uniqueKey, std::string& currentType, con
 std::array< bool, 2> RenderTags( const std::string& uniqueKey, Strings& currentTags, bool missingHasChanged, const std::string& label = "" );
 bool RenderFilePath( std::string& currentPath, const Strings& filter );
 bool RenderMotifVariable( const std::string& uniqueKey, const std::string& varName, std::string& currentValue, const Strings& motifHierarchy, const std::string& label = "" );
+bool RenderCheckbox( bool& currentValue, const std::string& label = "", bool defaultValue = false );
 
 bool RenderIntOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, int& currentValue, const std::string& label = "", int defaultValue = 1.f );
 bool RenderPercentOrVar( const std::string& uniqueKey, NamedStrings& stepVars, const std::string& attrName, const Strings& motifHierarchy, float& currentValue, const std::string& label = "", float defaultValue = 1.f );
@@ -43,3 +45,5 @@ void SetImGuiTextColor( const Rgba& newColor );
 
 // Return value is if the button was pressed
 bool RenderImageButton( const char* textureStr, const ImVec2& buttonSize, const Rgba& bgColor = Rgba::CLEAR_BLACK );
+
+#endif

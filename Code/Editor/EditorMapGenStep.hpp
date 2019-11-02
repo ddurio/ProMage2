@@ -27,6 +27,8 @@ class EditorMapGenStep {
     static std::map< MapGenStep*, std::vector< bool > > s_conditionChangelist;
     static std::map< MapGenStep*, std::vector< bool > > s_resultChangelist;
     static std::map< MapGenStep*, std::vector< bool > > s_customChangelist;
+    static constexpr int NUM_BASE_CONDITIONS = 7;
+    static constexpr int NUM_BASE_RESULTS = 5;
 
 
     // Conditions
@@ -38,6 +40,7 @@ class EditorMapGenStep {
     static void RenderConditions_PerlinNoise( MapGenStep* genStep );
     static void RenderConditions_RoomsAndPaths( MapGenStep* genStep );
     static void RenderConditions_Sprinkle( MapGenStep* genStep );
+    static void RenderConditions_Custom( MapGenStep* genStep );
 
     // Results
     static void RenderResults( MapGenStep* genStep, const std::string& stepName );

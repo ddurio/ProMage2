@@ -6,8 +6,8 @@
         <Sprinkle ifIsType="%groundType%" ifHeatMapDistance="%stairDistRange%" setType="StairsUp" setTags="stairsUp"/>
         <CellularAutomata setTags="stairsUpAccess" ifNeighborType="StairsUp"/>
         <Motif name="AddStairs">
-            <groundType value="EdgedSand"/>
-            <stairDistRange value="0~999998"/>
+            <groundType value="EdgedSand" type="Tile"/>
+            <stairDistRange value="0~999998" type="IntRange"/>
         </Motif>
     </Custom>
 </CustomSteps>
