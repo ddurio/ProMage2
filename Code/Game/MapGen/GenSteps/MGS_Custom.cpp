@@ -16,6 +16,20 @@ MGS_Custom::MGS_Custom( const XMLElement& element, const Strings& motifHierarchy
 }
 
 
+std::vector< MapGenStep::CustomEvent > MGS_Custom::GetCustomResults() const {
+    std::vector< MapGenStep::CustomEvent > stepResults;
+    int numChildren = (int)m_genSteps.size();
+
+    for( int stepIndex = 0; stepIndex < numChildren; stepIndex++ ) {
+        const MapGenStep* genStep = m_genSteps[stepIndex];
+        std::vector< MapGenStep::CustomEvent > childResults = genStep->GetCustomResults();
+        stepResults.insert( stepResults.end(), childResults.begin(), childResults.end() );
+    }
+
+    return stepResults;
+}
+
+
 void MGS_Custom::SaveToXml( XmlDocument& document, XMLElement& element ) const {
 
 }

@@ -15,6 +15,8 @@ class MGS_Custom : public MapGenStep {
     MGS_Custom( const XMLElement& element, const Strings& motifHierarchy );
     ~MGS_Custom() {};
 
+    std::vector< CustomEvent > GetCustomResults() const override;
+
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
     bool RecalculateMotifVars( EventArgs& args ) override;
 

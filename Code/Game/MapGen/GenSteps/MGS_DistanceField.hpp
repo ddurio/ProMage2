@@ -17,6 +17,7 @@ class MGS_DistanceField : public MapGenStep {
     private:
     static constexpr float INVALID_DISTANCE = 999999.f;
 
+    std::string m_heatMapName = "Distance";
     std::string m_movementType = "";
     int m_maxDistance = (int)INVALID_DISTANCE;
 

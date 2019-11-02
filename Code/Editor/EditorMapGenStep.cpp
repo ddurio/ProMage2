@@ -429,7 +429,7 @@ void EditorMapGenStep::RenderResults_BaseClass( MapGenStep* genStep ) {
     bool change3 = RenderHeatMapsOrVar( uniqueKey, stepVars, "setHeatMap", genStep->m_motifHierarchy, genStep->m_setHeatMap );
 
     RenderChangeText( paramsChanged[4] );
-    bool change4 = RenderEventList( uniqueKey, genStep->s_customResults, genStep->m_customResults );
+    bool change4 = RenderEventList( "Results", genStep->s_customResults, genStep->m_customResults );
 
     paramsChanged[0] = paramsChanged[0] || change0;
     paramsChanged[1] = paramsChanged[1] || change1and2[0];

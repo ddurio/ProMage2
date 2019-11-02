@@ -10,4 +10,13 @@
             <stairDistRange value="0~999998" type="IntRange"/>
         </Motif>
     </Custom>
+    <Custom name="AddLoot">
+        <DistanceField ifIsType="StairsDown" movementType="Walk" heatMapName="LootStairsDown"/>
+        <DistanceField ifIsType="StairsUp"   movementType="Walk" heatMapName="LootStairsUp"/>
+        <Sprinkle count="%numPieces%" ifHeatMapLootStairsDown="%distFromStairs%" ifHeatMapLootStairsUp="%distFromStairs%" spawnItem="PlateHelm"/>
+        <Motif name="AddLoot">
+            <numPieces      value="2~6"       type="IntRange"/>
+            <distFromStairs value="50~999998" type="IntRange"/>
+        </Motif>
+    </Custom>
 </CustomSteps>

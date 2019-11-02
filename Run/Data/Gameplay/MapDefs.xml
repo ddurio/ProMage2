@@ -8,6 +8,7 @@
         <CellularAutomata ifIsType="StoneWall" setType="CaveDirtFloor" ifNeighborType="FakeStone" ifNumNeighbors="1"/>
         <CellularAutomata ifIsType="FakeStone" setType="StoneWall" ifNeighborType="CaveDirtFloor"/>
         <AddStairs groundType="CaveDirtFloor"/>
+        <AddLoot distFromStairs="25~999998"/>
         <!--
         <AddStairs motif="customTestDirt" stairDistRange="5~9"/>
         <Sprinkle ifIsType="CaveDirtFloor" setType="StairsDown" setTags="stairsDown"/>

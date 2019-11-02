@@ -43,7 +43,7 @@ class MapGenStep {
     void Run( Map& map ) const;
 
     struct CustomEvent;
-    std::vector< CustomEvent > GetCustomResults() const;
+    virtual std::vector< CustomEvent > GetCustomResults() const;
     virtual std::string GetName() const;
     const Strings& GetMotifs() const;
 
