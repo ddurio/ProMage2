@@ -82,9 +82,9 @@ void Editor::Startup() {
     g_theEventSystem->Subscribe( "saveAll", &EditorMapDef::SaveAllToXml );
 
     // Setup Editor
-    m_mapWindow  = new MapWindow(  Vec2( 0.70f, 0.9f ) );
-    m_stepWindow = new StepWindow( Vec2( 0.70f, 0.1f ) );
-    m_xmlWindow  = new XmlWindow(  Vec2( 0.30f, 1.f  ) );
+    m_mapWindow  = new MapWindow(  Vec2( 0.65f, 0.9f ) );
+    m_stepWindow = new StepWindow( Vec2( 0.65f, 0.1f ) );
+    m_xmlWindow  = new XmlWindow(  Vec2( 0.35f, 1.f  ) );
 
     // Setup Style
     ImGuiStyle& style = ImGui::GetStyle();
