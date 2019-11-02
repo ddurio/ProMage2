@@ -6,6 +6,8 @@
 #include "Engine/Core/WindowContext.hpp"
 
 #include "Game/MapGen/GenSteps/MGS_CellularAutomata.hpp"
+#include "Game/MapGen/GenSteps/MGS_Custom.hpp"
+#include "Game/MapGen/GenSteps/MGS_CustomDef.hpp"
 #include "Game/MapGen/GenSteps/MGS_DistanceField.hpp"
 #include "Game/MapGen/GenSteps/MGS_FromImage.hpp"
 #include "Game/MapGen/GenSteps/MGS_PerlinNoise.hpp"
@@ -16,6 +18,7 @@
 
 std::map< MapGenStep*, std::vector< bool > > EditorMapGenStep::s_conditionChangelist;   // PRIVATE
 std::map< MapGenStep*, std::vector< bool > > EditorMapGenStep::s_resultChangelist;      // PRIVATE
+std::map< MapGenStep*, std::vector< bool > > EditorMapGenStep::s_customChangelist;      // PRIVATE
 
 
 void EditorMapGenStep::RenderStepParams( MapGenStep* genStep, const std::string& stepName ) {
@@ -23,9 +26,18 @@ void EditorMapGenStep::RenderStepParams( MapGenStep* genStep, const std::string&
         ImGui::Text( "Internal step... No modifiable values" );
         return;
     }
+    
+    std::string stepType = genStep->GetName();
+    Strings customStepTypes = MGS_CustomDef::GetAllDefinitionTypes();
+    bool isCustomStep = EngineCommon::VectorContains( customStepTypes, stepType );
 
-    RenderConditions( genStep, stepName );
-    RenderResults( genStep, stepName );
+    RenderConditions( genStep, stepName, isCustomStep );
+
+    if( isCustomStep ) {
+        RenderChildSteps( genStep, stepName );
+    } else {
+        RenderResults( genStep, stepName );
+    }
 }
 
 
@@ -46,7 +58,7 @@ bool EditorMapGenStep::IsChanged( MapGenStep* genStep ) {
 
 
 // PRIVATE ----------------------------------------------------------------------
-void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string& stepName ) {
+void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string& stepName, bool isCustomStep ) {
     bool condChanged = IsChangedConditions( genStep );
     std::string headerStr = Stringf( "Conditions%s", condChanged ? " *" : "" );
     SetImGuiTextColor( condChanged ? Rgba::ORGANIC_YELLOW : Rgba::WHITE );
@@ -55,10 +67,10 @@ void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string&
         std::string stepCondStr = Stringf( "%s_Conditions", stepName.c_str() );
         ImGui::TreePush( stepCondStr.c_str() );
 
-        RenderConditions_BaseClass( genStep );
-        ImGui::Separator();
-
         std::string stepType = genStep->GetName();
+
+        RenderConditions_BaseClass( genStep, isCustomStep );
+        ImGui::Separator();
 
         if( StringICmp( stepType, "CellularAutomata" ) ) {
             RenderConditions_CellularAutomata( genStep );
@@ -72,7 +84,7 @@ void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string&
             RenderConditions_RoomsAndPaths( genStep );
         } else if( StringICmp( stepType, "Sprinkle" ) ) {
             RenderConditions_Sprinkle( genStep );
-        } else {
+        } else if( !isCustomStep ) {
             ERROR_RECOVERABLE( Stringf( "(EditorMapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
         }
 
@@ -81,7 +93,7 @@ void EditorMapGenStep::RenderConditions( MapGenStep* genStep, const std::string&
 }
 
 
-void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
+void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep, bool isCustomStep ) {
     std::vector< bool >& paramsChanged = s_conditionChangelist[genStep];
 
     if( paramsChanged.empty() ) {
@@ -100,18 +112,21 @@ void EditorMapGenStep::RenderConditions_BaseClass( MapGenStep* genStep ) {
     RenderChangeText( paramsChanged[1] );
     localChanges[1] = RenderIntRangeOrVar( uniqueKey, stepVars, "numIterations", genStep->m_motifHierarchy, genStep->m_numIterations, "Iterations" );
     ImGui::Separator();
+    std::array< bool, 2 > change3and4 = { false, false };
 
-    RenderChangeText( paramsChanged[2] );
-    localChanges[2] = RenderTileDropDownOrVar( uniqueKey, stepVars, "ifIsType", genStep->m_motifHierarchy, genStep->m_ifIsType );
+    if( !isCustomStep ) {
+        RenderChangeText( paramsChanged[2] );
+        localChanges[2] = RenderTileDropDownOrVar( uniqueKey, stepVars, "ifIsType", genStep->m_motifHierarchy, genStep->m_ifIsType );
 
-    RenderChangeText( paramsChanged[3] );
-    std::array< bool, 2 > change3and4 = RenderTagsOrVar( uniqueKey, stepVars, "ifHasTags", genStep->m_motifHierarchy, genStep->m_ifHasTags, paramsChanged[4], "Tile" );
+        RenderChangeText( paramsChanged[3] );
+        change3and4 = RenderTagsOrVar( uniqueKey, stepVars, "ifHasTags", genStep->m_motifHierarchy, genStep->m_ifHasTags, paramsChanged[4], "Tile" );
 
-    RenderChangeText( paramsChanged[5] );
-    localChanges[5] = RenderHeatMapsOrVar( uniqueKey, stepVars, "ifHeatMap", genStep->m_motifHierarchy, genStep->m_ifHeatMap );
+        RenderChangeText( paramsChanged[5] );
+        localChanges[5] = RenderHeatMapsOrVar( uniqueKey, stepVars, "ifHeatMap", genStep->m_motifHierarchy, genStep->m_ifHeatMap );
 
-    RenderChangeText( paramsChanged[6] );
-    localChanges[6] = RenderEventList( "Conditions", genStep->s_customConditions, genStep->m_customConditions );
+        RenderChangeText( paramsChanged[6] );
+        localChanges[6] = RenderEventList( "Conditions", genStep->s_customConditions, genStep->m_customConditions );
+    }
 
     paramsChanged[0] = paramsChanged[0] || localChanges[0];
     paramsChanged[1] = paramsChanged[1] || localChanges[1];
@@ -422,6 +437,39 @@ void EditorMapGenStep::RenderResults_Sprinkle( MapGenStep* genStep ) {
 }
 
 
+void EditorMapGenStep::RenderChildSteps( MapGenStep* genStep, const std::string& stepName ) {
+    MGS_Custom* cStep = (MGS_Custom*)genStep;
+    bool customChanged = IsChangedCustom( cStep );
+
+    std::string headerStr = Stringf( "Child Steps%s", customChanged ? " *" : "" );
+    SetImGuiTextColor( customChanged ? Rgba::ORGANIC_YELLOW : Rgba::WHITE );
+
+    if( ImGui::CollapsingHeader( headerStr.c_str(), ImGuiTreeNodeFlags_DefaultOpen ) ) {
+        std::string stepCustomStr = Stringf( "%s_Custom", stepName.c_str() );
+        ImGui::TreePush( stepCustomStr.c_str() );
+
+        // Child steps
+        int numChildSteps = (int)cStep->m_genSteps.size();
+
+        for( int stepIndex = 0; stepIndex < numChildSteps; stepIndex++ ) {
+            MapGenStep* childStep = cStep->m_genSteps[stepIndex];
+            std::string childName = Stringf( "%d. %s", stepIndex + 1, childStep->GetName().c_str() );
+
+            if( ImGui::CollapsingHeader( childName.c_str() ) ) {
+                std::string stepChildStr = Stringf( "%s_%s_Child", stepCustomStr.c_str(), childName.c_str() );
+                ImGui::TreePush( stepChildStr.c_str() );
+
+                RenderStepParams( childStep, childName );
+
+                ImGui::TreePop();
+            }
+        }
+
+        ImGui::TreePop();
+    }
+}
+
+
 Strings EditorMapGenStep::GetEventNames( const std::vector< MapGenStep::CustomEvent >& eventList ) {
     Strings names;
     int numEvents = (int)eventList.size();
@@ -576,24 +624,25 @@ bool EditorMapGenStep::RenderEventList( const std::string& label, std::vector< M
 
 bool EditorMapGenStep::IsChangedConditions( MapGenStep* genStep ) {
     const std::vector< bool >& conditions = s_conditionChangelist[genStep];
-    int numParms = (int)conditions.size();
-
-    for( int paramIndex = 0; paramIndex < numParms; paramIndex++ ) {
-        if( conditions[paramIndex] ) {
-            return true;
-        }
-    }
-
-    return false;
+    bool isChanged = EngineCommon::VectorContains( conditions, true );
+    return isChanged;
 }
 
 
 bool EditorMapGenStep::IsChangedResults( MapGenStep* genStep ) {
     const std::vector< bool >& results = s_resultChangelist[genStep];
-    int numParms = (int)results.size();
+    bool isChanged = EngineCommon::VectorContains( results, true );
+    return isChanged;
+}
 
-    for( int paramIndex = 0; paramIndex < numParms; paramIndex++ ) {
-        if( results[paramIndex] ) {
+
+bool EditorMapGenStep::IsChangedCustom( MGS_Custom* customStep ) {
+    int numChildren = (int)customStep->m_genSteps.size();
+
+    for( int stepIndex = 0; stepIndex < numChildren; stepIndex++ ) {
+        MapGenStep* childStep = customStep->m_genSteps[stepIndex];
+
+        if( IsChanged( childStep ) ) {
             return true;
         }
     }

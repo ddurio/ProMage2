@@ -4,6 +4,20 @@
 #include "Game/MapGen/GenSteps/MGS_Custom.hpp"
 
 
+// STATIC ----------------------------------------------------------
+Strings MGS_CustomDef::GetAllDefinitionTypes() {
+    Strings allTypes;
+    std::map< std::string, MGS_CustomDef* >::const_iterator defIter = s_definitions.begin();
+
+    for( defIter; defIter != s_definitions.end(); defIter++ ) {
+        allTypes.push_back( defIter->first );
+    }
+
+    return allTypes;
+}
+
+
+// PUBLIC ----------------------------------------------------------
 void MGS_CustomDef::DefineObject( MGS_Custom& theObject ) const {
     const Strings& objectMotifs = theObject.m_motifHierarchy;
     GUARANTEE_OR_DIE( objectMotifs.size() == 3, "(MGS_CustomDef) ERROR -- Expected motif array of size three" );

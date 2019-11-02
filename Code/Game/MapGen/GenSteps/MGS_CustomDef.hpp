@@ -12,6 +12,8 @@ class MGS_CustomDef : public Definition< MGS_Custom, MGS_CustomDef > {
     friend class Definition< MGS_Custom, MGS_CustomDef >;
 
     public:
+    static Strings GetAllDefinitionTypes();
+
     void DefineObject( MGS_Custom& theObject ) const override;
 
     std::string GetMotif() const;
