@@ -82,9 +82,9 @@ void Editor::Startup() {
     g_theEventSystem->Subscribe( "saveAll", &EditorMapDef::SaveAllToXml );
 
     // Setup Editor
-    m_mapWindow  = new MapWindow(  Vec2( 0.65f, 0.9f ) );
+    m_mapWindow  = new MapWindow(  Vec2( 0.65f, 0.88f ), Vec2( 0.f, 0.83f ) );
     m_stepWindow = new StepWindow( Vec2( 0.65f, 0.1f ) );
-    m_xmlWindow  = new XmlWindow(  Vec2( 0.35f, 1.f  ) );
+    m_xmlWindow  = new XmlWindow(  Vec2( 0.35f, 0.98f ), Vec2( 1.f, 0.f ) );
 
     // Setup Style
     ImGuiStyle& style = ImGui::GetStyle();
@@ -141,6 +141,18 @@ void Editor::Update() {
     }
 
     float deltaSeconds = m_editorClock.GetDeltaTime();
+
+    ImGui::BeginMainMenuBar();
+    
+    if( ImGui::BeginMenu( "File" ) ) {
+        ImGui::MenuItem( "New Map Type" );
+        ImGui::EndMenu();
+    }
+
+    ImGui::EndMainMenuBar();
+
+
+
 
     m_mapWindow->Update( deltaSeconds );
     m_stepWindow->Update( deltaSeconds );
