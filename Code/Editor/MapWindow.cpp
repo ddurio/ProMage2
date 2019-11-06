@@ -206,10 +206,11 @@ void MapWindow::UpdateZoom( float deltaSeconds ) {
     Map*& theMap = m_mapPerStep[m_stepIndex];
 
     // Window sizes
+    Vec2 windowPos = ImGui::GetWindowPos();
     Vec2 contentMin = ImGui::GetWindowContentRegionMin();
     Vec2 contentMax = ImGui::GetWindowContentRegionMax();
 
-    AABB2 contentBounds = AABB2( contentMin, contentMax );
+    AABB2 contentBounds = AABB2( windowPos + contentMin, windowPos + contentMax );
     Vec2 contentDims = contentBounds.GetDimensions();
 
     // Apply Zoom
@@ -293,6 +294,8 @@ void MapWindow::RenderMap( float deltaSeconds ) {
     void* mapView = m_mapCamera->GetRenderTarget()->GetShaderView();
 
     ImGui::Image( mapView, m_imageBounds.GetDimensions().GetAsImGui() ); // Map render
+
+
     ImGui::GetWindowDrawList()->AddRect( m_imageBounds.mins.GetAsImGui(), m_imageBounds.maxs.GetAsImGui(), 0xFFFF'FFFF );
 }
 

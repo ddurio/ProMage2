@@ -68,5 +68,7 @@ class Editor {
     void BuildLoadingMesh();
     void BuildLoadedMesh();
 
+    void UpdateMainMenu();
+
     bool ToggleDemo( EventArgs& args );
 };

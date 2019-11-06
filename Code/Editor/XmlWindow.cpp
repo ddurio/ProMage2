@@ -46,48 +46,7 @@ void XmlWindow::UpdateChild( float deltaSeconds ) {
     EditorMapDef* eMapDef = (EditorMapDef*)EditorMapDef::GetDefinition( mapType ); // Forced to cast 'const'-ness away
 
     RenderRegenSettings( eMapDef, currentIndex );
-
-    // Step params
-    Strings stepNames = mapWindow->GetStepNames();
-
-    int numSteps = (int)stepNames.size();
-    m_stepHeaderOpen.resize( numSteps, false );
-
-    // Draw headers
-    for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
-        MapGenStep* genStep = eMapDef->GetStep( stepIndex );
-        std::string stepName = stepNames[stepIndex];
-        SetImGuiTextColor( Rgba::WHITE );
-
-        if( stepIndex != 0 && EditorMapGenStep::IsChanged( genStep ) ) {
-            stepName = Stringf( "%s%s", stepName.c_str(), " *" );
-            SetImGuiTextColor( Rgba::ORGANIC_YELLOW );
-        }
-
-        ImGui::SetNextTreeNodeOpen( (stepIndex == currentIndex) );
-
-        if( ImGui::CollapsingHeader( stepName.c_str(), ImGuiTreeNodeFlags_None ) ) {
-            ImGui::TreePush( stepName.c_str() );
-
-            if( stepIndex == 0 ) {
-                eMapDef->RenderMapDefParams();
-            } else {
-                EditorMapGenStep::RenderStepParams( genStep, stepName );
-            }
-
-            ImGui::TreePop();
-
-            if( stepIndex != currentIndex ) {
-                // User opened a new tab.. change map
-                m_stepHeaderOpen[currentIndex] = false;
-
-                EventArgs args;
-                args.SetValue( "stepIndex", stepIndex );
-
-                g_theEventSystem->FireEvent( EVENT_EDITOR_CHANGE_STEP, args );
-            }
-        }
-    }
+    RenderGenSteps( eMapDef );
 }
 
 
@@ -134,6 +93,115 @@ void XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
         ImGui::Checkbox( "Highlight Modified Tiles", &m_highlightChanges );
 
         ImGui::TreePop();
+    }
+}
+
+
+void XmlWindow::RenderGenSteps( EditorMapDef* eMapDef ) {
+    MapWindow* mapWindow = g_theEditor->GetMapWindow();
+    int currentIndex = mapWindow->GetStepIndex();
+
+    // Step params
+    Strings stepNames = mapWindow->GetStepNames();
+
+    int numSteps = (int)stepNames.size();
+    m_stepHeaderOpen.resize( numSteps, false );
+
+    // Draw headers
+    for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
+        MapGenStep* genStep = eMapDef->GetStep( stepIndex );
+        std::string stepName = stepNames[stepIndex];
+        SetImGuiTextColor( Rgba::WHITE );
+
+        if( stepIndex != 0 && EditorMapGenStep::IsChanged( genStep ) ) {
+            stepName = Stringf( "%s%s", stepName.c_str(), " *" );
+            SetImGuiTextColor( Rgba::ORGANIC_YELLOW );
+        }
+
+        ImGui::SetNextTreeNodeOpen( (stepIndex == currentIndex) );
+        ImGui::PushID( stepName.c_str() );
+
+        if( ImGui::CollapsingHeader( stepName.c_str(), ImGuiTreeNodeFlags_None ) ) {
+            ImGui::TreePush( stepName.c_str() );
+
+            if( stepIndex == 0 ) {
+                eMapDef->RenderMapDefParams();
+            } else {
+                EditorMapGenStep::RenderStepParams( genStep, stepName );
+            }
+
+            ImGui::TreePop();
+
+            if( stepIndex != currentIndex ) {
+                // User opened a new tab.. change map
+                m_stepHeaderOpen[currentIndex] = false;
+
+                EventArgs args;
+                args.SetValue( "stepIndex", stepIndex );
+
+                g_theEventSystem->FireEvent( EVENT_EDITOR_CHANGE_STEP, args );
+            }
+        }
+
+        ImGui::PopID();
+        RenderContextMenu( eMapDef, stepName, stepIndex, numSteps );
+    }
+}
+
+
+void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, int numSteps ) {
+    if( ImGui::BeginPopupContextItem( guiID.c_str() ) ) {
+        if( stepIndex <= 1 ) {
+            ImGui::PushItemFlag( ImGuiItemFlags_Disabled, true );
+            SetImGuiTextColor( true );
+        }
+
+        // Move Up
+        if( ImGui::MenuItem( "Move Up" ) ) {
+            eMapDef->ReorderStepUp( stepIndex - 1 );
+        }
+
+        if( stepIndex <= 1 ) {
+            ImGui::PopItemFlag();
+            SetImGuiTextColor( false );
+        } else if( stepIndex >= (numSteps - 3) ) {
+            ImGui::PushItemFlag( ImGuiItemFlags_Disabled, true );
+            SetImGuiTextColor( true );
+        } else {
+            SetImGuiTextColor( false );
+        }
+
+        // Move Down
+        if( ImGui::MenuItem( "Move Down" ) ) {
+            eMapDef->ReorderStepDown( stepIndex - 1 );
+        }
+
+        if( stepIndex >= (numSteps - 3) ) {
+            ImGui::PopItemFlag();
+            SetImGuiTextColor( false );
+        }
+
+        ImGui::Separator();
+
+        // Insert Before
+        if( ImGui::MenuItem( "Insert Before" ) ) {
+
+        }
+
+        // Insert After
+        if( ImGui::MenuItem( "Insert After" ) ) {
+
+        }
+
+        ImGui::Separator();
+        SetImGuiTextColor( Rgba::ORGANIC_RED );
+
+        // Delete
+        if( ImGui::MenuItem( "Delete" ) ) {
+            eMapDef->DeleteStep( stepIndex - 1 );
+        }
+
+        ImGui::EndPopup();
     }
 }
 

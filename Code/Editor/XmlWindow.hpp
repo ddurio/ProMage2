@@ -27,4 +27,6 @@ class XmlWindow : public EditorWindow {
     void UpdateChild( float deltaSeconds ) override;
 
     void RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex );
+    void RenderGenSteps( EditorMapDef* eMapDef );
+    void RenderContextMenu( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, int numSteps );
 };

@@ -142,18 +142,7 @@ void Editor::Update() {
 
     float deltaSeconds = m_editorClock.GetDeltaTime();
 
-    ImGui::BeginMainMenuBar();
-    
-    if( ImGui::BeginMenu( "File" ) ) {
-        ImGui::MenuItem( "New Map Type" );
-        ImGui::EndMenu();
-    }
-
-    ImGui::EndMainMenuBar();
-
-
-
-
+    UpdateMainMenu();
     m_mapWindow->Update( deltaSeconds );
     m_stepWindow->Update( deltaSeconds );
     m_xmlWindow->Update( deltaSeconds );
@@ -277,6 +266,18 @@ void Editor::BuildLoadedMesh() {
     // Create Mesh
     m_loadedMesh = new GPUMesh( g_theRenderer );
     m_loadedMesh->CopyVertsFromCPUMesh( &builder );
+}
+
+
+void Editor::UpdateMainMenu() {
+    ImGui::BeginMainMenuBar();
+    
+    if( ImGui::BeginMenu( "File" ) ) {
+        ImGui::MenuItem( "New Map Type" );
+        ImGui::EndMenu();
+    }
+
+    ImGui::EndMainMenuBar();
 }
 
 

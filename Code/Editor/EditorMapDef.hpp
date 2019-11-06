@@ -25,6 +25,12 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     Strings GetStepNames( int indexOffset = 0 ) const;
     Strings GetMapTypes() const;
 
+    void ReorderStepUp( int stepIndexToMove );
+    void ReorderStepDown( int stepIndexToMove );
+    void InsertStepBefore( int stepIndexToInsertBefore, MapGenStep* stepToInsert );
+    void InsertStepAfter( int stepIndexToInsertAfter, MapGenStep* stepToInsert );
+    void DeleteStep( int stepIndexToDelete );
+
     static int SetupChangeTileMGS();
     static bool SaveAllToXml( EventArgs& args );
 

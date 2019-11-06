@@ -20,6 +20,7 @@ Editor:
 	** Mouse left click: Step header to change step index (only one step open at a time)
 	** Mouse left click: GUI interactions (drop downs, buttons, etc.)
 	** Mouse right click (on parameter label): Convert parameter between hard-coded value and motif variable
+	** Control + Mouse left click: Converts any GUI element into free type field for easy entry
   * Step Media Window - (Bottom Left)
 	** Buttons (left to right)
 	** Jump to Start - Go to first step

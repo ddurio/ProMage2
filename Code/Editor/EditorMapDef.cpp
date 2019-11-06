@@ -77,6 +77,59 @@ Strings EditorMapDef::GetMapTypes() const {
 }
 
 
+void EditorMapDef::ReorderStepUp( int stepIndexToMove ) {
+    int numSteps = (int)m_mapGenSteps.size();
+
+    if( stepIndexToMove <= 0 || stepIndexToMove >= numSteps ) {
+        return;
+    }
+
+    MapGenStep* stepToMoveDown = m_mapGenSteps[stepIndexToMove - 1];
+    MapGenStep* stepToMoveUp   = m_mapGenSteps[stepIndexToMove];
+
+    m_mapGenSteps[stepIndexToMove - 1] = stepToMoveUp;
+    m_mapGenSteps[stepIndexToMove]     = stepToMoveDown;
+}
+
+
+void EditorMapDef::ReorderStepDown( int stepIndexToMove ) {
+    int numSteps = (int)m_mapGenSteps.size();
+
+    if( stepIndexToMove < 0 || stepIndexToMove >= (numSteps - 1) ) {
+        return;
+    }
+
+    MapGenStep* stepToMoveDown = m_mapGenSteps[stepIndexToMove];
+    MapGenStep* stepToMoveUp   = m_mapGenSteps[stepIndexToMove + 1];
+
+    m_mapGenSteps[stepIndexToMove]     = stepToMoveUp;
+    m_mapGenSteps[stepIndexToMove + 1] = stepToMoveDown;
+}
+
+
+void EditorMapDef::InsertStepBefore( int stepIndexToInsertBefore, MapGenStep* stepToInsert ) {
+
+}
+
+
+void EditorMapDef::InsertStepAfter( int stepIndexToInsertAfter, MapGenStep* stepToInsert ) {
+
+}
+
+
+void EditorMapDef::DeleteStep( int stepIndexToDelete ) {
+    int numSteps = (int)m_mapGenSteps.size();
+
+    if( stepIndexToDelete < 0 || stepIndexToDelete >= numSteps ) {
+        return;
+    }
+
+    std::vector< MapGenStep* >::iterator stepIter = m_mapGenSteps.begin() + stepIndexToDelete;
+    m_mapGenSteps.erase( stepIter );
+    m_numSteps--;
+}
+
+
 int EditorMapDef::SetupChangeTileMGS() {
     Strings attrNames;
 
