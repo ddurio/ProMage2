@@ -561,7 +561,7 @@ void MapWindow::GetHeatMapChanges( Strings& changeList, const Metadata* currentM
     std::map< std::string, float, StringCmpCaseI >::iterator newHeatIter = currentHeat.begin();
 
     while( newHeatIter != currentHeat.end() ) {
-        std::string heatChange = Stringf( "Heat Map (%s): -.- --> %.1f", newHeatIter->first.c_str(), newHeatIter->second );
+        std::string heatChange = Stringf( "Heat Map (%s): Unset --> %.1f", newHeatIter->first.c_str(), newHeatIter->second );
         changeList.push_back( heatChange );
 
         newHeatIter++;
