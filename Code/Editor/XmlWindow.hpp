@@ -22,6 +22,16 @@ class XmlWindow : public EditorWindow {
     std::vector< bool > m_stepHeaderOpen;
 
     std::string m_mapType = "";
+    std::string m_newStepType = "";
+    Strings m_stepTypes = {
+        "CellularAutomata",
+        "DistanceField",
+        "FromImage",
+        "PerlinNoise",
+        "RoomsAndPaths",
+        "Sprinkle"
+    };
+
 
 
     void UpdateChild( float deltaSeconds ) override;
@@ -29,4 +39,6 @@ class XmlWindow : public EditorWindow {
     void RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex );
     void RenderGenSteps( EditorMapDef* eMapDef );
     void RenderContextMenu( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, int numSteps );
+    void RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool insertBefore );
+    //void RenderNewStepPopup( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, bool insertBefore );
 };

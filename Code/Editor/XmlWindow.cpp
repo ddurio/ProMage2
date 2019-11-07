@@ -150,59 +150,104 @@ void XmlWindow::RenderGenSteps( EditorMapDef* eMapDef ) {
 
 
 void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, int numSteps ) {
-    if( ImGui::BeginPopupContextItem( guiID.c_str() ) ) {
-        if( stepIndex <= 1 ) {
-            ImGui::PushItemFlag( ImGuiItemFlags_Disabled, true );
-            SetImGuiTextColor( true );
-        }
+    std::string beforeID = Stringf( "%s_insertBefore", guiID.c_str() );
+    std::string afterID = Stringf( "%s_insertAfter", guiID.c_str() );
 
+    if( ImGui::BeginPopupContextItem( guiID.c_str() ) ) {
         // Move Up
-        if( ImGui::MenuItem( "Move Up" ) ) {
+        bool moveUpEnabled = (stepIndex > 1) && (stepIndex < (numSteps - 2));
+
+        if( ImGui::MenuItem( "Move Up", "", nullptr, moveUpEnabled ) ) {
             eMapDef->ReorderStepUp( stepIndex - 1 );
         }
 
-        if( stepIndex <= 1 ) {
-            ImGui::PopItemFlag();
-            SetImGuiTextColor( false );
-        } else if( stepIndex >= (numSteps - 3) ) {
-            ImGui::PushItemFlag( ImGuiItemFlags_Disabled, true );
-            SetImGuiTextColor( true );
-        } else {
-            SetImGuiTextColor( false );
-        }
-
         // Move Down
-        if( ImGui::MenuItem( "Move Down" ) ) {
-            eMapDef->ReorderStepDown( stepIndex - 1 );
-        }
+        bool moveDownEnabled = (stepIndex > 0) && (stepIndex < (numSteps - 3));
 
-        if( stepIndex >= (numSteps - 3) ) {
-            ImGui::PopItemFlag();
-            SetImGuiTextColor( false );
+        if( ImGui::MenuItem( "Move Down", "", nullptr, moveDownEnabled ) ) {
+            eMapDef->ReorderStepDown( stepIndex - 1 );
         }
 
         ImGui::Separator();
 
         // Insert Before
-        if( ImGui::MenuItem( "Insert Before" ) ) {
+        bool insertBeforeEnabled = (stepIndex > 0) && (stepIndex < (numSteps - 1));
 
+        if( ImGui::BeginMenu( "Insert Before", insertBeforeEnabled ) ) {
+            RenderNewStepMenu( eMapDef, stepIndex, true );
+            ImGui::EndMenu();
         }
 
         // Insert After
-        if( ImGui::MenuItem( "Insert After" ) ) {
+        bool insertAfterEnabled = (stepIndex < (numSteps - 2));
 
+        if( ImGui::BeginMenu( "Insert After", insertAfterEnabled ) ) {
+            RenderNewStepMenu( eMapDef, stepIndex, false );
+            ImGui::EndMenu();
         }
 
         ImGui::Separator();
         SetImGuiTextColor( Rgba::ORGANIC_RED );
 
         // Delete
-        if( ImGui::MenuItem( "Delete" ) ) {
+        bool deleteEnabled = (stepIndex > 0) && (stepIndex < (numSteps - 2));
+
+        if( ImGui::MenuItem( "Delete", "", nullptr, deleteEnabled ) ) {
             eMapDef->DeleteStep( stepIndex - 1 );
         }
 
         ImGui::EndPopup();
     }
 }
+
+
+void XmlWindow::RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool insertBefore ) {
+    int numTypes = (int)m_stepTypes.size();
+
+    for( int typeIndex = 0; typeIndex < numTypes; typeIndex++ ) {
+        const std::string& stepType = m_stepTypes[typeIndex];
+
+        if( ImGui::MenuItem( stepType.c_str() ) ) {
+            MapGenStep* newStep = MapGenStep::CreateMapGenStep( stepType );
+
+            if( insertBefore ) {
+                eMapDef->InsertStepBefore( stepIndex, newStep );
+            } else {
+                eMapDef->InsertStepAfter( stepIndex, newStep );
+            }
+        }
+    }
+}
+
+
+/*
+void XmlWindow::RenderNewStepPopup( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, bool insertBefore ) {
+    if( ImGui::BeginPopup( guiID.c_str() ) ) {
+        ImGui::Text( "New Step" );
+        ImGui::Separator();
+
+        RenderDropDown( "newGenStep", m_newStepType, m_stepTypes, "", false, "" );
+
+        std::string buttonID = Stringf( "%s_button", guiID.c_str() );
+        ImGui::SameLine();
+        ImGui::PushID( buttonID.c_str() );
+
+        if( ImGui::Button( "Add" ) ) {
+            MapGenStep* newStep = MapGenStep::CreateMapGenStep( m_newStepType );
+
+            if( insertBefore ) {
+                eMapDef->InsertStepBefore( stepIndex, newStep );
+            } else {
+                eMapDef->InsertStepAfter( stepIndex, newStep );
+            }
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::PopID();
+        ImGui::EndPopup();
+    }
+}
+*/
 
 #endif

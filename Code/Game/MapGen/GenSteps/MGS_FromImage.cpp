@@ -116,6 +116,10 @@ void MGS_FromImage::RunOnce( Map& theMap ) const {
 
     IntVec2 imageOffset = GetImageOffset( theMap );
 
+    if( imageOffset == IntVec2::NEGONE ) {
+        return; // Couldn't find spot to put it
+    }
+
     int rotations = mapRNG->GetRandomIntInRange( m_numRotations );
     Image rotatedImage;
     m_image->GetRotated( rotations, rotatedImage );
@@ -162,6 +166,8 @@ bool MGS_FromImage::IsAlignmentValid( Map& theMap, const AABB2& imageBounds ) co
                 if( !IsTileValid( theMap, *tile ) ) {
                     return false;
                 }
+            } else {
+                return false;
             }
         }
     }

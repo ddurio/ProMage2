@@ -8,7 +8,8 @@ class MGS_CellularAutomata : public MapGenStep {
     friend class EditorMapGenStep;
 
     public:
-    MGS_CellularAutomata( const XMLElement& element, const Strings& motifHierarchy );
+    explicit MGS_CellularAutomata( const XMLElement& element, const Strings& motifHierarchy );
+    explicit MGS_CellularAutomata() {};
     ~MGS_CellularAutomata() {};
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;

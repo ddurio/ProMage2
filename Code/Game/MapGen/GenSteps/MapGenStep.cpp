@@ -289,6 +289,30 @@ MapGenStep* MapGenStep::CreateMapGenStep( const MapGenStep* stepToCopy ) {
 }
 
 
+MapGenStep* MapGenStep::CreateMapGenStep( const std::string& stepType ) {
+    MapGenStep* newStep = nullptr;
+
+    if( StringICmp( stepType, "CellularAutomata" ) ) {
+        newStep = new MGS_CellularAutomata();
+    } else if( StringICmp( stepType, "DistanceField" ) ) {
+        newStep = new MGS_DistanceField();
+    } else if( StringICmp( stepType, "FromImage" ) ) {
+        newStep = new MGS_FromImage();
+    } else if( StringICmp( stepType, "PerlinNoise" ) ) {
+        newStep = new MGS_PerlinNoise();
+    } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
+        newStep = new MGS_RoomsAndPaths();
+    } else if( StringICmp( stepType, "Sprinkle" ) ) {
+        newStep = new MGS_Sprinkle();
+    } else {
+        ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
+    }
+
+    newStep->m_stepType = stepType;
+    return newStep;
+}
+
+
 // Public ----------------------------------------------------
 void MapGenStep::Run( Map& theMap ) const {
     RNG* mapRNG = theMap.GetMapRNG();

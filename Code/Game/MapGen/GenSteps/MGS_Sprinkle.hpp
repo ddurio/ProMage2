@@ -9,6 +9,7 @@ class MGS_Sprinkle : public MapGenStep {
 
     public:
     explicit MGS_Sprinkle( const XMLElement& element, const Strings& motifHierarchy );
+    explicit MGS_Sprinkle() {};
     ~MGS_Sprinkle() {};
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;

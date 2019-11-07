@@ -108,12 +108,21 @@ void EditorMapDef::ReorderStepDown( int stepIndexToMove ) {
 
 
 void EditorMapDef::InsertStepBefore( int stepIndexToInsertBefore, MapGenStep* stepToInsert ) {
+    if( stepIndexToInsertBefore < 0 ) {
+        return;
+    } else if( stepIndexToInsertBefore >= m_numSteps ) {
+        m_mapGenSteps.push_back( stepToInsert );
+    } else {
+        std::vector< MapGenStep* >::iterator stepIter = m_mapGenSteps.begin() + stepIndexToInsertBefore;
+        m_mapGenSteps.insert( stepIter, stepToInsert );
+    }
 
+    m_numSteps++;
 }
 
 
 void EditorMapDef::InsertStepAfter( int stepIndexToInsertAfter, MapGenStep* stepToInsert ) {
-
+    InsertStepBefore( stepIndexToInsertAfter + 1, stepToInsert );
 }
 
 
