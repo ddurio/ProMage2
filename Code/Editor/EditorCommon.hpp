@@ -3,7 +3,10 @@
 
 
 class Editor;
+class JobSystem;
+
 extern Editor* g_theEditor;
+extern JobSystem* g_theJobs;
 
 
 constexpr char  EVENT_EDITOR_CHANGE_STEP[]   = "setStepIndex";

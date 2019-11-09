@@ -42,7 +42,6 @@ Actor::Actor( Map* theMap, const std::string& actorType, const std::string& cont
     Shader* shader = g_theRenderer->GetOrCreateShader( "Data/Shaders/PaperDoll2.hlsl" );
     shader->CreateInputLayout<VertexPCU>();
     shader->SetDepthMode( COMPARE_ALWAYS, false );
-    g_theRenderer->BindShader( shader );
 
     m_material->SetShader( shader );
 

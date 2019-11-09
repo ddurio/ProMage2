@@ -25,7 +25,13 @@
 #include "Game/MapGen/Map/TileDef.hpp"
 
 
-Editor::Editor() {
+JobSystem* g_theJobs = new JobSystem();
+
+
+Editor::Editor() :
+    Job( g_theJobs, JOB_CATEGORY_GENERIC ) {
+    SetAutoDestroy( false );
+
     m_uiCamera = new Camera();
     m_uiCamera->SetOrthoProjection( 10.f );
 
@@ -33,6 +39,11 @@ Editor::Editor() {
     g_theRenderer->BindTexture( font->GetTexturePath() );
 
     g_theEventSystem->Subscribe( "guiDemo", this, &Editor::ToggleDemo );
+
+    g_theEditor = this;
+    g_theJobs->Startup();
+    g_theJobs->StartJob( this ); // Calls startup on another thread
+    m_loadState = LOAD_STATE_INIT;
 
     BuildLoadingMesh();
 }
@@ -91,6 +102,8 @@ void Editor::Startup() {
     style.Colors[ImGuiCol_Header] = Rgba::ORGANIC_GRAY.GetAsImGui();
 
     BuildLoadedMesh();
+
+    m_loadState = LOAD_STATE_READY;
 }
 
 
@@ -179,24 +192,21 @@ const Clock* Editor::GetEditorClock() const {
 }
 
 
+void Editor::Execute() {
+    Startup();
+}
+
+
 // PRIVATE -------------------------------
 bool Editor::UpdateIsLoaded() {
     if( m_loadState == LOAD_STATE_DONE ) {
         return true;
     }
+    
+    if( m_loadState == LOAD_STATE_INIT ) { // Loading
 
-    switch( m_loadState ) {
-        case(LOAD_STATE_PRE_INIT): {
-            m_loadState = LOAD_STATE_INIT;
-            break;
-        } case(LOAD_STATE_INIT): {
-            Startup();
-            m_loadState = LOAD_STATE_READY;
-            break;
-        } case(LOAD_STATE_READY): {
-            // Could flash / change alpha of text here
-            break;
-        }
+    } else if( m_loadState == LOAD_STATE_READY ) { // Loaded
+
     }
 
     return false;

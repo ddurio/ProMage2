@@ -1,6 +1,7 @@
 #pragma once
 #include "Editor/EditorCommon.hpp"
 
+#include "Engine/Async/Job.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/Time.hpp"
@@ -15,7 +16,7 @@ class StepWindow;
 class XmlWindow;
 
 
-class Editor {
+class Editor : public Job {
     public:
     Editor();
     ~Editor();
@@ -39,14 +40,13 @@ class Editor {
     private:
 
     enum LoadState {
-        LOAD_STATE_PRE_INIT,
         LOAD_STATE_INIT,
         LOAD_STATE_READY,
         LOAD_STATE_DONE
     };
 
 
-    LoadState m_loadState  = LOAD_STATE_PRE_INIT;
+    LoadState m_loadState  = LOAD_STATE_INIT;
     GPUMesh* m_loadingMesh = nullptr;
     GPUMesh* m_loadedMesh  = nullptr;
 
@@ -62,6 +62,7 @@ class Editor {
     bool m_demoIsShown = false;
 
 
+    void Execute() override;
     bool UpdateIsLoaded();
     bool RenderIsLoaded() const;
 
