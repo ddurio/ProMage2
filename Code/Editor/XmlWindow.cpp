@@ -11,6 +11,8 @@
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/ImGuiSystem.hpp"
 
+#include "Game/MapGen/GenSteps/MGS_CustomDef.hpp"
+
 #include "ThirdParty/DearImGui/imgui_internal.h"
 
 
@@ -23,6 +25,9 @@ XmlWindow::XmlWindow( const Vec2& normDimensions /*= Vec2( 0.2f, 1.f )*/, const 
     m_mapType = mapWindow->GetMapType();
 
     g_theEventSystem->Subscribe( EVENT_EDITOR_GENERATE_MAP, &EditorMapGenStep::ResetChangedParams );
+
+    Strings customStepNames = MGS_CustomDef::GetAllDefinitionTypes();
+    m_stepTypes.insert( m_stepTypes.end(), customStepNames.begin(), customStepNames.end() );
 }
 
 
@@ -119,9 +124,10 @@ void XmlWindow::RenderGenSteps( EditorMapDef* eMapDef ) {
         }
 
         ImGui::SetNextTreeNodeOpen( (stepIndex == currentIndex) );
-        ImGui::PushID( stepName.c_str() );
+        bool headerOpen = ImGui::CollapsingHeader( stepName.c_str(), ImGuiTreeNodeFlags_None );
+        RenderContextMenu( eMapDef, stepName, stepIndex, numSteps );
 
-        if( ImGui::CollapsingHeader( stepName.c_str(), ImGuiTreeNodeFlags_None ) ) {
+        if( headerOpen ) {
             ImGui::TreePush( stepName.c_str() );
 
             if( stepIndex == 0 ) {
@@ -142,9 +148,6 @@ void XmlWindow::RenderGenSteps( EditorMapDef* eMapDef ) {
                 g_theEventSystem->FireEvent( EVENT_EDITOR_CHANGE_STEP, args );
             }
         }
-
-        ImGui::PopID();
-        RenderContextMenu( eMapDef, stepName, stepIndex, numSteps );
     }
 }
 
@@ -202,13 +205,14 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
 
 
 void XmlWindow::RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool insertBefore ) {
+    std::string mapMotif = eMapDef->GetMotif();
     int numTypes = (int)m_stepTypes.size();
 
     for( int typeIndex = 0; typeIndex < numTypes; typeIndex++ ) {
         const std::string& stepType = m_stepTypes[typeIndex];
 
         if( ImGui::MenuItem( stepType.c_str() ) ) {
-            MapGenStep* newStep = MapGenStep::CreateMapGenStep( stepType );
+            MapGenStep* newStep = MapGenStep::CreateMapGenStep( stepType, { mapMotif } );
 
             if( insertBefore ) {
                 eMapDef->InsertStepBefore( stepIndex, newStep );
@@ -218,36 +222,5 @@ void XmlWindow::RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool in
         }
     }
 }
-
-
-/*
-void XmlWindow::RenderNewStepPopup( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, bool insertBefore ) {
-    if( ImGui::BeginPopup( guiID.c_str() ) ) {
-        ImGui::Text( "New Step" );
-        ImGui::Separator();
-
-        RenderDropDown( "newGenStep", m_newStepType, m_stepTypes, "", false, "" );
-
-        std::string buttonID = Stringf( "%s_button", guiID.c_str() );
-        ImGui::SameLine();
-        ImGui::PushID( buttonID.c_str() );
-
-        if( ImGui::Button( "Add" ) ) {
-            MapGenStep* newStep = MapGenStep::CreateMapGenStep( m_newStepType );
-
-            if( insertBefore ) {
-                eMapDef->InsertStepBefore( stepIndex, newStep );
-            } else {
-                eMapDef->InsertStepAfter( stepIndex, newStep );
-            }
-
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::PopID();
-        ImGui::EndPopup();
-    }
-}
-*/
 
 #endif

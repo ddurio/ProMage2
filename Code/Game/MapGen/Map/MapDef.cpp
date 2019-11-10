@@ -22,6 +22,11 @@ void MapDef::DefineObject( Map& theMap ) const {
 }
 
 
+std::string MapDef::GetMotif() const {
+    return m_motif;
+}
+
+
 void MapDef::SaveToXml( XmlDocument& document, XMLElement& element ) const {
     element.SetAttribute( "name", m_defType.c_str() );
     element.SetAttribute( "fillTile", m_tileFillType.c_str() );

@@ -9,7 +9,7 @@ class MGS_RoomsAndPaths : public MapGenStep {
 
     public:
     explicit MGS_RoomsAndPaths( const XMLElement& element, const Strings& motifHierarchy );
-    explicit MGS_RoomsAndPaths() {};
+    explicit MGS_RoomsAndPaths( const Strings& motifHierarchy );
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
     bool RecalculateMotifVars( EventArgs& args ) override;

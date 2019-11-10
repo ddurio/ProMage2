@@ -15,6 +15,11 @@ MGS_PerlinNoise::MGS_PerlinNoise( const XMLElement& element, const Strings& moti
 }
 
 
+MGS_PerlinNoise::MGS_PerlinNoise( const Strings& motifHierarchy ) :
+    MapGenStep( motifHierarchy ) {
+}
+
+
 void MGS_PerlinNoise::SaveToXml( XmlDocument& document, XMLElement& element ) const {
     element.SetName( "PerlinNoise" );
     MapGenStep::SaveToXml( document, element );

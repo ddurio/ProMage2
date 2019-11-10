@@ -13,6 +13,11 @@ MGS_Sprinkle::MGS_Sprinkle( const XMLElement& element, const Strings& motifHiera
 }
 
 
+MGS_Sprinkle::MGS_Sprinkle( const Strings& motifHierarchy ) :
+    MapGenStep( motifHierarchy ) {
+}
+
+
 void MGS_Sprinkle::SaveToXml( XmlDocument& document, XMLElement& element ) const {
     element.SetName( "Sprinkle" );
     MapGenStep::SaveToXml( document, element );

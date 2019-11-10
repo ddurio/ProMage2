@@ -9,7 +9,7 @@ class MGS_DistanceField : public MapGenStep {
 
     public:
     explicit MGS_DistanceField( const XMLElement& element, const Strings& motifHierarchy );
-    explicit MGS_DistanceField() {};
+    explicit MGS_DistanceField( const Strings& motifHierarchy );
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
     bool RecalculateMotifVars( EventArgs& args ) override;

@@ -30,6 +30,11 @@ MGS_RoomsAndPaths::MGS_RoomsAndPaths( const XMLElement& element, const Strings& 
 }
 
 
+MGS_RoomsAndPaths::MGS_RoomsAndPaths( const Strings& motifHierarchy ) :
+    MapGenStep( motifHierarchy ) {
+}
+
+
 void MGS_RoomsAndPaths::SaveToXml( XmlDocument& document, XMLElement& element ) const {
     element.SetName( "RoomsAndPaths" );
     MapGenStep::SaveToXml( document, element );

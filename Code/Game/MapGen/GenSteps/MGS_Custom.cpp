@@ -9,10 +9,20 @@ MGS_Custom::MGS_Custom( const XMLElement& element, const Strings& motifHierarchy
     m_defType = element.Name();
     const MGS_CustomDef* stepDef = MGS_CustomDef::GetDefinition( m_defType );
 
-    SetupMotifFromXML( element, stepDef );
+    SetupMotifFromXML( element );
     stepDef->DefineObject( *this );
+}
 
-    s_numCustomSteps++;
+
+MGS_Custom::MGS_Custom( const std::string& stepType, const Strings& motifHierarchy ) :
+    MapGenStep( motifHierarchy ) {
+    m_defType = stepType;
+
+    SetupEmptyMotif();
+    AddChildMotifs( { m_motifDef->GetDefintionType() } );
+
+    const MGS_CustomDef* stepDef = MGS_CustomDef::GetDefinition( m_defType );
+    stepDef->DefineObject( *this );
 }
 
 
@@ -61,18 +71,25 @@ void MGS_Custom::RunOnce( Map& theMap ) const {
 }
 
 
-void MGS_Custom::SetupMotifFromXML( const XMLElement& element, const MGS_CustomDef* virtualDef ) {
-    // Make new motif based on CustomDef motif
-    std::string motifToCopy = virtualDef->GetMotif();
+void MGS_Custom::SetupEmptyMotif() {
+    const MGS_CustomDef* customDef = MGS_CustomDef::GetDefinition( m_defType );
+    std::string motifToCopy = customDef->GetMotif();
     std::string nameToAppend = Stringf( "CustomXML.%d", s_numCustomSteps );
 
     m_motifDef = new MotifDef( motifToCopy, nameToAppend );
+    s_numCustomSteps++;
+}
+
+
+void MGS_Custom::SetupMotifFromXML( const XMLElement& element ) {
+    // Make new motif based on CustomDef motif
+    SetupEmptyMotif();
 
     // Modify new motif based on XML overrides
     NamedProperties& motifVars = m_motifDef->GetVariableValues();
     Strings varNames = motifVars.GetNames();
 
-    std::string invalidValue = "__HOPEFULLY_NOT_A_VALUE__";
+    const std::string invalidValue = "__HOPEFULLY_NOT_A_VALUE__";
     int numVars = (int)varNames.size();
 
     for( int varIndex = 0; varIndex < numVars; varIndex++ ) {

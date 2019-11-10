@@ -28,7 +28,7 @@ class MapGenStep {
 
     public:
     explicit MapGenStep( const XMLElement& element, const Strings& motifHierarchy );
-    explicit MapGenStep() {};
+    explicit MapGenStep( const Strings& motifHierarchy );
     virtual ~MapGenStep() {};
 
     static int AddCustomCondition( const std::string& eventName, const Strings& attrNames, CustomAttrRequirement requirement = REQUIRE_ALL );
@@ -39,7 +39,7 @@ class MapGenStep {
 
     static MapGenStep* CreateMapGenStep( const XMLElement& element, const Strings& motifHierarchy );
     static MapGenStep* CreateMapGenStep( const MapGenStep* stepToCopy );
-    static MapGenStep* CreateMapGenStep( const std::string& stepType );
+    static MapGenStep* CreateMapGenStep( const std::string& stepType, const Strings& motifHierarchy );
 
 
     void Run( Map& map ) const;

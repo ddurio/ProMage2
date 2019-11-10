@@ -18,7 +18,7 @@ class MGS_FromImage : public MapGenStep {
     public:
     explicit MGS_FromImage( const XMLElement& element, const Strings& motifHierarchy );
     explicit MGS_FromImage( const MGS_FromImage& copyFrom );
-    explicit MGS_FromImage() {};
+    explicit MGS_FromImage( const Strings& motifHierarchy );
     ~MGS_FromImage();
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;

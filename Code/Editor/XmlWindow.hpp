@@ -40,5 +40,4 @@ class XmlWindow : public EditorWindow {
     void RenderGenSteps( EditorMapDef* eMapDef );
     void RenderContextMenu( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, int numSteps );
     void RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool insertBefore );
-    //void RenderNewStepPopup( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, bool insertBefore );
 };

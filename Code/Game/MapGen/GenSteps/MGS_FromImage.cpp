@@ -29,6 +29,11 @@ MGS_FromImage::MGS_FromImage( const MGS_FromImage& copyFrom ) :
 }
 
 
+MGS_FromImage::MGS_FromImage( const Strings& motifHierarchy ) :
+    MapGenStep( motifHierarchy ) {
+}
+
+
 MGS_FromImage::~MGS_FromImage() {
     Shutdown();
 }

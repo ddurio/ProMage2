@@ -103,6 +103,12 @@ MapGenStep::MapGenStep( const XMLElement& element, const Strings& motifHierarchy
 }
 
 
+MapGenStep::MapGenStep( const Strings& motifHierarchy ) {
+    AddParentMotifs( motifHierarchy ); // Map motif
+    AddChildMotifs( { "" } ); // Step motif
+}
+
+
 // Custom Event ----------------------------------------------------------------------
 MapGenStep::CustomEvent::CustomEvent( const CustomEvent& event, const Strings& parsedValues ) :
     name( event.name ),
@@ -223,6 +229,7 @@ void MapGenStep::RemoveCustomResult( int resultIndex ) {
 }
 
 
+// Build from xml
 MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element, const Strings& motifHierarchy ) {
     std::string stepType = element.Name();
     MapGenStep* step = nullptr;
@@ -253,6 +260,7 @@ MapGenStep* MapGenStep::CreateMapGenStep( const XMLElement& element, const Strin
 }
 
 
+// Copied from existing step (i.e. MGS_CustomDef)
 MapGenStep* MapGenStep::CreateMapGenStep( const MapGenStep* stepToCopy ) {
     std::string stepType = stepToCopy->m_stepType;
     MapGenStep* newStep = nullptr;
@@ -289,23 +297,30 @@ MapGenStep* MapGenStep::CreateMapGenStep( const MapGenStep* stepToCopy ) {
 }
 
 
-MapGenStep* MapGenStep::CreateMapGenStep( const std::string& stepType ) {
+// Created programmatically (i.e. Thesis Editor)
+MapGenStep* MapGenStep::CreateMapGenStep( const std::string& stepType, const Strings& motifHierarchy ) {
     MapGenStep* newStep = nullptr;
 
     if( StringICmp( stepType, "CellularAutomata" ) ) {
-        newStep = new MGS_CellularAutomata();
+        newStep = new MGS_CellularAutomata( motifHierarchy );
     } else if( StringICmp( stepType, "DistanceField" ) ) {
-        newStep = new MGS_DistanceField();
+        newStep = new MGS_DistanceField( motifHierarchy );
     } else if( StringICmp( stepType, "FromImage" ) ) {
-        newStep = new MGS_FromImage();
+        newStep = new MGS_FromImage( motifHierarchy );
     } else if( StringICmp( stepType, "PerlinNoise" ) ) {
-        newStep = new MGS_PerlinNoise();
+        newStep = new MGS_PerlinNoise( motifHierarchy );
     } else if( StringICmp( stepType, "RoomsAndPaths" ) ) {
-        newStep = new MGS_RoomsAndPaths();
+        newStep = new MGS_RoomsAndPaths( motifHierarchy );
     } else if( StringICmp( stepType, "Sprinkle" ) ) {
-        newStep = new MGS_Sprinkle();
+        newStep = new MGS_Sprinkle( motifHierarchy );
     } else {
-        ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
+        const MGS_CustomDef* customDef = MGS_CustomDef::GetDefinition( stepType );
+
+        if( customDef != nullptr ) {
+            newStep = new MGS_Custom( stepType, motifHierarchy );
+        } else {
+            ERROR_RECOVERABLE( Stringf( "(MapGenStep): Unrecognized step type '%s'", stepType.c_str() ) );
+        }
     }
 
     newStep->m_stepType = stepType;

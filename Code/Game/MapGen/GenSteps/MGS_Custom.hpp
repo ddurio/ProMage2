@@ -12,7 +12,8 @@ class MGS_Custom : public MapGenStep {
     friend class MGS_CustomDef;
 
     public:
-    MGS_Custom( const XMLElement& element, const Strings& motifHierarchy );
+    explicit MGS_Custom( const XMLElement& element, const Strings& motifHierarchy );
+    explicit MGS_Custom( const std::string& stepType, const Strings& motifHierarchy );
     ~MGS_Custom() {};
 
     std::vector< CustomEvent > GetCustomResults() const override;
@@ -32,6 +33,7 @@ class MGS_Custom : public MapGenStep {
 
     void RunOnce( Map& theMap ) const;
 
-    void SetupMotifFromXML( const XMLElement& element, const MGS_CustomDef* virtualDef );
+    void SetupEmptyMotif();
+    void SetupMotifFromXML( const XMLElement& element );
 };
 

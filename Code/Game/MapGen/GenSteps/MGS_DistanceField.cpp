@@ -11,6 +11,11 @@ MGS_DistanceField::MGS_DistanceField( const XMLElement& element, const Strings& 
 }
 
 
+MGS_DistanceField::MGS_DistanceField( const Strings& motifHierarchy ) :
+    MapGenStep( motifHierarchy ) {
+}
+
+
 void MGS_DistanceField::SaveToXml( XmlDocument& document, XMLElement& element ) const {
     element.SetName( "DistanceField" );
     MapGenStep::SaveToXml( document, element );

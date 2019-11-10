@@ -20,6 +20,11 @@ MGS_CellularAutomata::MGS_CellularAutomata( const XMLElement& element, const Str
 }
 
 
+MGS_CellularAutomata::MGS_CellularAutomata( const Strings& motifHierarchy ) :
+    MapGenStep( motifHierarchy ) {
+}
+
+
 void MGS_CellularAutomata::SaveToXml( XmlDocument& document, XMLElement& element ) const {
     element.SetName( "CellularAutomata" );
     MapGenStep::SaveToXml( document, element );

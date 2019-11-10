@@ -9,7 +9,7 @@ class MGS_CellularAutomata : public MapGenStep {
 
     public:
     explicit MGS_CellularAutomata( const XMLElement& element, const Strings& motifHierarchy );
-    explicit MGS_CellularAutomata() {};
+    explicit MGS_CellularAutomata( const Strings& motifHierarchy );
     ~MGS_CellularAutomata() {};
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;

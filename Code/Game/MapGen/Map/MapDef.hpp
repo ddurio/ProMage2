@@ -21,6 +21,8 @@ class MapDef : public Definition< Map, MapDef > {
     public:
     virtual void DefineObject( Map& theMap ) const override;
 
+    std::string GetMotif() const;
+
     virtual void SaveToXml( XmlDocument& document, XMLElement& element ) const;
     bool RecalculateMotifVars( EventArgs& args );
 

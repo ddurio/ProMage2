@@ -9,7 +9,7 @@ class MGS_PerlinNoise : public MapGenStep {
 
     public:
     explicit MGS_PerlinNoise( const XMLElement& element, const Strings& motifHierarchy );
-    explicit MGS_PerlinNoise() {};
+    explicit MGS_PerlinNoise( const Strings& motifHierarchy );
 
     void SaveToXml( XmlDocument& document, XMLElement& element ) const override;
     bool RecalculateMotifVars( EventArgs& args ) override;
