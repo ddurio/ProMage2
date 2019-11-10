@@ -106,6 +106,37 @@ MapGenStep::MapGenStep( const XMLElement& element, const Strings& motifHierarchy
 MapGenStep::MapGenStep( const Strings& motifHierarchy ) {
     AddParentMotifs( motifHierarchy ); // Map motif
     AddChildMotifs( { "" } ); // Step motif
+
+    // Add custom cond/results that require no xml attributes
+    int numCustomConditions = (int)s_customConditions.size();
+
+    for( int conditionIndex = 0; conditionIndex < numCustomConditions; conditionIndex++ ) {
+        const CustomEvent& sEvent = s_customConditions[conditionIndex];
+
+        if( sEvent.requirement == REQUIRE_NONE ) {
+            int numNames = (int)sEvent.attrNames.size();
+
+            Strings values;
+            values.resize( numNames, "" );
+
+            m_customConditions.emplace_back( sEvent, values );
+        }
+    }
+
+    int numCustomResults = (int)s_customResults.size();
+
+    for( int resultIndex = 0; resultIndex < numCustomResults; resultIndex++ ) {
+        const CustomEvent& sEvent = s_customResults[resultIndex];
+
+        if( sEvent.requirement == REQUIRE_NONE ) {
+            int numNames = (int)sEvent.attrNames.size();
+
+            Strings values;
+            values.resize( numNames, "" );
+
+            m_customResults.emplace_back( sEvent, values );
+        }
+    }
 }
 
 
