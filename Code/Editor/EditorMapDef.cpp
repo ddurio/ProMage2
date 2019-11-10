@@ -4,6 +4,7 @@
 #include "Editor/EditorMapGenStep.hpp"
 #include "Editor/ImGuiUtils.hpp"
 
+#include "Engine/Async/JobSystem.hpp"
 #include "Engine/Math/RNG.hpp"
 
 #include "Game/MapGen/GenSteps/MapGenStep.hpp"
@@ -17,10 +18,8 @@ void EditorMapDef::DefineObject( std::vector< Map* >* mapSteps, bool useCustomSe
     m_allJobsStarted = false;
     m_numJobsRunning = 0;
 
-    SpinUpThreads();
     LaunchJobs( useCustomSeed, customSeed );
-    ProcessMainPayloads();
-    SpinDownThreads();
+    WaitForJobs();
 }
 
 
@@ -162,7 +161,6 @@ EditorMapDef::EditorMapDef( const XMLElement& element ) :
     m_numSteps += numGenSteps;
 
     std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, m_defType.c_str() );
-
     g_theEventSystem->Subscribe( eventName, (MapDef*)this, &EditorMapDef::RecalculateMotifVars );
 
     for( int stepIndex = 0; stepIndex < numGenSteps; stepIndex++ ) {
@@ -188,34 +186,6 @@ bool EditorMapDef::IsFinished() const {
 }
 
 
-bool EditorMapDef::CompleteStep( AsyncPayload& payload ) const {
-    payload.numStepsDone++;
-
-    GUARANTEE_RECOVERABLE( payload.numStepsDone <= payload.numStepsToDo, "(EditorMapDef) Too many steps completed!" );
-
-    if( payload.numStepsDone == payload.numStepsToDo ) {
-        payload.theMap->StartupPostDefine();
-        payload.theMap->Shutdown();
-        g_theEventSystem->Unsubscribe( "changeTile", payload.theMap, &Map::TrackModifiedTiles );
-        m_mainPayloads.Enqueue( payload );
-
-        return true;
-    }
-
-    payload.theMap->ClearModifiedTiles();
-    return false;
-}
-
-
-void EditorMapDef::SpinUpThreads() const {
-    int numCores = std::thread::hardware_concurrency();
-
-    for( int coreIndex = 0; coreIndex < numCores; coreIndex++ ) {
-        m_threads.emplace_back( &EditorMapDef::ProcessWorkerPayloads, this );
-    }
-}
-
-
 void EditorMapDef::LaunchJobs( bool useCustomSeed, unsigned int customSeed ) const {
     unsigned int mapSeed = (useCustomSeed) ? customSeed : g_RNG->GetRandomSeed();
 
@@ -227,95 +197,21 @@ void EditorMapDef::LaunchJobs( bool useCustomSeed, unsigned int customSeed ) con
         SetMapDef( *theMap );
         g_theEventSystem->Subscribe( "changeTile", theMap, &Map::TrackModifiedTiles );
 
-        AsyncPayload payload;
-        payload.theMap = theMap;
-        payload.numStepsToDo = stepIndex;
+        EditorMapDefJob* eJob = new EditorMapDefJob( this, theMap, stepIndex );
 
         m_numJobsRunning++;
-        m_workerPayloads.Enqueue( payload );
+        g_theJobs->StartJob( eJob );
     }
 
     m_allJobsStarted = true;
 }
 
 
-void EditorMapDef::ProcessWorkerPayloads() const {
-    AsyncPayload payload;
-
-    while( !IsFinished() ) {
-        while( m_workerPayloads.Dequeue( &payload ) ) {
-
-            Map& theMap = *payload.theMap;
-            RNG* mapRNG = GetMapRNG( theMap );
-            int mapWidth = mapRNG->GetRandomIntInRange( m_width );
-            int mapHeight = mapRNG->GetRandomIntInRange( m_height );
-            SetMapDimensions( theMap, IntVec2( mapWidth, mapHeight ) );
-
-            DefineFillAndEdge( theMap );
-
-            if( CompleteStep( payload ) ) {
-                break;
-            }
-
-            // Run Each MapGenStep
-            int numSteps = (int)m_mapGenSteps.size();
-            bool payloadComplete = false;
-
-            for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
-                m_mapGenSteps[stepIndex]->Run( theMap );
-
-                if( CompleteStep( payload ) ) {
-                    payloadComplete = true;
-                    break;
-                }
-            }
-
-            if( payloadComplete ) {
-                break;
-            }
-
-            DefineFromContextTiles( theMap );
-
-            if( CompleteStep( payload ) ) {
-                break;
-            }
-
-            DefineTileColliders( theMap );
-
-            if( CompleteStep( payload ) ) {
-                break;
-            } else {
-                ERROR_RECOVERABLE( "(EditorMapDef) Worker never sent job back!" );
-            }
-        }
-
-        std::this_thread::sleep_for( std::chrono::seconds( 0 ) );
-    }
-}
-
-
-void EditorMapDef::ProcessMainPayloads() const {
+void EditorMapDef::WaitForJobs() const {
     // Process all of the payloads
-    AsyncPayload payload;
-
     while( m_numJobsRunning > 0 ) {
-        while( m_mainPayloads.Dequeue( &payload ) ) {
-            m_numJobsRunning--;
-            (*m_mapPerStep)[payload.numStepsToDo - 1] = payload.theMap;
-        }
+        g_theJobs->ProcessCategory( JOB_CATEGORY_GENERIC );
     }
-}
-
-
-void EditorMapDef::SpinDownThreads() const {
-    // Kill the threads
-    int numThreads = (int)m_threads.size();
-
-    for( int threadIndex = 0; threadIndex < numThreads; threadIndex++ ) {
-        m_threads[threadIndex].join();
-    }
-
-    m_threads.clear();
 }
 
 
@@ -348,5 +244,86 @@ bool EditorMapDef::SaveOneToXml( EventArgs& args ) {
 
     return false;
 }
+
+
+// EditorMapDefJob ---------------------------------------------
+EditorMapDefJob::EditorMapDefJob( const EditorMapDef* eMapDef, Map* theMap, int numStepsToDo ) :
+    Job( g_theJobs, JOB_CATEGORY_GENERIC ),
+    m_eMapDef( eMapDef ),
+    m_theMap( theMap ),
+    m_numStepsToDo( numStepsToDo ) {
+}
+
+
+const EditorMapDef* EditorMapDefJob::GetMapDef() const {
+    return m_eMapDef;
+}
+
+
+void EditorMapDefJob::Execute() {
+    Map& theMap = *m_theMap;
+    RNG* mapRNG = m_eMapDef->GetMapRNG( theMap );
+    int mapWidth = mapRNG->GetRandomIntInRange( m_eMapDef->m_width );
+    int mapHeight = mapRNG->GetRandomIntInRange( m_eMapDef->m_height );
+    m_eMapDef->SetMapDimensions( theMap, IntVec2( mapWidth, mapHeight ) );
+
+    m_eMapDef->DefineFillAndEdge( theMap );
+
+    if( CompleteStep() ) {
+        return;
+    }
+
+    // Run Each MapGenStep
+    int numSteps = (int)m_eMapDef->m_mapGenSteps.size();
+    bool payloadComplete = false;
+
+    for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
+        m_eMapDef->m_mapGenSteps[stepIndex]->Run( theMap );
+
+        if( CompleteStep() ) {
+            payloadComplete = true;
+            break;
+        }
+    }
+
+    if( payloadComplete ) {
+        return;
+    }
+
+    m_eMapDef->DefineFromContextTiles( theMap );
+
+    if( CompleteStep() ) {
+        return;
+    }
+
+    m_eMapDef->DefineTileColliders( theMap );
+
+    if( CompleteStep() ) {
+        return;
+    } else {
+        ERROR_RECOVERABLE( "(EditorMapDef) Worker never sent job back!" );
+    }
+}
+
+
+bool EditorMapDefJob::CompleteStep() {
+    m_numStepsDone++;
+
+    GUARANTEE_RECOVERABLE( m_numStepsDone <= m_numStepsToDo, "(EditorMapDef) Too many steps completed!" );
+
+    if( m_numStepsDone == m_numStepsToDo ) {
+        m_theMap->StartupPostDefine();
+        m_theMap->Shutdown();
+        g_theEventSystem->Unsubscribe( "changeTile", m_theMap, &Map::TrackModifiedTiles );
+
+        (*m_eMapDef->m_mapPerStep)[m_numStepsToDo - 1] = m_theMap;
+        m_eMapDef->m_numJobsRunning--;
+        return true;
+    }
+
+    m_theMap->ClearModifiedTiles();
+    return false;
+}
+
 
 #endif

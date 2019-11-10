@@ -43,16 +43,11 @@ Editor::Editor() :
     g_theEditor = this;
     g_theJobs->Startup();
     g_theJobs->StartJob( this ); // Calls startup on another thread
-    m_loadState = LOAD_STATE_INIT;
-
-    BuildLoadingMesh();
 }
 
 
 Editor::~Editor() {
     CLEAR_POINTER( m_uiCamera );
-    CLEAR_POINTER( m_loadingMesh );
-    CLEAR_POINTER( m_loadedMesh );
     CLEAR_POINTER( m_mapWindow );
     CLEAR_POINTER( m_stepWindow );
     CLEAR_POINTER( m_xmlWindow );
@@ -101,9 +96,7 @@ void Editor::Startup() {
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_Header] = Rgba::ORGANIC_GRAY.GetAsImGui();
 
-    BuildLoadedMesh();
-
-    m_loadState = LOAD_STATE_READY;
+    m_editorIsLoading = false;
 }
 
 
@@ -124,14 +117,8 @@ void Editor::Shutdown() {
 
 
 bool Editor::HandleKeyPressed( unsigned char keyCode ) {
-    if( m_loadState == LOAD_STATE_READY ) {
-        if( keyCode == KB_SPACE ) { // Continue to Play
-            m_loadState = LOAD_STATE_DONE;
-            return true;
-        }
-    }
-
     // ThesisFIXME: Implement key pressed
+    UNUSED( keyCode );
     return false;
 }
 
@@ -149,13 +136,14 @@ bool Editor::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f */ 
 
 
 void Editor::Update() {
-    if( !UpdateIsLoaded() ) {
+    if( IsLoading() ) {
+        UpdateLoading();
         return;
     }
 
     float deltaSeconds = m_editorClock.GetDeltaTime();
 
-    UpdateMainMenu();
+    UpdateMenuBar();
     m_mapWindow->Update( deltaSeconds );
     m_stepWindow->Update( deltaSeconds );
     m_xmlWindow->Update( deltaSeconds );
@@ -167,13 +155,19 @@ void Editor::Update() {
 
 
 void Editor::Render() const {
-    if( !RenderIsLoaded() ) {
+    if( IsLoading() ) {
+        RenderLoading();
         return;
     }
 
     m_mapWindow->Render();
     m_stepWindow->Render();
     m_xmlWindow->Render();
+}
+
+
+void Editor::SetMapLoadingState( bool isLoading ) {
+    m_mapIsLoading = isLoading;
 }
 
 
@@ -192,94 +186,45 @@ const Clock* Editor::GetEditorClock() const {
 }
 
 
+bool Editor::IsLoading() const {
+    return (m_editorIsLoading || m_mapIsLoading);
+}
+
+
+// PRIVATE -------------------------------
 void Editor::Execute() {
     Startup();
 }
 
 
-// PRIVATE -------------------------------
-bool Editor::UpdateIsLoaded() {
-    if( m_loadState == LOAD_STATE_DONE ) {
-        return true;
-    }
-    
-    if( m_loadState == LOAD_STATE_INIT ) { // Loading
-
-    } else if( m_loadState == LOAD_STATE_READY ) { // Loaded
-
-    }
-
-    return false;
-}
-
-
-bool Editor::RenderIsLoaded() const {
-    if( m_loadState == LOAD_STATE_DONE ) {
-        return true;
-    }
-
-    g_theRenderer->BeginCamera( m_uiCamera );
-
+void Editor::UpdateLoading() {
     BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
-    g_theRenderer->BindTexture( font->GetTexturePath() );
 
-    if( m_loadState == LOAD_STATE_INIT ) { // LOADING
-        g_theRenderer->ClearRenderTarget( Rgba::CYAN );
-        g_theRenderer->DrawMesh( m_loadingMesh );
-    } else if( m_loadState == LOAD_STATE_READY ) { // LOADED
-        g_theRenderer->ClearRenderTarget( Rgba::YELLOW );
-        g_theRenderer->DrawMesh( m_loadedMesh );
-    }
-
-    g_theRenderer->EndCamera( m_uiCamera );
-    return false;
-}
-
-
-void Editor::BuildLoadingMesh() {
-    if( m_loadingMesh != nullptr ) {
-        return; // Already built
-    }
-
-    BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
-    CPUMesh builder;
-    VertexList verts;
     AABB2 cameraBounds = m_uiCamera->GetBounds();
     Vec2 cameraDimensions = cameraBounds.GetDimensions();
 
-    // Create text verts
-    font->AddVeretsForTextInBox2D( verts, cameraBounds, cameraDimensions.y * 0.1f, "Loading...", Rgba::BLACK );
-    builder.AddVertexArray( verts );
+    //int loadingIndex = GetIndexOverTime( 4, 0.25f );
+    m_loadingIndex++;
+    int numDots = (m_loadingIndex / 50) % 4;
+    int maxGlyphs = 7 + numDots;
 
-    // Create Mesh
-    m_loadingMesh = new GPUMesh( g_theRenderer );
-    m_loadingMesh->CopyVertsFromCPUMesh( &builder );
+    // Create text verts
+    m_loadingVerts.clear();
+    font->AddVeretsForTextInBox2D(
+        m_loadingVerts,
+        cameraBounds,
+        cameraDimensions.y * 0.1f,
+        "Loading...",
+        Rgba::ORGANIC_BLUE,
+        1.f,
+        ALIGN_CENTER,
+        TEXT_DRAW_SHRINK_TO_FIT,
+        maxGlyphs
+    );
 }
 
 
-void Editor::BuildLoadedMesh() {
-    if( m_loadedMesh != nullptr ) {
-        return; // Already built
-    }
-
-    BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
-    CPUMesh builder;
-    VertexList verts;
-    AABB2 cameraBounds = m_uiCamera->GetBounds();
-    Vec2 cameraDimensions = cameraBounds.GetDimensions();
-
-    // Create text verts
-    font->AddVeretsForTextInBox2D( verts, cameraBounds, cameraDimensions.y * 0.1f, "Loaded", Rgba::BLACK );
-    font->AddVeretsForTextInBox2D( verts, cameraBounds, cameraDimensions.y * 0.05f, "Press Space to Continue", Rgba::BLACK, 1.f, Vec2( 0.5f, 0.25f ) );
-    builder.AddVertexArray( verts );
-
-    // Create Mesh
-    m_loadedMesh = new GPUMesh( g_theRenderer );
-    m_loadedMesh->CopyVertsFromCPUMesh( &builder );
-}
-
-
-void Editor::UpdateMainMenu() {
+void Editor::UpdateMenuBar() {
     ImGui::BeginMainMenuBar();
     
     if( ImGui::BeginMenu( "File" ) ) {
@@ -288,6 +233,19 @@ void Editor::UpdateMainMenu() {
     }
 
     ImGui::EndMainMenuBar();
+}
+
+
+void Editor::RenderLoading() const {
+    g_theRenderer->BeginCamera( m_uiCamera );
+
+    BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
+    g_theRenderer->BindTexture( font->GetTexturePath() );
+
+    g_theRenderer->ClearRenderTarget( Rgba::ORGANIC_GRAY );
+    g_theRenderer->DrawVertexArray( m_loadingVerts );
+
+    g_theRenderer->EndCamera( m_uiCamera );
 }
 
 

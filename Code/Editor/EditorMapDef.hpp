@@ -2,6 +2,7 @@
 #include "Editor/EditorCommon.hpp"
 
 #include "Engine/Async/AsyncQueue.hpp"
+#include "Engine/Async/Job.hpp"
 #include "Engine/Utils/NamedStrings.hpp"
 
 #include "Game/MapGen/Map/MapDef.hpp"
@@ -9,6 +10,7 @@
 
 class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     friend class Definition< Map, EditorMapDef >;
+    friend class EditorMapDefJob;
 
     public:
     void DefineObject( std::vector< Map* >* mapSteps, bool useCustomSeed = false, unsigned int customSeed = 0 ) const;
@@ -36,12 +38,6 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
 
 
     private:
-    struct AsyncPayload {
-        Map* theMap = nullptr;
-        int numStepsToDo = -1;
-        int numStepsDone = 0;
-    };
-
     using Definition< Map, EditorMapDef >::s_defClass;
     using Definition< Map, EditorMapDef >::s_definitions;
     using MapDef                         ::m_defType;
@@ -50,27 +46,38 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
 
     mutable std::vector< Map* >* m_mapPerStep   = nullptr;
     mutable bool m_allJobsStarted               = false;
-    mutable int m_numJobsRunning                = 0;
-
-    mutable std::vector< std::thread > m_threads;
-    mutable AsyncQueue< AsyncPayload > m_workerPayloads;
-    mutable AsyncQueue< AsyncPayload > m_mainPayloads;
-
+    mutable std::atomic< int > m_numJobsRunning = 0;
 
 
     explicit EditorMapDef( const XMLElement& element );
     ~EditorMapDef();
 
     bool IsFinished() const;
-    bool CompleteStep( AsyncPayload& payload ) const;
 
-    void SpinUpThreads() const;
     void LaunchJobs( bool useCustomSeed, unsigned int customSeed ) const;
-    void ProcessWorkerPayloads() const;
-    void ProcessMainPayloads() const;
-    void SpinDownThreads() const;
+    void WaitForJobs() const;
 
     void DefineFromContextTiles( Map& theMap ) const override;
 
     bool SaveOneToXml( EventArgs& args );
+};
+
+
+class EditorMapDefJob : public Job {
+    public:
+    EditorMapDefJob( const EditorMapDef* eMapDef, Map* theMap, int numStepsToDo );
+    ~EditorMapDefJob() {};
+
+    const EditorMapDef* GetMapDef() const;
+
+
+    private:
+    const EditorMapDef* m_eMapDef = nullptr;
+    Map* m_theMap = nullptr;
+    int m_numStepsToDo = -1;
+    int m_numStepsDone = 0;
+
+
+    void Execute() override;
+    bool CompleteStep();
 };

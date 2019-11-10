@@ -22,7 +22,10 @@
 
 
 MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const Vec2& alignment /*= Vec2( 0.f, 1.f ) */ ) :
-    EditorWindow( normDimensions, alignment ) {
+    EditorWindow( normDimensions, alignment ),
+    Job( g_theJobs, JOB_CATEGORY_GENERIC ) {
+    SetAutoDestroy( false );
+
     m_windowName = "MapEditor";
     m_extraFlags |= ImGuiWindowFlags_NoMouseInputs;
 
@@ -36,6 +39,7 @@ MapWindow::MapWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.9f )*/, const
     m_highlightColor = *(ImU32*)packedColor;
 
     Startup();
+    g_theJobs->WaitForJob( this );
 }
 
 
@@ -374,23 +378,22 @@ void MapWindow::RenderTileChangeTooltip() {
 }
 
 
-bool MapWindow::GenerateMaps( EventArgs& args ) {
+void MapWindow::Execute() {
     if( m_mapPerStep.size() > 0 ) { // Previously generated maps.. delete them
         Shutdown();
     }
+    
+    std::string defaultMapType = g_theGameConfigBlackboard.GetValue( "editorDefaultMap", "Island" );
+    std::string mapType = m_genArgs.GetValue( "mapType", defaultMapType );
 
-    //std::string mapType = args.GetValue( "mapType", "Cavern" );
-    std::string mapType = args.GetValue( "mapType", "Island" );
-    //std::string mapType = args.GetValue( "mapType", "DD1" );
-
-    bool useCustomSeed = args.GetValue( "useCustomSeed", false );
-    unsigned int customSeed = args.GetValue( "customSeed", 0 );
+    bool useCustomSeed = m_genArgs.GetValue( "useCustomSeed", false );
+    unsigned int customSeed = m_genArgs.GetValue( "customSeed", 0 );
 
     const EditorMapDef* eMapDef = EditorMapDef::GetDefinition( mapType );
     eMapDef->DefineObject( &m_mapPerStep, useCustomSeed, customSeed );
 
     m_stepIndex = (int)m_mapPerStep.size() - 1;
-    m_stepIndex = args.GetValue( "stepIndex", m_stepIndex );
+    m_stepIndex = m_genArgs.GetValue( "stepIndex", m_stepIndex );
 
     EventArgs stepArgs;
     stepArgs.SetValue( "stepIndex", m_stepIndex );
@@ -414,6 +417,17 @@ bool MapWindow::GenerateMaps( EventArgs& args ) {
     // Setup render target
     TextureView2D* mapView = g_theRenderer->GetOrCreateRenderTarget( m_mapViewName );
     m_mapCamera->SetRenderTarget( mapView );
+
+    g_theEditor->SetMapLoadingState( false );
+}
+
+
+bool MapWindow::GenerateMaps( EventArgs& args ) {
+    g_theEditor->SetMapLoadingState( true );
+
+    m_genArgs = args;
+    ResetPrerequisites();
+    g_theJobs->StartJob( this );
 
     return false;
 }

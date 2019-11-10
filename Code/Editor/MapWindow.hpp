@@ -3,6 +3,7 @@
 
 #include "Editor/EditorWindow.hpp"
 
+#include "Engine/Async/Job.hpp"
 #include "Engine/Core/WindowContext.hpp"
 
 #include "Game/MapGen/Map/Map.hpp"
@@ -11,7 +12,7 @@
 class Camera;
 
 
-class MapWindow : public EditorWindow {
+class MapWindow : public EditorWindow, public Job {
     public:
     MapWindow( const Vec2& normDimensions = Vec2( 0.8f, 0.9f ), const Vec2& alignment = Vec2( 0.f, 1.f ) );
     ~MapWindow();
@@ -37,6 +38,9 @@ class MapWindow : public EditorWindow {
     const std::string m_mapViewName  = "mapEditor/mapView";
 
     unsigned int m_highlightColor = 0;
+
+    // Generation Info
+    EventArgs m_genArgs;
 
     // Map sizes
     bool m_sizeIsCalculated = false;
@@ -66,6 +70,7 @@ class MapWindow : public EditorWindow {
     void RenderTileChangeHighlight();
     void RenderTileChangeTooltip();
 
+    void Execute() override;
     bool GenerateMaps( EventArgs& args );
     bool SetVisibleMapStep( EventArgs& args );
 

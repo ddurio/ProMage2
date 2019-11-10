@@ -6,6 +6,7 @@
 #include "Engine/Core/ImGuiSystem.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/WindowContext.hpp"
+#include "Engine/Vertex/VertexUtils.hpp"
 
 
 class Camera;
@@ -31,6 +32,8 @@ class Editor : public Job {
     void Update();
     void Render() const;
 
+    void SetMapLoadingState( bool isLoading );
+
     MapWindow* GetMapWindow() const;
     XmlWindow* GetXmlWindow() const;
 
@@ -40,15 +43,15 @@ class Editor : public Job {
     private:
 
     enum LoadState {
-        LOAD_STATE_INIT,
-        LOAD_STATE_READY,
+        LOAD_STATE_LOADING,
         LOAD_STATE_DONE
     };
 
 
-    LoadState m_loadState  = LOAD_STATE_INIT;
-    GPUMesh* m_loadingMesh = nullptr;
-    GPUMesh* m_loadedMesh  = nullptr;
+    bool m_editorIsLoading = true;
+    bool m_mapIsLoading = false;
+    int m_loadingIndex = 0;
+    VertexList m_loadingVerts;
 
     std::vector< int > m_customResultIndex;
 
@@ -62,14 +65,13 @@ class Editor : public Job {
     bool m_demoIsShown = false;
 
 
+    bool IsLoading() const;
+
     void Execute() override;
-    bool UpdateIsLoaded();
-    bool RenderIsLoaded() const;
+    void UpdateLoading();
+    void UpdateMenuBar();
 
-    void BuildLoadingMesh();
-    void BuildLoadedMesh();
-
-    void UpdateMainMenu();
+    void RenderLoading() const;
 
     bool ToggleDemo( EventArgs& args );
 };
