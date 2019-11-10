@@ -3,6 +3,7 @@
 
 #include "Editor/EditorWindow.hpp"
 
+#include "Engine/Core/EventSystem.hpp"
 #include "Engine/Math/Vec2.hpp"
 
 
@@ -15,6 +16,8 @@ class XmlWindow : public EditorWindow {
     ~XmlWindow();
 
     bool ShouldHighlightTiles() const;
+
+    void TriggerMapGen( const std::string& mapType, int stepIndex, bool useCustomSeed = false );
 
 
     private:
@@ -34,10 +37,12 @@ class XmlWindow : public EditorWindow {
 
 
 
-    void UpdateChild( float deltaSeconds ) override;
+    bool UpdateChild( float deltaSeconds ) override;
 
-    void RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex );
+    bool RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex );
     void RenderGenSteps( EditorMapDef* eMapDef );
     void RenderContextMenu( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, int numSteps );
     void RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool insertBefore );
+
+    bool ChangeMapType( EventArgs& args );
 };

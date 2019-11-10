@@ -2,6 +2,7 @@
 #include "Editor/Editor.hpp"
 
 #include "Editor/EditorMapDef.hpp"
+#include "Editor/ImGuiUtils.hpp"
 #include "Editor/MapWindow.hpp"
 #include "Editor/StepWindow.hpp"
 #include "Editor/XmlWindow.hpp"
@@ -143,10 +144,15 @@ void Editor::Update() {
 
     float deltaSeconds = m_editorClock.GetDeltaTime();
 
-    UpdateMenuBar();
     m_mapWindow->Update( deltaSeconds );
     m_stepWindow->Update( deltaSeconds );
-    m_xmlWindow->Update( deltaSeconds );
+    bool regenTriggered = m_xmlWindow->Update( deltaSeconds );
+
+    if( regenTriggered ) {
+        return;
+    }
+
+    UpdateMenuBar();
 
     if( m_demoIsShown ) {
         ImGui::ShowDemoWindow();
@@ -228,7 +234,36 @@ void Editor::UpdateMenuBar() {
     ImGui::BeginMainMenuBar();
     
     if( ImGui::BeginMenu( "File" ) ) {
-        ImGui::MenuItem( "New Map Type" );
+        if( ImGui::BeginMenu( "New" ) ) {
+            if( ImGui::BeginMenu( "Map Type" ) ) {
+                ImGui::InputText( "newMapTypeName", &m_newMapType, ImGuiInputTextFlags_CharsNoBlank );
+                RenderTileDropDown( "newMapTypeFill", m_newMapFill, "Fill Type", false, "" );
+
+                if( ImGui::MenuItem( "New Map Type", "Ctrl + N" ) ) {
+                    EditorMapDef::CreateNewMapDef( m_newMapType, m_newMapFill );
+                    m_xmlWindow->TriggerMapGen( m_newMapType, -1, true );
+                }
+
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMenu();
+        }
+
+        if( ImGui::MenuItem( "Open..." ) ) {
+            // ThesisFIXME: Implement open mapDef file
+        }
+
+        ImGui::Separator();
+
+        if( ImGui::MenuItem( "Save" ) ) {
+            // ThesisFIXME: Implement save mapDef file
+        }
+
+        if( ImGui::MenuItem( "Save As..." ) ) {
+            // ThesisFIXME: Implement save as file dialog
+        }
+
         ImGui::EndMenu();
     }
 

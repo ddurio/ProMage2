@@ -35,6 +35,7 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
 
     static int SetupChangeTileMGS();
     static bool SaveAllToXml( EventArgs& args );
+    static EditorMapDef* CreateNewMapDef( const std::string& mapType, const std::string& fillType );
 
 
     private:
@@ -44,13 +45,17 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
 
     int m_numSteps = 3; // FillAndEdge, Context, Colliders
 
-    mutable std::vector< Map* >* m_mapPerStep   = nullptr;
-    mutable bool m_allJobsStarted               = false;
-    mutable std::atomic< int > m_numJobsRunning = 0;
+    mutable std::vector< Map* >* m_mapPerStep       = nullptr;
+    mutable bool                 m_allJobsStarted   = false;
+    mutable std::atomic< int >   m_numJobsRunning   = 0;
 
 
     explicit EditorMapDef( const XMLElement& element );
+    explicit EditorMapDef( const std::string& mapType, const std::string& fillType );
     ~EditorMapDef();
+
+    using Definition< Map, EditorMapDef >::AddDefinition;
+    using MapDef::RecalculateMotifVars;
 
     bool IsFinished() const;
 

@@ -28,7 +28,7 @@ class StepWindow : public EditorWindow {
     bool m_isLooping = false;
 
 
-    void UpdateChild( float deltaSeconds ) override;
+    bool UpdateChild( float deltaSeconds ) override;
     void UpdatePlaying( float deltaSeconds );
 
     void RenderMediaButtons();

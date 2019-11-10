@@ -10,10 +10,10 @@ class EditorWindow {
     EditorWindow( const Vec2& normDimensions, const Vec2& alignment );
     virtual ~EditorWindow();
 
-    void Update( float deltaSeconds );
+    bool Update( float deltaSeconds );
     virtual void Render() const;
 
-    virtual void UpdateChild( float deltaSeconds ) = 0;
+    virtual bool UpdateChild( float deltaSeconds ) = 0;
 
     void SetLocation( const Vec2& normDimensions, const Vec2& alignment );
 

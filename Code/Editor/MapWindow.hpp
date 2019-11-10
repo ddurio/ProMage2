@@ -59,7 +59,7 @@ class MapWindow : public EditorWindow, public Job {
     bool m_isZooming = true;
 
 
-    void UpdateChild( float deltaSeconds ) override;
+    bool UpdateChild( float deltaSeconds ) override;
     void UpdateMapCamera( float deltaSeconds );
     void UpdateZoom( float deltaSeconds );
 

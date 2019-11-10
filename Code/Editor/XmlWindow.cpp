@@ -25,6 +25,7 @@ XmlWindow::XmlWindow( const Vec2& normDimensions /*= Vec2( 0.2f, 1.f )*/, const 
     m_mapType = mapWindow->GetMapType();
 
     g_theEventSystem->Subscribe( EVENT_EDITOR_GENERATE_MAP, &EditorMapGenStep::ResetChangedParams );
+    g_theEventSystem->Subscribe( EVENT_EDITOR_GENERATE_MAP, this, &XmlWindow::ChangeMapType );
 
     Strings customStepNames = MGS_CustomDef::GetAllDefinitionTypes();
     m_stepTypes.insert( m_stepTypes.end(), customStepNames.begin(), customStepNames.end() );
@@ -33,6 +34,7 @@ XmlWindow::XmlWindow( const Vec2& normDimensions /*= Vec2( 0.2f, 1.f )*/, const 
 
 XmlWindow::~XmlWindow() {
     g_theEventSystem->Unsubscribe( EVENT_EDITOR_GENERATE_MAP, &EditorMapGenStep::ResetChangedParams );
+    g_theEventSystem->Unsubscribe( EVENT_EDITOR_GENERATE_MAP, this, &XmlWindow::ChangeMapType );
 }
 
 
@@ -41,7 +43,23 @@ bool XmlWindow::ShouldHighlightTiles() const {
 }
 
 
-void XmlWindow::UpdateChild( float deltaSeconds ) {
+void XmlWindow::TriggerMapGen( const std::string& mapType, int stepIndex, bool useCurrentSeed /*= false*/ ) {
+    MapWindow* mapWindow = g_theEditor->GetMapWindow();
+    EventArgs args;
+
+    if( mapWindow->GetMapType() == mapType ) {
+        args.SetValue( "stepIndex", stepIndex );
+    }
+
+    args.SetValue( "mapType", mapType );
+    args.SetValue( "useCustomSeed", useCurrentSeed );
+    args.SetValue( "customSeed", mapWindow->GetMapSeed() );
+
+    g_theEventSystem->FireEvent( EVENT_EDITOR_GENERATE_MAP, args );
+}
+
+
+bool XmlWindow::UpdateChild( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
     MapWindow* mapWindow = g_theEditor->GetMapWindow();
@@ -50,12 +68,20 @@ void XmlWindow::UpdateChild( float deltaSeconds ) {
     std::string mapType = mapWindow->GetMapType();
     EditorMapDef* eMapDef = (EditorMapDef*)EditorMapDef::GetDefinition( mapType ); // Forced to cast 'const'-ness away
 
-    RenderRegenSettings( eMapDef, currentIndex );
+    bool regenTriggered = RenderRegenSettings( eMapDef, currentIndex );
+
+    if( regenTriggered ) {
+        return true;
+    }
+
     RenderGenSteps( eMapDef );
+    return false;
 }
 
 
-void XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
+bool XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
+    bool regenTriggered = false;
+
     if( ImGui::CollapsingHeader( "General Options", ImGuiTreeNodeFlags_DefaultOpen ) ) {
         ImGui::TreePush( "General Options" );
 
@@ -64,34 +90,15 @@ void XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
         ImGui::Columns( 2, nullptr, true, ImGuiColumnsFlags_NoResize ); // ThesisFIXME: Potentially dangerous.. modified imGui to expose this flag
 
         if( ImGui::Button( "Regenerate Current Map", ImVec2( -1, 0 ) ) ) {
-            MapWindow* mapWindow = g_theEditor->GetMapWindow();
-            EventArgs args;
-
-            if( mapWindow->GetMapType() == m_mapType ) {
-                args.SetValue( "stepIndex", stepIndex );
-            }
-
-            args.SetValue( "mapType", m_mapType );
-            args.SetValue( "useCustomSeed", true );
-            args.SetValue( "customSeed", mapWindow->GetMapSeed() );
-
-            g_theEventSystem->FireEvent( EVENT_EDITOR_GENERATE_MAP, args );
+            TriggerMapGen( m_mapType, stepIndex, true );
+            regenTriggered = true;
         }
 
         ImGui::NextColumn();
 
         if( ImGui::Button( "Generate New Map", ImVec2( -1, 0 ) ) ) {
-            EventArgs args;
-            args.SetValue( "mapType", m_mapType );
-
-            MapWindow* mapWindow = g_theEditor->GetMapWindow();
-            std::string currentMapType = mapWindow->GetMapType();
-
-            if( currentMapType == m_mapType ) { // Only keep current step if it's the same map type
-                args.SetValue( "stepIndex", stepIndex );
-            }
-
-            g_theEventSystem->FireEvent( EVENT_EDITOR_GENERATE_MAP, args );
+            TriggerMapGen( m_mapType, stepIndex, false );
+            regenTriggered = true;
         }
 
         ImGui::Columns( 1 );
@@ -99,6 +106,8 @@ void XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
 
         ImGui::TreePop();
     }
+
+    return regenTriggered;
 }
 
 
@@ -221,6 +230,12 @@ void XmlWindow::RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool in
             }
         }
     }
+}
+
+
+bool XmlWindow::ChangeMapType( EventArgs& args ) {
+    m_mapType = args.GetValue( "mapType", m_mapType );
+    return false;
 }
 
 #endif

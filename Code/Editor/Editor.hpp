@@ -64,6 +64,9 @@ class Editor : public Job {
 
     bool m_demoIsShown = false;
 
+    std::string m_newMapType    = "";
+    std::string m_newMapFill    = "";
+
 
     bool IsLoading() const;
 

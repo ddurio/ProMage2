@@ -30,7 +30,7 @@ StepWindow::~StepWindow() {
 }
 
 
-void StepWindow::UpdateChild( float deltaSeconds ) {
+bool StepWindow::UpdateChild( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
     ImGui::SetWindowFontScale( 2.f );
@@ -42,6 +42,8 @@ void StepWindow::UpdateChild( float deltaSeconds ) {
     UpdatePlaying( deltaSeconds );
     RenderMediaButtons();
     RenderStepSlider();
+
+    return false;
 }
 
 

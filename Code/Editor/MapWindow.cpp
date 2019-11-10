@@ -162,11 +162,13 @@ Strings MapWindow::GetStepNames() const {
 }
 
 
-void MapWindow::UpdateChild( float deltaSeconds ) {
+bool MapWindow::UpdateChild( float deltaSeconds ) {
     CalculateMapSizes();
     RenderMap( deltaSeconds );
     RenderTileChangeHighlight();
     RenderTileChangeTooltip();
+
+    return false;
 }
 
 

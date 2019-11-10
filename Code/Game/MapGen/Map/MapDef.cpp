@@ -35,11 +35,11 @@ void MapDef::SaveToXml( XmlDocument& document, XMLElement& element ) const {
         element.SetAttribute( "edgeTile", m_tileEdgeType.c_str() );
     }
 
-    if( m_width != IntRange::ZERO ) {
+    if( m_width != IntRange::ONE ) {
         element.SetAttribute( "width", m_width.GetAsString().c_str() );
     }
 
-    if( m_height != IntRange::ZERO ) {
+    if( m_height != IntRange::ONE ) {
         element.SetAttribute( "height", m_height.GetAsString().c_str() );
     }
 
@@ -79,6 +79,14 @@ bool MapDef::RecalculateMotifVars( EventArgs& args ) {
 }
 
 
+MapDef* MapDef::CreateNewMapDef( const std::string& mapType, const std::string& fillType ) {
+    MapDef* newDef = new MapDef( mapType, fillType );
+    AddDefinition( newDef );
+
+    return newDef;
+}
+
+
 // PROTECTED --------------------------------------
 MapDef::MapDef( const XMLElement& element ) {
     // Name
@@ -104,6 +112,12 @@ MapDef::MapDef( const XMLElement& element ) {
         MapGenStep* genStep = MapGenStep::CreateMapGenStep( *stepEle, { m_motif } );
         m_mapGenSteps.push_back( genStep );
     }
+}
+
+
+MapDef::MapDef( const std::string& mapType, const std::string& fillType ) {
+    m_defType = mapType;
+    m_tileFillType = fillType;
 }
 
 

@@ -109,13 +109,15 @@ void EditorMapDef::ReorderStepDown( int stepIndexToMove ) {
 void EditorMapDef::InsertStepBefore( int stepIndexToInsertBefore, MapGenStep* stepToInsert ) {
     if( stepIndexToInsertBefore < 0 ) {
         return;
-    } else if( stepIndexToInsertBefore >= m_numSteps ) {
+    } else if( stepIndexToInsertBefore >= m_numSteps - 3 ) {
         m_mapGenSteps.push_back( stepToInsert );
     } else {
         std::vector< MapGenStep* >::iterator stepIter = m_mapGenSteps.begin() + stepIndexToInsertBefore;
         m_mapGenSteps.insert( stepIter, stepToInsert );
     }
 
+    std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, m_defType.c_str() );
+    g_theEventSystem->Subscribe( eventName, stepToInsert, &MapGenStep::RecalculateMotifVars );
     m_numSteps++;
 }
 
@@ -133,6 +135,10 @@ void EditorMapDef::DeleteStep( int stepIndexToDelete ) {
     }
 
     std::vector< MapGenStep* >::iterator stepIter = m_mapGenSteps.begin() + stepIndexToDelete;
+
+    std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, m_defType.c_str() );
+    g_theEventSystem->Unsubscribe( eventName, *stepIter, &MapGenStep::RecalculateMotifVars );
+
     m_mapGenSteps.erase( stepIter );
     m_numSteps--;
 }
@@ -152,6 +158,14 @@ bool EditorMapDef::SaveAllToXml( EventArgs& args ) {
 }
 
 
+EditorMapDef* EditorMapDef::CreateNewMapDef( const std::string& mapType, const std::string& fillType ) {
+    EditorMapDef* eMapDef = new EditorMapDef( mapType, fillType );
+    AddDefinition( eMapDef );
+
+    return eMapDef;
+}
+
+
 // PRIVATE -------------------------------------------
 EditorMapDef::EditorMapDef( const XMLElement& element ) :
     MapDef( element ) {
@@ -167,6 +181,14 @@ EditorMapDef::EditorMapDef( const XMLElement& element ) :
         MapGenStep* genStep = m_mapGenSteps[stepIndex];
         g_theEventSystem->Subscribe( eventName, genStep, &MapGenStep::RecalculateMotifVars );
     }
+}
+
+
+EditorMapDef::EditorMapDef( const std::string& mapType, const std::string& fillType ) :
+    MapDef( mapType, fillType ) {
+
+    std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, m_defType.c_str() );
+    g_theEventSystem->Subscribe( eventName, (MapDef*)this, &EditorMapDef::RecalculateMotifVars );
 }
 
 

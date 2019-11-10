@@ -14,10 +14,12 @@ EditorWindow::~EditorWindow() {
 }
 
 
-void EditorWindow::Update( float deltaSeconds ) {
+bool EditorWindow::Update( float deltaSeconds ) {
     Vec2 windowSize = g_theGui->CreateStaticWindow( m_windowDimensions, m_windowAlignment, m_windowName.c_str(), m_extraFlags );
-    UpdateChild( deltaSeconds );
+    bool regenTriggered = UpdateChild( deltaSeconds );
     ImGui::End();
+
+    return regenTriggered;
 }
 
 

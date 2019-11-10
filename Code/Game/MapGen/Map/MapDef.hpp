@@ -26,6 +26,8 @@ class MapDef : public Definition< Map, MapDef > {
     virtual void SaveToXml( XmlDocument& document, XMLElement& element ) const;
     bool RecalculateMotifVars( EventArgs& args );
 
+    static MapDef* CreateNewMapDef( const std::string& mapType, const std::string& fillType );
+
 
     protected:
     std::string m_motif = "";
@@ -33,12 +35,13 @@ class MapDef : public Definition< Map, MapDef > {
 
     std::string m_tileFillType = "";
     std::string m_tileEdgeType = "";
-    IntRange m_width = IntRange::ZERO;
-    IntRange m_height = IntRange::ZERO;
+    IntRange m_width = IntRange::ONE;
+    IntRange m_height = IntRange::ONE;
     std::vector<MapGenStep*> m_mapGenSteps;
 
 
     explicit MapDef( const XMLElement& element );
+    explicit MapDef( const std::string& mapType, const std::string& fillType );
     ~MapDef();
 
     RNG* GetMapRNG( const Map& theMap ) const;
