@@ -19,7 +19,7 @@ MGS_Custom::MGS_Custom( const std::string& stepType, const Strings& motifHierarc
     m_defType = stepType;
 
     SetupEmptyMotif();
-    AddChildMotifs( { m_motifDef->GetDefintionType() } );
+    AddChildMotifs( { m_customXmlMotif->GetDefintionType() } );
 
     const MGS_CustomDef* stepDef = MGS_CustomDef::GetDefinition( m_defType );
     stepDef->DefineObject( *this );
@@ -41,7 +41,26 @@ std::vector< MapGenStep::CustomEvent > MGS_Custom::GetCustomResults() const {
 
 
 void MGS_Custom::SaveToXml( XmlDocument& document, XMLElement& element ) const {
+    UNUSED( document );
 
+    // Get all values from customXmlMotif
+    const NamedProperties& motifVars = m_customXmlMotif->GetVariableValues();
+    Strings varKeys = motifVars.GetNames();
+    int numVars = (int)varKeys.size();
+
+    for( int varIndex = 0; varIndex < numVars; varIndex++ ) {
+        const std::string& varKey = varKeys[varIndex];
+        const std::string& varValue = motifVars.GetValue( varKey, "" );
+
+        element.SetAttribute( varKey.c_str(), varValue.c_str() );
+    }
+
+    // Get step motif value (should be motifHierarchy[1])
+    const std::string& stepMotif = m_motifHierarchy[1];
+
+    if( stepMotif != "" ) {
+        element.SetAttribute( "Motif", stepMotif.c_str() );
+    }
 }
 
 
@@ -76,7 +95,7 @@ void MGS_Custom::SetupEmptyMotif() {
     std::string motifToCopy = customDef->GetMotif();
     std::string nameToAppend = Stringf( "CustomXML.%d", s_numCustomSteps );
 
-    m_motifDef = new MotifDef( motifToCopy, nameToAppend );
+    m_customXmlMotif = new MotifDef( motifToCopy, nameToAppend );
     s_numCustomSteps++;
 }
 
@@ -86,7 +105,7 @@ void MGS_Custom::SetupMotifFromXML( const XMLElement& element ) {
     SetupEmptyMotif();
 
     // Modify new motif based on XML overrides
-    NamedProperties& motifVars = m_motifDef->GetVariableValues();
+    NamedProperties& motifVars = m_customXmlMotif->GetVariableValues();
     Strings varNames = motifVars.GetNames();
 
     const std::string invalidValue = "__HOPEFULLY_NOT_A_VALUE__";
@@ -104,5 +123,5 @@ void MGS_Custom::SetupMotifFromXML( const XMLElement& element ) {
     }
 
     // Add motif to my hierarchy
-    AddChildMotifs( { m_motifDef->GetDefintionType() } );
+    AddChildMotifs( { m_customXmlMotif->GetDefintionType() } );
 }

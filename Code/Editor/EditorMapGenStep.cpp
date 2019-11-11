@@ -311,7 +311,7 @@ void EditorMapGenStep::RenderConditions_Custom( MapGenStep* genStep ) {
     }
 
     // Start rendering parameters
-    NamedProperties& motifVars = cStep->m_motifDef->GetVariableValues();
+    NamedProperties& motifVars = cStep->m_customXmlMotif->GetVariableValues();
     Strings motifHierarchy = genStep->m_motifHierarchy;
     motifHierarchy.push_back( defMotifName );
 

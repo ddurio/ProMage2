@@ -28,7 +28,7 @@ class MGS_Custom : public MapGenStep {
     std::string m_defType = "";
     std::vector< MapGenStep* > m_genSteps;
 
-    MotifDef* m_motifDef = nullptr; // NON-const version for editor
+    MotifDef* m_customXmlMotif = nullptr; // NON-const version for editor
 
 
     void RunOnce( Map& theMap ) const;

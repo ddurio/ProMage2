@@ -86,7 +86,7 @@ void Editor::Startup() {
     MGS_CustomDef::LoadFromFile( DATA_CUSTOM_STEPS, "Custom" );
     EditorMapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
 
-    g_theEventSystem->Subscribe( "saveAll", &EditorMapDef::SaveAllToXml );
+    g_theEventSystem->Subscribe( EVENT_EDITOR_SAVE_MAPS, &EditorMapDef::SaveAllToXml );
 
     // Setup Editor
     m_mapWindow  = new MapWindow(  Vec2( 0.65f, 0.88f ), Vec2( 0.f, 0.83f ) );
@@ -112,7 +112,7 @@ void Editor::Shutdown() {
     ItemDef::DestroyDefs();
     TileDef::DestroyDefs();
 
-    g_theEventSystem->Unsubscribe( "saveAll", &EditorMapDef::SaveAllToXml );
+    g_theEventSystem->Unsubscribe( EVENT_EDITOR_SAVE_MAPS, &EditorMapDef::SaveAllToXml );
     EditorMapDef::DestroyDefs();
 }
 
@@ -257,7 +257,10 @@ void Editor::UpdateMenuBar() {
         ImGui::Separator();
 
         if( ImGui::MenuItem( "Save" ) ) {
-            // ThesisFIXME: Implement save mapDef file
+            EventArgs args;
+            args.SetValue( "filePath", m_mapDefFile );
+
+            g_theEventSystem->FireEvent( EVENT_EDITOR_SAVE_MAPS, args );
         }
 
         if( ImGui::MenuItem( "Save As..." ) ) {

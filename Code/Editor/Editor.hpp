@@ -66,6 +66,7 @@ class Editor : public Job {
 
     std::string m_newMapType    = "";
     std::string m_newMapFill    = "";
+    std::string m_mapDefFile    = DATA_MAP_DEFS;
 
 
     bool IsLoading() const;
