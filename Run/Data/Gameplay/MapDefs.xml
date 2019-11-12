@@ -40,14 +40,14 @@
         <CellularAutomata ifIsType="EdgedCaveDirt" setType="CliffGrass" ifNeighborType="EdgedWater"/>
         <CellularAutomata ifIsType="EdgedCaveDirt" setType="EdgedDarkGrass" ifNeighborType="CliffGrass"/>
     </MapDefinition>
-    <MapDefinition name="DD1" fillTile="FakeStone" width="26" height="14">
+    <MapDefinition name="DD1" fillTile="FakeStone" width="26" height="20">
         <FromImage imageFilePath="Data/Images/DD1.png" alignX="0.500000" alignY="0.500000"/>
         <CellularAutomata ifIsType="StairsUp" setTags="stairsUp" ifNeighborType="Grass"/>
         <CellularAutomata ifIsType="Grass" setType="CaveDirtFloor" setTags="stairsUpAccess"/>
         <CellularAutomata ifIsType="StairsDown" setTags="stairsDown"/>
         <CellularAutomata ifIsType="Water" setType="CaveDirtFloor" setTags="stairsDownAccess"/>
     </MapDefinition>
-    <MapDefinition name="DD2" fillTile="FakeStone" width="26" height="14">
+    <MapDefinition name="DD2" fillTile="FakeStone" width="26" height="20">
         <FromImage imageFilePath="Data/Images/DD2.png" alignX="0.500000" alignY="0.500000"/>
         <CellularAutomata ifIsType="StairsUp" setTags="stairsUp" ifNeighborType="Grass"/>
         <CellularAutomata ifIsType="Grass" setType="CaveDirtFloor" setTags="stairsUpAccess"/>

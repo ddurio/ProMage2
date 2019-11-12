@@ -255,16 +255,27 @@ void Editor::UpdateMenuBar() {
         }
 
         ImGui::Separator();
+        bool shouldSave = false;
 
         if( ImGui::MenuItem( "Save" ) ) {
+            shouldSave = true;
+        }
+
+        if( ImGui::MenuItem( "Save As..." ) ) {
+            Strings filter = { "XML", "*.xml" };
+            std::string newMapFile = g_theWindow->SaveFileDialog( "Data/Gameplay", filter );
+
+            if( newMapFile != "" ) {
+                shouldSave = true;
+                m_mapDefFile = newMapFile;
+            }
+        }
+
+        if( shouldSave ) {
             EventArgs args;
             args.SetValue( "filePath", m_mapDefFile );
 
             g_theEventSystem->FireEvent( EVENT_EDITOR_SAVE_MAPS, args );
-        }
-
-        if( ImGui::MenuItem( "Save As..." ) ) {
-            // ThesisFIXME: Implement save as file dialog
         }
 
         ImGui::EndMenu();

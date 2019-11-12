@@ -159,12 +159,12 @@ void MGS_FromImage::RunOnce( Map& theMap ) const {
 
 bool MGS_FromImage::IsAlignmentValid( Map& theMap, const AABB2& imageBounds ) const {
     int minX = (int)imageBounds.mins.x;
-    int maxX = (int)imageBounds.maxs.x;
+    int maxX = (int)imageBounds.maxs.x; // Max value is float (far right of tile).. not tile index
     int minY = (int)imageBounds.mins.y;
-    int maxY = (int)imageBounds.maxs.y;
+    int maxY = (int)imageBounds.maxs.y; // Means tiles used are one less than max value (< not <= in loops)
 
-    for( int tileY = minY; tileY <= maxY; tileY++ ) {
-        for( int tileX = minX; tileX <= maxX; tileX++ ) {
+    for( int tileY = minY; tileY < maxY; tileY++ ) {
+        for( int tileX = minX; tileX < maxX; tileX++ ) {
             const Tile* tile = nullptr;
 
             if( theMap.GetTileIfValid( tile, IntVec2( tileX, tileY ) ) ) {

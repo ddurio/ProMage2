@@ -304,13 +304,12 @@ bool RenderFilePath( std::string& currentPath, const Strings& filter ) {
 
     if( ImGui::Button( "Open File" ) ) {
 
-        std::string newFilePath = g_theWindow->OpenFileDialog( "Data/Images", filter, "Open File" );
+        std::string newFilePath = g_theWindow->OpenFileDialog( "Data/Images", filter );
 
-        if( currentPath != newFilePath ) {
+        if( newFilePath != "" && currentPath != newFilePath ) {
             hasChanged = true;
+            currentPath = newFilePath;
         }
-
-        currentPath = newFilePath;
     }
 
     ImGui::SameLine();
