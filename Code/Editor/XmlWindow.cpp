@@ -10,6 +10,7 @@
 
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/ImGuiSystem.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 #include "Game/MapGen/GenSteps/MGS_CustomDef.hpp"
 
@@ -206,6 +207,16 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
 
         if( ImGui::MenuItem( "Delete", "", nullptr, deleteEnabled ) ) {
             eMapDef->DeleteStep( stepIndex - 1 );
+            
+            MapWindow* mapWindow = g_theEditor->GetMapWindow();
+            std::string mapType = mapWindow->GetMapType();
+            int selectedStep = mapWindow->GetStepIndex();
+
+            if( selectedStep > stepIndex ) {
+                selectedStep--;
+            }
+
+            TriggerMapGen( mapType, selectedStep, true );
         }
 
         ImGui::EndPopup();

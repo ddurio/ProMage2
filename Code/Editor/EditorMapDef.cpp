@@ -139,6 +139,7 @@ void EditorMapDef::DeleteStep( int stepIndexToDelete ) {
     std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, m_defType.c_str() );
     g_theEventSystem->Unsubscribe( eventName, *stepIter, &MapGenStep::RecalculateMotifVars );
 
+    delete *stepIter;
     m_mapGenSteps.erase( stepIter );
     m_numSteps--;
 }
