@@ -64,9 +64,17 @@ class Editor : public Job {
 
     bool m_demoIsShown = false;
 
+    const Strings m_xmlFilter   = { "XML", "*.xml" };
     std::string m_newMapType    = "";
-    std::string m_newMapFill    = "";
+    std::string m_newMapFill    = "Grass";
     std::string m_mapDefFile    = DATA_MAP_DEFS;
+
+    // Keyboard Shortcuts
+    bool m_controlPressed = false;
+    bool m_shiftPressed = false;
+    bool m_oPressed = false;
+    bool m_nPressed = false;
+    bool m_sPressed = false;
 
 
     bool IsLoading() const;

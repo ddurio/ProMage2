@@ -72,6 +72,7 @@ constexpr char  DATA_TILE_DEFS[]            = "Data/Gameplay/TileDefs.xml";
 constexpr char  EVENT_DEATH_PLAYER[]        = "playerDeath";
 constexpr char  EVENT_DEATH_MERCHANT[]      = "merchantDeath";
 constexpr char  EVENT_DEATH_ENEMY[]         = "enemyDeath";
+constexpr char  EVENT_QUIT_APP[]            = "quit";
 
 constexpr char  FONT_NAME_SQUIRREL[]        = "SquirrelFixedFont";
 constexpr char  MAT_NAME_PAPER_DOLL[]       = "PaperDoll";

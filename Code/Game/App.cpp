@@ -70,7 +70,7 @@ void App::Startup() {
 #endif
 
 
-    g_theEventSystem->Subscribe( "quit", this, &App::Command_Quit );
+    g_theEventSystem->Subscribe( EVENT_QUIT_APP, this, &App::Command_Quit );
 }
 
 

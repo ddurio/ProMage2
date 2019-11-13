@@ -49,9 +49,6 @@ Editor::Editor() :
 
 Editor::~Editor() {
     CLEAR_POINTER( m_uiCamera );
-    CLEAR_POINTER( m_mapWindow );
-    CLEAR_POINTER( m_stepWindow );
-    CLEAR_POINTER( m_xmlWindow );
 
     Map::ResetMaterialCreated();
 
@@ -84,7 +81,7 @@ void Editor::Startup() {
     m_customResultIndex.push_back( EditorMapDef::SetupChangeTileMGS() );
     MotifDef::LoadFromFile( DATA_MOTIF_DEFS, "Motif" );
     MGS_CustomDef::LoadFromFile( DATA_CUSTOM_STEPS, "Custom" );
-    EditorMapDef::LoadFromFile( DATA_MAP_DEFS, "MapDefinition" );
+    EditorMapDef::LoadFromFile( m_mapDefFile, "MapDefinition" );
 
     g_theEventSystem->Subscribe( EVENT_EDITOR_SAVE_MAPS, &EditorMapDef::SaveAllToXml );
 
@@ -102,6 +99,13 @@ void Editor::Startup() {
 
 
 void Editor::Shutdown() {
+    m_editorIsLoading = true;
+    ResetPrerequisites();
+
+    CLEAR_POINTER( m_mapWindow );
+    CLEAR_POINTER( m_stepWindow );
+    CLEAR_POINTER( m_xmlWindow );
+
     int numResults = (int)m_customResultIndex.size();
 
     for( int resultIndex = 0; resultIndex < numResults; resultIndex++ ) {
@@ -112,21 +116,58 @@ void Editor::Shutdown() {
     ItemDef::DestroyDefs();
     TileDef::DestroyDefs();
 
+    MotifDef::DestroyDefs();
+    MGS_CustomDef::DestroyDefs();
+
     g_theEventSystem->Unsubscribe( EVENT_EDITOR_SAVE_MAPS, &EditorMapDef::SaveAllToXml );
     EditorMapDef::DestroyDefs();
 }
 
 
 bool Editor::HandleKeyPressed( unsigned char keyCode ) {
-    // ThesisFIXME: Implement key pressed
-    UNUSED( keyCode );
+    switch( keyCode ) {
+        case(KB_CONTROL): {
+            m_controlPressed = true;
+            return true;
+        } case(KB_SHIFT): {
+            m_shiftPressed = true;
+            return true;
+        } case(KB_N): {
+            m_nPressed = true;
+            return true;
+        } case(KB_O): {
+            m_oPressed = true;
+            return true;
+        } case(KB_S): {
+            m_sPressed = true;
+            return true;
+        }
+    }
+
     return false;
 }
 
 
 bool Editor::HandleKeyReleased( unsigned char keyCode ) {
-    UNUSED( keyCode );
-    // ThesisFIXME: Implement key released
+    switch( keyCode ) {
+        case(KB_CONTROL): {
+            m_controlPressed = false;
+            return true;
+        } case(KB_SHIFT): {
+            m_shiftPressed = false;
+            return true;
+        } case(KB_N): {
+            m_nPressed = false;
+            return true;
+        } case(KB_O): {
+            m_oPressed = false;
+            return true;
+        } case(KB_S): {
+            m_sPressed = false;
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -232,14 +273,38 @@ void Editor::UpdateLoading() {
 
 void Editor::UpdateMenuBar() {
     ImGui::BeginMainMenuBar();
-    
+
+    bool shortcutNew    = m_controlPressed && m_nPressed;
+    bool shortcutOpen   = m_controlPressed && m_oPressed;
+    bool shortcutSave   = m_controlPressed && !m_shiftPressed && m_sPressed;
+    bool shortcutSaveAs = m_controlPressed && m_shiftPressed && m_sPressed;
+    bool shortcutAny    = shortcutNew || shortcutOpen || shortcutSave || shortcutSaveAs;
+
+    if( shortcutAny ) {
+        ImGui::OpenPopup( "File" );
+    }
+
     if( ImGui::BeginMenu( "File" ) ) {
-        if( ImGui::BeginMenu( "New" ) ) {
+        if( shortcutNew ) {
+            ImGui::OpenPopup( "New" );
+        }
+
+        if( ImGui::BeginMenu( "New" )  ) {
+            if( shortcutNew ) {
+                ImGui::OpenPopup( "Map Type" );
+            }
+
             if( ImGui::BeginMenu( "Map Type" ) ) {
-                ImGui::InputText( "newMapTypeName", &m_newMapType, ImGuiInputTextFlags_CharsNoBlank );
+                if( shortcutNew ) {
+                    ImGui::SetKeyboardFocusHere();
+                    m_controlPressed = false;
+                    m_nPressed = false;
+                }
+
+                ImGui::InputText( "Map Type", &m_newMapType, ImGuiInputTextFlags_CharsNoBlank );
                 RenderTileDropDown( "newMapTypeFill", m_newMapFill, "Fill Type", false, "" );
 
-                if( ImGui::MenuItem( "New Map Type", "Ctrl + N" ) ) {
+                if( ImGui::MenuItem( "Create New Map Type", "Ctrl + N" ) ) {
                     EditorMapDef::CreateNewMapDef( m_newMapType, m_newMapFill );
                     m_xmlWindow->TriggerMapGen( m_newMapType, -1, true );
                 }
@@ -250,20 +315,35 @@ void Editor::UpdateMenuBar() {
             ImGui::EndMenu();
         }
 
-        if( ImGui::MenuItem( "Open..." ) ) {
-            // ThesisFIXME: Implement open mapDef file
+        if( ImGui::MenuItem( "Open...", "Ctrl + O" ) || shortcutOpen ) {
+            std::string newMapFile = g_theWindow->OpenFileDialog( "Data/Gameplay", m_xmlFilter );
+
+            if( newMapFile != "" ) {
+                m_mapDefFile = newMapFile;
+
+                Shutdown();
+                g_theJobs->StartJob( this ); // Calls startup on another thread
+            }
         }
 
         ImGui::Separator();
         bool shouldSave = false;
 
-        if( ImGui::MenuItem( "Save" ) ) {
+        if( shortcutSave ) {
+            m_controlPressed = false;
+            m_sPressed = false;
+        } else if( shortcutSaveAs ) {
+            m_controlPressed = false;
+            m_shiftPressed = false;
+            m_sPressed = false;
+        }
+
+        if( ImGui::MenuItem( "Save", "Ctrl + S" ) || shortcutSave ) {
             shouldSave = true;
         }
 
-        if( ImGui::MenuItem( "Save As..." ) ) {
-            Strings filter = { "XML", "*.xml" };
-            std::string newMapFile = g_theWindow->SaveFileDialog( "Data/Gameplay", filter );
+        if( ImGui::MenuItem( "Save As..." ) || shortcutSaveAs ) {
+            std::string newMapFile = g_theWindow->SaveFileDialog( "Data/Gameplay", m_xmlFilter );
 
             if( newMapFile != "" ) {
                 shouldSave = true;
@@ -276,6 +356,12 @@ void Editor::UpdateMenuBar() {
             args.SetValue( "filePath", m_mapDefFile );
 
             g_theEventSystem->FireEvent( EVENT_EDITOR_SAVE_MAPS, args );
+        }
+
+        ImGui::Separator();
+
+        if( ImGui::MenuItem( "Quit", "Alt + F4" ) ) {
+            g_theEventSystem->FireEvent( EVENT_QUIT_APP );
         }
 
         ImGui::EndMenu();
