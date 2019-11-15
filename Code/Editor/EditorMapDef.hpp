@@ -62,9 +62,8 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     void LaunchJobs( bool useCustomSeed, unsigned int customSeed ) const;
     void WaitForJobs() const;
 
-    void DefineFromContextTiles( Map& theMap ) const override;
-
-    bool SaveOneToXml( EventArgs& args );
+    void DefineFromEdgedTiles( Map& theMap ) const override;
+    void DefineFromWallTiles( Map& theMap ) const override;
 };
 
 

@@ -43,7 +43,8 @@ class Tile {
 
     void AddRenderType( const std::string& tileType );
     void AddRenderType( const TileDef* tileDef );
-    bool AddTypesFromNeighbors( const Map& map );
+    bool AddTypesFromNeighbors( const Map& theMap );
+    bool ChooseWallFromNeighbor( const Map& theMap );
 
     void AddVertsToMesh( CPUMesh& builder ) const;
 

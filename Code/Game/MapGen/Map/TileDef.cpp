@@ -22,12 +22,16 @@ void TileDef::DefineObject( Tile& theObject ) const {
     theObject.m_tileDef = this;
 
     theObject.m_metadata->m_renderTypes = TileQueue();
+    theObject.AddRenderType( this );
 
-    int numTypes = (int)m_extraRenderTypes.size();
+    // Add extra render types (for all non-wall contextual tiles)
+    if( !StringICmp( m_tileContext, "wall" ) ) {
+        int numTypes = (int)m_extraRenderTypes.size();
 
-    for( int typeIndex = 0; typeIndex < numTypes; typeIndex++ ) {
-        const std::string& extraStr = m_extraRenderTypes[typeIndex];
-        theObject.AddRenderType( extraStr );
+        for( int typeIndex = 0; typeIndex < numTypes; typeIndex++ ) {
+            const std::string& extraStr = m_extraRenderTypes[typeIndex];
+            theObject.AddRenderType( extraStr );
+        }
     }
 }
 
@@ -151,6 +155,10 @@ TileDef::TileDef( const XMLElement& element ) {
 
     std::string extraRenderStr = ParseXMLAttribute( element, "extraRenderTypes", "" );
     m_extraRenderTypes = SplitStringOnDelimeter( extraRenderStr, ',', false );
+
+    if( StringICmp( m_tileContext, "wall" ) ) {
+        GUARANTEE_OR_DIE( m_extraRenderTypes.size() == 1, "(TileDef) 'Wall' context must have precisely one extra render type")
+    }
 
     m_spriteTint = ParseXMLAttribute( element, "spriteTint", m_spriteTint );
     m_texelColor = ParseXMLAttribute( element, "texelColor", m_texelColor );

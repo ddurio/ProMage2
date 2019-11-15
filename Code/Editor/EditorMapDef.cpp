@@ -238,7 +238,7 @@ void EditorMapDef::WaitForJobs() const {
 }
 
 
-void EditorMapDef::DefineFromContextTiles( Map& theMap ) const {
+void EditorMapDef::DefineFromEdgedTiles( Map& theMap ) const {
     IntVec2 mapDimensions = theMap.GetMapDimensions();
     int numTiles = mapDimensions.x * mapDimensions.y;
 
@@ -256,16 +256,24 @@ void EditorMapDef::DefineFromContextTiles( Map& theMap ) const {
 }
 
 
-bool EditorMapDef::SaveOneToXml( EventArgs& args ) {
-    UNUSED( args );
-    // ThesisFIXME:  Need to implement save for single mapDef
-    // should open windows save file 
+void EditorMapDef::DefineFromWallTiles( Map& theMap ) const {
+    IntVec2 mapDimensions = theMap.GetMapDimensions();
+    int numTiles = mapDimensions.x * mapDimensions.y;
 
-    // Create XmlDocument and root element(s)
+    for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
+        Tile& tile = GetTile( theMap, tileIndex );
+        std::string tileContext = tile.GetTileContext();
 
-    // call MapDef::SaveToXml
+        if( StringICmp( tileContext, "wall" ) ) {
+            if( tile.ChooseWallFromNeighbor( theMap ) ) {
+                EventArgs args;
+                args.SetValue( "callingMap", &theMap );
+                args.SetValue( "callingTile", &tile );
 
-    return false;
+                theMap.TrackModifiedTiles( args );
+            }
+        }
+    }
 }
 
 

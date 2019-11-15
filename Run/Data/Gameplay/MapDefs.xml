@@ -1,12 +1,13 @@
 <EditorMapDefs>
-    <MapDefinition name="Cave" fillTile="FakeStone" width="50~100" height="50~100">
+    <MapDefinition name="Cave" fillTile="StoneWall" width="50~100" height="50~100">
         <RoomsAndPaths>
-            <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWall"/>
+            <Rooms count="5~15" width="10~20" height="10~20" floor="CaveDirtFloor" wall="StoneWallBracket"/>
             <Paths floor="CaveDirtFloor"/>
         </RoomsAndPaths>
-        <CellularAutomata ifIsType="FakeStone" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor"/>
-        <CellularAutomata ifIsType="StoneWall" setType="CaveDirtFloor" ifNeighborType="FakeStone" ifNumNeighbors="1"/>
-        <CellularAutomata ifIsType="FakeStone" setType="StoneWall" ifNeighborType="CaveDirtFloor"/>
+        <CellularAutomata ifIsType="StoneWall" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor"/>
+        <CellularAutomata ifIsType="StoneWallBracket" setType="CaveDirtFloor" ifNeighborType="CaveDirtFloor" ifNumNeighbors="5~8"/>
+        <CellularAutomata ifIsType="StoneWall" setType="StoneWallBracket" ifNeighborType="CaveDirtFloor"/>
+        <CellularAutomata ifIsType="StoneWallBracket" setType="StoneWall"/>
         <AddStairs groundType="CaveDirtFloor"/>
         <AddLoot distFromStairs="25~999998"/>
         <Sprinkle chanceToRun="0.5" ifIsType="CaveDirtFloor" ifHasTags="stairsDownAccess" setTags="merchant" spawnActor="Merchant" controller=""/>

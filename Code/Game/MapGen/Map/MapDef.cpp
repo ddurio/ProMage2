@@ -188,12 +188,33 @@ void MapDef::DefineFromMGS( Map& theMap ) const {
 
 
 void MapDef::DefineFromContextTiles( Map& theMap ) const {
+    DefineFromEdgedTiles( theMap );
+    DefineFromWallTiles( theMap );
+}
+
+
+void MapDef::DefineFromEdgedTiles( Map& theMap ) const {
     IntVec2 mapDimensions = theMap.GetMapDimensions();
     int numTiles = mapDimensions.x * mapDimensions.y;
 
     for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
         Tile& tile = theMap.m_tiles[tileIndex];
         tile.AddTypesFromNeighbors( theMap );
+    }
+}
+
+
+void MapDef::DefineFromWallTiles( Map& theMap ) const {
+    IntVec2 mapDimensions = theMap.GetMapDimensions();
+    int numTiles = mapDimensions.x * mapDimensions.y;
+
+    for( int tileIndex = 0; tileIndex < numTiles; tileIndex++ ) {
+        Tile& tile = theMap.m_tiles[tileIndex];
+        std::string tileContext = tile.GetTileContext();
+
+        if( StringICmp( tileContext, "wall" ) ) {
+            tile.ChooseWallFromNeighbor( theMap );
+        }
     }
 }
 

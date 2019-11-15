@@ -52,7 +52,9 @@ class MapDef : public Definition< Map, MapDef > {
 
     void DefineFillAndEdge( Map& theMap ) const;
     void DefineFromMGS( Map& theMap ) const;
-    virtual void DefineFromContextTiles( Map& theMap ) const;
+    void DefineFromContextTiles( Map& theMap ) const;
+    virtual void DefineFromEdgedTiles( Map& theMap ) const;
+    virtual void DefineFromWallTiles( Map& theMap ) const;
     void DefineTileColliders( Map& theMap ) const;
 
     bool IsEdgeTile( int tileX, int tileY, int mapWidth, int mapHeight ) const;

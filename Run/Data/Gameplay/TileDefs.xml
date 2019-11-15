@@ -187,8 +187,19 @@
         allowsSwimming="false"
     />
     <TileDefinition
+        name="StoneWallTop"
+        spriteCoords="4,12"
+        texelColor="50,50,50"
+        allowsSight="false"
+        allowsWalking="false"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
         name="StoneWall"
         spriteCoords="16,12"
+        context="Wall"
+        extraRenderTypes="StoneWallTop"
         texelColor="50,50,50"
         allowsSight="false"
         allowsWalking="false"
@@ -198,6 +209,8 @@
     <TileDefinition
         name="StoneWallBracket"
         spriteCoords="17,12"
+        context="Wall"
+        extraRenderTypes="StoneWallTop"
         texelColor="51,51,51"
         allowsSight="false"
         allowsWalking="false"

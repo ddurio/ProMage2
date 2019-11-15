@@ -191,11 +191,35 @@ void Tile::AddRenderType( const TileDef* tileDef ) {
 }
 
 
-bool Tile::AddTypesFromNeighbors( const Map& map ) {
+bool Tile::AddTypesFromNeighbors( const Map& theMap ) {
     std::map< std::string, NeighborFlag > edgedNeighbors;
-    GetEdgedNeighborByType( map, edgedNeighbors );
+    GetEdgedNeighborByType( theMap, edgedNeighbors );
 
     return AddEdgesFromNeighborFlags( edgedNeighbors );
+}
+
+
+bool Tile::ChooseWallFromNeighbor( const Map& theMap ) {
+    IntVec2 southNeighborCoords = m_tileCoords + IntVec2::DOWN;
+
+    if( theMap.IsValidTileCoords( southNeighborCoords ) ) {
+        const Tile& neighborTile = theMap.GetTile( southNeighborCoords );
+        const std::string& neighborType = neighborTile.GetTileType();
+        const std::string& myType = GetTileType();
+
+        if( myType == neighborType ) {
+            // Change to top of wall type
+            const Strings& extraTypes = m_tileDef->GetExtraRenderTypes();
+            GUARANTEE_OR_DIE( extraTypes.size() == 1, "(Tile): Expected one extra render type for 'Wall' contextual tile type" );
+
+            m_metadata->m_renderTypes = TileQueue();
+            AddRenderType( extraTypes[0] );
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
@@ -205,9 +229,7 @@ void Tile::AddVertsToMesh( CPUMesh& builder ) const {
     Rgba tint;
     AABB2 uvs;
 
-    // Additional render tiles (edged tiles / stairs)
     TileQueue renderTypes = m_metadata->m_renderTypes; // Intentionally makes a copy
-    renderTypes.push( m_tileDef );
 
     while( !renderTypes.empty() ) {
         const TileDef* tileDef = renderTypes.top();
