@@ -206,18 +206,17 @@ bool Tile::ChooseWallFromNeighbor( const Map& theMap ) {
         const Tile& neighborTile = theMap.GetTile( southNeighborCoords );
         const std::string& neighborType = neighborTile.GetTileType();
 
-        const Strings& extraTypes = m_tileDef->GetExtraRenderTypes();
-        GUARANTEE_OR_DIE( extraTypes.size() >= 1, "(Tile): Expected at least one extra render type for 'Wall' contextual tile type" );
+        Strings changeTypes = m_tileDef->GetExtraRenderTypes();
+        GUARANTEE_OR_DIE( changeTypes.size() >= 1, "(Tile): Expected at least one extra render type for 'Wall' contextual tile type" );
 
-        // First one is what to change to, others are types to consider as if they're myself
-        const std::string& myType = GetTileType();
-        Strings changeTypes = extraTypes;
-        changeTypes[0] = myType;
+        // First one is what to change to, rest are other neighbor types to consider valid
+        std::string changeToType = changeTypes[0];
+        changeTypes[0] = GetTileType(); // Replace type to change to with myself
 
         if( EngineCommon::VectorContains( changeTypes, neighborType ) ) {
             // Change to top of wall type
             m_metadata->m_renderTypes = TileQueue();
-            AddRenderType( extraTypes[0] );
+            AddRenderType( changeToType );
 
             return true;
         }
