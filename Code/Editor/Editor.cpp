@@ -284,12 +284,15 @@ void Editor::UpdateMenuBar() {
         ImGui::OpenPopup( "File" );
     }
 
+    // File
     if( ImGui::BeginMenu( "File" ) ) {
         if( shortcutNew ) {
             ImGui::OpenPopup( "New" );
         }
 
+        // New
         if( ImGui::BeginMenu( "New" )  ) {
+            // Map Type
             if( shortcutNew ) {
                 ImGui::OpenPopup( "Map Type" );
             }
@@ -315,6 +318,12 @@ void Editor::UpdateMenuBar() {
             ImGui::EndMenu();
         }
 
+        // Open
+        if( shortcutOpen ) {
+            m_controlPressed = false;
+            m_oPressed = false;
+        }
+
         if( ImGui::MenuItem( "Open...", "Ctrl + O" ) || shortcutOpen ) {
             std::string newMapFile = g_theWindow->OpenFileDialog( "Data/Gameplay", m_xmlFilter );
 
@@ -326,6 +335,7 @@ void Editor::UpdateMenuBar() {
             }
         }
 
+        // Save & SaveAs
         ImGui::Separator();
         bool shouldSave = false;
 
@@ -358,6 +368,7 @@ void Editor::UpdateMenuBar() {
             g_theEventSystem->FireEvent( EVENT_EDITOR_SAVE_MAPS, args );
         }
 
+        // Quit
         ImGui::Separator();
 
         if( ImGui::MenuItem( "Quit", "Alt + F4" ) ) {

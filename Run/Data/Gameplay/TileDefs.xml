@@ -187,19 +187,10 @@
         allowsSwimming="false"
     />
     <TileDefinition
-        name="StoneWallTop"
-        spriteCoords="4,12"
-        texelColor="50,50,50"
-        allowsSight="false"
-        allowsWalking="false"
-        allowsFlying="true"
-        allowsSwimming="false"
-    />
-    <TileDefinition
         name="StoneWall"
         spriteCoords="16,12"
         context="Wall"
-        extraRenderTypes="StoneWallTop"
+        extraRenderTypes="StoneWallTop,StoneWallBracket,FakeStone,FakeStoneWallTop"
         texelColor="50,50,50"
         allowsSight="false"
         allowsWalking="false"
@@ -210,10 +201,28 @@
         name="StoneWallBracket"
         spriteCoords="17,12"
         context="Wall"
-        extraRenderTypes="StoneWallTop"
+        extraRenderTypes="StoneWallTop,StoneWall,FakeStone,FakeStoneWallTop"
         texelColor="51,51,51"
         allowsSight="false"
         allowsWalking="false"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="StoneWallTop"
+        spriteCoords="4,12"
+        texelColor="50,50,50"
+        allowsSight="false"
+        allowsWalking="false"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="FakeStoneWallTop"
+        spriteCoords="4,12"
+        texelColor="50,50,50"
+        allowsSight="false"
+        allowsWalking="true"
         allowsFlying="true"
         allowsSwimming="false"
     />

@@ -16,4 +16,9 @@
     <Motif name="StairsClose">
         <stairDistRange value="1~4"/>
     </Motif>
+    <Motif name="CaveMotif">
+        <fakeWallType value="FakeStoneWallTop"/>
+        <roomWallType value="StoneWall"/>
+        <roomWallVariant value="StoneWallBracket"/>
+    </Motif>
 </Motifs>

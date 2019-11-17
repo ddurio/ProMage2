@@ -157,16 +157,17 @@ TileDef::TileDef( const XMLElement& element ) {
     m_extraRenderTypes = SplitStringOnDelimeter( extraRenderStr, ',', false );
 
     if( StringICmp( m_tileContext, "wall" ) ) {
-        GUARANTEE_OR_DIE( m_extraRenderTypes.size() == 1, "(TileDef) 'Wall' context must have precisely one extra render type")
+        // First one is what to change to, others are types to change because of (myself is auto included)
+        GUARANTEE_OR_DIE( m_extraRenderTypes.size() >= 1, "(TileDef) 'Wall' context must have at least one extra render type")
     }
 
     m_spriteTint = ParseXMLAttribute( element, "spriteTint", m_spriteTint );
     m_texelColor = ParseXMLAttribute( element, "texelColor", m_texelColor );
 
     // Map Variables
-    m_allowsSight = ParseXMLAttribute( element, "allowsSight", m_allowsSight );
-    m_allowsWalking = ParseXMLAttribute( element, "allowsWalking", m_allowsWalking );
-    m_allowsFlying = ParseXMLAttribute( element, "allowsFlying", m_allowsFlying );
+    m_allowsSight    = ParseXMLAttribute( element, "allowsSight",    m_allowsSight    );
+    m_allowsWalking  = ParseXMLAttribute( element, "allowsWalking",  m_allowsWalking  );
+    m_allowsFlying   = ParseXMLAttribute( element, "allowsFlying",   m_allowsFlying   );
     m_allowsSwimming = ParseXMLAttribute( element, "allowsSwimming", m_allowsSwimming );
 
     // Context Sensitivity
