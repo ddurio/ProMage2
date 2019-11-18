@@ -33,6 +33,9 @@ void EditorMapDef::RenderMapDefParams() {
     RenderIntRangeOrVar( "eMapDefHeight", m_motifVars, "height", { m_motif }, m_height, "Map Height", 3, 100 );
     RenderTileDropDownOrVar( "eMapDefFill", m_motifVars, "fillTile", { m_motif }, m_tileFillType, "Fill Type", false, "__HOPEFULLY_NOT_USED__" );
     RenderTileDropDownOrVar( "eMapDefEdge", m_motifVars, "edgeTile", { m_motif }, m_tileEdgeType, "Edge Type" );
+
+    Strings motifNames = MotifDef::GetAllDefinitionTypes();
+    RenderDropDown( "eMapDefMotif", m_motif, motifNames, "Motif", true, "" );
 }
 
 

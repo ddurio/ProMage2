@@ -34,8 +34,15 @@ void EditorMapGenStep::RenderStepParams( MapGenStep* genStep, const std::string&
     Strings customStepTypes = MGS_CustomDef::GetAllDefinitionTypes();
     bool isCustomStep = EngineCommon::VectorContains( customStepTypes, stepType );
 
+    // Motif
+    Strings motifNames = MotifDef::GetAllDefinitionTypes();
+    int motifIndex = (isCustomStep) ? 1 : 0;
+    RenderDropDown( "eMapDefMotif", genStep->m_motifHierarchy[motifIndex], motifNames, "Motif", true, "" );
+
+    // Conditions
     RenderConditions( genStep, stepName, isCustomStep );
 
+    // Results
     if( isCustomStep ) {
         RenderChildSteps( genStep, stepName );
     } else {
@@ -376,7 +383,7 @@ void EditorMapGenStep::RenderConditions_Custom( MapGenStep* genStep ) {
 
 void EditorMapGenStep::RenderResults( MapGenStep* genStep, const std::string& stepName ) {
     bool resultsChanged = IsChangedResults( genStep );
-    std::string headerStr = Stringf( "Results%s", resultsChanged ? " *" : "" );
+    std::string headerStr = Stringf( "Changes%s", resultsChanged ? " *" : "" );
     SetImGuiTextColor( resultsChanged ? Rgba::ORGANIC_YELLOW : Rgba::WHITE );
 
     if( ImGui::CollapsingHeader( headerStr.c_str(), ImGuiTreeNodeFlags_DefaultOpen ) ) {
