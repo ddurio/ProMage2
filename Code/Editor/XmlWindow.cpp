@@ -168,14 +168,16 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
 
     if( ImGui::BeginPopupContextItem( guiID.c_str() ) ) {
         // Move Up
-        bool moveUpEnabled = (stepIndex > 1) && (stepIndex < (numSteps - 2));
+        bool moveUpEnabled = (stepIndex > EditorMapDef::NUM_PRE_STEPS)
+                          && (stepIndex < (numSteps - EditorMapDef::NUM_POST_STEPS));
 
         if( ImGui::MenuItem( "Move Up", "", nullptr, moveUpEnabled ) ) {
             eMapDef->ReorderStepUp( stepIndex - 1 );
         }
 
         // Move Down
-        bool moveDownEnabled = (stepIndex > 0) && (stepIndex < (numSteps - 3));
+        bool moveDownEnabled = (stepIndex >= EditorMapDef::NUM_PRE_STEPS)
+                            && (stepIndex < (numSteps - (EditorMapDef::NUM_POST_STEPS + 1)));
 
         if( ImGui::MenuItem( "Move Down", "", nullptr, moveDownEnabled ) ) {
             eMapDef->ReorderStepDown( stepIndex - 1 );
@@ -184,7 +186,8 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
         ImGui::Separator();
 
         // Insert Before
-        bool insertBeforeEnabled = (stepIndex > 0) && (stepIndex < (numSteps - 1));
+        bool insertBeforeEnabled = (stepIndex >= EditorMapDef::NUM_PRE_STEPS)
+                                && (stepIndex < (numSteps - (EditorMapDef::NUM_POST_STEPS - 1)));
 
         if( ImGui::BeginMenu( "Insert Before", insertBeforeEnabled ) ) {
             RenderNewStepMenu( eMapDef, stepIndex, true );
@@ -192,7 +195,7 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
         }
 
         // Insert After
-        bool insertAfterEnabled = (stepIndex < (numSteps - 2));
+        bool insertAfterEnabled = (stepIndex < (numSteps - EditorMapDef::NUM_POST_STEPS));
 
         if( ImGui::BeginMenu( "Insert After", insertAfterEnabled ) ) {
             RenderNewStepMenu( eMapDef, stepIndex, false );
@@ -203,7 +206,8 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
         SetImGuiTextColor( Rgba::ORGANIC_RED );
 
         // Delete
-        bool deleteEnabled = (stepIndex > 0) && (stepIndex < (numSteps - 2));
+        bool deleteEnabled = (stepIndex >= EditorMapDef::NUM_PRE_STEPS)
+                          && (stepIndex < (numSteps - EditorMapDef::NUM_POST_STEPS));
 
         if( ImGui::MenuItem( "Delete", "", nullptr, deleteEnabled ) ) {
             eMapDef->DeleteStep( stepIndex - 1 );
@@ -219,6 +223,7 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
             TriggerMapGen( mapType, selectedStep, true );
         }
 
+        SetImGuiTextColor( Rgba::WHITE );
         ImGui::EndPopup();
     }
 }

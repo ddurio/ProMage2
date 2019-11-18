@@ -119,8 +119,10 @@ std::string MapWindow::GetStepName() const {
 
     if( m_stepIndex == 0 ) {
         stepName = "Map Initialization";
-    } else if( m_stepIndex == numSteps - 2 ) {
+    } else if( m_stepIndex == numSteps - 3 ) {
         stepName = "Edged Tiles";
+    } else if( m_stepIndex == numSteps - 2 ) {
+        stepName = "Wall Perspective";
     } else if( m_stepIndex == numSteps - 1 ) {
         stepName = "Phys. Colliders";
     } else {
@@ -154,8 +156,12 @@ Strings MapWindow::GetStepNames() const {
     std::string edgedName = Stringf( "%d: Edged Tiles", numSteps + 1 );
     stepNames.push_back( edgedName );
 
+    // SouthWall
+    std::string wallName = Stringf( "%d: Wall Perspective", numSteps + 2 );
+    stepNames.push_back( wallName );
+
     // Colliders
-    std::string colliderName = Stringf( "%d: Phys. Colliders", numSteps + 2 );
+    std::string colliderName = Stringf( "%d: Phys. Colliders", numSteps + 3 );
     stepNames.push_back( colliderName );
 
     return stepNames;

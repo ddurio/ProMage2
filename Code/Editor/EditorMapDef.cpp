@@ -109,7 +109,7 @@ void EditorMapDef::ReorderStepDown( int stepIndexToMove ) {
 void EditorMapDef::InsertStepBefore( int stepIndexToInsertBefore, MapGenStep* stepToInsert ) {
     if( stepIndexToInsertBefore < 0 ) {
         return;
-    } else if( stepIndexToInsertBefore >= m_numSteps - 3 ) {
+    } else if( stepIndexToInsertBefore >= m_numSteps - (NUM_POST_STEPS + 1) ) {
         m_mapGenSteps.push_back( stepToInsert );
     } else {
         std::vector< MapGenStep* >::iterator stepIter = m_mapGenSteps.begin() + stepIndexToInsertBefore;
@@ -264,7 +264,7 @@ void EditorMapDef::DefineFromWallTiles( Map& theMap ) const {
         Tile& tile = GetTile( theMap, tileIndex );
         std::string tileContext = tile.GetTileContext();
 
-        if( StringICmp( tileContext, "wall" ) ) {
+        if( StringICmp( tileContext, "southWall" ) ) {
             if( tile.ChooseWallFromNeighbor( theMap ) ) {
                 EventArgs args;
                 args.SetValue( "callingMap", &theMap );
@@ -321,7 +321,13 @@ void EditorMapDefJob::Execute() {
         return;
     }
 
-    m_eMapDef->DefineFromContextTiles( theMap );
+    m_eMapDef->DefineFromEdgedTiles( theMap );
+
+    if( CompleteStep() ) {
+        return;
+    }
+
+    m_eMapDef->DefineFromWallTiles( theMap );
 
     if( CompleteStep() ) {
         return;

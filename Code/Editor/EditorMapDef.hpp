@@ -37,13 +37,16 @@ class EditorMapDef : public Definition< Map, EditorMapDef >, public MapDef {
     static bool SaveAllToXml( EventArgs& args );
     static EditorMapDef* CreateNewMapDef( const std::string& mapType, const std::string& fillType );
 
+    static const int NUM_PRE_STEPS  = 1;    // FillAndEdge
+    static const int NUM_POST_STEPS = 3;    // EdgedTiles, SouthWall, Colliders
+
 
     private:
     using Definition< Map, EditorMapDef >::s_defClass;
     using Definition< Map, EditorMapDef >::s_definitions;
     using MapDef                         ::m_defType;
 
-    int m_numSteps = 3; // FillAndEdge, Context, Colliders
+    int m_numSteps = NUM_PRE_STEPS + NUM_POST_STEPS;
 
     mutable std::vector< Map* >* m_mapPerStep       = nullptr;
     mutable bool                 m_allJobsStarted   = false;

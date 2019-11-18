@@ -184,6 +184,7 @@ void Editor::Update() {
     }
 
     float deltaSeconds = m_editorClock.GetDeltaTime();
+    SetImGuiTextColor( Rgba::WHITE );
 
     m_mapWindow->Update( deltaSeconds );
     m_stepWindow->Update( deltaSeconds );
@@ -352,7 +353,7 @@ void Editor::UpdateMenuBar() {
             shouldSave = true;
         }
 
-        if( ImGui::MenuItem( "Save As..." ) || shortcutSaveAs ) {
+        if( ImGui::MenuItem( "Save As...", "Ctrl + Shift + S" ) || shortcutSaveAs ) {
             std::string newMapFile = g_theWindow->SaveFileDialog( "Data/Gameplay", m_xmlFilter );
 
             if( newMapFile != "" ) {

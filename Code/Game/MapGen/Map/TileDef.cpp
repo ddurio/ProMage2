@@ -25,7 +25,7 @@ void TileDef::DefineObject( Tile& theObject ) const {
     theObject.AddRenderType( this );
 
     // Add extra render types (for all non-wall contextual tiles)
-    if( !StringICmp( m_tileContext, "wall" ) ) {
+    if( !StringICmp( m_tileContext, "southWall" ) ) {
         int numTypes = (int)m_extraRenderTypes.size();
 
         for( int typeIndex = 0; typeIndex < numTypes; typeIndex++ ) {
@@ -156,7 +156,7 @@ TileDef::TileDef( const XMLElement& element ) {
     std::string extraRenderStr = ParseXMLAttribute( element, "extraRenderTypes", "" );
     m_extraRenderTypes = SplitStringOnDelimeter( extraRenderStr, ',', false );
 
-    if( StringICmp( m_tileContext, "wall" ) ) {
+    if( StringICmp( m_tileContext, "southWall" ) ) {
         // First one is what to change to, others are types to change because of (myself is auto included)
         GUARANTEE_OR_DIE( m_extraRenderTypes.size() >= 1, "(TileDef) 'Wall' context must have at least one extra render type")
     }

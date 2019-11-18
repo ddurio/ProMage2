@@ -212,7 +212,7 @@ void MapDef::DefineFromWallTiles( Map& theMap ) const {
         Tile& tile = theMap.m_tiles[tileIndex];
         std::string tileContext = tile.GetTileContext();
 
-        if( StringICmp( tileContext, "wall" ) ) {
+        if( StringICmp( tileContext, "southWall" ) ) {
             tile.ChooseWallFromNeighbor( theMap );
         }
     }
