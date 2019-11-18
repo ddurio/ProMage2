@@ -29,10 +29,10 @@ void EditorMapDef::DefineObject( Map& theMap ) const {
 
 
 void EditorMapDef::RenderMapDefParams() {
-    RenderIntRange( m_width, "Map Width", 3, 100 );
-    RenderIntRange( m_height, "Map Height", 3, 100 );
-    RenderTileDropDown( "emdFill", m_tileFillType, "Fill Type", false, "__HOPEFULLY_NOT_USED__" );
-    RenderTileDropDown( "emdEdge", m_tileEdgeType, "Edge Type" );
+    RenderIntRangeOrVar( "eMapDefWidth", m_motifVars, "width", { m_motif }, m_width, "Map Width", 3, 100 );
+    RenderIntRangeOrVar( "eMapDefHeight", m_motifVars, "height", { m_motif }, m_height, "Map Height", 3, 100 );
+    RenderTileDropDownOrVar( "eMapDefFill", m_motifVars, "fillTile", { m_motif }, m_tileFillType, "Fill Type", false, "__HOPEFULLY_NOT_USED__" );
+    RenderTileDropDownOrVar( "eMapDefEdge", m_motifVars, "edgeTile", { m_motif }, m_tileEdgeType, "Edge Type" );
 }
 
 
