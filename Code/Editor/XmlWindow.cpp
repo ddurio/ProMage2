@@ -90,6 +90,7 @@ bool XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
         RenderDropDown( "emdMapTypes", m_mapType, mapTypes, "Map Type", false, "__HOPEFULLY_NOT_A_MAP_TYPE__" );
         ImGui::Columns( 2, nullptr, true, ImGuiColumnsFlags_NoResize ); // ThesisFIXME: Potentially dangerous.. modified imGui to expose this flag
 
+        // Current Map Button
         if( ImGui::Button( "Regenerate Current Map", ImVec2( -1, 0 ) ) ) {
             TriggerMapGen( m_mapType, stepIndex, true );
             regenTriggered = true;
@@ -97,14 +98,21 @@ bool XmlWindow::RenderRegenSettings( EditorMapDef* eMapDef, int stepIndex  ) {
 
         ImGui::NextColumn();
 
+        // New Map Button
         if( ImGui::Button( "Generate New Map", ImVec2( -1, 0 ) ) ) {
             TriggerMapGen( m_mapType, stepIndex, false );
             regenTriggered = true;
         }
 
         ImGui::Columns( 1 );
-        ImGui::Checkbox( "Highlight Modified Tiles", &m_highlightChanges );
 
+        // Map Seed
+        if( !regenTriggered ) {
+            MapWindow* mapWindow = g_theEditor->GetMapWindow();
+            ImGui::Text( "Current Map Seed: %u", mapWindow->GetMapSeed() );
+        }
+
+        ImGui::Checkbox( "Highlight Modified Tiles", &m_highlightChanges );
         ImGui::TreePop();
     }
 
