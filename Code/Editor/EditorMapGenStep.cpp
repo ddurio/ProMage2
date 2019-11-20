@@ -383,7 +383,7 @@ void EditorMapGenStep::RenderConditions_Custom( MapGenStep* genStep ) {
 
 void EditorMapGenStep::RenderResults( MapGenStep* genStep, const std::string& stepName ) {
     bool resultsChanged = IsChangedResults( genStep );
-    std::string headerStr = Stringf( "Changes%s", resultsChanged ? " *" : "" );
+    std::string headerStr = Stringf( "Modifications%s", resultsChanged ? " *" : "" );
     SetImGuiTextColor( resultsChanged ? Rgba::ORGANIC_YELLOW : Rgba::WHITE );
 
     if( ImGui::CollapsingHeader( headerStr.c_str(), ImGuiTreeNodeFlags_DefaultOpen ) ) {

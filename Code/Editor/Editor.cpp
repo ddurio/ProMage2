@@ -2,6 +2,7 @@
 #include "Editor/Editor.hpp"
 
 #include "Editor/EditorMapDef.hpp"
+#include "Editor/HelpWindow.hpp"
 #include "Editor/ImGuiUtils.hpp"
 #include "Editor/MapWindow.hpp"
 #include "Editor/StepWindow.hpp"
@@ -84,6 +85,14 @@ void Editor::Startup() {
     EditorMapDef::LoadFromFile( m_mapDefFile, "MapDefinition" );
 
     g_theEventSystem->Subscribe( EVENT_EDITOR_SAVE_MAPS, &EditorMapDef::SaveAllToXml );
+
+    // Load Help Images
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_CA );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_DF );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_FI );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_PN );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_RnP );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_Spr );
 
     // Setup Editor
     m_mapWindow  = new MapWindow(  Vec2( 0.65f, 0.88f ), Vec2( 0.f, 0.83f ) );
@@ -186,12 +195,18 @@ void Editor::Update() {
     float deltaSeconds = m_editorClock.GetDeltaTime();
     SetImGuiTextColor( Rgba::WHITE );
 
-    m_mapWindow->Update( deltaSeconds );
-    m_stepWindow->Update( deltaSeconds );
-    bool regenTriggered = m_xmlWindow->Update( deltaSeconds );
+    if( m_helpWindow == nullptr ) {
+        m_mapWindow->Update( deltaSeconds );
+        m_stepWindow->Update( deltaSeconds );
+        bool regenTriggered = m_xmlWindow->Update( deltaSeconds );
 
-    if( regenTriggered ) {
-        return;
+        if( regenTriggered ) {
+            return;
+        }
+    } else if( m_helpWindow->IsOpen() ) {
+        m_helpWindow->Update( deltaSeconds );
+    } else {
+        CLEAR_POINTER( m_helpWindow );
     }
 
     UpdateMenuBar();
@@ -275,6 +290,14 @@ void Editor::UpdateLoading() {
 void Editor::UpdateMenuBar() {
     ImGui::BeginMainMenuBar();
 
+    UpdateFileMenu();
+    UpdateHelpMenu();
+
+    ImGui::EndMainMenuBar();
+}
+
+
+void Editor::UpdateFileMenu() {
     bool shortcutNew    = m_controlPressed && m_nPressed;
     bool shortcutOpen   = m_controlPressed && m_oPressed;
     bool shortcutSave   = m_controlPressed && !m_shiftPressed && m_sPressed;
@@ -379,7 +402,17 @@ void Editor::UpdateMenuBar() {
         ImGui::EndMenu();
     }
 
-    ImGui::EndMainMenuBar();
+}
+
+
+void Editor::UpdateHelpMenu() {
+    if( ImGui::BeginMenu( "Help" ) ) {
+        if( ImGui::MenuItem( "Generation Steps" ) ) {
+            m_helpWindow = new HelpWindow();
+        }
+
+        ImGui::EndMenu();
+    }
 }
 
 

@@ -178,6 +178,9 @@
     <ClCompile Include="MapGen\GenSteps\MGS_Custom.cpp">
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
+    <ClCompile Include="..\Editor\HelpWindow.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp">
@@ -329,6 +332,9 @@
     </ClInclude>
     <ClInclude Include="MapGen\GenSteps\MGS_Custom.hpp">
       <Filter>MapGen\GenSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Editor\HelpWindow.hpp">
+      <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

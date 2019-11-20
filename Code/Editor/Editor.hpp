@@ -11,6 +11,7 @@
 
 class Camera;
 class GPUMesh;
+class HelpWindow;
 class Map;
 class MapWindow;
 class StepWindow;
@@ -61,6 +62,7 @@ class Editor : public Job {
     MapWindow* m_mapWindow      = nullptr;
     StepWindow* m_stepWindow    = nullptr;
     XmlWindow* m_xmlWindow      = nullptr;
+    HelpWindow* m_helpWindow    = nullptr;
 
     bool m_demoIsShown = false;
 
@@ -82,6 +84,8 @@ class Editor : public Job {
     void Execute() override;
     void UpdateLoading();
     void UpdateMenuBar();
+    void UpdateFileMenu();
+    void UpdateHelpMenu();
 
     void RenderLoading() const;
 

@@ -20,3 +20,10 @@ constexpr char  TEXTURE_EDITOR_MEDIA_END[]      = "Data/Images/Media/SkipNext.pn
 constexpr char  TEXTURE_EDITOR_MEDIA_PLAY[]     = "Data/Images/Media/Play.png";
 constexpr char  TEXTURE_EDITOR_MEDIA_PAUSE[]    = "Data/Images/Media/Pause.png";
 constexpr char  TEXTURE_EDITOR_MEDIA_LOOP[]     = "Data/Images/Media/Sync.png";
+
+constexpr char  TEXTURE_EDITOR_HELP_CA[]        = "Data/Images/HelpDocs/CellularAutomata.png";
+constexpr char  TEXTURE_EDITOR_HELP_DF[]        = "Data/Images/HelpDocs/DistanceField.png";
+constexpr char  TEXTURE_EDITOR_HELP_FI[]        = "Data/Images/HelpDocs/FromImage.png";
+constexpr char  TEXTURE_EDITOR_HELP_PN[]        = "Data/Images/HelpDocs/PerlinNoise.png";
+constexpr char  TEXTURE_EDITOR_HELP_RnP[]       = "Data/Images/HelpDocs/RoomsAndPaths.png";
+constexpr char  TEXTURE_EDITOR_HELP_Spr[]       = "Data/Images/HelpDocs/Sprinkle.png";

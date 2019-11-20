@@ -23,5 +23,8 @@ class EditorWindow {
     Vec2 m_windowDimensions     = Vec2::ZERO;
     Vec2 m_windowAlignment      = Vec2::ZERO;
 
+    bool m_useCloseButton       = false;
+    bool m_windowIsOpen         = true;
+
     ImGuiWindowFlags m_extraFlags = ImGuiWindowFlags_HorizontalScrollbar;
 };
