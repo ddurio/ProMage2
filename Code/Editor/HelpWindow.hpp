@@ -17,7 +17,7 @@ class HelpWindow : public EditorWindow {
 
     private:
     Camera* m_camera = nullptr;
-    bool m_typeIndex = 0;
+    int m_typeIndex = 0;
 
     const Strings m_typeNames = {
         TEXTURE_EDITOR_HELP_CA,

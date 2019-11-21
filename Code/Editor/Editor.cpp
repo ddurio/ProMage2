@@ -87,12 +87,14 @@ void Editor::Startup() {
     g_theEventSystem->Subscribe( EVENT_EDITOR_SAVE_MAPS, &EditorMapDef::SaveAllToXml );
 
     // Load Help Images
-    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_CA );
-    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_DF );
-    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_FI );
-    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_PN );
-    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_RnP );
-    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_Spr );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_CA     );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_DF     );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_FI     );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_PN     );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_RnP    );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_HELP_Spr    );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_MEDIA_LEFT  );
+    g_theRenderer->GetOrCreateTextureView2D( TEXTURE_EDITOR_MEDIA_RIGHT );
 
     // Setup Editor
     m_mapWindow  = new MapWindow(  Vec2( 0.65f, 0.88f ), Vec2( 0.f, 0.83f ) );

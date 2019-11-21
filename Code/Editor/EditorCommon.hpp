@@ -21,6 +21,9 @@ constexpr char  TEXTURE_EDITOR_MEDIA_PLAY[]     = "Data/Images/Media/Play.png";
 constexpr char  TEXTURE_EDITOR_MEDIA_PAUSE[]    = "Data/Images/Media/Pause.png";
 constexpr char  TEXTURE_EDITOR_MEDIA_LOOP[]     = "Data/Images/Media/Sync.png";
 
+constexpr char  TEXTURE_EDITOR_MEDIA_LEFT[]     = "Data/Images/Media/LeftArrow.png";
+constexpr char  TEXTURE_EDITOR_MEDIA_RIGHT[]    = "Data/Images/Media/RightArrow.png";
+
 constexpr char  TEXTURE_EDITOR_HELP_CA[]        = "Data/Images/HelpDocs/CellularAutomata.png";
 constexpr char  TEXTURE_EDITOR_HELP_DF[]        = "Data/Images/HelpDocs/DistanceField.png";
 constexpr char  TEXTURE_EDITOR_HELP_FI[]        = "Data/Images/HelpDocs/FromImage.png";
