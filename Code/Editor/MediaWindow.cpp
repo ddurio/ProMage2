@@ -1,5 +1,5 @@
 #if defined(_EDITOR)
-#include "Editor/StepWindow.hpp"
+#include "Editor/MediaWindow.hpp"
 
 #include "Editor/Editor.hpp"
 #include "Editor/ImGuiUtils.hpp"
@@ -12,12 +12,12 @@
 #include "Engine/Core/ImGuiSystem.hpp"
 
 
-StepWindow::StepWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.1f )*/, const Vec2& alignment /*= Vec2::ZERO */ ) :
+MediaWindow::MediaWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.1f )*/, const Vec2& alignment /*= Vec2::ZERO */ ) :
     EditorWindow( normDimensions, alignment ) {
     // ThesisFIXME: Choose better name for this window
     m_windowName = "StepEditor";
     m_extraFlags = ImGuiWindowFlags_NoTitleBar;
-    g_theEventSystem->Subscribe( EVENT_EDITOR_CHANGE_STEP, this, &StepWindow::HandleStepChange );
+    g_theEventSystem->Subscribe( EVENT_EDITOR_CHANGE_STEP, this, &MediaWindow::HandleStepChange );
 
     const Clock* editorClock = g_theEditor->GetEditorClock();
     m_stepTimer = new Timer( editorClock );
@@ -25,12 +25,12 @@ StepWindow::StepWindow( const Vec2& normDimensions /*= Vec2( 0.8f, 0.1f )*/, con
 }
 
 
-StepWindow::~StepWindow() {
-    g_theEventSystem->Unsubscribe( EVENT_EDITOR_CHANGE_STEP, this, &StepWindow::HandleStepChange );
+MediaWindow::~MediaWindow() {
+    g_theEventSystem->Unsubscribe( EVENT_EDITOR_CHANGE_STEP, this, &MediaWindow::HandleStepChange );
 }
 
 
-bool StepWindow::UpdateChild( float deltaSeconds ) {
+bool MediaWindow::UpdateChild( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
     ImGui::SetWindowFontScale( 2.f );
@@ -47,7 +47,7 @@ bool StepWindow::UpdateChild( float deltaSeconds ) {
 }
 
 
-void StepWindow::UpdatePlaying( float deltaSeconds ) {
+void MediaWindow::UpdatePlaying( float deltaSeconds ) {
     UNUSED( deltaSeconds );
 
     if( m_isPlaying && m_stepTimer->Decrement() ) {
@@ -68,7 +68,7 @@ void StepWindow::UpdatePlaying( float deltaSeconds ) {
 }
 
 
-void StepWindow::RenderMediaButtons() {
+void MediaWindow::RenderMediaButtons() {
     ImVec2 buttonSize = ImVec2( 25.f, 25.f );
 
     if( RenderImageButton( TEXTURE_EDITOR_MEDIA_START, buttonSize ) ) {
@@ -110,7 +110,7 @@ void StepWindow::RenderMediaButtons() {
 }
 
 
-void StepWindow::RenderStepSlider() {
+void MediaWindow::RenderStepSlider() {
     MapWindow* mapWindow = g_theEditor->GetMapWindow();
     Strings stepNames = mapWindow->GetStepNames();
 
@@ -134,7 +134,7 @@ void StepWindow::RenderStepSlider() {
 }
 
 
-void StepWindow::ChangeStepIndex() const {
+void MediaWindow::ChangeStepIndex() const {
     EventArgs args;
     args.SetValue( "stepIndex", m_sliderIndex );
 
@@ -142,7 +142,7 @@ void StepWindow::ChangeStepIndex() const {
 }
 
 
-bool StepWindow::HandleStepChange( EventArgs& args ) {
+bool MediaWindow::HandleStepChange( EventArgs& args ) {
     m_sliderIndex = args.GetValue( "stepIndex", m_sliderIndex );
 
     return false;

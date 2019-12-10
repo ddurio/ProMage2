@@ -157,9 +157,6 @@
     <ClCompile Include="..\Editor\MapWindow.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\Editor\StepWindow.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
     <ClCompile Include="..\Editor\XmlWindow.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
@@ -179,6 +176,9 @@
       <Filter>MapGen\GenSteps</Filter>
     </ClCompile>
     <ClCompile Include="..\Editor\HelpWindow.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Editor\MediaWindow.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -312,9 +312,6 @@
     <ClInclude Include="..\Editor\MapWindow.hpp">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\Editor\StepWindow.hpp">
-      <Filter>Editor</Filter>
-    </ClInclude>
     <ClInclude Include="..\Editor\XmlWindow.hpp">
       <Filter>Editor</Filter>
     </ClInclude>
@@ -334,6 +331,9 @@
       <Filter>MapGen\GenSteps</Filter>
     </ClInclude>
     <ClInclude Include="..\Editor\HelpWindow.hpp">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Editor\MediaWindow.hpp">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,7 +5,7 @@
 #include "Editor/HelpWindow.hpp"
 #include "Editor/ImGuiUtils.hpp"
 #include "Editor/MapWindow.hpp"
-#include "Editor/StepWindow.hpp"
+#include "Editor/MediaWindow.hpp"
 #include "Editor/XmlWindow.hpp"
 
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -98,7 +98,7 @@ void Editor::Startup() {
 
     // Setup Editor
     m_mapWindow  = new MapWindow(  Vec2( 0.65f, 0.88f ), Vec2( 0.f, 0.83f ) );
-    m_stepWindow = new StepWindow( Vec2( 0.65f, 0.1f ) );
+    m_stepWindow = new MediaWindow( Vec2( 0.65f, 0.1f ) );
     m_xmlWindow  = new XmlWindow(  Vec2( 0.35f, 0.98f ), Vec2( 1.f, 0.f ) );
 
     // Setup Style
@@ -143,6 +143,9 @@ bool Editor::HandleKeyPressed( unsigned char keyCode ) {
         } case(KB_SHIFT): {
             m_shiftPressed = true;
             return true;
+        } case(KB_C): {
+            m_cPressed = true;
+            return true;
         } case(KB_N): {
             m_nPressed = true;
             return true;
@@ -151,6 +154,9 @@ bool Editor::HandleKeyPressed( unsigned char keyCode ) {
             return true;
         } case(KB_S): {
             m_sPressed = true;
+            return true;
+        } case(KB_V): {
+            m_vPressed = true;
             return true;
         }
     }
@@ -167,6 +173,9 @@ bool Editor::HandleKeyReleased( unsigned char keyCode ) {
         } case(KB_SHIFT): {
             m_shiftPressed = false;
             return true;
+        } case(KB_C): {
+            m_cPressed = false;
+            return true;
         } case(KB_N): {
             m_nPressed = false;
             return true;
@@ -175,6 +184,9 @@ bool Editor::HandleKeyReleased( unsigned char keyCode ) {
             return true;
         } case(KB_S): {
             m_sPressed = false;
+            return true;
+        } case(KB_V): {
+            m_vPressed = false;
             return true;
         }
     }
@@ -248,6 +260,16 @@ XmlWindow* Editor::GetXmlWindow() const {
 
 const Clock* Editor::GetEditorClock() const {
     return &m_editorClock;
+}
+
+
+bool Editor::IsCopyShortcutPressed() const {
+    return (m_controlPressed && m_cPressed);
+}
+
+
+bool Editor::IsPasteShortcutPressed() const {
+    return (m_controlPressed && m_vPressed);
 }
 
 
@@ -365,12 +387,7 @@ void Editor::UpdateFileMenu() {
         ImGui::Separator();
         bool shouldSave = false;
 
-        if( shortcutSave ) {
-            m_controlPressed = false;
-            m_sPressed = false;
-        } else if( shortcutSaveAs ) {
-            m_controlPressed = false;
-            m_shiftPressed = false;
+        if( shortcutSave || shortcutSaveAs) {
             m_sPressed = false;
         }
 
@@ -403,7 +420,6 @@ void Editor::UpdateFileMenu() {
 
         ImGui::EndMenu();
     }
-
 }
 
 

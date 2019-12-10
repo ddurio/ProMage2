@@ -171,43 +171,88 @@ void XmlWindow::RenderGenSteps( EditorMapDef* eMapDef ) {
 
 
 bool XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, int numSteps ) {
-    std::string beforeID = Stringf( "%s_insertBefore", guiID.c_str() );
-    std::string afterID = Stringf( "%s_insertAfter", guiID.c_str() );
     bool regenTriggered = false;
 
-    if( ImGui::BeginPopupContextItem( guiID.c_str() ) ) {
-        // Move Up
-        bool moveUpEnabled = (stepIndex > EditorMapDef::NUM_PRE_STEPS)
-                          && (stepIndex < (numSteps - EditorMapDef::NUM_POST_STEPS));
+    const MapWindow* mapWindow = g_theEditor->GetMapWindow();
+    int selectedIndex = mapWindow->GetStepIndex();
 
-        if( ImGui::MenuItem( "Move Up", "", nullptr, moveUpEnabled ) ) {
-            eMapDef->ReorderStepUp( stepIndex - 1 );
+    bool isSelected = (stepIndex == selectedIndex);
+    bool shortcutCopy = g_theEditor->IsCopyShortcutPressed() && isSelected;
+    bool shortcutPaste = g_theEditor->IsPasteShortcutPressed() && isSelected;
+    bool shortcutAny = shortcutCopy || shortcutPaste;
+
+    if( shortcutAny ) {
+        ImGui::OpenPopup( guiID.c_str() );
+    }
+
+    if( ImGui::BeginPopupContextItem( guiID.c_str() ) || shortcutAny ) {
+        int firstXmlStepIndex = EditorMapDef::NUM_PRE_STEPS;
+        int lastXmlStepIndex = numSteps - EditorMapDef::NUM_POST_STEPS - 1;
+        bool isXmlStep = (stepIndex >= firstXmlStepIndex)
+                      && (stepIndex <= lastXmlStepIndex);
+
+        // Copy
+        if( ImGui::MenuItem( "Copy", "Ctrl + C", nullptr, isXmlStep ) || (shortcutCopy && isXmlStep) ) {
+            m_stepToCopy = eMapDef->GetStep( stepIndex );
+
+            if( shortcutCopy ) {
+                g_theEditor->m_cPressed = false;
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        // Paste
+        bool insertAfterEnabled = (stepIndex >= firstXmlStepIndex - 1)
+                               && (stepIndex <= lastXmlStepIndex);
+        bool pasteEnabled = insertAfterEnabled && (m_stepToCopy != nullptr);
+
+        if( ImGui::MenuItem( "Paste", "Ctrl + V", nullptr, pasteEnabled ) || (shortcutPaste && isXmlStep) ) {
+            if( shortcutPaste ) {
+                g_theEditor->m_vPressed = false;
+            }
+
+            MapGenStep* newCopiedStep = MapGenStep::CreateMapGenStep( m_stepToCopy );
+            eMapDef->InsertStepAfter( stepIndex, newCopiedStep );
+
+            std::string mapType = mapWindow->GetMapType();
+            TriggerMapGen( mapType, stepIndex + 1, true );
+            regenTriggered = true;
+        }
+
+        ImGui::Separator();
+
+        // Move Up
+        bool moveUpEnabled = (stepIndex >= firstXmlStepIndex + 1)
+                          && (stepIndex <= lastXmlStepIndex);
+
+        if( !regenTriggered && ImGui::MenuItem( "Move Up", "", nullptr, moveUpEnabled ) ) {
+            eMapDef->ReorderStepUp( stepIndex );
         }
 
         // Move Down
-        bool moveDownEnabled = (stepIndex >= EditorMapDef::NUM_PRE_STEPS)
-                            && (stepIndex < (numSteps - (EditorMapDef::NUM_POST_STEPS + 1)));
+        bool moveDownEnabled = (stepIndex >= firstXmlStepIndex)
+                            && (stepIndex <= lastXmlStepIndex - 1);
 
-        if( ImGui::MenuItem( "Move Down", "", nullptr, moveDownEnabled ) ) {
-            eMapDef->ReorderStepDown( stepIndex - 1 );
+        if( !regenTriggered && ImGui::MenuItem( "Move Down", "", nullptr, moveDownEnabled ) ) {
+            eMapDef->ReorderStepDown( stepIndex );
         }
 
         ImGui::Separator();
 
         // Insert Before
-        bool insertBeforeEnabled = (stepIndex >= EditorMapDef::NUM_PRE_STEPS)
-                                && (stepIndex < (numSteps - (EditorMapDef::NUM_POST_STEPS - 1)));
+        bool insertBeforeEnabled = (stepIndex >= firstXmlStepIndex)
+                                && (stepIndex <= lastXmlStepIndex + 1);
 
-        if( ImGui::BeginMenu( "Insert Before", insertBeforeEnabled ) ) {
-            regenTriggered = RenderNewStepMenu( eMapDef, stepIndex - 1, true );
+        if( !regenTriggered && ImGui::BeginMenu( "Insert Before", insertBeforeEnabled ) ) {
+            regenTriggered = RenderNewStepMenu( eMapDef, stepIndex, true );
             ImGui::EndMenu();
         }
 
         // Insert After
-        bool insertAfterEnabled = (stepIndex < (numSteps - EditorMapDef::NUM_POST_STEPS));
+        //bool insertAfterEnabled: Created above for "Paste" option
 
         if( !regenTriggered && ImGui::BeginMenu( "Insert After", insertAfterEnabled ) ) {
-            regenTriggered = RenderNewStepMenu( eMapDef, stepIndex - 1, false );
+            regenTriggered = RenderNewStepMenu( eMapDef, stepIndex, false );
             ImGui::EndMenu();
         }
 
@@ -215,13 +260,9 @@ bool XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
         SetImGuiTextColor( Rgba::ORGANIC_RED );
 
         // Delete
-        bool deleteEnabled = (stepIndex >= EditorMapDef::NUM_PRE_STEPS)
-                          && (stepIndex < (numSteps - EditorMapDef::NUM_POST_STEPS));
-
-        if( !regenTriggered && ImGui::MenuItem( "Delete", "", nullptr, deleteEnabled ) ) {
-            eMapDef->DeleteStep( stepIndex - 1 );
+        if( !regenTriggered && ImGui::MenuItem( "Delete", "", nullptr, isXmlStep ) ) {
+            eMapDef->DeleteStep( stepIndex );
             
-            MapWindow* mapWindow = g_theEditor->GetMapWindow();
             std::string mapType = mapWindow->GetMapType();
             int selectedStep = mapWindow->GetStepIndex();
 
@@ -251,21 +292,18 @@ bool XmlWindow::RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool in
         if( ImGui::MenuItem( stepType.c_str() ) ) {
             MapGenStep* newStep = MapGenStep::CreateMapGenStep( stepType, { mapMotif } );
 
+            MapWindow* mapWindow = g_theEditor->GetMapWindow();
+            std::string mapType = mapWindow->GetMapType();
+            int newSelectedIndex = stepIndex;
+
             if( insertBefore ) {
                 eMapDef->InsertStepBefore( stepIndex, newStep );
             } else {
                 eMapDef->InsertStepAfter( stepIndex, newStep );
+                newSelectedIndex++;
             }
 
-            MapWindow* mapWindow = g_theEditor->GetMapWindow();
-            std::string mapType = mapWindow->GetMapType();
-            int selectedStep = mapWindow->GetStepIndex();
-
-            if( selectedStep > stepIndex || (insertBefore && selectedStep == stepIndex) ) {
-                selectedStep++;
-            }
-
-            TriggerMapGen( mapType, selectedStep, true );
+            TriggerMapGen( mapType, newSelectedIndex, true );
             return true;
         }
     }

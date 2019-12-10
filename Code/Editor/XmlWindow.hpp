@@ -8,6 +8,7 @@
 
 
 class EditorMapDef;
+class MapGenStep;
 
 
 class XmlWindow : public EditorWindow {
@@ -23,6 +24,7 @@ class XmlWindow : public EditorWindow {
     private:
     bool m_highlightChanges = true;
     std::vector< bool > m_stepHeaderOpen;
+    const MapGenStep* m_stepToCopy = nullptr;
 
     std::string m_mapType = "";
     std::string m_newStepType = "";
@@ -32,7 +34,10 @@ class XmlWindow : public EditorWindow {
         "FromImage",
         "PerlinNoise",
         "RoomsAndPaths",
-        "Sprinkle"
+        "Sprinkle",
+        // ...
+        // plus custom step types added at run time
+        // ...
     };
 
 

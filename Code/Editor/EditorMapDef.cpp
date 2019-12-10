@@ -79,33 +79,35 @@ Strings EditorMapDef::GetMapTypes() const {
 }
 
 
-void EditorMapDef::ReorderStepUp( int stepIndexToMove ) {
+void EditorMapDef::ReorderStepUp( int stepIndexToMoveUp ) {
     int numSteps = (int)m_mapGenSteps.size();
+    int xmlStepIndex = stepIndexToMoveUp - NUM_PRE_STEPS;
 
-    if( stepIndexToMove <= 0 || stepIndexToMove >= numSteps ) {
+    if( xmlStepIndex <= 0 || xmlStepIndex >= numSteps ) {
         return;
     }
 
-    MapGenStep* stepToMoveDown = m_mapGenSteps[stepIndexToMove - 1];
-    MapGenStep* stepToMoveUp   = m_mapGenSteps[stepIndexToMove];
+    MapGenStep* stepToMoveDown = m_mapGenSteps[xmlStepIndex - 1];
+    MapGenStep* stepToMoveUp   = m_mapGenSteps[xmlStepIndex];
 
-    m_mapGenSteps[stepIndexToMove - 1] = stepToMoveUp;
-    m_mapGenSteps[stepIndexToMove]     = stepToMoveDown;
+    m_mapGenSteps[xmlStepIndex - 1] = stepToMoveUp;
+    m_mapGenSteps[xmlStepIndex]     = stepToMoveDown;
 }
 
 
 void EditorMapDef::ReorderStepDown( int stepIndexToMove ) {
     int numSteps = (int)m_mapGenSteps.size();
+    int xmlStepIndex = stepIndexToMove - NUM_PRE_STEPS;
 
-    if( stepIndexToMove < 0 || stepIndexToMove >= (numSteps - 1) ) {
+    if( xmlStepIndex < 0 || xmlStepIndex >= (numSteps - 1) ) {
         return;
     }
 
-    MapGenStep* stepToMoveDown = m_mapGenSteps[stepIndexToMove];
-    MapGenStep* stepToMoveUp   = m_mapGenSteps[stepIndexToMove + 1];
+    MapGenStep* stepToMoveDown = m_mapGenSteps[xmlStepIndex];
+    MapGenStep* stepToMoveUp   = m_mapGenSteps[xmlStepIndex + 1];
 
-    m_mapGenSteps[stepIndexToMove]     = stepToMoveUp;
-    m_mapGenSteps[stepIndexToMove + 1] = stepToMoveDown;
+    m_mapGenSteps[xmlStepIndex]     = stepToMoveUp;
+    m_mapGenSteps[xmlStepIndex + 1] = stepToMoveDown;
 }
 
 
@@ -115,7 +117,7 @@ void EditorMapDef::InsertStepBefore( int stepIndexToInsertBefore, MapGenStep* st
     } else if( stepIndexToInsertBefore >= m_numSteps - (NUM_POST_STEPS + 1) ) {
         m_mapGenSteps.push_back( stepToInsert );
     } else {
-        std::vector< MapGenStep* >::iterator stepIter = m_mapGenSteps.begin() + stepIndexToInsertBefore;
+        std::vector< MapGenStep* >::iterator stepIter = m_mapGenSteps.begin() + stepIndexToInsertBefore - NUM_PRE_STEPS;
         m_mapGenSteps.insert( stepIter, stepToInsert );
     }
 
@@ -132,12 +134,13 @@ void EditorMapDef::InsertStepAfter( int stepIndexToInsertAfter, MapGenStep* step
 
 void EditorMapDef::DeleteStep( int stepIndexToDelete ) {
     int numSteps = (int)m_mapGenSteps.size();
+    int xmlStepIndex = stepIndexToDelete - NUM_PRE_STEPS;
 
-    if( stepIndexToDelete < 0 || stepIndexToDelete >= numSteps ) {
+    if( xmlStepIndex < 0 || xmlStepIndex >= numSteps ) {
         return;
     }
 
-    std::vector< MapGenStep* >::iterator stepIter = m_mapGenSteps.begin() + stepIndexToDelete;
+    std::vector< MapGenStep* >::iterator stepIter = m_mapGenSteps.begin() + xmlStepIndex;
 
     std::string eventName = Stringf( "%s_%s", EVENT_EDITOR_MOTIF_CHANGED, m_defType.c_str() );
     g_theEventSystem->Unsubscribe( eventName, *stepIter, &MapGenStep::RecalculateMotifVars );

@@ -14,11 +14,13 @@ class GPUMesh;
 class HelpWindow;
 class Map;
 class MapWindow;
-class StepWindow;
+class MediaWindow;
 class XmlWindow;
 
 
 class Editor : public Job {
+    friend class XmlWindow; // Can change shortcut keys pressed/released state
+
     public:
     Editor();
     ~Editor();
@@ -40,6 +42,9 @@ class Editor : public Job {
 
     const Clock* GetEditorClock() const;
 
+    bool IsCopyShortcutPressed() const;
+    bool IsPasteShortcutPressed() const;
+
 
     private:
 
@@ -60,7 +65,7 @@ class Editor : public Job {
     Clock m_editorClock;
 
     MapWindow* m_mapWindow      = nullptr;
-    StepWindow* m_stepWindow    = nullptr;
+    MediaWindow* m_stepWindow    = nullptr;
     XmlWindow* m_xmlWindow      = nullptr;
     HelpWindow* m_helpWindow    = nullptr;
 
@@ -74,9 +79,11 @@ class Editor : public Job {
     // Keyboard Shortcuts
     bool m_controlPressed = false;
     bool m_shiftPressed = false;
+    bool m_cPressed = false;
     bool m_oPressed = false;
     bool m_nPressed = false;
     bool m_sPressed = false;
+    bool m_vPressed = false;
 
 
     bool IsLoading() const;

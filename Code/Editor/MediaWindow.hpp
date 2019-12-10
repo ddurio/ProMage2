@@ -11,10 +11,10 @@ class MapWindow;
 class Timer;
 
 
-class StepWindow : public EditorWindow {
+class MediaWindow : public EditorWindow {
     public:
-    StepWindow( const Vec2& normDimensions = Vec2( 0.8f, 0.1f ), const Vec2& alignment = Vec2::ZERO );
-    ~StepWindow();
+    MediaWindow( const Vec2& normDimensions = Vec2( 0.8f, 0.1f ), const Vec2& alignment = Vec2::ZERO );
+    ~MediaWindow();
 
 
     private:

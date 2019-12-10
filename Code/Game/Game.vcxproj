@@ -465,7 +465,7 @@
     <ClCompile Include="..\Editor\HelpWindow.cpp" />
     <ClCompile Include="..\Editor\ImGuiUtils.cpp" />
     <ClCompile Include="..\Editor\MapWindow.cpp" />
-    <ClCompile Include="..\Editor\StepWindow.cpp" />
+    <ClCompile Include="..\Editor\MediaWindow.cpp" />
     <ClCompile Include="..\Editor\XmlWindow.cpp" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="ActorController.cpp" />
@@ -517,7 +517,7 @@
     <ClInclude Include="..\Editor\HelpWindow.hpp" />
     <ClInclude Include="..\Editor\ImGuiUtils.hpp" />
     <ClInclude Include="..\Editor\MapWindow.hpp" />
-    <ClInclude Include="..\Editor\StepWindow.hpp" />
+    <ClInclude Include="..\Editor\MediaWindow.hpp" />
     <ClInclude Include="..\Editor\XmlWindow.hpp" />
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="ActorController.hpp" />
