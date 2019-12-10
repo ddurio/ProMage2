@@ -1,3 +1,5 @@
+#if defined( _EDITOR) 
+
 #pragma once
 #include "Editor/EditorCommon.hpp"
 
@@ -31,3 +33,5 @@ class HelpWindow : public EditorWindow {
 
     bool UpdateChild( float deltaSeconds ) override;
 };
+
+#endif

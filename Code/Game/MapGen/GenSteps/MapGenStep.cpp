@@ -362,12 +362,17 @@ MapGenStep* MapGenStep::CreateMapGenStep( const std::string& stepType, const Str
 // Public ----------------------------------------------------
 void MapGenStep::Run( Map& theMap ) const {
     RNG* mapRNG = theMap.GetMapRNG();
+
+    // Chance to Run check
+    if( !mapRNG->PercentChance( m_chanceToRun ) ) {
+        return;
+    }
+
+    // Iterations
     int numIterations = mapRNG->GetRandomIntInRange( m_numIterations );
 
     for( int iterationIndex = 0; iterationIndex < numIterations; iterationIndex++ ) {
-        if( mapRNG->PercentChance( m_chanceToRun ) ) {
-            RunOnce( theMap );
-        }
+        RunOnce( theMap );
     }
 }
 

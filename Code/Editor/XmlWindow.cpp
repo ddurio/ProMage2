@@ -143,9 +143,9 @@ void XmlWindow::RenderGenSteps( EditorMapDef* eMapDef ) {
 
         ImGui::SetNextTreeNodeOpen( (stepIndex == currentIndex) );
         bool headerOpen = ImGui::CollapsingHeader( stepName.c_str(), ImGuiTreeNodeFlags_None );
-        RenderContextMenu( eMapDef, stepName, stepIndex, numSteps );
+        bool regenTriggered = RenderContextMenu( eMapDef, stepName, stepIndex, numSteps );
 
-        if( headerOpen ) {
+        if( !regenTriggered && headerOpen ) {
             ImGui::TreePush( stepName.c_str() );
 
             if( stepIndex == 0 ) {
@@ -170,9 +170,10 @@ void XmlWindow::RenderGenSteps( EditorMapDef* eMapDef ) {
 }
 
 
-void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, int numSteps ) {
+bool XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& guiID, int stepIndex, int numSteps ) {
     std::string beforeID = Stringf( "%s_insertBefore", guiID.c_str() );
     std::string afterID = Stringf( "%s_insertAfter", guiID.c_str() );
+    bool regenTriggered = false;
 
     if( ImGui::BeginPopupContextItem( guiID.c_str() ) ) {
         // Move Up
@@ -198,15 +199,15 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
                                 && (stepIndex < (numSteps - (EditorMapDef::NUM_POST_STEPS - 1)));
 
         if( ImGui::BeginMenu( "Insert Before", insertBeforeEnabled ) ) {
-            RenderNewStepMenu( eMapDef, stepIndex, true );
+            regenTriggered = RenderNewStepMenu( eMapDef, stepIndex - 1, true );
             ImGui::EndMenu();
         }
 
         // Insert After
         bool insertAfterEnabled = (stepIndex < (numSteps - EditorMapDef::NUM_POST_STEPS));
 
-        if( ImGui::BeginMenu( "Insert After", insertAfterEnabled ) ) {
-            RenderNewStepMenu( eMapDef, stepIndex, false );
+        if( !regenTriggered && ImGui::BeginMenu( "Insert After", insertAfterEnabled ) ) {
+            regenTriggered = RenderNewStepMenu( eMapDef, stepIndex - 1, false );
             ImGui::EndMenu();
         }
 
@@ -217,7 +218,7 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
         bool deleteEnabled = (stepIndex >= EditorMapDef::NUM_PRE_STEPS)
                           && (stepIndex < (numSteps - EditorMapDef::NUM_POST_STEPS));
 
-        if( ImGui::MenuItem( "Delete", "", nullptr, deleteEnabled ) ) {
+        if( !regenTriggered && ImGui::MenuItem( "Delete", "", nullptr, deleteEnabled ) ) {
             eMapDef->DeleteStep( stepIndex - 1 );
             
             MapWindow* mapWindow = g_theEditor->GetMapWindow();
@@ -229,15 +230,18 @@ void XmlWindow::RenderContextMenu( EditorMapDef* eMapDef, const std::string& gui
             }
 
             TriggerMapGen( mapType, selectedStep, true );
+            regenTriggered = true;
         }
 
         SetImGuiTextColor( Rgba::WHITE );
         ImGui::EndPopup();
     }
+
+    return regenTriggered;
 }
 
 
-void XmlWindow::RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool insertBefore ) {
+bool XmlWindow::RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool insertBefore ) {
     std::string mapMotif = eMapDef->GetMotif();
     int numTypes = (int)m_stepTypes.size();
 
@@ -252,8 +256,21 @@ void XmlWindow::RenderNewStepMenu( EditorMapDef* eMapDef, int stepIndex, bool in
             } else {
                 eMapDef->InsertStepAfter( stepIndex, newStep );
             }
+
+            MapWindow* mapWindow = g_theEditor->GetMapWindow();
+            std::string mapType = mapWindow->GetMapType();
+            int selectedStep = mapWindow->GetStepIndex();
+
+            if( selectedStep > stepIndex || (insertBefore && selectedStep == stepIndex) ) {
+                selectedStep++;
+            }
+
+            TriggerMapGen( mapType, selectedStep, true );
+            return true;
         }
     }
+
+    return false;
 }
 
 

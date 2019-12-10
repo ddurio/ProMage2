@@ -94,16 +94,6 @@
     <!--    Will only expand over tiles above them -->
     
     <TileDefinition
-        name="EdgedLava"
-        spriteCoords="12,26"
-        context="edged"
-        texelColor="33,136,38"
-        allowsSight="true"
-        allowsWalking="false"
-        allowsFlying="true"
-        allowsSwimming="false"
-    />
-    <TileDefinition
         name="EdgedCaveDirt"
         spriteCoords="27,26"
         context="edged"
@@ -124,16 +114,6 @@
         allowsSwimming="false"
     />
     <TileDefinition
-        name="EdgedObsidian"
-        spriteCoords="9,26"
-        context="edged"
-        texelColor="20,20,20"
-        allowsSight="true"
-        allowsWalking="true"
-        allowsFlying="true"
-        allowsSwimming="false"
-    />
-    <TileDefinition
         name="EdgedDarkGrass"
         spriteCoords="15,26"
         context="edged"
@@ -148,6 +128,26 @@
         spriteCoords="6,26"
         context="edged"
         texelColor="31,100,38"
+        allowsSight="true"
+        allowsWalking="true"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="EdgedLava"
+        spriteCoords="12,26"
+        context="edged"
+        texelColor="33,136,38"
+        allowsSight="true"
+        allowsWalking="false"
+        allowsFlying="true"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="EdgedObsidian"
+        spriteCoords="9,26"
+        context="edged"
+        texelColor="20,20,20"
         allowsSight="true"
         allowsWalking="true"
         allowsFlying="true"

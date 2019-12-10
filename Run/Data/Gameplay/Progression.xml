@@ -17,10 +17,10 @@
     </Mobs>
     <Maps>
         <KeyFrame floor="0"   mapType="Island"/>
-        <KeyFrame floor="1"   mapType="Cavern"/>
+        <KeyFrame floor="1"   mapType="Shattered Plains"/>
         <KeyFrame floor="10"  mapType="Cave"/>
         <KeyFrame floor="22"  mapType="DD1"/>
-        <KeyFrame floor="23"  mapType="Cavern"/>
+        <KeyFrame floor="23"  mapType="Shattered Plains"/>
         <KeyFrame floor="222" mapType="DD2"/>
         <KeyFrame floor="223" mapType="Cave"/>
     </Maps>

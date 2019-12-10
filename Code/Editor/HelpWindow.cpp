@@ -1,3 +1,5 @@
+#if defined( _EDITOR) 
+
 #include "Editor/HelpWindow.hpp"
 
 #include "Engine/Renderer/Camera.hpp"
@@ -85,3 +87,5 @@ bool HelpWindow::UpdateChild( float deltaSeconds ) {
     ImGui::Columns( 1 );
     return false;
 }
+
+#endif
