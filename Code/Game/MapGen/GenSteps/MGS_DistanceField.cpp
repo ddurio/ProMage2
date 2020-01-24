@@ -20,7 +20,7 @@ void MGS_DistanceField::SaveToXml( XmlDocument& document, XMLElement& element ) 
     element.SetName( "DistanceField" );
     MapGenStep::SaveToXml( document, element );
 
-    if( m_movementType != "" ) {
+    if( m_movementType != "Walk" ) {
         element.SetAttribute( "movementType", m_movementType.c_str() );
     }
 

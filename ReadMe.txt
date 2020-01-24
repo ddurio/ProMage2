@@ -1,7 +1,5 @@
 Known Issues:
 - Intermittent Run-time fatal "Read Access Violation" (Release ONLY)
-- Clicking on any "Custom Step" in the editor causes "recoverable" errors.. every frame..
-	* Don't click on a step header named "Add Stairs" until next week when that's implemented
 
 General:
 - ProMage2 == 'PRO'cedural 'M'ap 'A'lgorithm 'GE'nerator '2'D
@@ -47,4 +45,3 @@ Game:
 		** Case insensitive, but no spaces around equal sign allowed
 		** Map type alternates every ten levels (1-10, 11-20, ...)
 		** 'goToFloor number=11' to see first example of Cave map
-	
