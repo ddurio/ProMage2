@@ -1,10 +1,14 @@
+Known Issues:
+- Pressing F8 to restart the program can sometimes cause "accessing nullptr" crashes when updating Motif variables
+
 General:
 - ProMage2 == 'PRO'cedural 'M'ap 'A'lgorithm 'GE'nerator '2'D
 - Tilde (`) to open devConsole
 - Execute 'quit' devConsole command, Alt-F4, or click Windows X to quit
+- Source code available in SMU Perforce: //depot/C28/Students/ddurio/SD/ProMage2/...
 
 Editor:
-- Launch  ./ProMage2/Run/ProMage2_x64_Editor.exe
+- Launch  ./Run/ProMage2_x64_Editor.exe
 - Can be run from VS in either EditorDebug, EditorFastBreak, EditorRelease build configuration
 - Layout:
   * Map Window - (Top Left)
@@ -25,7 +29,7 @@ Editor:
 	** Step Index slider - Mouse left hold and drag to change step index
 
 Game:
-- Launch  ./ProMage2/Run/ProMage2_x64.exe
+- Launch  ./Run/ProMage2_x64.exe
 - Can be run from VS in either GameDebug, GameFastBreak, or GameRelease build configuration
 - Controls:
 	* WASD to move character
