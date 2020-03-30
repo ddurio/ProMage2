@@ -65,10 +65,10 @@ struct AABB2 {
     AABB2 GetBoxAtRight( float fractionOfWidth, float additionalWidth = 0.f ) const;
     AABB2 GetBoxAtBottom( float fractionOfHeight, float additionalHeight = 0.f ) const;
     AABB2 GetBoxAtTop( float fractionOfHeight, float additionalHeight = 0.f ) const;
-    */
 
     AABB2 CarveBoxOffLeft( float fractionOfWidth, float additionalWidth = 0.f );
     AABB2 CarveBoxOffRight( float fractionOfWidth, float additionalWidth = 0.f );
+    */
     AABB2 CarveBoxOffBottom( float fractionOfHeight, float additionalHeight = 0.f );
     AABB2 CarveBoxOffTop( float fractionOfHeight, float additionalHeight = 0.f );
 

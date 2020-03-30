@@ -3,7 +3,6 @@
 #include "Engine/Physics/Collider2D.hpp"
 
 #include "Engine/Core/EventSystem.hpp"
-#include "Engine/Debug/Profiler.hpp"
 #include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Math/Capsule2.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -127,12 +126,16 @@ float Collider2D::GetMomentOfInertia() const {
 
 
 bool Collider2D::GetCollisionInfo( const Collider2D* colliderB, CollisionInfo2D& outCollisionInfo ) const {
-    PROFILE_FUNCTION();
-
     outCollisionInfo.myCollider = this;
     outCollisionInfo.otherCollider = colliderB;
 
-    return GetManifold( colliderB, outCollisionInfo.manifold );
+    float radiusA = 0.f;
+    float radiusB = 0.f;
+
+    OBB2 boundsA = GetWorldBounds( radiusA );
+    OBB2 boundsB = colliderB->GetWorldBounds( radiusB );
+
+    return Manifold2::GetManifold( boundsA, radiusA, boundsB, radiusB, outCollisionInfo.manifold );
 }
 
 
@@ -179,7 +182,7 @@ void Collider2D::FireCallbackEvent( RBChildEvent event, void* info ) {
     // Fire event
     CollisionInfo2D& collision = *(CollisionInfo2D*)info;
 
-    EventArgs args = m_callbackArgs;
+    EventArgs args;
     args.SetValue( PHYSICS_ARG_MY_COLLIDER,     collision.myCollider    );
     args.SetValue( PHYSICS_ARG_OTHER_COLLIDER,  collision.otherCollider );
     args.SetValue( PHYSICS_ARG_MANIFOLD,        collision.manifold      );
@@ -213,7 +216,7 @@ CollisionInfo2D::CollisionInfo2D( const Collider2D* myColliderIn, const Collider
 
 
 CollisionInfo2D CollisionInfo2D::GetInverse() const {
-    Manifold2 inverseManifold = manifold.GetInverted();
+    Manifold2 inverseManifold = Manifold2( -manifold.normal, manifold.penetration );
     CollisionInfo2D inverse = CollisionInfo2D( otherCollider, myCollider, inverseManifold );
 
     return inverse;

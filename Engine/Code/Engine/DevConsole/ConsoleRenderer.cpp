@@ -1,7 +1,6 @@
 #include "Engine/DevConsole/ConsoleRenderer.hpp"
 
 #include "Engine/Core/Time.hpp"
-#include "Engine/Debug/Profiler.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Memory/Memory.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
@@ -41,7 +40,7 @@ void ConsoleRenderer::Render( RenderContext* renderer ) const {
         return;
     }
 
-    const BitmapFont* font = renderer->GetOrCreateBitmapFont( fontName );
+    const BitmapFont* font = renderer->GetOrCreateBitmapFont( fontName.c_str() );
 
     AABB2 consoleBounds;
     AABB2 inputBounds;
@@ -109,17 +108,17 @@ void ConsoleRenderer::RenderMemTracking( RenderContext* renderer, float lineHeig
 
     // Mode
     std::string memMode = TrackedMemory::GetMode();
-    font->AddVertsForTextInBox2D( memVerts, innerBounds, lineHeight, memMode, Rgba::BLUE, 1.f, ALIGN_CENTER_LEFT );
+    font->AddVeretsForTextInBox2D( memVerts, innerBounds, lineHeight, memMode, Rgba::BLUE, 1.f, ALIGN_CENTER_LEFT );
 
     // Num Allocations
     int numAllocs = TrackedMemory::GetNumLiveAllocations();
     std::string allocStr = Stringf( "Live Allocs: %d", numAllocs );
-    font->AddVertsForTextInBox2D( memVerts, innerBounds, lineHeight, allocStr, Rgba::BLUE, 1.f, ALIGN_CENTER );
+    font->AddVeretsForTextInBox2D( memVerts, innerBounds, lineHeight, allocStr, Rgba::BLUE, 1.f, ALIGN_CENTER );
 
     // Num Bytes
     std::string numBytes = TrackedMemory::GetLiveByteString();
     std::string byteStr = Stringf( "Live Bytes: %s", numBytes.c_str() );
-    font->AddVertsForTextInBox2D( memVerts, innerBounds, lineHeight, byteStr, Rgba::BLUE, 1.f, ALIGN_CENTER_RIGHT );
+    font->AddVeretsForTextInBox2D( memVerts, innerBounds, lineHeight, byteStr, Rgba::BLUE, 1.f, ALIGN_CENTER_RIGHT );
 
     renderer->BindTexture( font->GetTexturePath() );
     renderer->DrawVertexArray( memVerts );
@@ -174,7 +173,7 @@ void ConsoleRenderer::RenderStrings( RenderContext* renderer, float lineHeight, 
         AABB2 lineBox = remainingBounds.CarveBoxOffBottom( 0.f, lineHeight );
         std::string lineText = Stringf( "%d, %.02f: %s", lineIter->m_frameNumber, lineIter->m_printTime, lineIter->m_string.c_str() );
 
-        font->AddVertsForTextInBox2D( textVerts, lineBox, lineHeight, lineText, lineIter->m_color, 1.f, ALIGN_CENTER_LEFT );
+        font->AddVeretsForTextInBox2D( textVerts, lineBox, lineHeight, lineText, lineIter->m_color, 1.f, ALIGN_CENTER_LEFT );
     }
 
     renderer->BindTexture( font->GetTexturePath() );
@@ -182,9 +181,7 @@ void ConsoleRenderer::RenderStrings( RenderContext* renderer, float lineHeight, 
 }
 
 
-void ConsoleRenderer::RenderInput( RenderContext* renderer, float lineHeight, AABB2 inputBounds, const BitmapFont* font ) const {
-    AABB2 fpsBounds = inputBounds.CarveBoxOffRight( 0.2f );
-
+void ConsoleRenderer::RenderInput( RenderContext* renderer, float lineHeight, const AABB2& inputBounds, const BitmapFont* font ) const {
     Vec2 inputDimensions = inputBounds.GetDimensions();
     Vec2 innerDimensions = inputDimensions - Vec2( 0.5f * lineHeight, 0.5f * lineHeight );
     AABB2 innerBounds = inputBounds.GetBoxWithin( innerDimensions, ALIGN_CENTER );
@@ -204,23 +201,11 @@ void ConsoleRenderer::RenderInput( RenderContext* renderer, float lineHeight, AA
         RenderInputHighlight( renderer, lineHeight, innerBounds, font, highlightStart, highlightEnd );
     }
 
-    // Add verts for input
-    VertexList textVerts;
-    font->AddVertsForTextInBox2D( textVerts, innerBounds, lineHeight, inputString, Rgba::WHITE, 1.f, ALIGN_CENTER_LEFT );
-
-    // Add verts for FPS
-    double avgFrameSeconds = g_theProfiler->GetAverageFrameSeconds();
-    std::string avgFrameStr = GetProfileTimeString( avgFrameSeconds );
-
-    int avgFPS = RoundToInt( 1. / avgFrameSeconds );
-    std::string fpsStr = Stringf( "%dFPS (%s)", avgFPS, avgFrameStr.c_str() );
-    Rgba fpsColor = (avgFPS >= 60) ? Rgba::ORGANIC_GREEN : Rgba::ORGANIC_RED;
-
-    font->AddVertsForTextInBox2D( textVerts, fpsBounds, lineHeight, fpsStr, fpsColor );
-
     // Draw text verts
+    VertexList inputVerts;
+    font->AddVeretsForTextInBox2D( inputVerts, innerBounds, lineHeight, inputString, Rgba::WHITE, 1.f, ALIGN_CENTER_LEFT );
     renderer->BindTexture( font->GetTexturePath() );
-    renderer->DrawVertexArray( textVerts );
+    renderer->DrawVertexArray( inputVerts );
 
     double blinkRate = 1.5f * GetCurrentTimeSeconds();
     bool caretVisible = (int)blinkRate % 2;

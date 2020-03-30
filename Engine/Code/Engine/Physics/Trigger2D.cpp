@@ -5,7 +5,7 @@
 #include "Engine/Physics/RigidBody2D.hpp"
 
 
-bool Trigger2D::GetTriggerInfo( Collider2D* colliderB, bool isImpossibleToOverlap, TriggerInfo2D& outTriggerInfo ) {
+bool Trigger2D::GetTriggerInfo( Collider2D* colliderB, TriggerInfo2D& outTriggerInfo ) {
     std::map< const Collider2D*, TriggerInfo2D >::iterator infoIter = m_triggerInfos.find( colliderB );
 
     // Get existing or Create new info
@@ -17,9 +17,14 @@ bool Trigger2D::GetTriggerInfo( Collider2D* colliderB, bool isImpossibleToOverla
     }
 
     // Check if still overlapping
+    float radiusA = 0.f;
+    float radiusB = 0.f;
+
+    OBB2 boundsA = GetWorldBounds( radiusA );
+    OBB2 boundsB = colliderB->GetWorldBounds( radiusB );
     Manifold2 manifold;
 
-    if( !isImpossibleToOverlap && GetManifold( colliderB, manifold ) ) {
+    if( Manifold2::GetManifold( boundsA, radiusA, boundsB, radiusB, manifold ) ) {
         int frame = m_parent->GetPhysicsFrame();
         outTriggerInfo.latestFrame = frame;
 
@@ -83,7 +88,7 @@ void Trigger2D::FireCallbackEvent( RBChildEvent event, void* info ) {
             m_triggerInfos.erase( leavingCollider );
             break;
         } case( RBCHILD_EVENT_COLLIDE ): {
-            std::string msg = "(Trigger2D) WARNING - Invalid callback requested of type 'OnColide'";
+            std::string msg = "(Trigger2D) WARNING - Invalid callback requested of type 'Collision'";
             g_theDevConsole->PrintString( msg, DevConsole::CHANNEL_WARNING );
             return;
         } default: {
@@ -94,7 +99,7 @@ void Trigger2D::FireCallbackEvent( RBChildEvent event, void* info ) {
     }
 
     // Fire event
-    EventArgs args = m_callbackArgs;
+    EventArgs args;
     args.SetValue( PHYSICS_ARG_MY_TRIGGER,      collision.myTrigger     );
     args.SetValue( PHYSICS_ARG_OTHER_COLLIDER,  collision.otherCollider );
     args.SetValue( PHYSICS_ARG_FIRST_FRAME,     collision.firstFrame    );

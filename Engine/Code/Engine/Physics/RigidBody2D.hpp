@@ -4,20 +4,6 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/Transform2D.hpp"
 
-
-class Collider2D;
-class GPUMesh;
-class PhysicsSystem;
-class RenderContext;
-class Trigger2D;
-
-
-struct AABB2;
-struct Capsule2;
-struct Manifold2;
-struct OBB2;
-
-
 enum SimulationMode {
     SIMULATION_MODE_INVALID = -1,
 
@@ -27,14 +13,16 @@ enum SimulationMode {
     NUM_SIMULATION_MODES
 };
 
+class Collider2D;
+class GPUMesh;
+class PhysicsSystem;
+class RenderContext;
+class Trigger2D;
 
-const std::string PHYSICS_ARG_MY_COLLIDER       = "myCollider";
-const std::string PHYSICS_ARG_MY_TRIGGER        = "myTrigger";
-const std::string PHYSICS_ARG_OTHER_COLLIDER    = "otherCollider";
-const std::string PHYSICS_ARG_MANIFOLD          = "manifold";
-const std::string PHYSICS_ARG_FIRST_FRAME       = "firstFrame";
-const std::string PHYSICS_ARG_LATEST_FRAME      = "latestFrame";
-
+struct AABB2;
+struct Capsule2;
+struct Manifold2;
+struct OBB2;
 
 class RigidBody2D {
     friend class PhysicsSystem;
@@ -44,16 +32,14 @@ class RigidBody2D {
 
     void Update( float deltaSeconds );
     void UpdatePosition();
-    void UpdateBitFields();
 
-    void ClearCollisionDebug();
+    void ClearCollision();
     void CheckCollision( RigidBody2D* otherRB, bool resolveCollision );
     void CheckTriggers( RigidBody2D* otherRB );
     void UpdateGameObjectTransform();
     void RenderDebug() const;
 
     SimulationMode GetSimulationMode() const;
-    int GetChannelIndex() const;
     Rgba GetDebugColor() const;
     float GetMass() const;
     float GetRestitution() const;
@@ -68,6 +54,7 @@ class RigidBody2D {
     bool GetYConstraint() const;
     bool GetRotationConstraint() const;
     const std::vector<Collider2D*>& GetColliders() const;
+    void* GetGameObject() const;
     const Transform2D& GetTransform() const;
     int GetPhysicsFrame() const;
 
@@ -88,9 +75,8 @@ class RigidBody2D {
     void AddImpulse( const Vec2& impulse, const Vec2& contactPos, bool ignoreMass = false );
 
     void SetSimulationMode( SimulationMode mode );
-    void SetGameObjectTransform( Transform2D* gameObjectTransform );
+    void SetGameObject( void* gameObject, Transform2D* gameObjectTransform );
     void SetIgnoreObject( RigidBody2D* ignoreObject );
-    void SetChannel( const std::string& channelName );
     void SetDebugColor( const Rgba& color );
     void SetAutoDebugColor( bool autoUpdateColor );
     void SetGravityScale( const Vec2& gravityScale );
@@ -120,7 +106,6 @@ class RigidBody2D {
 
     void Destroy();
 
-
     PhysicsSystem* m_physicsSystem = nullptr;
     RenderContext* m_renderContext = nullptr;
     std::vector<Collider2D*> m_colliders;
@@ -128,10 +113,10 @@ class RigidBody2D {
 
     Transform2D m_transform = Transform2D();
     Transform2D* m_gameObjectTransform = nullptr;
+    void* m_gameObject = nullptr;
     RigidBody2D* m_ignoreObject = nullptr;
 
     SimulationMode m_simMode = SIMULATION_MODE_STATIC;
-    int m_channelIndex = 0; // "Default" channel is index zero
     bool m_isGarbage = false;
 
     Vec2 m_velocity = Vec2::ZERO;
@@ -154,11 +139,9 @@ class RigidBody2D {
     bool m_rotIsFixed = false;
 
     Rgba m_debugColor = Rgba::WHITE;
-    //bool m_autoUpdateColor = true;
-    bool m_autoUpdateColor = false;
+    bool m_autoUpdateColor = true;
 
     GPUMesh* m_mesh = nullptr;
-    uint64_t m_bitFields = 0xFFFF'FFFF'FFFF'FFFF;
 
 
     void BuildMesh();
@@ -171,10 +154,9 @@ class RigidBody2D {
     Rgba GetAutoTriggerColor( bool isColliding ) const;
     void AutoUpdateDebugColor();
 
-    bool IsImpossibleToOverlap( const RigidBody2D* otherRB ) const;
     void CompareColliders( Collider2D* myCollider, Collider2D* otherCollider, bool resolveCollision );
-    void CompareTriggerList( std::vector<Collider2D*>& colliders, bool isImpossibleToOverlap );
-    void CompareTrigger( Trigger2D* myTrigger, Collider2D* otherCollider, bool isImpossibleToOverlap );
+    void CompareTriggerList( std::vector<Collider2D*>& colliders );
+    void CompareTrigger( Trigger2D* myTrigger, Collider2D* otherCollider );
     void CorrectCollisionOverlap( RigidBody2D* otherRigidBody, const Manifold2& collision );
     void ResolveCollisionEnergy( RigidBody2D* otherRigidBody, const Manifold2& collision );
     float GetCollisionImpulseAlongNormal( RigidBody2D* otherRigidBody, const Vec2& contactPos, const Vec2& normal );

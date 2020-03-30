@@ -12,11 +12,7 @@ struct VertexPCU {
 
     VertexPCU() {};
 	explicit VertexPCU( const Vec3& position, const Rgba& color, const Vec2& uvTexCoords );
-    explicit VertexPCU( const std::string& textIn );
 
     static const BufferAttribute LAYOUT[4];
     static void CopyFromMaster( void* outArray, const std::vector<VertexMaster>& inList );
-
-    void SetFromText( const std::string& textIn );
-    std::string GetAsString() const;
 };

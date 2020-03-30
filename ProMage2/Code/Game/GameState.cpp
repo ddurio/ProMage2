@@ -56,7 +56,7 @@ void GameState::BuildLoadingMesh() {
     Vec2 cameraDimensions = cameraBounds.GetDimensions();
 
     // Create text verts
-    font->AddVertsForTextInBox2D( verts, cameraBounds, cameraDimensions.y * 0.1f, "Loading...", Rgba::BLACK );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, cameraDimensions.y * 0.1f, "Loading...", Rgba::BLACK );
     builder.AddVertexArray( verts );
 
     // Create Mesh
@@ -77,8 +77,8 @@ void GameState::BuildLoadedMesh() {
     Vec2 cameraDimensions = cameraBounds.GetDimensions();
 
     // Create text verts
-    font->AddVertsForTextInBox2D( verts, cameraBounds, cameraDimensions.y * 0.1f, "Loaded", Rgba::BLACK );
-    font->AddVertsForTextInBox2D( verts, cameraBounds, cameraDimensions.y * 0.05f, "Press Space to Continue", Rgba::BLACK, 1.f, Vec2( 0.5f, 0.25f ) );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, cameraDimensions.y * 0.1f, "Loaded", Rgba::BLACK );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, cameraDimensions.y * 0.05f, "Press Space to Continue", Rgba::BLACK, 1.f, Vec2( 0.5f, 0.25f ) );
     builder.AddVertexArray( verts );
 
     // Create Mesh

@@ -39,10 +39,7 @@ void GPUMesh::CopyVertsFromCPUMesh( const CPUMesh* mesh, const std::string& shad
     copyCB( vertList, mesh->m_verts );
 
     m_vertexBuffer->CopyCPUToGPU( vertList, numVerts, stride );
-
-    if( mesh->IsUsingIndexBuffer() ) {
-        m_indexBuffer->CopyCPUToGPU( &(mesh->m_indices[0]), mesh->GetIndexCount() );
-    }
+    m_indexBuffer->CopyCPUToGPU( &(mesh->m_indices[0]), mesh->GetIndexCount() );
 
     SetDrawCall( mesh->IsUsingIndexBuffer(), mesh->GetElementCount() );
 

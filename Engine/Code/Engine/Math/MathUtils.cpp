@@ -265,9 +265,9 @@ Vec3 GetClosestPointOnLine( const Vec3& point, const Vec3& linePointA, const Vec
 
 
 Vec2 GetClosestPointOnLineSegment( const Vec2& point, const Vec2& lineStart, const Vec2& lineEnd ) {
-    Vec2 startToPointNorm = (point - lineStart);
-    Vec2 endToPointNorm = (point - lineEnd);
-    Vec2 lineNorm = (lineEnd - lineStart);
+    Vec2 startToPointNorm = (point - lineStart).GetNormalized();
+    Vec2 endToPointNorm = (point - lineEnd).GetNormalized();
+    Vec2 lineNorm = (lineEnd - lineStart).GetNormalized();
 
     if( DotProduct( startToPointNorm, lineNorm ) < 0 ) { // Behind start of line segment
         return lineStart;
@@ -280,9 +280,9 @@ Vec2 GetClosestPointOnLineSegment( const Vec2& point, const Vec2& lineStart, con
 
 
 Vec3 GetClosestPointOnLineSegment( const Vec3& point, const Vec3& lineStart, const Vec3& lineEnd ) {
-    Vec3 startToPointNorm = (point - lineStart);
-    Vec3 endToPointNorm = (point - lineEnd);
-    Vec3 lineNorm = (lineEnd - lineStart);
+    Vec3 startToPointNorm = (point - lineStart).GetNormalized();
+    Vec3 endToPointNorm = (point - lineEnd).GetNormalized();
+    Vec3 lineNorm = (lineEnd - lineStart).GetNormalized();
 
     if( DotProduct( startToPointNorm, lineNorm ) < 0 ) { // Behind start of line segment
         return lineStart;
@@ -318,6 +318,8 @@ float GetTurnedTowards( float currentDegrees, float goalDegrees, float maxDeltaD
 
 bool DoesDiscOverlapAABB2( const Vec2& discCenter, float discRadius, const AABB2& aabb2 ) {
     Vec2 closestPoint = aabb2.GetClosestPointOnAABB2( discCenter );
+    //Vec2 displacement = (discCenter - closestPoint);
+    //float dispMagnitude = displacement.GetLength();
     float dispMagnitude = GetDistanceSquared( discCenter, closestPoint );
     return (dispMagnitude < discRadius * discRadius);
 }
@@ -927,3 +929,4 @@ UNITTEST( "Transforms", "MathUtils", 0 ) {
     UnitTest::VerifyResult( isFullyTransformed3bCorrect,  "TransformPosition3DXY( scaleXY, rotateXY, translateXY ) was incorrect", theTest );
     UnitTest::VerifyResult( isFullyTransformed3dCorrect,  "TransformPosition3DXY( scaleXY, rotateXY, translateXY ) was incorrect", theTest );
 }
+

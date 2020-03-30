@@ -285,16 +285,14 @@ UNITTEST( "Basics", "Vec3", 0 ) {
     Vec3 vec3cVec2 = Vec3( Vec2( -1.3f, 1.7f ), 0.3f );
     Vec3 vec3bStr( "1.4,-1.6,0.2" );                    // explicit string constructor
     Vec3 vec3cStr = Vec3( "-1.3f,1.7f,0.30f" );         // explicit string constructor (per C++ standard)
-    Vec3 vec3IntVec2 = Vec3( IntVec2( 3, 4 ), 5.3f );         // explicit IntVec2 construct with float Z
 
-    UnitTest::VerifyResult( sizeof( Vec3 ) == 12,                           "sizeof(Vec3) was not 12 bytes",                                                    theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3b, 1.4f, -1.6f, 0.2f ),      "Vec3( x, y, z ) : explicit constructor failed to assign x, y, and/or z",           theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3d, 1.4f, -1.6f, 0.2f ),      "Vec3( Vec3 ) : copy constructor failed to copy x, y, and/or z",                    theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3bVec2, 1.4f, -1.6f, 0.2f ),  "Vec3( Vec2, z ) : Vec2, float constructor failed to assign x, y, and/or z",        theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3cVec2, -1.3f, 1.7f, 0.3f ),  "Vec3( Vec2, z ) : Vec2, float constructor failed to assign x, y, and/or z",        theTest );
-    UnitTest::VerifyResult( vec3bStr == vec3b,                              "Vec3( string ) : string constructor failed to copy x, y, and/or z",                theTest );
-    UnitTest::VerifyResult( vec3cStr == vec3c,                              "Vec3( string ) : string constructor failed to copy x, y, and/or z",                theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3IntVec2, 3.f, 4.f, 5.3f ),   "Vec3( IntVec2, z ) : IntVec2, float constructor failed to assign x, y, and/or z",  theTest );
+    UnitTest::VerifyResult( sizeof( Vec3 ) == 12,                           "sizeof(Vec3) was not 12 bytes",                                                theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3b, 1.4f, -1.6f, 0.2f ),      "Vec3( x, y, z ) : explicit constructor failed to assign x, y, and/or z",       theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3d, 1.4f, -1.6f, 0.2f ),      "Vec3( Vec3 ) : copy constructor failed to copy x, y, and/or z",                theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3bVec2, 1.4f, -1.6f, 0.2f ),  "Vec3( Vec2, z ) : Vec2, float constructor failed to assign x, y, and/or z",    theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3cVec2, -1.3f, 1.7f, 0.3f ),  "Vec3( Vec2, z ) : Vec2, float constructor failed to assign x, y, and/or z",    theTest );
+    UnitTest::VerifyResult( vec3bStr == vec3b,                              "Vec3( string ) : string constructor failed to copy x, y, and/or z",            theTest );
+    UnitTest::VerifyResult( vec3cStr == vec3c,                              "Vec3( string ) : string constructor failed to copy x, y, and/or z",            theTest );
 
     // Static constants
     UnitTest::VerifyResult( Vec3::ZERO.x == 0.f,    "Vec3::ZERO : x is non-zero",       theTest );
@@ -330,16 +328,14 @@ UNITTEST( "Basics", "Vec3", 0 ) {
     Vec3 vec3l = vec3f * 0.2f;		// operator* (Vec3 * float)
     Vec3 vec3m = 0.2f * vec3g;		// operator* (float * Vec3)
     Vec3 vec3n = vec3f / 0.5f;		// operator/ (Vec3 / float)
-    Vec3 vec3dd = -vec3n;            // operator- (negation)
 
-    UnitTest::VerifyResult( IsMostlyEqual( vec3h,   3.0f, -0.5f, -7.f ),   "Vec3::operator+ : did not add (vec3 + vec3) correctly",                  theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3i,   7.0f, -3.0f, -14.2f ), "Vec3::operator+ : did not add (vec3 + vec3) with itself correctly",      theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3j,   4.0f, -2.5f, -7.2f ),  "Vec3::operator- : did not subtract (vec3 - vec3) correctly",             theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3k,   0.0f,  0.0f,  0.0f ),  "Vec3::operator- : did not subtract (vec3 - vec3) from itself correctly", theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3l,   0.7f, -0.3f, -1.42f ), "Vec3::operator* : did not scale (vec3 * float) correctly",               theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3m,  -0.1f,  0.2f,  0.02f ), "Vec3::operator* : did not scale (float * vec3) correctly",               theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3n,   7.0f, -3.0f, -14.2f ), "Vec3::operator/ : did not divide (vec3 / float) correctly",              theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec3dd, -7.0f,  3.0f,  14.2f ), "Vec3::operator- : did not negate (-vec3) correctly",                     theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3h, 3.0f, -0.5f, -7.f ),   "Vec3::operator+ : did not add (vec3 + vec3) correctly",                   theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3i, 7.0f, -3.0f, -14.2f ), "Vec3::operator+ : did not add (vec3 + vec3) with itself correctly",       theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3j, 4.0f, -2.5f, -7.2f ),  "Vec3::operator- : did not subtract (vec3 - vec3) correctly",              theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3k, 0.0f, 0.0f, 0.0f ),    "Vec3::operator- : did not subtract (vec3 - vec3) from itself correctly",  theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3l, 0.7f, -0.3f, -1.42f ), "Vec3::operator* : did not scale (vec3 * float) correctly",                theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3m, -0.1f, 0.2f, 0.02f ),  "Vec3::operator* : did not scale (float * vec3) correctly",                theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec3n, 7.0f, -3.0f, -14.2f ), "Vec3::operator/ : did not divide (vec3 / float) correctly",               theTest );
 
     Vec3 vec3o( 3.f, 4.f, 5.f );	// explicit constructor
     Vec3 vec3p( 3.f, 4.f, 5.f );	// explicit constructor
@@ -434,7 +430,7 @@ UNITTEST( "Methods", "Vec3", 0 ) {
 
     Vec3 vec3gNormalized = vec3g.GetNormalized();
     Vec3 vec3iNormalized = vec3i.GetNormalized();
-    Vec3 vec3zeroNormalized = Vec3::ZERO.GetNormalized();
+    Vec3 vec3zeroNormalized = Vec3::ZERO.GetNormalized(); // Currently forces into X direction?
     Vec3 vec3oneNormalized = Vec3::ONE.GetNormalized(); // sqrt(3) / 3
 
     vec3h.SetLength( 700.f );      // Reduced to -200, -300, -600

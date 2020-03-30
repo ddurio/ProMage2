@@ -18,8 +18,8 @@ struct OBB2 {
 
 
     OBB2() {};
-    explicit OBB2( const Vec2& centerIn, const Vec2& halfExtentsIn, const Vec2& rightIn );
     explicit OBB2( const AABB2& aabb2 );
+    explicit OBB2( const Vec2& centerIn, const Vec2& halfExtentsIn, const Vec2& rightIn );
     explicit OBB2( const std::string& textIn );
 
     void SetFromText( const std::string& textIn );
@@ -29,12 +29,6 @@ struct OBB2 {
 
     Vec2 GetLocalPoint( const Vec2& worldPoint ) const;
     Vec2 GetWorldPoint( const Vec2& localPoint ) const;
-
-    Vec2 GetLocalDirection( const Vec2& worldDirection ) const;
-    Vec2 GetWorldDirection( const Vec2& localDirection ) const;
-
-    AABB2 GetLocalBounds() const;
-    AABB2 GetBoundingAABB( float paddingRadius = 0.f ) const;
 
     void GetCorners( Vec2& positionTL, Vec2& positionTR, Vec2& positionBL, Vec2& positionBR ) const;
     void GetCorners( Vec2* positions ) const;

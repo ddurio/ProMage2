@@ -57,6 +57,6 @@ void UILabel::SetText( const std::string& text ) {
 
     BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
 
-    font->AddVertsForTextInBox2D( m_textVerts, worldBounds, dimensions.y, m_text, GetColor(), 1.f, ALIGN_CENTER, TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( m_textVerts, worldBounds, dimensions.y, m_text, GetColor(), 1.f, ALIGN_CENTER, TEXT_DRAW_SHRINK_TO_FIT );
     SetTexture( font->GetTexturePath() );
 }

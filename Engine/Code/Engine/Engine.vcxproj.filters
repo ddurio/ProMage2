@@ -388,15 +388,6 @@
     <ClCompile Include="Input\Keyboard.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\BufferUtils.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\ConvexHull2.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\ConvexPoly2.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec3.hpp">
@@ -776,15 +767,6 @@
     </ClInclude>
     <ClInclude Include="Async\WriteImageJob.hpp">
       <Filter>Async</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\BufferUtils.hpp">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\ConvexHull2.hpp">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\ConvexPoly2.hpp">
-      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

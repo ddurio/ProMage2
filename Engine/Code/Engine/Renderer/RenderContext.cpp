@@ -194,20 +194,7 @@ Material* RenderContext::GetOrCreateMaterial( const std::string& filePath ) {
 
     if( materialIter == m_loadedMaterials.end() ) {
         Strings splitID = SplitStringOnDelimeter( filePath, ':' );
-        Material* newMat = CreateMaterial( splitID[0].c_str() );
-
-        if( splitID.size() > 1 ) {
-            materialIter = m_loadedMaterials.find( filePath );
-
-            if( materialIter == m_loadedMaterials.end() ) {
-                std::string errMsg = Stringf( "(RenderContext) ERROR -- Requested material ID (%s) was not found in file (%s)", splitID[1].c_str(), splitID[0].c_str() );
-                ERROR_AND_DIE( errMsg.c_str() );
-            }
-
-            return materialIter->second;
-        }
-
-        return newMat;
+        return CreateMaterial( splitID[0].c_str() );
     } else {
         return materialIter->second;
     }

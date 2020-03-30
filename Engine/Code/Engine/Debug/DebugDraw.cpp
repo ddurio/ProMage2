@@ -656,7 +656,7 @@ void DebugDraw::DrawDebugText( const DebugDrawOptions& options, BitmapFont* font
 
     AABB2 quad = AABB2( Vec2( -options.length, -options.size ), Vec2( options.length, options.size ) );
     VertexList textVerts;
-    font->AddVertsForTextInBox2D( textVerts, quad, 2.f * options.size, text, Rgba::WHITE, 1.f, alignment, TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( textVerts, quad, 2.f * options.size, text, Rgba::WHITE, 1.f, alignment, TEXT_DRAW_SHRINK_TO_FIT );
 
     builder.AddVertexArray( textVerts );
     AddNewMesh( &builder, options );

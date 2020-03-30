@@ -1,6 +1,5 @@
 #include "Engine/Physics/Manifold.hpp"
 
-#include "Engine/Debug/Profiler.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Plane2.hpp"
@@ -38,125 +37,7 @@ void Manifold2::SetFromText( const std::string& manifoldStr ) {
 }
 
 
-Manifold2 Manifold2::GetInverted() const {
-    return Manifold2( -normal, penetration );
-}
-
-
-void Manifold2::Invert() {
-    normal = -normal;
-    contactPos += normal * penetration;
-}
-
-
-bool Manifold2::GetManifold( const Vec2& discCenterA, float discRadiusA, const Vec2& discCenterB, float discRadiusB, Manifold2& result ) {
-    PROFILE_FUNCTION();
-
-    Vec2 displacement = discCenterA - discCenterB;
-    float radiiSum = discRadiusA + discRadiusB;
-    float radiiSquared = radiiSum * radiiSum;
-
-    if( displacement.GetLengthSquared() >= radiiSquared ) {
-        // No collision
-        result.normal = Vec2::ZERO;
-        result.penetration = 0.f;
-        return false;
-    }
-
-    float dispLength = displacement.GetLength();
-
-    if( dispLength == 0.f ) {
-        // Perfectly on top of each other...
-        result.normal = Vec2::UP;
-        result.penetration = radiiSum;
-        return true;
-    }
-
-    result.normal = displacement / dispLength;
-    result.penetration = radiiSum - dispLength;
-
-    Vec2 dispToEdgeB = result.normal * discRadiusB;
-    result.contactPos = discCenterB + dispToEdgeB;
-    return true;
-}
-
-
-bool Manifold2::GetManifold( const AABB2& boundsA, const AABB2& boundsB, Manifold2& result ) {
-    PROFILE_FUNCTION();
-
-    float overlapMinX = std::max( boundsA.mins.x, boundsB.mins.x );
-    float overlapMaxX = std::min( boundsA.maxs.x, boundsB.maxs.x );
-    float overlapMinY = std::max( boundsA.mins.y, boundsB.mins.y );
-    float overlapMaxY = std::min( boundsA.maxs.y, boundsB.maxs.y );
-
-    bool isOverlappingX = overlapMinX < overlapMaxX;
-    bool isOverlappingY = overlapMinY < overlapMaxY;
-
-    // They are actually overlapping
-    if( isOverlappingX && isOverlappingY ) {
-        Vec2 direction = boundsA.GetCenter() - boundsB.GetCenter();
-
-        // Distances it takes to push out of
-        float pushLeft  = std::abs( boundsB.mins.x - boundsA.maxs.x );
-        float pushRight = std::abs( boundsB.maxs.x - boundsA.mins.x );
-        float pushUp    = std::abs( boundsB.maxs.y - boundsA.mins.y );
-        float pushDown  = std::abs( boundsB.mins.y - boundsA.maxs.y );
-        float distances[4] = { pushLeft, pushRight, pushUp, pushDown };
-
-        float minDistance = 99999999.f;
-        int minIndex = -1;
-
-        // Find shortest distance
-        for( int dirIndex = 0; dirIndex < 4; dirIndex++ ) {
-            float distance = distances[dirIndex];
-
-            if( distance < minDistance ) {
-                minDistance = distance;
-                minIndex = dirIndex;
-            }
-        }
-
-        // Set actual result based on minimum direction
-        Vec2 contactStart = Vec2::ZERO;
-        Vec2 contactEnd = Vec2::ZERO;
-
-        if( minIndex == 0 ) { // Left
-            result.normal = Vec2::LEFT;
-            result.penetration = pushLeft;
-
-            contactStart = Vec2( boundsB.mins.x, overlapMinY );
-            contactEnd = Vec2( boundsB.mins.x, overlapMaxY );
-        } else if( minIndex == 1 ) { // Right
-            result.normal = Vec2::RIGHT;
-            result.penetration = pushRight;
-
-            contactStart = Vec2( boundsB.maxs.x, overlapMinY );
-            contactEnd = Vec2( boundsB.maxs.x, overlapMaxY );
-        } else if( minIndex == 2 ) { // Up
-            result.normal = Vec2::UP;
-            result.penetration = pushUp;
-
-            contactStart = Vec2( overlapMinX, boundsB.maxs.y );
-            contactEnd = Vec2( overlapMaxX, boundsB.maxs.y );
-        } else if( minIndex == 3 ) { // Down
-            result.normal = Vec2::DOWN;
-            result.penetration = pushDown;
-
-            contactStart = Vec2( overlapMinX, boundsB.mins.y );
-            contactEnd = Vec2( overlapMaxX, boundsB.mins.y );
-        }
-
-        result.contactPos = (contactStart + contactEnd) * 0.5f;
-        return true;
-    }
-
-    return false;
-}
-
-
 bool Manifold2::GetManifold( const OBB2& boxA, const OBB2& boxB, Manifold2& result ) {
-    PROFILE_FUNCTION();
-
     Plane2 faces[8];
     boxA.GetFaces( faces[0], faces[1], faces[2], faces[3] );
     boxB.GetFaces( faces[4], faces[5], faces[6], faces[7] );
@@ -186,7 +67,7 @@ bool Manifold2::GetManifold( const OBB2& boxA, const OBB2& boxB, Manifold2& resu
                 }
             }
 
-            if( worstCase >= 0.f ) {
+            if( worstCase > 0.f ) {
                 return false;
             } else {
                 worstCases[faceIndex] = worstCase;
@@ -252,8 +133,6 @@ bool Manifold2::GetManifold( const OBB2& boxA, const OBB2& boxB, Manifold2& resu
 
 
 bool Manifold2::GetManifold( const OBB2& boxA, float radiusA, const OBB2& boxB, float radiusB, Manifold2& result ) {
-    PROFILE_FUNCTION();
-
     // Disc proximity check first
     if( !boxA.IsNearOBB( boxB, radiusA, radiusB ) ) {
         return false;
@@ -360,34 +239,73 @@ bool Manifold2::GetManifold( const OBB2& boxA, float radiusA, const OBB2& boxB, 
 }
 
 
-bool Manifold2::GetManifold( const AABB2& boundsA, const Vec2& discCenterB, float discRadiusB, Manifold2& result ) {
-    PROFILE_FUNCTION();
+/*
+bool Manifold2::GetManifold( const AABB2& boundsA, const AABB2& boundsB, Manifold2& result ) {
+    float overlapMinX = std::max( boundsA.mins.x, boundsB.mins.x );
+    float overlapMaxX = std::min( boundsA.maxs.x, boundsB.maxs.x );
+    float overlapMinY = std::max( boundsA.mins.y, boundsB.mins.y );
+    float overlapMaxY = std::min( boundsA.maxs.y, boundsB.maxs.y );
 
-    bool discInsideBox = boundsA.IsPointInside( discCenterB );
-    Vec2 closestPoint = boundsA.GetClosestPointOnAABB2Edge( discCenterB );
+    bool isOverlappingX = overlapMinX < overlapMaxX;
+    bool isOverlappingY = overlapMinY < overlapMaxY;
 
-    Vec2 displacement = Vec2::ZERO;
-    float dispLength = 1.f;
-    
-    if( discInsideBox ) {
-        displacement = discCenterB - closestPoint; // Direction reversed due to being on the wrong side of the box edge
-        dispLength = displacement.GetLength();
-        result.penetration = discRadiusB + dispLength; // Must move extra (add the displacement) instead of subtract
+    // They are actually overlapping
+    if( isOverlappingX && isOverlappingY ) {
+        Vec2 direction = boundsA.GetCenter() - boundsB.GetCenter();
 
-        if( dispLength == 0.f ) { // Disc Center perfectly on an edge
-            dispLength = 1.f;
+        // Distances it takes to push out of
+        float pushLeft  = std::abs( boundsB.mins.x - boundsA.maxs.x );
+        float pushRight = std::abs( boundsB.maxs.x - boundsA.mins.x );
+        float pushUp    = std::abs( boundsB.maxs.y - boundsA.mins.y );
+        float pushDown  = std::abs( boundsB.mins.y - boundsA.maxs.y );
+        float distances[4] = { pushLeft, pushRight, pushUp, pushDown };
 
-            if( discCenterB.x == boundsA.mins.x ) { // Left
-                displacement = Vec2::LEFT;
-            } else if( discCenterB.x == boundsA.maxs.x ) { // Right
-                displacement = Vec2::RIGHT;
-            } else if( discCenterB.y == boundsA.mins.y ) { // Down
-                displacement = Vec2::DOWN;
-            } else if( discCenterB.y == boundsA.maxs.y ) { // Up
-                displacement = Vec2::UP;
+        float minDistance = 99999999.f;
+        int minIndex = -1;
+
+        // Find shortest distance
+        for( int dirIndex = 0; dirIndex < 4; dirIndex++ ) {
+            float distance = distances[dirIndex];
+
+            if( distance < minDistance ) {
+                minDistance = distance;
+                minIndex = dirIndex;
             }
         }
+
+        // Set actual result based on minimum direction
+        if( minIndex == 0 ) { // Left
+            result.normal = Vec2( -1.f,  0.f );
+            result.penetration = pushLeft;
+        } else if( minIndex == 1 ) { // Right
+            result.normal = Vec2(  1.f,  0.f );
+            result.penetration = pushRight;
+        } else if( minIndex == 2 ) { // Up
+            result.normal = Vec2(  0.f,  1.f );
+            result.penetration = pushUp;
+        } else if( minIndex == 3 ) { // Down
+            result.normal = Vec2(  0.f, -1.f );
+            result.penetration = pushDown;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+
+bool Manifold2::GetManifold( const AABB2& boundsA, const Vec2& discCenterB, float discRadiusB, Manifold2& result ) {
+    bool discInsideBox = boundsA.IsPointInside( discCenterB );
+    Vec2 displacement;
+
+    if (discInsideBox ) {
+        Vec2 closestPoint = boundsA.GetClosestPointOnAABB2Edge( discCenterB );
+        displacement = discCenterB - closestPoint; // Direction reversed due to being on the wrong side of the box edge
+
+        result.penetration = discRadiusB + displacement.GetLength(); // Must also move extra (add the displacement) instead of subtract
     } else {
+        Vec2 closestPoint = boundsA.GetClosestPointOnAABB2( discCenterB );
         displacement = closestPoint - discCenterB;
         float radiusSquared = discRadiusB * discRadiusB;
 
@@ -398,69 +316,33 @@ bool Manifold2::GetManifold( const AABB2& boundsA, const Vec2& discCenterB, floa
             return false;
         }
         
-        dispLength = displacement.GetLength(); // Can't be zero here (otherwise it would have been inside AABB2)
-        result.penetration = discRadiusB - dispLength;
+        result.penetration = discRadiusB - displacement.GetLength();
     }
 
-    result.normal = displacement / dispLength; // Guarantee dispLength is not zero in if/else
-
-    Vec2 dispToEdgeB = result.normal * discRadiusB;
-    result.contactPos = discCenterB + dispToEdgeB;
+    displacement.SetLength( 1.f );
+    result.normal = displacement;
 
     return true;
 }
 
 
-bool Manifold2::GetManifold( const Vec2& discCenterA, float discRadiusA, const AABB2& boxB, float boxRadiusB, Manifold2& result ) {
-    return GetManifold( discCenterA, discRadiusA + boxRadiusB, boxB, result );
-}
+bool Manifold2::GetManifold( const Vec2& discCenterA, float discRadiusA, const Vec2& discCenterB, float discRadiusB, Manifold2& result ) {
+    Vec2 displacement = discCenterA - discCenterB;
+    float radiiSum = discRadiusA + discRadiusB;
+    float radiiSquared = radiiSum * radiiSum;
 
-
-bool Manifold2::GetManifold( const AABB2& boxA, float boxRadiusA, const Vec2& discCenterB, float discRadiusB, Manifold2& result ) {
-    return GetManifold( boxA, discCenterB, discRadiusB + boxRadiusA, result );
-}
-
-
-bool Manifold2::GetManifold( const Vec2& discCenterA, float discRadiusA, const AABB2& boundsB, Manifold2& result ) {
-    bool isOverlapping = GetManifold( boundsB, discCenterA, discRadiusA, result );
-    result.Invert();
-
-    return isOverlapping;
-}
-
-
-bool Manifold2::GetManifold( const Vec2& discCenterA, float discRadiusA, const OBB2& boxB, Manifold2& result ) {
-    // Convert to local space
-    AABB2 localBoxB = boxB.GetLocalBounds();
-    Vec2 localDiscCenterA = boxB.GetLocalPoint( discCenterA );
-
-    bool isOverlapping = GetManifold( localDiscCenterA, discRadiusA, localBoxB, result );
-
-    if( isOverlapping ) { // Convert back to world space
-        result.normal = boxB.GetWorldDirection( result.normal );
-        result.contactPos = boxB.GetWorldPoint( result.contactPos );
+    if( displacement.GetLengthSquared() >= radiiSquared ) {
+        // No collision
+        result.normal = Vec2::ZERO;
+        result.penetration = 0.f;
+        return false;
     }
 
-    return isOverlapping;
+    result.penetration = radiiSum - displacement.GetLength();
+
+    displacement.SetLength( 1.f );
+    result.normal = displacement;
+
+    return true;
 }
-
-
-bool Manifold2::GetManifold( const OBB2& boxA, const Vec2& discCenterB, float discRadiusB, Manifold2& result ) {
-    bool isOverlapping = GetManifold( discCenterB, discRadiusB, boxA, result );
-    result.Invert();
-
-    return isOverlapping;
-}
-
-
-bool Manifold2::GetManifold( const Vec2& discCenterA, float discRadiusA, const OBB2& boxB, float boxRadiusB, Manifold2& result ) {
-    return GetManifold( discCenterA, discRadiusA + boxRadiusB, boxB, result );
-}
-
-
-bool Manifold2::GetManifold( const OBB2& boxA, float boxRadiusA, const Vec2& discCenterB, float discRadiusB, Manifold2& result ) {
-    bool isOverlapping = GetManifold( discCenterB, discRadiusB, boxA, boxRadiusA, result );
-    result.Invert();
-
-    return isOverlapping;
-}
+*/

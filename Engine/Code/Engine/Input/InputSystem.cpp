@@ -1,7 +1,6 @@
 #include "Engine/Input/InputSystem.hpp"
 
 #include "Engine/Core/WindowContext.hpp"
-#include "Engine/Debug/Profiler.hpp"
 
 
 void InputSystem::Startup( WindowContext* windowContext /*= nullptr */ ) {
@@ -17,8 +16,6 @@ void InputSystem::Shutdown() {
 
 
 void InputSystem::BeginFrame() {
-    PROFILE_FUNCTION();
-
     m_keyboardAndMouse.BeginFrame();
 
     for( int i = 0; i < MAX_CONTROLLERS; i++ ) {

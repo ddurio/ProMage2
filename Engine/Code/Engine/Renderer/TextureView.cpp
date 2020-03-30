@@ -54,7 +54,7 @@ TextureView::TextureView( ID3D11Device* device, Texture* texture ) {
 
     TextureType type = texture->GetType();
 
-    if( type == TEXTURE_TYPE_IMAGE || type == TEXTURE_TYPE_IMAGE_COLOR ) {
+    if( type == TEXTURE_TYPE_IMAGE ) {
         // Shader View
         device->CreateShaderResourceView( d3dTexture, nullptr, &m_shaderView );
         GUARANTEE_OR_DIE( m_shaderView != nullptr, "(TextureView) Failed to create D3D ShaderResourceView." );

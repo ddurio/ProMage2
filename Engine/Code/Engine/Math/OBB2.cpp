@@ -76,54 +76,11 @@ Vec2 OBB2::GetWorldPoint( const Vec2& localPoint ) const {
 }
 
 
-Vec2 OBB2::GetLocalDirection( const Vec2& worldDirection ) const {
-    float localI = DotProduct( worldDirection, right );
-    float localJ = DotProduct( worldDirection, up );
-    return Vec2( localI, localJ );
-}
-
-
-Vec2 OBB2::GetWorldDirection( const Vec2& localDirection ) const {
-    return (localDirection.x * right) + (localDirection.y * up);
-}
-
-
-AABB2 OBB2::GetLocalBounds() const {
-    return AABB2( -halfExtents, halfExtents );
-}
-
-
-AABB2 OBB2::GetBoundingAABB( float paddingRadius /*= 0.f */ ) const {
-    Vec2 corners[4];
-    GetCorners( corners );
-
-    if( paddingRadius != 0.f ) {
-        Vec2 xOffset = paddingRadius * right;
-        Vec2 yOffset = paddingRadius * up;
-
-        corners[0] +=  yOffset - xOffset;    // Top Left
-        corners[1] +=  yOffset + xOffset;    // Top Right
-        corners[2] += -yOffset - xOffset;    // Bot Left
-        corners[3] += -yOffset + xOffset;    // Bot Right
-    }
-
-    AABB2 boundingBox( corners[0], corners[0] );
-    boundingBox.GrowToIncludePoint( corners[1] );
-    boundingBox.GrowToIncludePoint( corners[2] );
-    boundingBox.GrowToIncludePoint( corners[3] );
-
-    return boundingBox;
-}
-
-
 void OBB2::GetCorners( Vec2& positionTL, Vec2& positionTR, Vec2& positionBL, Vec2& positionBR ) const {
-    Vec2 xOffset = halfExtents.x * right;
-    Vec2 yOffset = halfExtents.y * up;
-
-    positionTL = center + yOffset - xOffset;
-    positionTR = center + yOffset + xOffset;
-    positionBL = center - yOffset - xOffset;
-    positionBR = center - yOffset + xOffset;
+    positionTL = center + halfExtents.y * up - halfExtents.x * right;
+    positionTR = center + halfExtents.y * up + halfExtents.x * right;
+    positionBL = center - halfExtents.y * up - halfExtents.x * right;
+    positionBR = center - halfExtents.y * up + halfExtents.x * right;
 }
 
 

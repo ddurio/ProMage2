@@ -371,51 +371,35 @@ float Vec2::NormalizeGetPreviousLength() {
 UNITTEST( "Constructors", "Vec2", 0 ) {
     Vec2 v1;								// default constructor
     Vec2 v2( 1.4f, -1.6f );					// explicit constructor
-    Vec2 v3  = Vec2( -1.3f, 1.7f );	        // explicit constructor (per C++ standard)
+    Vec2 v3 = Vec2( -1.3f, 1.7f );	        // explicit constructor (per C++ standard)
     Vec2 v4( v2 );							// copy constructor
-    Vec2 v5  = v3;							// copy constructor (per C++ standard)
+    Vec2 v5 = v3;							// copy constructor (per C++ standard)
     Vec2 v6( "-2.1,0" );                    // explicit string constructor
-    Vec2 v7  = Vec2( "6.f,-7.1f" );          // explicit string constructor (per C++ standard)
-    Vec2 v8  = Vec2( 4.2f );                 // explicit single float constructor
-    float floatArr[2] = { 123.f, 456.f };   // explicit float array constructor
-    Vec2 v9  = Vec2( floatArr );
-    Vec2 v10 = Vec2( IntVec2::NEGONE );     // explicit IntVec2 constructor
+    Vec2 v7 = Vec2( "6.f,-7.1f" );          // explicit string constructor (per C++ standard)
 
-    UnitTest::VerifyResult( sizeof( Vec2 )  ==  8,      "sizeof(Vec2) was not 8 bytes",                                     theTest );
-    UnitTest::VerifyResult( v2.x            ==  1.4f,   "Vec2( x, y ) : explicit constructor failed to assign x",           theTest );
-    UnitTest::VerifyResult( v2.y            == -1.6f,   "Vec2( x, y ) : explicit constructor failed to assign y",           theTest );
-    UnitTest::VerifyResult( v3.x            == -1.3f,   "Vec2( x, y ) : explicit constructor failed to assign x",           theTest );
-    UnitTest::VerifyResult( v3.y            ==  1.7f,   "Vec2( x, y ) : explicit constructor failed to assign y",           theTest );
-    UnitTest::VerifyResult( v4.x            ==  1.4f,   "Vec2( vec2 ) : copy constructor failed to copy x",                 theTest );
-    UnitTest::VerifyResult( v4.y            == -1.6f,   "Vec2( vec2 ) : copy constructor failed to copy y",                 theTest );
-    UnitTest::VerifyResult( v5.x            == -1.3f,   "Vec2 = vec2::operator= failed to assign x",                        theTest );
-    UnitTest::VerifyResult( v5.y            ==  1.7f,   "Vec2 = vec2::operator= failed to assign y",                        theTest );
-    UnitTest::VerifyResult( v6.x            == -2.1f,   "Vec2( string ) : explicit string constructor failed to assign x",  theTest );
-    UnitTest::VerifyResult( v6.y            ==  0.f,    "Vec2( string ) : explicit string constructor failed to assign y",  theTest );
-    UnitTest::VerifyResult( v7.x            ==  6.f,    "Vec2( string ) : string constructor failed to assign x.f",         theTest );
-    UnitTest::VerifyResult( v7.y            == -7.1f,   "Vec2( string ) : string constructor failed to assign y.f",         theTest );
-    UnitTest::VerifyResult( v8.x            ==  4.2f,   "Vec2( string ) : single float constructor failed to assign x.f",   theTest );
-    UnitTest::VerifyResult( v8.y            ==  4.2f,   "Vec2( string ) : single float constructor failed to assign y.f",   theTest );
-    UnitTest::VerifyResult( v9.x            ==  123.f,  "Vec2( string ) : float array constructor failed to assign x.f",    theTest );
-    UnitTest::VerifyResult( v9.y            ==  456.f,  "Vec2( string ) : float array constructor failed to assign y.f",    theTest );
-    UnitTest::VerifyResult( v10.x           == -1.f,    "Vec2( string ) : IntVec2 constructor failed to assign x.f",        theTest );
-    UnitTest::VerifyResult( v10.y           == -1.f,    "Vec2( string ) : IntVec2 constructor failed to assign y.f",        theTest );
+    UnitTest::VerifyResult( sizeof( Vec2 ) == 8,    "sizeof(Vec2) was not 8 bytes",                                     theTest );
+    UnitTest::VerifyResult( v2.x == 1.4f,           "Vec2( x, y ) : explicit constructor failed to assign x",           theTest );
+    UnitTest::VerifyResult( v2.y == -1.6f,          "Vec2( x, y ) : explicit constructor failed to assign y",           theTest );
+    UnitTest::VerifyResult( v4.x == 1.4f,           "Vec2( vec2 ) : copy constructor failed to copy x",                 theTest );
+    UnitTest::VerifyResult( v4.y == -1.6f,          "Vec2( vec2 ) : copy constructor failed to copy y",                 theTest );
+    UnitTest::VerifyResult( v6.x == -2.1f,          "Vec2( string ) : explicit string constructor failed to assign x",  theTest );
+    UnitTest::VerifyResult( v6.y == 0.f,            "Vec2( string ) : explicit string constructor failed to assign y",  theTest );
+    UnitTest::VerifyResult( v7.x == 6.f,            "Vec2( string ) : string constructor failed to assign x.f",         theTest );
+    UnitTest::VerifyResult( v7.y == -7.1f,          "Vec2( string ) : string constructor failed to assign y.f",         theTest );
 
     // Static constants
-    UnitTest::VerifyResult( Vec2::ZERO.x    ==  0.f,    "Vec2::ZERO : x is non-zero",       theTest );
-    UnitTest::VerifyResult( Vec2::ZERO.y    ==  0.f,    "Vec2::ZERO : y is non-zero",       theTest );
-    UnitTest::VerifyResult( Vec2::ONE.x     ==  1.f,    "Vec2::ONE : x is non-one",         theTest );
-    UnitTest::VerifyResult( Vec2::ONE.y     ==  1.f,    "Vec2::ONE : y is non-one",         theTest );
-    UnitTest::VerifyResult( Vec2::NEGONE.x  == -1.f,    "Vec2::ONE : x is non-one",         theTest );
-    UnitTest::VerifyResult( Vec2::NEGONE.y  == -1.f,    "Vec2::ONE : y is non-one",         theTest );
-    UnitTest::VerifyResult( Vec2::LEFT.x    == -1.f,    "Vec2::LEFT : x is not neg one",    theTest );
-    UnitTest::VerifyResult( Vec2::LEFT.y    ==  0.f,    "Vec2::LEFT : y is non-zero",       theTest );
-    UnitTest::VerifyResult( Vec2::RIGHT.x   ==  1.f,    "Vec2::RIGHT : x is not one",       theTest );
-    UnitTest::VerifyResult( Vec2::RIGHT.y   ==  0.f,    "Vec2::RIGHT : y is non-zero",      theTest );
-    UnitTest::VerifyResult( Vec2::UP.x      ==  0.f,    "Vec2::UP : x is non-zero",         theTest );
-    UnitTest::VerifyResult( Vec2::UP.y      ==  1.f,    "Vec2::UP : y is not one",          theTest );
-    UnitTest::VerifyResult( Vec2::DOWN.x    ==  0.f,    "Vec2::DOWN : x is non-zero",       theTest );
-    UnitTest::VerifyResult( Vec2::DOWN.y    == -1.f,    "Vec2::DOWN : y is not neg one",    theTest );
+    UnitTest::VerifyResult( Vec2::ZERO.x == 0.f,    "Vec2::ZERO : x is non-zero",       theTest );
+    UnitTest::VerifyResult( Vec2::ZERO.y == 0.f,    "Vec2::ZERO : y is non-zero",       theTest );
+    UnitTest::VerifyResult( Vec2::ONE.x == 1.f,     "Vec2::ONE : x is non-one",         theTest );
+    UnitTest::VerifyResult( Vec2::ONE.y == 1.f,     "Vec2::ONE : y is non-one",         theTest );
+    UnitTest::VerifyResult( Vec2::LEFT.x == -1.f,   "Vec2::LEFT : x is not neg one",    theTest );
+    UnitTest::VerifyResult( Vec2::LEFT.y == 0.f,    "Vec2::LEFT : y is non-zero",       theTest );
+    UnitTest::VerifyResult( Vec2::RIGHT.x == 1.f,   "Vec2::RIGHT : x is not one",       theTest );
+    UnitTest::VerifyResult( Vec2::RIGHT.y == 0.f,   "Vec2::RIGHT : y is non-zero",      theTest );
+    UnitTest::VerifyResult( Vec2::UP.x == 0.f,      "Vec2::UP : x is non-zero",         theTest );
+    UnitTest::VerifyResult( Vec2::UP.y == 1.f,      "Vec2::UP : y is not one",          theTest );
+    UnitTest::VerifyResult( Vec2::DOWN.x == 0.f,    "Vec2::DOWN : x is non-zero",       theTest );
+    UnitTest::VerifyResult( Vec2::DOWN.y == -1.f,   "Vec2::DOWN : y is not neg one",    theTest );
 }
 
 
@@ -423,18 +407,14 @@ UNITTEST( "Temporary Operators", "Vec2", 0 ) {
     Vec2 v1( 3.5f, -1.5f );					// explicit constructor from x,y
     Vec2 v2 = Vec2( -0.5f, 1.0f );	// explicit constructor from x,y
 
-    Vec2 v3  = v1 + v2;						// operator+ (vec2 + vec2)
-    Vec2 v4  = v1 + v1;						// operator+ (vec2 + vec2), added with itself
-    Vec2 v5  = v1 - v2;						// operator- (vec2 - vec2)
-    Vec2 v6  = v1 - v1;						// operator- (vec2 - vec2), subtract from itself
-    Vec2 v7  = v1 * 2.0f;					// operator* (vec2 * float)
-    Vec2 v8  = 2.0f * v1;					// operator* (float * vec2)
-    Vec2 v9  = v1 / 2.0f;					// operator/ (vec2 / float)
+    Vec2 v3 = v1 + v2;						// operator+ (vec2 + vec2)
+    Vec2 v4 = v1 + v1;						// operator+ (vec2 + vec2), added with itself
+    Vec2 v5 = v1 - v2;						// operator- (vec2 - vec2)
+    Vec2 v6 = v1 - v1;						// operator- (vec2 - vec2), subtract from itself
+    Vec2 v7 = v1 * 2.0f;					// operator* (vec2 * float)
+    Vec2 v8 = 2.0f * v1;					// operator* (float * vec2)
+    Vec2 v9 = v1 / 2.0f;					// operator/ (vec2 / float)
     Vec2 v10 = v1 * v2;                     // operator* (vec2 * vec2)
-    Vec2 v11 = v1 * IntVec2::NEGONE;        // operator* (vec2 * intVec2)
-    Vec2 v12 = v1 / v2;                     // operator/ (vec2 / vec2)
-    Vec2 v13 = v1 / IntVec2::NEGONE;        // operator/ (vec2 / intVec2)
-    Vec2 v14 = -v2;                         // operator- (self negation)
 
     UnitTest::VerifyResult( v3.x  == 3.0f,   "Vec2::operator+ : did not add x in (vec2 + vec2) correctly",                  theTest );
     UnitTest::VerifyResult( v4.x  == 7.0f,   "Vec2::operator+ : did not add x in (vec2 + vec2) with itself correctly",      theTest );
@@ -444,10 +424,6 @@ UNITTEST( "Temporary Operators", "Vec2", 0 ) {
     UnitTest::VerifyResult( v8.x  == 7.0f,   "Vec2::operator* : did not scale x in (float * vec2) correctly",               theTest );
     UnitTest::VerifyResult( v9.x  == 1.75f,  "Vec2::operator/ : did not divide x in (vec2 / float) correctly",              theTest );
     UnitTest::VerifyResult( v10.x == -1.75f, "Vec2::operator* : did not scale x in (vec2 * vec2) correctly",                theTest );
-    UnitTest::VerifyResult( v11.x == -3.5f,  "Vec2::operator* : did not scale x in (vec2 * intVec2) correctly",             theTest );
-    UnitTest::VerifyResult( v12.x == -7.f,   "Vec2::operator/ : did not scale x in (vec2 / vec2) correctly",                theTest );
-    UnitTest::VerifyResult( v13.x == -3.5f,  "Vec2::operator/ : did not scale x in (vec2 / intVec2) correctly",             theTest );
-    UnitTest::VerifyResult( v14.x ==  0.5f,  "Vec2::operator- : did not negate x in (-vec2) correctly",                     theTest );
 
     UnitTest::VerifyResult( v3.y  == -0.5f,  "Vec2::operator+ : did not add y in (vec2 + vec2) correctly",                  theTest );
     UnitTest::VerifyResult( v4.y  == -3.0f,  "Vec2::operator+ : did not add y in (vec2 + vec2) with itself correctly",      theTest );
@@ -457,10 +433,6 @@ UNITTEST( "Temporary Operators", "Vec2", 0 ) {
     UnitTest::VerifyResult( v8.y  == -3.0f,  "Vec2::operator* : did not scale y in (float * vec2) correctly",               theTest );
     UnitTest::VerifyResult( v9.y  == -0.75f, "Vec2::operator/ : did not divide y in (vec2 / float) correctly",              theTest );
     UnitTest::VerifyResult( v10.y == -1.5f,  "Vec2::operator* : did not scale y in (vec2 * vec2) correctly",                theTest );
-    UnitTest::VerifyResult( v11.y ==  1.5f,  "Vec2::operator* : did not scale y in (vec2 * intVec2) correctly",             theTest );
-    UnitTest::VerifyResult( v12.y == -1.5f,  "Vec2::operator/ : did not scale y in (vec2 / vec2) correctly",                theTest );
-    UnitTest::VerifyResult( v13.y ==  1.5f,  "Vec2::operator/ : did not scale y in (vec2 / intVec2) correctly",             theTest );
-    UnitTest::VerifyResult( v14.y == -1.f,   "Vec2::operator- : did not negate y in (-vec2) correctly",                     theTest );
 }
 
 
@@ -524,7 +496,7 @@ UNITTEST( "Assignment Operators", "Vec2", 0 ) {
 
 
 UNITTEST( "Methods", "Vec2", 0 ) {
-    // Vec2::MakeFromPolar static methods
+        // Vec2::MakeFromPolar static methods
     Vec2 a( 4.f, 3.f );
     Vec2 b( 8.f, -6.f );
     Vec2 c( -0.06f, -0.08f );
@@ -715,7 +687,6 @@ UNITTEST( "Methods", "Vec2", 0 ) {
     Vec2 bbClamped      = bb.GetClamped( 1000.f );
     Vec2 aNormalized    = a.GetNormalized();
     Vec2 cNormalized    = c.GetNormalized();
-    Vec2 zeroNormalized = Vec2::ZERO.GetNormalized();
     aa.SetLength( 20.f );
     bb.SetLength( 10.f );
     cc.ClampLength( 11.f ); // Should do nothing to cc, still (-6,8)
@@ -735,7 +706,6 @@ UNITTEST( "Methods", "Vec2", 0 ) {
     float ddClampedCorrectX = 60.f;		float ddClampedCorrectY = -80.f;
     float aNormCorrectX = 0.8f;			float aNormCorrectY = 0.6f;
     float cNormCorrectX = -0.6f;		float cNormCorrectY = -0.8f;
-    float zeroNormCorrectX = 0.f;       float zeroNormCorrectY = 0.f;
     float aCorrectX = 0.8f;				float aCorrectY = 0.6f;
     float cCorrectX = -0.6f;			float cCorrectY = -0.8f;
     float aOldLenCorrect = 5.f;
@@ -744,44 +714,20 @@ UNITTEST( "Methods", "Vec2", 0 ) {
     float bNewLenCorrect = 1.f;
     float cNewLenCorrect = 1.f;
 
-    UnitTest::VerifyResult( IsMostlyEqual( aaNotClamped,    aaNoClampCorrectX, aaNoClampCorrectY ),   "Vec2::GetClamped() clamped when it shouldn't have",          theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( aaClamped,       aaClampedCorrectX, aaClampedCorrectY ),   "Vec2::GetClamped() did not clamp correctly",                 theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( bbNotClamped,    bbNoClampCorrectX, bbNoClampCorrectY ),   "Vec2::GetClamped() clamped when it shouldn't have",          theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( bbClamped,       bbClampedCorrectX, bbClampedCorrectY ),   "Vec2::GetClamped() did not clamp correctly",                 theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( cc,              ccNoClampCorrectX, ccNoClampCorrectY ),   "Vec2::GetClamped() clamped when it shouldn't have",          theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( dd,              ddClampedCorrectX, ddClampedCorrectY ),   "Vec2::GetClamped() did not clamp correctly",                 theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( aaNotClamped,  aaNoClampCorrectX, aaNoClampCorrectY ), "Vec2::GetClamped() clamped when it shouldn't have",          theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( aaClamped,     aaClampedCorrectX, aaClampedCorrectY ), "Vec2::GetClamped() did not clamp correctly",                 theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( bbNotClamped,  bbNoClampCorrectX, bbNoClampCorrectY ), "Vec2::GetClamped() clamped when it shouldn't have",          theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( bbClamped,     bbClampedCorrectX, bbClampedCorrectY ), "Vec2::GetClamped() did not clamp correctly",                 theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( cc,            ccNoClampCorrectX, ccNoClampCorrectY ), "Vec2::GetClamped() clamped when it shouldn't have",          theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( dd,            ddClampedCorrectX, ddClampedCorrectY ), "Vec2::GetClamped() did not clamp correctly",                 theTest );
 
-    UnitTest::VerifyResult( IsMostlyEqual( aNormalized,     aNormCorrectX,     aNormCorrectY ),      "Vec2::GetNormalized() was incorrect",                           theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( cNormalized,     cNormCorrectX,     cNormCorrectY ),      "Vec2::GetNormalized() was incorrect",                           theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( zeroNormalized,  zeroNormCorrectX,  zeroNormCorrectY ),   "Vec2::ZERO.GetNormalized() was incorrect",                           theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( c,               cCorrectX,         cCorrectY ),          "Vec2::Normalize() did not normalize correctly",                 theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( a,               aCorrectX,         aCorrectY ),          "Vec2::NormalizeAndGetLength() did not normalize correctly",     theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( aOldLength,      aOldLenCorrect ),                         "Vec2::NormalizeAndGetLength() did not return previous length",  theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( bOldLength,      bOldLenCorrect ),                         "Vec2::NormalizeAndGetLength() did not return previous length",  theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( aNewLength,      aNewLenCorrect ),                         "Vec2::NormalizeAndGetLength() failed to make vec2 length=1",    theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( bNewLength,      bNewLenCorrect ),                         "Vec2::NormalizeAndGetLength() failed to make vec2 length=1",    theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( cNewLength,      cNewLenCorrect ),                         "Vec2::Normalize() failed to make vec2 length=1",                theTest );
-}
-
-
-UNITTEST( "ImGui", "Vec2", 0 ) {
-    ImVec2 imV1 = ImVec2( 1.23f, 4.56f );
-    Vec2 v1 = Vec2( imV1 );
-    Vec2 v2 = 3.f * v1;
-    v2 = v2 - imV1;
-    Vec2 v3 = v2;
-    v3 -= imV1;
-    Vec2 v4 = imV1 - v2;
-    ImVec2 imV2 = v4.GetAsImGui();
-
-    UnitTest::VerifyResult( v1.x            ==    1.23f,        "Vec2( ImVec2 ) : explicit constructor failed to assign x", theTest );
-    UnitTest::VerifyResult( v1.y            ==    4.56f,        "Vec2( ImVec2 ) : explicit constructor failed to assign y", theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( v2.x,  2.46f ),      "Vec2::operator- (vec2 - imVec2) failed to subtract x",     theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( v2.y,  9.12f ),      "Vec2::operator- (vec2 - imVec2) failed to subtract y",     theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( v3.x,  1.23f ),      "Vec2::operator-= (vec2 -= imVec2) failed to subtract x",   theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( v3.y,  4.56f ),      "Vec2::operator-= (vec2 -= imVec2) failed to subtract y",   theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( v4.x, -1.23f ),      "Vec2::operator- (imVec2 - vec2) failed to subtract x",     theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( v4.y, -4.56f ),      "Vec2::operator- (imVec2 - vec2) failed to subtract y",     theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( imV2.x, -1.23f ),    "Vec2::GetAsImGui failed to assign x",                      theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( imV2.y, -4.56f ),    "Vec2::GetAsImGui failed to assign y",                      theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( aNormalized,   aNormCorrectX,      aNormCorrectY ), "Vec2::GetNormalized() was incorrect",                           theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( cNormalized,   cNormCorrectX,      cNormCorrectY ), "Vec2::GetNormalized() was incorrect",                           theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( c,             cCorrectX,          cCorrectY ),     "Vec2::Normalize() did not normalize correctly",                 theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( a,             aCorrectX,          aCorrectY ),     "Vec2::NormalizeAndGetLength() did not normalize correctly",     theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( aOldLength,    aOldLenCorrect ),                    "Vec2::NormalizeAndGetLength() did not return previous length",  theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( bOldLength,    bOldLenCorrect ),                    "Vec2::NormalizeAndGetLength() did not return previous length",  theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( aNewLength,    aNewLenCorrect ),                    "Vec2::NormalizeAndGetLength() failed to make vec2 length=1",    theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( bNewLength,    bNewLenCorrect ),                    "Vec2::NormalizeAndGetLength() failed to make vec2 length=1",    theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( cNewLength,    cNewLenCorrect ),                    "Vec2::Normalize() failed to make vec2 length=1",                theTest );
 }

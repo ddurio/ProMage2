@@ -114,7 +114,7 @@ void Actor::Startup() {
         m_rigidBody->SetSimulationMode( SIMULATION_MODE_DYNAMIC );
     }
 
-    m_rigidBody->SetGameObjectTransform( &m_transform );
+    m_rigidBody->SetGameObject( this, &m_transform );
     m_rigidBody->AddCollider( Vec2::ZERO, m_physicsRadius );
 }
 

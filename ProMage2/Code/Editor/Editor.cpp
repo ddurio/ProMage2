@@ -303,7 +303,7 @@ void Editor::UpdateLoading() {
 
     // Create text verts
     m_loadingVerts.clear();
-    font->AddVertsForTextInBox2D(
+    font->AddVeretsForTextInBox2D(
         m_loadingVerts,
         cameraBounds,
         cameraDimensions.y * 0.1f,

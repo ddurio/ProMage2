@@ -28,7 +28,7 @@ class BitmapFont {
     std::string GetTexturePath() const;
 
     void AddVertsForText2D( VertexList& textVerts, const Vec2& textPositionMins, float cellHeight, const std::string& text, const Rgba& tint = Rgba::WHITE, float cellAspect = 1.f, int maxGlyphs = 9999999 ) const;
-    void AddVertsForTextInBox2D( VertexList& textVerts, const AABB2& boxBounds, float cellHeight, const std::string& text, const Rgba& tint = Rgba::WHITE, float cellAspect = 1.f, const Vec2& alignment = ALIGN_CENTER, TextDrawMode mode = TEXT_DRAW_OVERRUN, int maxGlyphs = 9999999 ) const;
+    void AddVeretsForTextInBox2D( VertexList& textVerts, const AABB2& boxBounds, float cellHeight, const std::string& text, const Rgba& tint = Rgba::WHITE, float cellAspect = 1.f, const Vec2& alignment = ALIGN_CENTER, TextDrawMode mode = TEXT_DRAW_OVERRUN, int maxGlyphs = 9999999 ) const;
 
     float GetGlyphAspect( int glyphUnicode ) const;
 

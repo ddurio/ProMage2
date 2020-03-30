@@ -183,9 +183,9 @@ void CreditsController::BuildTitleMesh() {
     BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
 
     VertexList verts;
-    font->AddVertsForTextInBox2D( verts, cameraBounds, 1.5f, "Adventure",                    Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.75f ), TEXT_DRAW_SHRINK_TO_FIT );
-    font->AddVertsForTextInBox2D( verts, cameraBounds, .7f,  "Danny Durio",                  Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.5f  ), TEXT_DRAW_SHRINK_TO_FIT );
-    font->AddVertsForTextInBox2D( verts, cameraBounds, .5f,  "SMU Guildhall C28 Programmer", Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.4f  ), TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, 1.5f, "Adventure",                    Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.75f ), TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, .7f,  "Danny Durio",                  Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.5f  ), TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, .5f,  "SMU Guildhall C28 Programmer", Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.4f  ), TEXT_DRAW_SHRINK_TO_FIT );
     builder.AddVertexArray( verts );
 
     CLEAR_POINTER( m_titleMesh );
@@ -201,11 +201,11 @@ void CreditsController::BuildThanksMesh() {
     BitmapFont* font = g_theRenderer->GetOrCreateBitmapFont( FONT_NAME_SQUIRREL );
 
     VertexList verts;
-    font->AddVertsForTextInBox2D( verts, cameraBounds, 1.0f, "Special Thanks",     Rgba::BLACK,        1.f, Vec2( 0.5f, 0.75f ), TEXT_DRAW_SHRINK_TO_FIT );
-    font->AddVertsForTextInBox2D( verts, cameraBounds, 0.6f, "Jackie Durio",       Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.6f ),  TEXT_DRAW_SHRINK_TO_FIT );
-    font->AddVertsForTextInBox2D( verts, cameraBounds, 0.6f, "Squirrel Eiserloh",  Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.5f ),  TEXT_DRAW_SHRINK_TO_FIT );
-    font->AddVertsForTextInBox2D( verts, cameraBounds, 0.6f, "Chris Forseth",      Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.4f ),  TEXT_DRAW_SHRINK_TO_FIT );
-    font->AddVertsForTextInBox2D( verts, cameraBounds, 0.6f, "SMU Guildhall C28",  Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.3f ),   TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, 1.0f, "Special Thanks",     Rgba::BLACK,        1.f, Vec2( 0.5f, 0.75f ), TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, 0.6f, "Jackie Durio",       Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.6f ),  TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, 0.6f, "Squirrel Eiserloh",  Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.5f ),  TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, 0.6f, "Chris Forseth",      Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.4f ),  TEXT_DRAW_SHRINK_TO_FIT );
+    font->AddVeretsForTextInBox2D( verts, cameraBounds, 0.6f, "SMU Guildhall C28",  Rgba::ORGANIC_BLUE, 1.f, Vec2( 0.5f, 0.3f ),   TEXT_DRAW_SHRINK_TO_FIT );
     builder.AddVertexArray( verts );
 
     CLEAR_POINTER( m_thanksMesh );

@@ -22,8 +22,8 @@ uint64_t ConvertSecondsToHPC( double seconds ) {
 }
 
 
-double ConvertHPCTOSeconds( uint64_t numHPC ) {
-    return (double)numHPC * g_secondsPerHPC;
+double ConvertHPCTOSeconds( uint64_t hpc ) {
+    return (double)hpc * g_secondsPerHPC;
 }
 
 
@@ -38,12 +38,6 @@ double GetCurrentTimeSeconds() {
 	//double currentSeconds = static_cast< double >( elapsedHPCSinceInitialTime ) * g_secondsPerHPC;
     double currentSeconds = ConvertHPCTOSeconds( elapsedHPCSinceInitialTime );
 	return currentSeconds;
-}
-
-
-double GetCurrentSystemTimeSeconds() {
-    uint64_t currentHPC = GetCurrentHPC();
-    return ConvertHPCTOSeconds( currentHPC );
 }
 
 

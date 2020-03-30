@@ -1,53 +1,12 @@
 #include "Engine/Physics/RigidBodyChild2D.hpp"
 
-#include "Engine/Debug/Profiler.hpp"
 #include "Engine/Math/Capsule2.hpp"
-#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Matrix44.hpp"
 #include "Engine/Math/Transform2D.hpp"
-#include "Engine/Physics/Manifold.hpp"
-#include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Physics/RigidBody2D.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
-
-
-void RigidBodyChild2D::UpdateBitFields( PhysicsSystem* physSystem ) {
-    Vec2 bitFieldScale = physSystem->GetBitFieldScale();
-    Vec2 bitFieldOffset = physSystem->GetBitFieldScaledOffset();
-
-    // Make world bounds
-    float radius = 0.f;
-    OBB2 worldBounds = GetWorldBounds( radius );
-    AABB2 worldBox = worldBounds.GetBoundingAABB( radius );
-
-    // Scale to bitfield bounds
-    worldBox.mins.x *= bitFieldScale.x;
-    worldBox.mins.y *= bitFieldScale.y;
-
-    worldBox.maxs.x *= bitFieldScale.x;
-    worldBox.maxs.y *= bitFieldScale.y;
-
-    // Translate origin
-    worldBox.Translate( bitFieldOffset );
-
-    // Set bits
-    int minX = Max( (int)worldBox.mins.x, 0 );
-    int maxX = Min( (int)worldBox.maxs.x, 7 );
-
-    int minY = Max( (int)worldBox.mins.y, 0 );
-    int maxY = Min( (int)worldBox.maxs.y, 7 );
-
-    m_bitFields = 0x0;
-
-    for( int yIndex = minY; yIndex <= maxY; yIndex++ ) {
-        for( int xIndex = minX; xIndex <= maxX; xIndex++ ) {
-            int fieldIndex = (8 * yIndex) + xIndex;
-            m_bitFields |= (1ULL << fieldIndex);
-        }
-    }
-}
 
 
 void RigidBodyChild2D::RenderDebug() const {
@@ -68,11 +27,6 @@ void RigidBodyChild2D::SetCallbackEvent( RBChildEvent event, const std::string& 
     if( event >= 0 && event < NUM_RBCHILD_EVENTS ) {
         m_callbackEvents[event] = callbackEvent;
     }
-}
-
-
-void RigidBodyChild2D::SetCallbackArguments( const EventArgs& args ) {
-    m_callbackArgs = args; // Does not overwrite existing args
 }
 
 
@@ -106,8 +60,8 @@ RigidBody2D* RigidBodyChild2D::GetParent() const {
 }
 
 
-const EventArgs& RigidBodyChild2D::GetCallbackArgumens() const {
-    return m_callbackArgs;
+void* RigidBodyChild2D::GetGameObject() const {
+    return m_parent->GetGameObject();
 }
 
 
@@ -117,9 +71,7 @@ RigidBodyChild2D::RigidBodyChild2D( RenderContext* renderContext, RigidBody2D* p
     m_parentTransform( parent->GetTransform() ),
     m_radius( radius ),
     m_debugColor( debugColor ) {
-    bool isStatic = (m_parent->GetSimulationMode() == SIMULATION_MODE_STATIC);
-    bool rotationIsFixed = m_parent->GetRotationConstraint();
-    m_shape = (isStatic || rotationIsFixed) ? RBCHILD_SHAPE_AABB2 : RBCHILD_SHAPE_OBB2;
+    m_shape = RBCHILD_SHAPE_AABB2;
 
     m_localBounds = OBB2( box );
     BuildMesh();
@@ -172,65 +124,6 @@ RigidBodyChild2D::~RigidBodyChild2D() {
 }
 
 
-bool RigidBodyChild2D::GetManifold( const RigidBodyChild2D* otherRBChild, Manifold2& out_manifold ) const {
-    PROFILE_FUNCTION();
-
-    float myRadius = m_radius;
-    OBB2 myWorldBounds = GetWorldBounds( myRadius );
-
-    if( m_shape == RBCHILD_SHAPE_DISC ) {
-        Vec2 discCenterA = myWorldBounds.center;
-        float discRadiusA = myRadius;
-    
-        float otherRadius = otherRBChild->m_radius;
-        OBB2 otherWorldBounds = otherRBChild->GetWorldBounds( otherRadius );
-
-        if( otherRBChild->m_shape == RBCHILD_SHAPE_DISC ) {            // Disc v Disc
-            return Manifold2::GetManifold( discCenterA, discRadiusA, otherWorldBounds.center, otherRadius, out_manifold );
-
-        } else if( otherRBChild->m_shape == RBCHILD_SHAPE_AABB2 ) {    // Disc v padded AABB2
-            Vec2 corners[4];
-            otherWorldBounds.GetCorners( corners );
-            AABB2 otherWorldAABB = AABB2( corners[2], corners[1] );
-
-            return Manifold2::GetManifold( discCenterA, discRadiusA, otherWorldAABB, otherRadius, out_manifold );
-
-        } else {                                                    // Disc v padded OBB2
-            return Manifold2::GetManifold( discCenterA, discRadiusA, otherWorldBounds, otherRadius, out_manifold );
-        }
-
-    } else if( m_shape == RBCHILD_SHAPE_AABB2 ) {
-        Vec2 corners[4];
-        myWorldBounds.GetCorners( corners );
-        AABB2 myWorldAABB = AABB2( corners[2], corners[1] );
-
-        float otherRadius = otherRBChild->m_radius;
-        OBB2 otherWorldBounds = otherRBChild->GetWorldBounds( otherRadius );
-
-        if( otherRBChild->m_shape == RBCHILD_SHAPE_DISC ) {            // padded AABB2 v Disc
-            return Manifold2::GetManifold( myWorldAABB, myRadius, otherWorldBounds.center, otherRadius, out_manifold );
-        
-        } else if( otherRBChild->m_shape == RBCHILD_SHAPE_AABB2 &&     // AABB2 v AABB2 (no padding)
-                   myRadius == 0.f && otherRadius == 0.f )
-        {
-            otherWorldBounds.GetCorners( corners );
-            AABB2 otherWorldAABB = AABB2( corners[2], corners[1] );
-
-            return Manifold2::GetManifold( myWorldAABB, otherWorldAABB, out_manifold );
-
-        } else {                                                    // padded OBB2 v padded OBB2
-            return Manifold2::GetManifold( myWorldBounds, myRadius, otherWorldBounds, otherRadius, out_manifold );
-        }
-
-    } else {
-        float otherRadius = otherRBChild->m_radius;
-        OBB2 otherWorldBounds = otherRBChild->GetWorldBounds( otherRadius );
-
-        return Manifold2::GetManifold( myWorldBounds, myRadius, otherWorldBounds, otherRadius, out_manifold );
-    }
-}
-
-
 void RigidBodyChild2D::BuildMesh() {
     if( m_mesh != nullptr ) {
         delete m_mesh;
@@ -251,7 +144,7 @@ void RigidBodyChild2D::BuildMesh() {
         } case( RBCHILD_SHAPE_AABB2 ): { // AABB is the same as OBB, intentional fall-through
         } case( RBCHILD_SHAPE_OBB2 ): { // Defaults to OBB, intentional fall-through
         } default: {
-            builder.AddQuadEdge( m_localBounds, lineThickness );
+            BuildBox( builder, lineThickness );
             break;
         }
     }
@@ -264,17 +157,36 @@ void RigidBodyChild2D::BuildMesh() {
 void RigidBodyChild2D::BuildCapsule( CPUMesh& builder, float lineThickness ) {
     Vec2 corners[4];
     m_localBounds.GetCorners( corners[0], corners[1], corners[2], corners[3] );
-    const Vec2& start = corners[0];
-    const Vec2& end = corners[1];
+    Vec2& start = corners[0];
+    Vec2& end = corners[1];
 
-    Capsule2 capsule = Capsule2( start, end, m_radius );
-    builder.AddCapsuleEdge( capsule, lineThickness );
+    if( start == end ) {
+        builder.AddRing( m_localBounds.center, m_radius - lineThickness, m_radius );
+        builder.AddLine( m_localBounds.center, m_localBounds.center + Vec2( m_radius - lineThickness, 0.f ), lineThickness );
+    } else {
+        Capsule2 capsule = Capsule2( start, end, m_radius );
+        builder.AddCapsuleEdge( capsule, lineThickness );
+    }
 }
 
 
 void RigidBodyChild2D::BuildDisc( CPUMesh& builder, float lineThickness ) {
     builder.AddRing( m_localBounds.center, m_radius - lineThickness, m_radius );
-    builder.AddLine( m_localBounds.center, m_localBounds.center + Vec2( m_radius - lineThickness, 0.f ), lineThickness );
+    builder.AddLine( m_localBounds.center, m_localBounds.center + Vec2( m_radius, 0.f ), lineThickness );
+}
+
+
+void RigidBodyChild2D::BuildBox( CPUMesh& builder, float lineThickness ) {
+    Vec2 botLeft;
+    Vec2 botRight;
+    Vec2 topLeft;
+    Vec2 topRight;
+    m_localBounds.GetCorners( topLeft, topRight, botLeft, botRight );
+
+    builder.AddLine( topLeft, topRight, lineThickness );
+    builder.AddLine( topRight, botRight, lineThickness );
+    builder.AddLine( botRight, botLeft, lineThickness );
+    builder.AddLine( botLeft, topLeft, lineThickness );
 }
 
 

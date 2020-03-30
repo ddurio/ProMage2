@@ -4,12 +4,10 @@
 #include "fstream"
 
 
-// Deprecate
 bool OpenFileForRead( const char* filename, std::ifstream& out_fileHandle ) {
     std::filesystem::path filePath( filename );
     filePath.remove_filename();
 
-    // This makes no sense.. if the directories don't exist, there's no way the file does..
     if( std::filesystem::create_directories( filePath ) ) { // Will create directories if they don't exist
         ERROR_RECOVERABLE( Stringf( "(FileUtils) Failed to create directories for file %s", filename ) );
         return false;
@@ -105,46 +103,5 @@ bool WriteToFile( std::ofstream& fileHandle, const char* buffer, size_t size ) {
 
 bool WriteToFile( std::ofstream& fileHandle, const std::string& content ) {
     return WriteToFile( fileHandle, content.c_str(), content.size() );
-}
-
-
-// Migrate to these
-
-// No guarantee the out buffer remains unchanged if this function fails
-bool ReadFromFile( const char* fileName, Buffer& out_fileBuffer ) {
-    FILE* fileHandle = nullptr;
-    errno_t openResult = fopen_s( &fileHandle, fileName, "rb" );
-
-    if( openResult != 0 || fileHandle == nullptr ) {
-        return false;
-    }
-
-    fseek( fileHandle, 0, SEEK_END );
-    long int numBytesInFile = ftell( fileHandle );
-    rewind( fileHandle );
-
-    out_fileBuffer.clear();
-    out_fileBuffer.resize( numBytesInFile, 0x00 );
-
-    size_t numBytesRead = fread( out_fileBuffer.data(), sizeof( unsigned char ), numBytesInFile, fileHandle );
-    fclose( fileHandle );
-
-    return (numBytesRead == numBytesInFile);
-}
-
-
-bool WriteToFile( const char* fileName, const Buffer& content ) {
-    FILE* fileHandle = nullptr;
-    errno_t openResult = fopen_s( &fileHandle, fileName, "wb" );
-
-    if( openResult != 0 || fileHandle == nullptr ) {
-        return false;
-    }
-
-    size_t numBytesInBuffer = content.size();
-    size_t numBytesWritten = fwrite( content.data(), sizeof( unsigned char ), numBytesInBuffer, fileHandle );
-    fclose( fileHandle );
-
-    return (numBytesWritten == numBytesInBuffer);
 }
 

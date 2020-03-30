@@ -4,21 +4,20 @@
 #include "Engine/Math/MathUtils.hpp"
 
 
-const Rgba Rgba::BLACK              = Rgba( 0.f,   0.f,    0.f,    1.f );
-const Rgba Rgba::BLUE               = Rgba( 02,    34,     221         ); // equates to #0222DD
-const Rgba Rgba::BROWN              = Rgba( 70,    35,     25          );
-const Rgba Rgba::CLEAR              = Rgba( 1.f,   1.f,    1.f,    0.f );
-const Rgba Rgba::CLEAR_BLACK        = Rgba( 0.f,   0.f,    0.f,    0.f );
-const Rgba Rgba::CYAN               = Rgba( 0.f,   1.f,    1.f,    1.f );
-const Rgba Rgba::FLAT               = Rgba( 0.5f,  0.5f,   1.f,    1.f );
-const Rgba Rgba::GRAY               = Rgba( 0.2f,  0.2f,   0.2f,   1.f );
-const Rgba Rgba::GREEN              = Rgba( 0.f,   0.75f,  0.f,    1.f );
-const Rgba Rgba::MAGENTA            = Rgba( 1.f,   0.f,    1.f,    1.f );
-const Rgba Rgba::ORANGE             = Rgba( 0.9f,  0.6f,   0.1f,   1.f );
-const Rgba Rgba::PURPLE             = Rgba( 0.75f, 0.09f,  0.88f,  1.f );
-const Rgba Rgba::RED                = Rgba( 1.f,   0.f,    0.f,    1.f );
-const Rgba Rgba::WHITE              = Rgba( 1.f,   1.f,    1.f,    1.f );
-const Rgba Rgba::YELLOW             = Rgba( 1.f,   1.f,    0.f,    1.f );
+const Rgba Rgba::BLACK       = Rgba( 0.f,   0.f,    0.f,    1.f );
+const Rgba Rgba::BLUE        = Rgba( 02,    34,     221          ); // equates to #0222DD
+const Rgba Rgba::CLEAR       = Rgba( 1.f,   1.f,    1.f,    0.f );
+const Rgba Rgba::CLEAR_BLACK = Rgba( 0.f,   0.f,    0.f,    0.f );
+const Rgba Rgba::CYAN        = Rgba( 0.f,   1.f,    1.f,    1.f );
+const Rgba Rgba::FLAT        = Rgba( 0.5f,  0.5f,   1.f,    1.f );
+const Rgba Rgba::GRAY        = Rgba( 0.2f,  0.2f,   0.2f,   1.f );
+const Rgba Rgba::GREEN       = Rgba( 0.f,   0.75f,  0.f,    1.f );
+const Rgba Rgba::MAGENTA     = Rgba( 1.f,   0.f,    1.f,    1.f );
+const Rgba Rgba::ORANGE      = Rgba( 0.9f,  0.6f,   0.1f,   1.f );
+const Rgba Rgba::PURPLE      = Rgba( 0.75f, 0.09f,  0.88f,  1.f );
+const Rgba Rgba::RED         = Rgba( 1.f,   0.f,    0.f,    1.f );
+const Rgba Rgba::WHITE       = Rgba( 1.f,   1.f,    1.f,    1.f );
+const Rgba Rgba::YELLOW      = Rgba( 1.f,   1.f,    0.f,    1.f );
 
 const Rgba Rgba::ORGANIC_BLUE       = Rgba(  22,   157,    255  );
 const Rgba Rgba::ORGANIC_BROWN      = Rgba( 133,    84,     57  );
@@ -91,14 +90,6 @@ Rgba::Rgba( int initialR, int initialG, int initialB, int initialA /*= 255 */ ) 
 }
 
 
-Rgba::Rgba( const ImVec4& imGuiVec4 ) :
-    r( imGuiVec4.x ),
-    g( imGuiVec4.y ),
-    b( imGuiVec4.z ),
-    a( imGuiVec4.w ) {
-}
-
-
 bool Rgba::operator==( const Rgba& compare ) const {
     return (compare.r == r && compare.g == g && compare.b == b && compare.a == a);
 }
@@ -126,7 +117,7 @@ void Rgba::GetAsArray( float floatArray[4] ) const {
 }
 
 
-void Rgba::GetAsBytes( unsigned char byteArray[4] ) const {
+void Rgba::GetAsBytes( unsigned char byateArray[4] ) const {
     float floatArray[4];
     GetAsArray( floatArray );
 
@@ -135,10 +126,10 @@ void Rgba::GetAsBytes( unsigned char byteArray[4] ) const {
     float bByte = floatArray[2] * 255.f;
     float aByte = floatArray[3] * 255.f;
 
-    byteArray[0] = (unsigned char)rByte;
-    byteArray[1] = (unsigned char)gByte;
-    byteArray[2] = (unsigned char)bByte;
-    byteArray[3] = (unsigned char)aByte;
+    byateArray[0] = (unsigned char)rByte;
+    byateArray[1] = (unsigned char)gByte;
+    byateArray[2] = (unsigned char)bByte;
+    byateArray[3] = (unsigned char)aByte;
 }
 
 

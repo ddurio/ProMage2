@@ -83,9 +83,7 @@ class ProfilerSystem {
     ProfilerNode* ProfilePush( const char* label );
     void ProfilePop();
 
-    double GetAverageFrameSeconds();
     float GetProfileTime( const char* label, std::thread::id threadID = std::this_thread::get_id() );
-    bool IsTakingInput() const;
 
 
     private:

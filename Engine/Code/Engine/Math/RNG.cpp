@@ -1,6 +1,5 @@
 #include "Engine/Math/RNG.hpp"
 
-#include "Engine/Core/Time.hpp"
 #include "Engine/Debug/UnitTests.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/FloatRange.hpp"
@@ -33,12 +32,6 @@ unsigned int RNG::GetPosition() const {
 
 void RNG::SetSeed( unsigned int seed ) {
     m_seed = seed;
-}
-
-
-void RNG::SetRandomSeed() {
-    float currentSeconds = (float)GetCurrentSystemTimeSeconds();
-    SetSeed( (unsigned int)currentSeconds );
 }
 
 

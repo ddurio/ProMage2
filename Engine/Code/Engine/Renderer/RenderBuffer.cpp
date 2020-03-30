@@ -91,6 +91,8 @@ bool RenderBuffer::Create( const void* initialData, size_t bufferSize, size_t el
         bufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
     }
 
+    // DFS1FIXME: Support structured buffers (Summer Semester)
+
     // Default to nullptr, changed if initial data provided
     D3D11_SUBRESOURCE_DATA* dataPointer = nullptr;
 

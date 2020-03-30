@@ -18,14 +18,13 @@ struct Rgba {
 	explicit Rgba( float r, float g, float b, float a = 1.f );
     explicit Rgba( int initialR, int initialG, int initialB, int initialA = 255 );
     explicit Rgba( const std::string& initialValues );
-    explicit Rgba( const ImVec4& imGuiVec4 );
 
 	bool operator==( const Rgba& compare ) const;				// vec2 == vec2
 	bool operator!=( const Rgba& compare ) const;				// vec2 != vec2
 
     const std::string GetAsString() const;
     void GetAsArray( float floatArray[4] ) const;
-    void GetAsBytes( unsigned char byteArray[4] ) const;
+    void GetAsBytes( unsigned char byateArray[4] ) const;
     ImVec4 GetAsImGui() const;
 
     void SetFromText( const std::string& valuesAsText );
@@ -37,7 +36,6 @@ struct Rgba {
 
     static const Rgba BLACK;
     static const Rgba BLUE;
-    static const Rgba BROWN;
     static const Rgba CLEAR;
     static const Rgba CLEAR_BLACK;
     static const Rgba CYAN;

@@ -193,16 +193,13 @@ UNITTEST( "Basics", "Vec4", 0 ) {
     Vec4 vec4l = vec4f * 0.2f;		// operator* (Vec4 * float)
     Vec4 vec4m = 0.2f * vec4g;		// operator* (float * Vec4)
     Vec4 vec4n = vec4f / 0.5f;		// operator/ (Vec4 / float)
-    Vec4 vec4dd = -vec4n;           // operator- (-Vec4), negation
 
-    UnitTest::VerifyResult( IsMostlyEqual( vec4h,   3.0f, -0.5f, -7.f,    3.4f ),   "Vec4::operator+ : did not add (vec4 + vec4) correctly",                    theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec4i,   7.0f, -3.0f, -14.2f,  0.6f ),   "Vec4::operator+ : did not add (vec4 + vec4) with itself correctly",        theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec4j,   4.0f, -2.5f, -7.2f,  -2.8f ),   "Vec4::operator- : did not subtract (vec4 - vec4) correctly",               theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec4k,   0.0f,  0.0f,  0.0f,   0.0f ),   "Vec4::operator- : did not subtract (vec4 - vec4) from itself correctly",   theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec4l,   0.7f, -0.3f, -1.42f,  0.06f ),  "Vec4::operator* : did not scale (vec4 * float) correctly",                 theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec4m,  -0.1f,  0.2f,  0.02f,  0.62f ),  "Vec4::operator* : did not scale (float * vec4) correctly",                 theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec4n,   7.0f, -3.0f, -14.2f,  0.6f ),   "Vec4::operator/ : did not divide (vec4 / float) correctly",                theTest );
-    UnitTest::VerifyResult( IsMostlyEqual( vec4dd, -7.0f,  3.0f,  14.2f, -0.6f ),   "Vec4::operator- : did not negate (-vec4) correctly",                       theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec4h, 3.0f, -0.5f, -7.f, 3.4f ),    "Vec4::operator+ : did not add (vec4 + vec4) correctly",                    theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec4i, 7.0f, -3.0f, -14.2f, 0.6f ),  "Vec4::operator+ : did not add (vec4 + vec4) with itself correctly",        theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec4j, 4.0f, -2.5f, -7.2f, -2.8f ),  "Vec4::operator- : did not subtract (vec4 - vec4) correctly",               theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec4k, 0.0f, 0.0f, 0.0f, 0.0f ),     "Vec4::operator- : did not subtract (vec4 - vec4) from itself correctly",   theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec4l, 0.7f, -0.3f, -1.42f, 0.06f ), "Vec4::operator* : did not scale (vec4 * float) correctly",                 theTest );
+    UnitTest::VerifyResult( IsMostlyEqual( vec4m, -0.1f, 0.2f, 0.02f, 0.62f ),  "Vec4::operator* : did not scale (float * vec4) correctly",                 theTest ); UnitTest::VerifyResult( IsMostlyEqual( vec4n, 7.0f, -3.0f, -14.2f, 0.6f ),  "Vec4::operator/ : did not divide (vec4 / float) correctly",                theTest );
 
     Vec4 vec4o( 3.f, 4.f, 5.f, 6.f );	// explicit constructor
     Vec4 vec4p( 3.f, 4.f, 5.f, 6.f );	// explicit constructor

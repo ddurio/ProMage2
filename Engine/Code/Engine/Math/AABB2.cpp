@@ -298,36 +298,6 @@ Vec2 AABB2::GetPointAlignment( const Vec2& point ) const {
 }
 
 
-AABB2 AABB2::CarveBoxOffLeft( float fractionOfWidth, float additionalWidth /*= 0.f */ ) {
-    Vec2 myDimensions = GetDimensions();
-    float boxWidth = myDimensions.x * fractionOfWidth + additionalWidth;
-    float boxHeight = myDimensions.y;
-
-    Vec2 boxDimensions = Vec2( boxWidth, boxHeight );
-    Vec2 boxMins = mins;
-    Vec2 boxMaxs = boxMins + boxDimensions;
-
-    mins.x += boxWidth;
-
-    return AABB2( boxMins, boxMaxs );
-}
-
-
-AABB2 AABB2::CarveBoxOffRight( float fractionOfWidth, float additionalWidth /*= 0.f */ ) {
-    Vec2 myDimensions = GetDimensions();
-    float boxWidth = myDimensions.x * fractionOfWidth + additionalWidth;
-    float boxHeight = myDimensions.y;
-
-    Vec2 boxDimensions = Vec2( boxWidth, boxHeight );
-    Vec2 boxMaxs = maxs;
-    Vec2 boxMins = boxMaxs - boxDimensions;
-
-    maxs.x -= boxWidth;
-
-    return AABB2( boxMins, boxMaxs );
-}
-
-
 AABB2 AABB2::CarveBoxOffBottom( float fractionOfHeight, float additionalHeight /*= 0.f */ ) {
     Vec2 myDimensions = GetDimensions();
     float boxWidth = myDimensions.x;

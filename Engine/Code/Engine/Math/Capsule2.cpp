@@ -59,22 +59,8 @@ std::string Capsule2::GetAsString() const {
 }
 
 
-float Capsule2::GetLength() const {
-    Vec2 lineDisp = end - start;
-    return lineDisp.GetLength();
-}
-
-
 Vec2 Capsule2::GetCenter() const {
     return (start + end) * 0.5f;
-}
-
-
-Vec2 Capsule2::GetRight() const {
-    Vec2 lineDisp = end - start;
-    Vec2 rightDir = lineDisp.GetRotatedMinus90Degrees();
-
-    return rightDir.GetNormalized();
 }
 
 
@@ -105,15 +91,6 @@ AABB2 Capsule2::GetBoundingAABB() const {
     float yMax = Max( start.y, end.y ) + radius;
 
     return AABB2( Vec2( xMin, yMin ), Vec2( xMax, yMax ) );
-}
-
-
-OBB2 Capsule2::GetBoundingOBB() const {
-    Vec2 center = GetCenter();
-    Vec2 halfExtents = Vec2( radius, GetLength() );
-    Vec2 right = GetRight();
-
-    return OBB2( center, halfExtents, right );
 }
 
 

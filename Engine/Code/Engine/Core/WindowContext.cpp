@@ -146,7 +146,6 @@ void WindowContext::Shutdown() {
 
 void WindowContext::BeginFrame() {
     PROFILE_FUNCTION();
-
     RunMessagePump();
 
     m_mousePositionPrevious = m_mousePositionCurrent;

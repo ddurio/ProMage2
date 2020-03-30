@@ -45,17 +45,14 @@ class CPUMesh {
 
     IntVec3 AddTriangle( const Vec3& position0, const Vec3& position1, const Vec3& position2 );
     IntVec3 AddTriangle( const Vec2& position0, const Vec2& position1, const Vec2& position2 );
-
     void AddQuad( const AABB2& quad, const AABB2& uvs = AABB2::UVZEROTOONE );
     void AddQuad( const OBB2& box, const AABB2& uvs = AABB2::UVZEROTOONE );
     void AddQuad( const Vec2& mins, const Vec2& maxs, const AABB2& uvs = AABB2::UVZEROTOONE, CoordinatePlane plane = COORD_PLANE_XY );
     void AddQuad( const Vec3& mins, const Vec3& maxs, const AABB2& uvs = AABB2::UVZEROTOONE, CoordinatePlane plane = COORD_PLANE_XY );
     void AddQuad( const Vec2& positionTL, const Vec2& positionTR, const Vec2& positionBL, const Vec2& positionBR, const AABB2& uvs = AABB2::UVZEROTOONE );
     void AddQuad( const Vec3& positionTL, const Vec3& positionTR, const Vec3& positionBL, const Vec3& positionBR, const AABB2& uvs = AABB2::UVZEROTOONE );
-    void AddQuadEdge( OBB2 box, float thickness );
 
     void AddRoundedQuad( const OBB2& box, float radius, const AABB2& uvs = AABB2::UVZEROTOONE );
-    void AddRoundedQuadEdge( const OBB2& box, float radius, float thickness );
 
     void AddBox( const Vec3& mins, const Vec3& maxs );
     void AddBox( const OBB3& box );

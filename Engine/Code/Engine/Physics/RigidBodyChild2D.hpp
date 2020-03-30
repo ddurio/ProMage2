@@ -29,25 +29,29 @@ enum RBChildEvent {
 };
 
 
+const std::string PHYSICS_ARG_MY_COLLIDER       = "myCollider";
+const std::string PHYSICS_ARG_MY_TRIGGER        = "myTrigger";
+const std::string PHYSICS_ARG_OTHER_COLLIDER    = "otherCollider";
+const std::string PHYSICS_ARG_MANIFOLD          = "manifold";
+const std::string PHYSICS_ARG_FIRST_FRAME       = "firstFrame";
+const std::string PHYSICS_ARG_LATEST_FRAME      = "latestFrame";
+
+
 class CPUMesh;
 class GPUMesh;
-class PhysicsSystem;
 class RenderContext;
 class RigidBody2D;
 
 struct Capsule2;
-struct Manifold2;
 struct Matrix44;
 
 
 class RigidBodyChild2D {
     public:
-    void UpdateBitFields( PhysicsSystem* physSystem );
     void RenderDebug() const;
     void SetDebugColor( const Rgba& color );
 
     void SetCallbackEvent( RBChildEvent event, const std::string& callbackEvent );
-    void SetCallbackArguments( const EventArgs& args );
 
     RBChildShape2D GetShape() const;
     OBB2 GetLocalBounds( float& radiusOut ) const;
@@ -55,8 +59,7 @@ class RigidBodyChild2D {
     Matrix44 GetModelMatrix() const;
 
     RigidBody2D* GetParent() const;
-    const EventArgs& GetCallbackArgumens() const;
-
+    void* GetGameObject() const;
 
     protected:
     RigidBodyChild2D( RenderContext* renderContext, RigidBody2D* parent, const AABB2& box, float radius = 0.f, const Rgba& debugColor = Rgba::WHITE );
@@ -80,16 +83,13 @@ class RigidBodyChild2D {
     bool m_isGarbage = false;
 
     std::string m_callbackEvents[NUM_RBCHILD_EVENTS];
-    EventArgs m_callbackArgs;
-
-    uint64_t m_bitFields = 0x00;
 
 
-    bool GetManifold( const RigidBodyChild2D* otherRBChild, Manifold2& out_manifold ) const;
     virtual void FireCallbackEvent( RBChildEvent event, void* info ) = 0;
 
     void BuildMesh();
     void BuildCapsule( CPUMesh& builder, float lineThickness );
     void BuildDisc( CPUMesh& builder, float lineThickness );
+    void BuildBox( CPUMesh& builder, float lineThickness );
     virtual void Destroy();
 };

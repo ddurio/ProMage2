@@ -15,17 +15,6 @@ NamedProperties::NamedProperties( const NamedProperties& copyFrom ) {
 }
 
 
-NamedProperties& NamedProperties::operator=( const NamedProperties& assignFrom ) {
-    std::map< std::string, BaseProperty*, StringCmpCaseI >::const_iterator pairsIter = assignFrom.m_keyValuePairs.begin();
-
-    for( pairsIter; pairsIter != assignFrom.m_keyValuePairs.end(); pairsIter++ ) {
-        m_keyValuePairs[pairsIter->first] = pairsIter->second->CopyToNewProperty();
-    }
-
-    return *this;
-}
-
-
 std::string NamedProperties::GetAsString() const {
     std::string argsAsString = "";
     std::map<std::string, BaseProperty*, StringCmpCaseI>::const_iterator pairsIter = m_keyValuePairs.begin();

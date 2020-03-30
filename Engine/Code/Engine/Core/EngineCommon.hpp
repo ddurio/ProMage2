@@ -47,7 +47,6 @@ extern NamedStrings     g_theGameConfigBlackboard;
 extern ProfilerSystem*  g_theProfiler;
 
 typedef unsigned int DevConsoleChannel;
-typedef std::vector< unsigned char > Buffer;
 
 
 struct Vec2;

@@ -16,7 +16,6 @@ class RNG {
     unsigned int GetPosition() const;
 
     void SetSeed( unsigned int seed );
-    void SetRandomSeed();
     void SetPosition( unsigned int position );
 
     unsigned int GetRandomSeed();

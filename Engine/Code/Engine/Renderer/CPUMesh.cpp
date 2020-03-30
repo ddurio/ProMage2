@@ -220,41 +220,9 @@ void CPUMesh::AddQuad( const Vec3& positionTL, const Vec3& positionTR, const Vec
 }
 
 
-void CPUMesh::AddQuadEdge( OBB2 box, float thickness ) {
-    box.halfExtents -= Vec2( 0.5f * thickness ); // Makes outside edge flush with quad edge
-
-    Vec2 corners[4];
-    box.GetCorners( corners );
-
-    AddLine( corners[0], corners[1], thickness ); // Top
-    AddLine( corners[2], corners[3], thickness ); // Bottom
-    AddLine( corners[0], corners[2], thickness ); // Left
-    AddLine( corners[1], corners[3], thickness ); // Right
-}
-
-
 void CPUMesh::AddRoundedQuad( const OBB2& box, float radius, const AABB2& uvs /*= AABB2::UVZEROTOONE*/ ) {
     if( radius == 0.f ) {
         AddQuad( box, uvs );
-        return;
-    } else if( box.halfExtents == Vec2::ZERO ) {
-        AddCircle( box.center, radius ); // FIXME: This ignores the uvs.. oops
-        return;
-    } else if( box.halfExtents.x == 0.f || box.halfExtents.y == 0 ) {
-        Vec2 corners[4];
-        box.GetCorners( corners );
-
-        Vec2 start = corners[0];
-        Vec2 end;
-
-        if( box.halfExtents.x == 0.f ) {
-            end = corners[2];
-        } else {
-            end = corners[1];
-        }
-
-        Capsule2 cap2 = Capsule2( start, end, radius );
-        AddCapsule( cap2 ); // FIXME: This ignores the uvs.. oops
         return;
     }
 
@@ -330,99 +298,6 @@ void CPUMesh::AddRoundedQuad( const OBB2& box, float radius, const AABB2& uvs /*
     AddPartialRing( corners[2], 0.f, radius, leftDegrees, downDegrees  ); // BL - 2
     AddPartialRing( corners[3], 0.f, radius, downDegrees, rightDegrees + 360.f ); // BR - 3
 }
-
-
-void CPUMesh::AddRoundedQuadEdge( const OBB2& box, float radius, float thickness ) {
-    if( radius == 0.f ) {
-        AddQuadEdge( box, thickness );
-        return;
-    } else if( box.halfExtents == Vec2::ZERO ) {
-        //AddRing( box.center, radius );
-        float innerRadius = radius - (0.5f * thickness);
-        AddRing( box.center, innerRadius, radius );
-        return;
-    } else if( box.halfExtents.x == 0.f || box.halfExtents.y == 0 ) {
-        Vec2 corners[4];
-        box.GetCorners( corners );
-
-        Vec2 start = corners[0];
-        Vec2 end;
-
-        if( box.halfExtents.x == 0.f ) {
-            end = corners[2];
-        } else {
-            end = corners[1];
-        }
-
-        Capsule2 cap2 = Capsule2( start, end, radius );
-        AddCapsuleEdge( cap2, thickness );
-        return;
-    }
-
-    /* Rounded OBB Subdivision
-                @@@----------@@@      -
-              @@@ |          | @@@    |
-             @@ D |          | D @@   |
-        -    @----|          |----@   |
-        |    |    |          |    |   |
-   2*Ey |    | B2 |    B1    | B3 |   | 2*Ey + 2*r
-        |    |    |          |    |   |
-        |    |    |          |    |   |
-        -    @----|          |----@   |
-             @@ D |          | D @@   |
-              @@@ |          | @@@    |
-                @@@----------@@@      -
-
-                  |---2*Ex---|
-    */
-
-    // B1
-    float halfThickness = 0.5f * thickness;
-    OBB2 box1Bounds = box;
-    box1Bounds.halfExtents.y += (radius - halfThickness);
-
-    Vec2 corners[4];
-    box1Bounds.GetCorners( corners );
-
-    AddLine( corners[0], corners[1], thickness );
-    AddLine( corners[2], corners[3], thickness );
-
-    // B2 / B3
-    float halfRadius = 0.5f * radius;
-    float sideBoxDistFromCenter = box.halfExtents.x + halfRadius;
-    Vec2 sideBoxOffsetFromCenter = box.right * sideBoxDistFromCenter;
-
-    Vec2 sideBoxHalfExtents = Vec2( halfRadius, box.halfExtents.y ) - Vec2( halfThickness );
-
-    // B2
-    Vec2 box2Center = box.center - sideBoxOffsetFromCenter;
-    OBB2 box2Bounds = OBB2( box2Center, sideBoxHalfExtents, box.right );
-
-    box2Bounds.GetCorners( corners );
-    AddLine( corners[0], corners[2], thickness );
-
-    // B3
-    Vec2 box3Center = box.center + sideBoxOffsetFromCenter;
-    OBB2 box3Bounds = OBB2( box3Center, sideBoxHalfExtents, box.right );
-
-    box3Bounds.GetCorners( corners );
-    AddLine( corners[1], corners[3], thickness );
-
-    // Corners
-    box.GetCorners( corners[0], corners[1], corners[2], corners[3] );
-    float rightDegrees  = box.right.GetAngleDegrees();
-    float upDegrees     = rightDegrees  + 90.f;
-    float leftDegrees   = upDegrees     + 90.f;
-    float downDegrees   = leftDegrees   + 90.f;
-
-    float innerRadius = radius - thickness;
-
-    AddPartialRing( corners[0], innerRadius, radius, upDegrees, leftDegrees    ); // TL - 0
-    AddPartialRing( corners[1], innerRadius, radius, rightDegrees, upDegrees   ); // TR - 1
-    AddPartialRing( corners[2], innerRadius, radius, leftDegrees, downDegrees  ); // BL - 2
-    AddPartialRing( corners[3], innerRadius, radius, downDegrees, rightDegrees + 360.f ); // BR - 3
-}
-
 
 void CPUMesh::AddBox( const Vec3& mins, const Vec3& maxs ) {
     Vec3 faceMins;
@@ -509,15 +384,15 @@ void CPUMesh::AddCapsuleEdge( const Capsule2& capsule, float thickness ) {
     Vec2 tangent = startToEnd.GetRotated90Degrees();
     float startDegrees = tangent.GetAngleDegrees();
 
-    float innerRadius = capsule.radius - thickness;
-    float outerRadius = capsule.radius;
+    float innerRadius = capsule.radius - (thickness * 0.5f);
+    float outerRadius = capsule.radius + (thickness * 0.5f);
 
     AddPartialRing( capsule.start, innerRadius, outerRadius, startDegrees, startDegrees + 180.f );
     AddPartialRing( capsule.end, innerRadius, outerRadius, startDegrees + 180.f, startDegrees + 360.f );
 
-    Vec2 bodyCenter = capsule.GetCenter();
+    Vec2 bodyCenter = (capsule.start + capsule.end) * 0.5f;
     Vec2 bodyRight = startToEnd;
-    Vec2 bodyDimensions = Vec2( 0.5f * bodyRight.GetLength(), capsule.radius ) - Vec2( 0.5f * thickness );
+    Vec2 bodyDimensions = Vec2( 0.5f * bodyRight.GetLength(), capsule.radius );
 
     OBB2 body = OBB2( bodyCenter, bodyDimensions, bodyRight );
     Vec2 corners[4];

@@ -1,0 +1,47 @@
+This documents my experience with Critical Error 0x0374 - Heap Corruption
+
+General Information:
+
+Unknown cause, extremely rare, inconsistent reproducibility, potentially multi-threaded,
+latent / after-the-fact effect, program crashing, release-only bug.
+	- Would crash generally during map generation (add, remove, modify steps)
+	- Originally would only appear in Release build configuration,
+	  later reproduced in FastBreak as well
+	- FastBreak confirmed latent effect, where crash happens some indeterminate amount
+	  of time after the actual heap corruption occurs
+	- Callstack was essentially useless when the corruption is detected because of the latent effect
+	- Callstack was different every time the crash was encountered
+
+Steps toward Solution:
+	- FastBreak build configuration allowed me to trust the VS debugger when the crash occured
+	- Running OBS studios while attempting to cause the crash allowed me to see
+	  the EXACT steps leading up to the crash
+		* Particularly useful in attempting to recreate the crash again later
+		* This failed for me, but was still really useful information
+		* Following the same steps in my video did NOT recreate the crash for me (good info nevertheless)
+	- Pulled out the big guns and ran my program using the gFlags and NTSD Windows SDK debugger tools
+		* The Windows SDK did not include the debugger tools by default
+			- I had to modify the existing SDK to download the tools
+			- Settings -> Add/remove/modify programs -> Modify SDK -> Check Debug Tools
+		* https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/example-12---using-page-heap-verification-to-find-a-bug
+		* Very finicky to get setup, but very quickly lead me to the issue
+		* gFlags and NTSD never got put into my global commands, so I had to run the command with the fully
+		  qualified path C:\"Program Files (x86)"\...\(glfags|ntsd)
+		* Exact default path is mentioned at the link above
+		* Secondly, my program failed to load files (like ProjectConfix.xml) if it wasn't run from the normal directory
+		* Also secondly, NTSD failed to find the .exe if it wasn't local to the C\ProgramFiles folder... no idea why
+			- As a solution to all of this, I copied my project Run/... folder into the ProgramFiles folder containing NTSD
+			- While in the Run/... folder, I ran ..\ntsd.exe with the arguments mentioned at the link
+			- This finally connected all the dots for me
+		* Finally, the tedious part again was causing the bug to happen while the debugger was running
+		* Once it was finally triggered, I was able to pull up the callStack at the exact time when
+		  the heap was corrupted, not just when it was detected
+		* With that information, I updated my code with a potential fix
+
+Solution:
+	- Ended up being a multi-threading issue in my EventSystem
+	- I had previously added a lock around the Add/Remove Subscription functions
+	- I had not added one around the Fire Event or GetEventList functions
+	- The later two functions only need read access to the list of event subscriptions
+	- To fix, I added a shared_lock around the two read-only functions and updated the
+	  Add/Remove loacks to be unique locks

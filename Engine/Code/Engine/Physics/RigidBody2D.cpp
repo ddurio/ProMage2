@@ -1,7 +1,6 @@
 #include "Engine/Physics/RigidBody2D.hpp"
 
 #include "Engine/Debug/DebugDraw.hpp"
-#include "Engine/Debug/Profiler.hpp"
 #include "Engine/DevConsole/DevConsole.hpp"
 #include "Engine/Math/Capsule2.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -26,15 +25,14 @@ const Rgba& RigidBody2D::DEBUG_COLOR_TRIGGER_DYNAMIC_COLLIDING = Rgba::WHITE;
 
 
 void RigidBody2D::BeginFrame() {
-    PROFILE_FUNCTION();
-
     m_frameForces = Vec2::ZERO;
     m_frameTorque = 0.f;
-    ClearCollisionDebug();
 }
 
 
 void RigidBody2D::Update( float deltaSeconds ) {
+    UpdatePosition();
+
     if( m_simMode == SIMULATION_MODE_DYNAMIC ) {
         // Linear
         Vec2 acceleration = m_physicsSystem->GetGravity() * m_gravityScale; // Start with gravity
@@ -55,54 +53,16 @@ void RigidBody2D::Update( float deltaSeconds ) {
 
             m_transform.rotationDegrees += m_angularVelocity * deltaSeconds;
         }
-
-        UpdateBitFields();
     }
 }
 
 
 void RigidBody2D::UpdatePosition() {
     m_transform = *m_gameObjectTransform;
-    UpdateBitFields();
 }
 
 
-void RigidBody2D::UpdateBitFields() {
-    if( !m_physicsSystem->IsUsingBitFields() ) {
-        return;
-    }
-
-    m_bitFields = 0x00;
-
-    // Colliders
-    int numColliders = (int)m_colliders.size();
-
-    for( int colliderIndex = 0; colliderIndex < numColliders; colliderIndex++ ) {
-        Collider2D* collider = m_colliders[colliderIndex];
-
-        if( collider != nullptr && !collider->m_isGarbage ) {
-            collider->UpdateBitFields( m_physicsSystem );
-            m_bitFields |= collider->m_bitFields;
-        }
-    }
-
-    // Triggers
-    int numTriggers = (int)m_triggers.size();
-
-    for( int triggerIndex = 0; triggerIndex < numTriggers; triggerIndex++ ) {
-        Trigger2D* trigger = m_triggers[triggerIndex];
-
-        if( trigger != nullptr && !trigger->m_isGarbage ) {
-            trigger->UpdateBitFields( m_physicsSystem );
-            m_bitFields |= trigger->m_bitFields;
-        }
-    }
-}
-
-
-void RigidBody2D::ClearCollisionDebug() {
-    PROFILE_FUNCTION();
-
+void RigidBody2D::ClearCollision() {
     int numColliders = (int)m_colliders.size();
 
     for( int colliderIndex = 0; colliderIndex < numColliders; colliderIndex++ ) {
@@ -117,9 +77,7 @@ void RigidBody2D::ClearCollisionDebug() {
 
 
 void RigidBody2D::CheckCollision( RigidBody2D* otherRB, bool resolveCollision ) {
-    PROFILE_FUNCTION();
-
-    if( IsImpossibleToOverlap( otherRB ) ) {
+    if( (otherRB == m_ignoreObject) || (this == otherRB->m_ignoreObject) ) {
         return;
     }
 
@@ -147,18 +105,18 @@ void RigidBody2D::CheckCollision( RigidBody2D* otherRB, bool resolveCollision ) 
 
 
 void RigidBody2D::CheckTriggers( RigidBody2D* otherRB ) {
-    PROFILE_FUNCTION();
-
-    bool impossibleOverlap = IsImpossibleToOverlap( otherRB );
-
-    // If both static... why bother?
-    if( m_simMode == SIMULATION_MODE_STATIC &&
-        otherRB->m_simMode == SIMULATION_MODE_STATIC ) {
-        impossibleOverlap = true;
+    if( (otherRB == m_ignoreObject) || (this == otherRB->m_ignoreObject) ) {
+        return;
     }
 
-    CompareTriggerList( otherRB->m_colliders, impossibleOverlap );
-    otherRB->CompareTriggerList( m_colliders, impossibleOverlap );
+    // Only compare against dynamic colliders (but either static or dynamic triggers)
+    if( otherRB->m_simMode != SIMULATION_MODE_STATIC ) {
+        CompareTriggerList( otherRB->m_colliders );
+    }
+
+    if( m_simMode != SIMULATION_MODE_STATIC ) {
+        otherRB->CompareTriggerList( m_colliders );
+    }
 }
 
 
@@ -197,11 +155,6 @@ void RigidBody2D::RenderDebug() const {
 
 SimulationMode RigidBody2D::GetSimulationMode() const {
     return m_simMode;
-}
-
-
-int RigidBody2D::GetChannelIndex() const {
-    return m_channelIndex;
 }
 
 
@@ -284,6 +237,11 @@ const std::vector<Collider2D*>& RigidBody2D::GetColliders() const {
 }
 
 
+void* RigidBody2D::GetGameObject() const {
+    return m_gameObject;
+}
+
+
 const Transform2D& RigidBody2D::GetTransform() const {
     return m_transform;
 }
@@ -302,11 +260,6 @@ void RigidBody2D::SetSimulationMode( SimulationMode newMode ) {
     SimulationMode oldMode = m_simMode;
     m_simMode = newMode;
     m_physicsSystem->UpdateRigidBodyMode( this, oldMode, newMode );
-
-    if( newMode == SIMULATION_MODE_STATIC ) {
-        m_velocity = Vec2::ZERO;
-        m_angularVelocity = 0.f;
-    }
 
     if( m_autoUpdateColor ) {
         AutoUpdateDebugColor();
@@ -424,7 +377,8 @@ void RigidBody2D::AddImpulse( const Vec2& impulse, const Vec2& contactPos, bool 
 }
 
 
-void RigidBody2D::SetGameObjectTransform( Transform2D* gameObjectTransform ) {
+void RigidBody2D::SetGameObject( void* gameObject, Transform2D* gameObjectTransform ) {
+    m_gameObject = gameObject;
     m_gameObjectTransform = gameObjectTransform;
 
     UpdatePosition();
@@ -433,16 +387,6 @@ void RigidBody2D::SetGameObjectTransform( Transform2D* gameObjectTransform ) {
 
 void RigidBody2D::SetIgnoreObject( RigidBody2D* ignoreObject ) {
     m_ignoreObject = ignoreObject;
-}
-
-
-void RigidBody2D::SetChannel( const std::string& channelName ) {
-    m_channelIndex = m_physicsSystem->GetChannelIndex( channelName );
-
-    if( m_channelIndex < 0 ) { // Doesn't exist yet..
-        std::string warningMsg = Stringf( "(RigidBody2D) WARNING -- Physics channel (%s) didn't exist.. making it for you", channelName.c_str() );
-        m_channelIndex = m_physicsSystem->AddChannel( channelName );
-    }
 }
 
 
@@ -606,7 +550,6 @@ void RigidBody2D::AddColliderToList( Collider2D* colliderIn ) {
             m_colliders[colliderIndex] = colliderIn;
             m_area += colliderIn->GetArea();
             UpdateMomentOfInertia();
-            UpdateBitFields();
             return;
         }
     }
@@ -614,7 +557,6 @@ void RigidBody2D::AddColliderToList( Collider2D* colliderIn ) {
     m_colliders.push_back( colliderIn );
     m_area += colliderIn->GetArea();
     UpdateMomentOfInertia();
-    UpdateBitFields();
 }
 
 
@@ -629,7 +571,6 @@ void RigidBody2D::AddTriggerToList( Trigger2D* triggerIn ) {
     }
 
     m_triggers.push_back( triggerIn );
-    UpdateBitFields();
 }
 
 
@@ -689,29 +630,12 @@ Rgba RigidBody2D::GetAutoTriggerColor( bool isColliding ) const {
 
 
 void RigidBody2D::AutoUpdateDebugColor() {
-    PROFILE_FUNCTION();
-
     Rgba newColor = GetAutoDebugColor();
     SetDebugColor( newColor );
 }
 
 
-bool RigidBody2D::IsImpossibleToOverlap( const RigidBody2D* otherRB ) const {
-    if( (otherRB == m_ignoreObject) || (this == otherRB->m_ignoreObject) ) {
-        return true; // We are ignoring each other
-    } else if( !m_physicsSystem->DoChannelsCollide( m_channelIndex, otherRB->m_channelIndex ) ) {
-        return true; // Our channels don't collide
-    } else if( m_physicsSystem->IsUsingBitFields() && ((m_bitFields & otherRB->m_bitFields) == 0x00) ) {
-        return true; // We have no bit field overlap
-    }
-
-    return false;
-}
-
-
 void RigidBody2D::CompareColliders( Collider2D* myCollider, Collider2D* otherCollider, bool resolveCollision ) {
-    PROFILE_FUNCTION();
-
     RigidBody2D* otherRB = otherCollider->GetParent();
     CollisionInfo2D collision;
 
@@ -750,9 +674,7 @@ void RigidBody2D::CompareColliders( Collider2D* myCollider, Collider2D* otherCol
 }
 
 
-void RigidBody2D::CompareTriggerList( std::vector<Collider2D*>& colliders, bool isImpossibleToOverlap ) {
-    PROFILE_FUNCTION();
-
+void RigidBody2D::CompareTriggerList( std::vector<Collider2D*>& colliders ) {
     int numTriggers = (int)m_triggers.size();
     int numColliders = (int)colliders.size();
 
@@ -764,7 +686,7 @@ void RigidBody2D::CompareTriggerList( std::vector<Collider2D*>& colliders, bool 
                 Collider2D* collider = colliders[colliderIndex];
 
                 if( (collider != nullptr) && (!collider->m_isGarbage) ) { // Both colliders are valid
-                    CompareTrigger( trigger, collider, isImpossibleToOverlap );
+                    CompareTrigger( trigger, collider );
                 }
             }
         }
@@ -772,12 +694,10 @@ void RigidBody2D::CompareTriggerList( std::vector<Collider2D*>& colliders, bool 
 }
 
 
-void RigidBody2D::CompareTrigger( Trigger2D* trigger, Collider2D* collider, bool isImpossibleToOverlap ) {
-    PROFILE_FUNCTION();
-
+void RigidBody2D::CompareTrigger( Trigger2D* trigger, Collider2D* collider ) {
     TriggerInfo2D triggerInfo;
     int currentFrame = GetPhysicsFrame();
-    bool isColliding = trigger->GetTriggerInfo( collider, isImpossibleToOverlap, triggerInfo ); // Actual collision check
+    bool isColliding = trigger->GetTriggerInfo( collider, triggerInfo ); // Actual collision check
 
     if( isColliding ) {
         if( triggerInfo.firstFrame == currentFrame ) {
@@ -793,7 +713,7 @@ void RigidBody2D::CompareTrigger( Trigger2D* trigger, Collider2D* collider, bool
         for( int triggerIndex = 0; triggerIndex < numTriggers; triggerIndex++ ) {
             Trigger2D*& triggerRef = collider->m_overlappingTriggers[triggerIndex];
 
-            if( trigger == triggerRef ) {
+            if( trigger ==  triggerRef ) {
                 triggerRef = nullptr;
             }
         }
@@ -814,8 +734,6 @@ void RigidBody2D::CompareTrigger( Trigger2D* trigger, Collider2D* collider, bool
 
 // Moves objects so they are no longer overlapping
 void RigidBody2D::CorrectCollisionOverlap( RigidBody2D* otherRigidBody, const Manifold2& collision ) {
-    PROFILE_FUNCTION();
-
     SimulationMode otherMode = otherRigidBody->GetSimulationMode();
 
     if( m_simMode == SIMULATION_MODE_STATIC && otherMode == SIMULATION_MODE_STATIC ) {
@@ -848,8 +766,6 @@ void RigidBody2D::CorrectCollisionOverlap( RigidBody2D* otherRigidBody, const Ma
 
 // Handles the energy transfer after a collision occurs
 void RigidBody2D::ResolveCollisionEnergy( RigidBody2D* otherRigidBody, const Manifold2& collision ) {
-    PROFILE_FUNCTION();
-
     // Collision Impulse (bounce) - Only used for Frictional Coulomb's Law
     float collisionMagnitude = GetCollisionImpulseAlongNormal( otherRigidBody, collision.contactPos, collision.normal );
 
@@ -908,7 +824,7 @@ float RigidBody2D::GetCollisionImpulseAlongNormal( RigidBody2D* otherRigidBody, 
     Vec2 centerToContactA = contactPos - m_transform.position;
     Vec2 centerToContactB = contactPos - otherRigidBody->m_transform.position;
 
-    float contactMagA = CrossProductLength( centerToContactA, normal ); // Cross is equivalent of Dot with perpendicular of one vector
+    float contactMagA = CrossProductLength( centerToContactA, normal );
     float contactMagB = CrossProductLength( centerToContactB, normal );
 
     float rotationalA = contactMagA * contactMagA / GetMomentOfInertia();

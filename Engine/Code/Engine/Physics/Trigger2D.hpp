@@ -32,19 +32,18 @@ class Trigger2D : public RigidBodyChild2D {
     friend class Collider2D; // Needs to call fireCallbackEvent on death
 
     public:
-    bool GetTriggerInfo( Collider2D* colliderB, bool isImpossibleToOverlap, TriggerInfo2D& outCollisionInfo );
+    bool GetTriggerInfo( Collider2D* colliderB, TriggerInfo2D& outCollisionInfo );
     TriggerInfo2D GetExistingTriggerInfo( const Collider2D* collider ) const;
 
-
     private:
-    std::map< const Collider2D*, TriggerInfo2D > m_triggerInfos;
-
-
     Trigger2D( RenderContext* renderContext, RigidBody2D* parent, const AABB2& box, float radius = 0.f, const Rgba& debugColor = Rgba::WHITE );
     Trigger2D( RenderContext* renderContext, RigidBody2D* parent, const OBB2& box, float radius = 0.f, const Rgba& debugColor = Rgba::WHITE );
     Trigger2D( RenderContext* renderContext, RigidBody2D* parent, const Capsule2& capsule, const Rgba& debugColor = Rgba::WHITE );
     Trigger2D( RenderContext* renderContext, RigidBody2D* parent, const Vec2& discCenter, float discRadius, const Rgba& debugColor = Rgba::WHITE );
+
     ~Trigger2D() {};
+
+    std::map< const Collider2D*, TriggerInfo2D > m_triggerInfos;
 
     void FireCallbackEvent( RBChildEvent event, void* info ) override;
 };

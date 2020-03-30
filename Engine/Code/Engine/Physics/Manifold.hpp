@@ -19,26 +19,6 @@ struct Manifold2 {
     std::string GetAsString() const;
     void SetFromText( const std::string& manifoldStr );
 
-    Manifold2 GetInverted() const;
-    void Invert();
-
-
-    // Obj vs self
-    static bool GetManifold( const Vec2& discCenterA, float discRadiusA, const Vec2& discCenterB, float discRadiusB, Manifold2& result );
-    static bool GetManifold( const AABB2& boundsA, const AABB2& boundsB, Manifold2& result );
     static bool GetManifold( const OBB2& boxA, const OBB2& boxB, Manifold2& result );
     static bool GetManifold( const OBB2& boxA, float radiusA, const OBB2& boxB, float radiusB, Manifold2& result );
-
-    // Disc v other
-    static bool GetManifold( const Vec2& discCenterA, float discRadiusA, const AABB2& boxB, Manifold2& result );
-    static bool GetManifold( const AABB2& boxA, const Vec2& discCenterB, float discRadiusB, Manifold2& result );
-
-    static bool GetManifold( const Vec2& discCenterA, float discRadiusA, const AABB2& boxB, float boxRadiusB, Manifold2& result );
-    static bool GetManifold( const AABB2& boxA, float boxRadiusA, const Vec2& discCenterB, float discRadiusB, Manifold2& result );
-
-    static bool GetManifold( const Vec2& discCenterA, float discRadiusA, const OBB2& boxB, Manifold2& result );
-    static bool GetManifold( const OBB2& boxA, const Vec2& discCenterB, float discRadiusB, Manifold2& result );
-
-    static bool GetManifold( const Vec2& discCenterA, float discRadiusA, const OBB2& boxB, float boxRadiusB, Manifold2& result );
-    static bool GetManifold( const OBB2& boxA, float boxRadiusA, const Vec2& discCenterB, float discRadiusB, Manifold2& result );
 };

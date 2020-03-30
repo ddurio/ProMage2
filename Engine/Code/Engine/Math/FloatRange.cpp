@@ -34,9 +34,9 @@ FloatRange::FloatRange( const std::string& initialRange ) {
 
 const std::string FloatRange::GetAsString() const {
     if( min == max ) {
-        return Stringf( "%.3f", min );
+        return Stringf( "%f", min );
     } else {
-        return Stringf( "%.3f~%.3f", min, max );
+        return Stringf( "%f~%f", min, max );
     }
 }
 

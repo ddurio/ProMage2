@@ -1,0 +1,42 @@
+RetAddr           : Args to Child                                                           : Call Site
+00007ffa`9a5e6626 : 00000000`00000000 00000000`00000000 00000000`0000000f 00000212`33fc1000 : verifier!VerifierCaptureContextAndReportStop+0x100
+00007ffa`9a5e5107 : 00000213`00195fb0 00007ffa`9a6093f8 00000212`33fc0000 00007ffa`9a609110 : verifier!VerifierStopMessage+0x2c6
+00007ffa`9a5e5414 : 00000000`00000040 00000212`33fc1000 00000213`00195fb0 00000212`ff829e38 : verifier!AVrfpDphReportCorruptedBlock+0x2bb
+00007ffa`9a5e2786 : 00000212`33fc1000 00000213`00195f70 00000212`ff829e38 00000213`00195fb0 : verifier!AVrfpDphCheckPageHeapBlock+0x16c
+00007ffa`9a5e28ad : 00000213`00195fb0 00000000`01000002 00000212`33fc1000 00000213`13f10fd0 : verifier!AVrfpDphFindBusyMemory+0xca
+00007ffa`9a5e42cd : 00000213`00195fb0 00000000`00000050 00000000`00000000 0000004e`75cfec50 : verifier!AVrfpDphFindBusyMemoryAndRemoveFromBusyList+0x25
+00007ffa`abbe5204 : 00000212`33fc0000 00000000`01000002 00000213`13f10fd0 00007ffa`abb1fc11 : verifier!AVrfDebugPageHeapFree+0x8d
+00007ffa`abb956b0 : 00000212`33fc0000 00000000`00000000 ffffffff`fffffffe 00000000`00000000 : ntdll!RtlDebugFreeHeap+0x3c
+00007ffa`abb20810 : 00000212`33fc0000 00000212`33fc0000 00000000`00000000 00000213`00195fb0 : ntdll!RtlpFreeHeap+0x73d50
+00007ffa`abb1fc11 : 00000212`ec371fe0 00000212`33fc0000 00000000`00000000 00000000`00000000 : ntdll!RtlpFreeHeapInternal+0x790
+00007ffa`a8b814cb : 00000212`52348fd0 00000000`00000000 0000004e`75cfef38 0000004e`75cfef68 : ntdll!RtlFreeHeap+0x51
+*** WARNING: Unable to verify checksum for ProMage2_x64_Editor.exe
+00007ff7`c22dd474 : 00000212`ec371fe0 00007ff7`00000000 0000004e`75cfef38 00007ff7`c22a5445 : ucrtbase!_free_base+0x1b
+00007ff7`c22dd4c3 : 00000213`00195fb0 00000213`13f10ff8 00000213`0f5b4f90 00007ff7`c22ae248 : ProMage2_x64_Editor!UntrackedMemory::Free+0x14 [d:\p4\personal\sd\engine\code\engine\memory\memory.cpp @ 56]
+00007ff7`c22dd74c : 00000213`00195fb0 00007ff7`c2253dcf 0000004e`75cfef01 00000213`4acfc900 : ProMage2_x64_Editor!TrackedMemory::Free+0x13 [d:\p4\personal\sd\engine\code\engine\memory\memory.cpp @ 108]
+00007ff7`c224a277 : 00000213`00195fb0 00000001`00000000 ffffffff`ffffff00 00007ff7`c2253552 : ProMage2_x64_Editor!operator delete+0x1c [d:\p4\personal\sd\engine\code\engine\memory\memory.cpp @ 255]
+00007ff7`c2253619 : 00000213`00195fb0 00000000`00000048 0000004e`75cff080 00000000`00000000 : ProMage2_x64_Editor!std::_Deallocate<16,0>+0x37 [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\xmemory0 @ 208]
+00007ff7`c226cd33 : 0000004e`75cff070 00000213`00195fb0 00000000`00000009 0000004e`75cff100 : ProMage2_x64_Editor!std::allocator<MapGenStep *>::deallocate+0x29 [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\xmemory0 @ 993]
+00007ff7`c226cb3c : 0000004e`75cff070 0000004e`75cff100 0000004e`75cff070 00000213`00196000 : ProMage2_x64_Editor!std::vector<Map *,std::allocator<Map *> >::_Tidy+0xa3 [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\vector @ 1918]
+00007ff7`c22d22f7 : 0000004e`75cff070 0000004e`75cff100 0000004e`75cff140 0000004e`75cff060 : ProMage2_x64_Editor!std::vector<Map *,std::allocator<Map *> >::~vector<Map *,std::allocator<Map *> >+0x1c [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\vector @ 894]
+00007ff7`c228cb27 : 00000212`34e82fa0 00000212`7c7adfa0 0000004e`75cff100 00000213`1327ffb0 : ProMage2_x64_Editor!EventSystem::FireEvent+0xf7 [d:\p4\personal\sd\engine\code\engine\core\eventsystem.cpp @ 108]
+00007ff7`c228c6e0 : 00000212`7be12e90 00000213`41347f00 00000213`4acfc900 0000004e`75cff1e0 : ProMage2_x64_Editor!MapGenStep::ChangeTilesCustomResults+0x137 [d:\p4\personal\sd\promage2\code\game\mapgen\gensteps\mapgenstep.cpp @ 719]
+00007ff7`c22a51a4 : 00000212`7be12e90 00000213`41347f00 00000213`0000001c 00000213`2329ffb0 : ProMage2_x64_Editor!MapGenStep::ChangeTile+0x140 [d:\p4\personal\sd\promage2\code\game\mapgen\gensteps\mapgenstep.cpp @ 661]
+00007ff7`c22a4edd : 00000212`7be12e90 00000213`41347f00 0000004e`0000001c 00007ff7`3f800000 : ProMage2_x64_Editor!MGS_DistanceField::ChangeTileDistance+0x74 [d:\p4\personal\sd\promage2\code\game\mapgen\gensteps\mgs_distancefield.cpp @ 170]
+00007ff7`c22a4a84 : 00000212`7be12e90 00000213`41347f00 0000004e`75cff378 0000004e`75cff3b8 : ProMage2_x64_Editor!MGS_DistanceField::OpenNeighbors+0x21d [d:\p4\personal\sd\promage2\code\game\mapgen\gensteps\mgs_distancefield.cpp @ 137]
+00007ff7`c228a51e : 00000212`7be12e90 00000213`41347f00 00000212`86d89fd0 00007ff7`c2251b78 : ProMage2_x64_Editor!MGS_DistanceField::RunOnce+0x104 [d:\p4\personal\sd\promage2\code\game\mapgen\gensteps\mgs_distancefield.cpp @ 75]
+00007ff7`c22517ec : 00000212`7be12e90 00000213`41347f00 0000004e`75cff4c0 ffffffff`fffffffe : ProMage2_x64_Editor!MapGenStep::Run+0x8e [d:\p4\personal\sd\promage2\code\game\mapgen\gensteps\mapgenstep.cpp @ 376]
+00007ff7`c22cf994 : 00000213`49647f90 0000004e`75cff570 00000212`52348fd0 00007ff7`c22c064b : ProMage2_x64_Editor!EditorMapDefJob::Execute+0x1dc [d:\p4\personal\sd\promage2\code\editor\editormapdef.cpp @ 320]
+00007ff7`c22cf8a4 : 00000212`34e2af70 00000000`00000000 00000001`75cff601 00000212`34e2af80 : ProMage2_x64_Editor!JobSystem::ProcessOne+0x64 [d:\p4\personal\sd\engine\code\engine\async\jobsystem.cpp @ 132]
+00007ff7`c22cfbab : 00000212`34e2af70 0000004e`00000000 00000212`ffffffff 00000000`00000000 : ProMage2_x64_Editor!JobSystem::ProcessCategory+0x44 [d:\p4\personal\sd\engine\code\engine\async\jobsystem.cpp @ 109]
+00007ff7`c22d145f : 00000212`34e2af70 00000000`00000000 00000212`52348fd0 00007ff7`c2247046 : ProMage2_x64_Editor!JobSystem::GenericThreadMain+0x9b [d:\p4\personal\sd\engine\code\engine\async\jobsystem.cpp @ 223]
+00007ff7`c22d13ee : 00007ff7`c22cfb10 00000212`52342ff0 00000000`00000000 00007ff7`c228f743 : ProMage2_x64_Editor!std::_Invoker_pmf_pointer::_Call<void (__cdecl JobSystem::*)(void),JobSystem *>+0x1f [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits @ 16707566]
+00007ff7`c22d126a : 00000212`52342ff8 00000212`52342ff0 0000004e`75cff798 00000212`52342ff0 : ProMage2_x64_Editor!std::invoke<void (__cdecl JobSystem::*)(void),JobSystem *>+0x3e [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits @ 16707566]
+00007ff7`c22d1025 : 00000212`52342ff0 0000004e`750ff100 00000000`00000000 00007ffa`a9761edb : ProMage2_x64_Editor!std::_LaunchPad<std::unique_ptr<std::tuple<void (__cdecl JobSystem::*)(void),JobSystem *>,std::default_delete<std::tuple<void (__cdecl JobSystem::*)(void),JobSystem *> > > >::_Execute<0,1>+0x4a [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\thr\xthread @ 239]
+00007ff7`c22d0fb3 : 0000004e`750ff158 00000000`00000000 0000844c`94f3299d 00000000`00000000 : ProMage2_x64_Editor!std::_LaunchPad<std::unique_ptr<std::tuple<void (__cdecl JobSystem::*)(void),JobSystem *>,std::default_delete<std::tuple<void (__cdecl JobSystem::*)(void),JobSystem *> > > >::_Run+0x65 [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\thr\xthread @ 245]
+00007ff7`c22cf038 : 0000004e`750ff158 00000000`00000000 00000000`00000000 00000000`00000000 : ProMage2_x64_Editor!std::_LaunchPad<std::unique_ptr<std::tuple<void (__cdecl JobSystem::*)(void),JobSystem *>,std::default_delete<std::tuple<void (__cdecl JobSystem::*)(void),JobSystem *> > > >::_Go+0x13 [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\thr\xthread @ 231]
+00007ffa`a8b90e72 : 0000004e`750ff158 00000212`52348fd0 00000000`00000000 00000000`00000000 : ProMage2_x64_Editor!std::_Pad::_Call_func+0x18 [c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\thr\xthread @ 209]
+00007ffa`ab9f7bd4 : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ucrtbase!thread_start<unsigned int (__cdecl*)(void *),1>+0x42
+00007ffa`abb4ced1 : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : KERNEL32!BaseThreadInitThunk+0x14
+00000000`00000000 : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x21
+0:012>

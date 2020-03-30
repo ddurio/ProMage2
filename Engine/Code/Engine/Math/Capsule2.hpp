@@ -5,7 +5,6 @@
 
 
 struct AABB2;
-struct OBB2;
 
 
 struct Capsule2 {
@@ -25,14 +24,11 @@ struct Capsule2 {
     void SetFromText( const std::string& textIn );
 
     std::string GetAsString() const;
-    float GetLength() const;
     Vec2 GetCenter() const;
-    Vec2 GetRight() const;
     Vec2 GetClosestPoint( const Vec2& point );
     Capsule2 GetTranslated( const Vec2& translation );
 
     AABB2 GetBoundingAABB() const;
-    OBB2 GetBoundingOBB() const;
 
     bool IsPointInside( const Vec2& point ) const;
 

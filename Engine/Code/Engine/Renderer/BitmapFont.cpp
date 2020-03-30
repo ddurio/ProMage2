@@ -43,7 +43,7 @@ void BitmapFont::AddVertsForText2D( VertexList& textVerts, const Vec2& textPosit
 }
 
 
-void BitmapFont::AddVertsForTextInBox2D( VertexList& textVerts, const AABB2& boxBounds, float cellHeight, const std::string& text, const Rgba& tint /*= Rgba::WHITE*/, float cellAspect /*= 1.f */,  const Vec2& alignment /*= ALIGN_CENTER*/, TextDrawMode mode /*= ALIGN_OVERRUN*/,int maxGlyphs /*= 9999999*/ ) const {
+void BitmapFont::AddVeretsForTextInBox2D( VertexList& textVerts, const AABB2& boxBounds, float cellHeight, const std::string& text, const Rgba& tint /*= Rgba::WHITE*/, float cellAspect /*= 1.f */,  const Vec2& alignment /*= ALIGN_CENTER*/, TextDrawMode mode /*= ALIGN_OVERRUN*/,int maxGlyphs /*= 9999999*/ ) const {
     std::vector<std::string> splitString = SplitStringOnDelimeter( text, '\n' );
 
     Vec2 textDimensions = GetTextSize( cellHeight, splitString, cellAspect );

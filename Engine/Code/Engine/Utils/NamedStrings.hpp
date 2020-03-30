@@ -20,8 +20,6 @@ class NamedStrings {
     ~NamedStrings() {};
 
     void SetFromXMLElementAttributes( const XMLElement& element );
-    void SaveToXMLElementAttributes( XMLElement& element, tinyxml2::XMLDocument* document = nullptr ) const;
-
     void SetValue( const std::string& key, const std::string& value );
     void ClearValue( const std::string& key );
 

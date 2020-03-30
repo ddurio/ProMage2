@@ -108,8 +108,6 @@ class NamedProperties {
     NamedProperties();
     NamedProperties( const NamedProperties& copyFrom );
 
-    NamedProperties& operator=( const NamedProperties& assignFrom );
-
     std::string GetAsString() const;
     Strings GetNames() const;
     bool IsNameSet( const std::string& key ) const;

@@ -91,7 +91,7 @@ class DebugDraw {
     std::list<DebugDrawMesh> m_screenMeshes;
     std::list<DebugDrawMesh> m_messageMeshes;
     bool m_isEnabled = true;
-    static const int m_numMessagesPerScreen = 50;
+    static const int m_numMessagesPerScreen = 20;
 
     RenderContext* m_renderer = nullptr;
     Camera* m_screenCamera = nullptr;

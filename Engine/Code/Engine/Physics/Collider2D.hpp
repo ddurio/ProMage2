@@ -41,18 +41,17 @@ class Collider2D : public RigidBodyChild2D {
 
     bool GetCollisionInfo( const Collider2D* colliderB, CollisionInfo2D& outCollisionInfo ) const;
 
-
     private:
-    float m_moment = 0.f;
-    bool m_isColliding = false;
-    std::vector<Trigger2D*> m_overlappingTriggers;
-
-
     Collider2D( RenderContext* renderContext, RigidBody2D* parent, const AABB2& box, float radius = 0.f, const Rgba& debugColor = Rgba::WHITE );
     Collider2D( RenderContext* renderContext, RigidBody2D* parent, const OBB2& box, float radius = 0.f, const Rgba& debugColor = Rgba::WHITE );
     Collider2D( RenderContext* renderContext, RigidBody2D* parent, const Capsule2& capsule, const Rgba& debugColor = Rgba::WHITE );
     Collider2D( RenderContext* renderContext, RigidBody2D* parent, const Vec2& discCenter, float discRadius, const Rgba& debugColor = Rgba::WHITE );
+
     ~Collider2D() {};
+
+    float m_moment = 0.f;
+    bool m_isColliding = false;
+    std::vector<Trigger2D*> m_overlappingTriggers;
 
     void FireCallbackEvent( RBChildEvent event, void* info ) override;
     void Destroy() override;

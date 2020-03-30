@@ -23,51 +23,6 @@ void NamedStrings::SetFromXMLElementAttributes( const XMLElement& element ) {
     for( const XMLAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next() ) {
         SetValue( attribute->Name(), attribute->Value() );
     }
-
-    if( GetValue( "version", 1 ) == 2 ) { // Version 2 says parse from child elements too
-        const XMLElement* childEle = element.FirstChildElement();
-
-        for( childEle; childEle != nullptr; childEle = childEle->NextSiblingElement() ) {
-            std::string value = childEle->Attribute( "value" );
-            SetValue( childEle->Name(), value );
-        }
-    }
-}
-
-
-void NamedStrings::SaveToXMLElementAttributes( XMLElement& element, tinyxml2::XMLDocument* document /*= nullptr */ ) const {
-    int version = GetValue( "version", 1 );
-
-    if( version == 1 ) {
-        std::map< std::string, std::string >::const_iterator keyValueIter = m_keyValuePairs.begin();
-
-        for( keyValueIter; keyValueIter != m_keyValuePairs.end(); keyValueIter++ ) {
-            element.SetAttribute( keyValueIter->first.c_str(), keyValueIter->second.c_str() );
-        }
-    } else {
-        std::map< std::string, std::string >::const_iterator keyValueIter = m_keyValuePairs.begin();
-
-        for( keyValueIter; keyValueIter != m_keyValuePairs.end(); keyValueIter++ ) {
-            std::string key = keyValueIter->first;
-            std::string value = keyValueIter->second;
-
-            if( key == "name" || key == "version" ) {
-                element.SetAttribute( key.c_str(), value.c_str() );
-            } else {
-                if( document == nullptr ) {
-                    ERROR_RECOVERABLE( "(NamedStrings) WARNING -- Cannot save version 2 to file without XML Document" );
-                    break;
-                }
-
-                XMLElement* childEle = document->NewElement( key.c_str() );
-                
-                if( childEle != nullptr ) {
-                    childEle->SetAttribute( "value", value.c_str() );
-                    element.InsertEndChild( childEle );
-                }
-            }
-        }
-    }
 }
 
 

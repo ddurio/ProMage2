@@ -52,7 +52,7 @@ class ConsoleRenderer {
     void RenderMemTracking( RenderContext* renderer, float lineHeight, AABB2& consoleBounds, const BitmapFont* font ) const;
     void RenderConsole( RenderContext* renderer, float liNeHeight, AABB2& consoleBounds, AABB2& inputBounds ) const;
     void RenderStrings( RenderContext* renderer, float lineHeight, const AABB2& consoleBounds, const BitmapFont* font ) const;
-    void RenderInput(   RenderContext* renderer, float lineHeight, AABB2 inputBounds, const BitmapFont* font ) const;
+    void RenderInput(   RenderContext* renderer, float lineHeight, const AABB2& inputBounds, const BitmapFont* font ) const;
     void RenderInputHighlight( RenderContext* renderer, float lineHeight, const AABB2& inputBounds, const BitmapFont* font, int startIndex, int endIndex ) const;
 
     AABB2 GetCharacterBoundsInFont( int charIndex, const std::string& inputString, float lineHeight, const BitmapFont* font ) const;

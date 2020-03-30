@@ -5,7 +5,6 @@
 uint64_t ConvertSecondsToHPC( double seconds );
 double ConvertHPCTOSeconds( uint64_t hpc );
 double GetCurrentTimeSeconds();
-double GetCurrentSystemTimeSeconds();
 uint64_t GetCurrentHPC();
 uint64_t GetOffsetHPC( double offsetSeconds );
 std::string GetProfileTimeString( uint64_t numHPC );

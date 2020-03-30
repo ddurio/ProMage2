@@ -121,6 +121,12 @@ void ProfilerSystem::Render() {
     bool reportOpen = ImGui::Button( "Generate Report" );
     RenderColumnCheckboxes();
 
+/*
+    ImGui::RadioButton( "Tree View", (int*)&m_reportViewTree, 1 );
+    ImGui::SameLine();
+    ImGui::RadioButton( "Flat View", (int*)&m_reportViewTree, 0 );
+*/
+    
     if( ImGui::RadioButton( "Tree View", m_reportViewTree ) ) {
         m_reportViewTree = true;
 
@@ -142,7 +148,8 @@ void ProfilerSystem::Render() {
 
 
     if( reportOpen ) {
-        g_theEventSystem->FireEvent( "profilerReport" );
+        EventArgs args;
+        g_theEventSystem->FireEvent( "profilerReport", args );
     }
 
     if( m_report != nullptr ) {
@@ -155,14 +162,14 @@ void ProfilerSystem::Render() {
 
 
 void ProfilerSystem::BeginFrame( const char* label /*= "BeginFrame" */ ) {
-    GUARANTEE_OR_DIE( t_activeNode == nullptr, "(Profiler) ERROR -- Profile tree started before start of frame" );
+    GUARANTEE_OR_DIE( t_activeNode == nullptr, "(Profiler): Profile tree started before start of frame" );
     ProfilePush( label );
 }
 
 
 void ProfilerSystem::EndFrame() {
     ProfilePop();
-    GUARANTEE_OR_DIE( t_depthCount == 0, "(Profiler) ERROR -- Profile tree not completed before end of frame" );
+    GUARANTEE_OR_DIE( t_depthCount == 0, "(Profiler): Profile tree not completed before end of frame" );
 
     // Free up old trees
     if( m_isRunning ) {
@@ -209,8 +216,7 @@ ProfilerNode* ProfilerSystem::ProfilePush( const char* label ) {
 
     newNode->threadID = std::this_thread::get_id();
     newNode->startHPC = GetCurrentHPC();
-    memcpy( newNode->label, label, Min( (int)strlen( label ), 32 ) );
-    newNode->label[31] = '\0'; // Guarantee null terminated
+    memcpy( newNode->label, label, strlen( label ) );
 
     if( t_activeNode != nullptr ) {
         t_activeNode->AddChild( newNode );
@@ -257,39 +263,6 @@ void ProfilerSystem::ProfilePop() {
 }
 
 
-double ProfilerSystem::GetAverageFrameSeconds() {
-    std::thread::id thisID = std::this_thread::get_id();
-    uint64_t numHPC = 0;
-    int numFrames = 0;
-
-    std::scoped_lock< std::shared_mutex > localLock( m_historyMutex );
-
-    if( m_historyTrees.size() == 0 ) {
-        return 0.;
-    }
-
-    ProfilerNode* node = m_historyTrees.back();
-
-    while( node != nullptr ) {
-        if( node->threadID == thisID ) {
-            numFrames++;
-            numHPC += (node->endHPC - node->startHPC);
-        }
-
-        node = node->prevSibling;
-    }
-
-    if( numFrames == 0 ) {
-        return 0.;
-    }
-
-    double durationTotal = ConvertHPCTOSeconds( numHPC );
-    double avgFrameTime = durationTotal / (double)numFrames;
-
-    return avgFrameTime;
-}
-
-
 float ProfilerSystem::GetProfileTime( const char* label, std::thread::id threadID /*= std::this_thread::get_id() */ ) {
     ProfilerNode* frameTree = GetHistory( threadID );
 
@@ -307,11 +280,6 @@ float ProfilerSystem::GetProfileTime( const char* label, std::thread::id threadI
     float elapsedSeconds = (float)ConvertHPCTOSeconds( elapsedHPC );
 
     return elapsedSeconds;
-}
-
-
-bool ProfilerSystem::IsTakingInput() const {
-    return m_isRendering;
 }
 
 
