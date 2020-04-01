@@ -17,13 +17,13 @@ MGS_RoomsAndPaths::MGS_RoomsAndPaths( const XMLElement& element, const Strings& 
     m_numRooms           = ParseXMLAttribute( *roomElement, "count",          m_motifVars,  m_motifHierarchy, m_numRooms );
     m_roomWidth          = ParseXMLAttribute( *roomElement, "width",          m_motifVars,  m_motifHierarchy, m_roomWidth );
     m_roomHeight         = ParseXMLAttribute( *roomElement, "height",         m_motifVars,  m_motifHierarchy, m_roomHeight );
-    m_roomFloor          = ParseXMLAttribute( *roomElement, "floor",          m_motifVars,  m_motifHierarchy, m_roomFloor );
+    m_roomFloor          = ParseXMLAttribute( *roomElement, "floor",          m_motifVars,  m_motifHierarchy, m_roomFloor,  "roomFloor" );
     m_roomWall           = ParseXMLAttribute( *roomElement, "wall",           m_motifVars,  m_motifHierarchy, m_roomWall );
     m_numOverlaps        = ParseXMLAttribute( *roomElement, "numOverlaps",    m_motifVars,  m_motifHierarchy, m_numOverlaps );
 
     // Paths
     const XMLElement* pathElement    = element.FirstChildElement( "Paths" );
-    m_pathFloor          = ParseXMLAttribute( *pathElement, "floor",          m_motifVars,  m_motifHierarchy, m_pathFloor );
+    m_pathFloor          = ParseXMLAttribute( *pathElement, "floor",          m_motifVars,  m_motifHierarchy, m_pathFloor,  "pathFloor" );
     m_pathLoop           = ParseXMLAttribute( *pathElement, "loop",           m_motifVars,  m_motifHierarchy, m_pathLoop );
     m_numExtraPaths      = ParseXMLAttribute( *pathElement, "extraCount",     m_motifVars,  m_motifHierarchy, m_numExtraPaths );
     m_pathStraightChance = ParseXMLAttribute( *pathElement, "straightChance", m_motifVars,  m_motifHierarchy, m_pathStraightChance );
@@ -47,7 +47,7 @@ void MGS_RoomsAndPaths::SaveToXml( XmlDocument& document, XMLElement& element ) 
 
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        roomsEle->SetAttribute( varName.c_str(), motifVar.c_str() );
     } else if( m_numRooms != IntRange::ZERO ) {
         roomsEle->SetAttribute( varName.c_str(), m_numRooms.GetAsString().c_str() );
     }
@@ -55,7 +55,7 @@ void MGS_RoomsAndPaths::SaveToXml( XmlDocument& document, XMLElement& element ) 
     varName = "width";
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        roomsEle->SetAttribute( varName.c_str(), motifVar.c_str() );
     } else if( m_roomWidth != IntRange::ZERO ) {
         roomsEle->SetAttribute( varName.c_str(), m_roomWidth.GetAsString().c_str() );
     }
@@ -63,23 +63,23 @@ void MGS_RoomsAndPaths::SaveToXml( XmlDocument& document, XMLElement& element ) 
     varName = "height";
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        roomsEle->SetAttribute( varName.c_str(), motifVar.c_str() );
     } else if( m_roomHeight != IntRange::ZERO ) {
         roomsEle->SetAttribute( varName.c_str(), m_roomHeight.GetAsString().c_str() );
     }
 
-    varName = "floor";
+    varName = "roomFloor";
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        roomsEle->SetAttribute( "floor", motifVar.c_str() );
     } else if( m_roomFloor != "" ) {
-        roomsEle->SetAttribute( varName.c_str(), m_roomFloor.c_str() );
+        roomsEle->SetAttribute( "floor", m_roomFloor.c_str() );
     }
 
     varName = "wall";
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        roomsEle->SetAttribute( varName.c_str(), motifVar.c_str() );
     } else if( m_roomWall != "" ) {
         roomsEle->SetAttribute( varName.c_str(), m_roomWall.c_str() );
     }
@@ -87,24 +87,24 @@ void MGS_RoomsAndPaths::SaveToXml( XmlDocument& document, XMLElement& element ) 
     varName = "numOverlaps";
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        roomsEle->SetAttribute( varName.c_str(), motifVar.c_str() );
     } else if( m_numOverlaps != IntRange::ZERO ) {
         roomsEle->SetAttribute( varName.c_str(), m_numOverlaps.GetAsString().c_str() );
     }
 
     // Paths
-    varName = "floor";
+    varName = "pathFloor";
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        pathsEle->SetAttribute( "floor", motifVar.c_str() );
     } else if( m_pathFloor != "" ) {
-        pathsEle->SetAttribute( varName.c_str(), m_pathFloor.c_str() );
+        pathsEle->SetAttribute( "floor", m_pathFloor.c_str() );
     }
 
     varName = "loop";
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        pathsEle->SetAttribute( varName.c_str(), motifVar.c_str() );
     } else if( !m_pathLoop ) {
         pathsEle->SetAttribute( varName.c_str(), m_pathLoop );
     }
@@ -112,7 +112,7 @@ void MGS_RoomsAndPaths::SaveToXml( XmlDocument& document, XMLElement& element ) 
     varName = "extraCount";
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        pathsEle->SetAttribute( varName.c_str(), motifVar.c_str() );
     } else if( m_numExtraPaths != IntRange::ZERO ) {
         pathsEle->SetAttribute( varName.c_str(), m_numExtraPaths.GetAsString().c_str() );
     }
@@ -120,7 +120,7 @@ void MGS_RoomsAndPaths::SaveToXml( XmlDocument& document, XMLElement& element ) 
     varName = "straightChance";
     if( m_motifVars.IsNameSet( varName ) ) {
         std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
-        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+        pathsEle->SetAttribute( varName.c_str(), motifVar.c_str() );
     } else if( m_pathStraightChance != FloatRange::ZERO ) {
         pathsEle->SetAttribute( varName.c_str(), m_pathStraightChance.GetAsString().c_str() );
     }

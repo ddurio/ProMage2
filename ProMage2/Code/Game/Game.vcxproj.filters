@@ -374,5 +374,8 @@
     <Xml Include="..\..\Run\Data\Gameplay\CustomStepDefs.xml">
       <Filter>Data</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\DemoMapDefs.xml">
+      <Filter>Data</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

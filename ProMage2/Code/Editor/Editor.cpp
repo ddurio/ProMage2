@@ -82,6 +82,8 @@ void Editor::Startup() {
     m_customResultIndex.push_back( EditorMapDef::SetupChangeTileMGS() );
     MotifDef::LoadFromFile( DATA_MOTIF_DEFS, "Motif" );
     MGS_CustomDef::LoadFromFile( DATA_CUSTOM_STEPS, "Custom" );
+
+    m_mapDefFile = g_theGameConfigBlackboard.GetValue( "editorDefaultDefFile", m_mapDefFile );
     EditorMapDef::LoadFromFile( m_mapDefFile, "MapDefinition" );
 
     g_theEventSystem->Subscribe( EVENT_EDITOR_SAVE_MAPS, &EditorMapDef::SaveAllToXml );

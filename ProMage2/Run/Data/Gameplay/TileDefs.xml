@@ -238,6 +238,17 @@
     <TileDefinition
         name="WoodWall"
         spriteCoords="29,1"
+        context="SouthWall"
+        extraRenderTypes="WoodWallTop"
+        texelColor="200,20,20"
+        allowsSight="false"
+        allowsWalking="false"
+        allowsFlying="false"
+        allowsSwimming="false"
+    />
+    <TileDefinition
+        name="WoodWallTop"
+        spriteCoords="30,22"
         texelColor="200,20,20"
         allowsSight="false"
         allowsWalking="false"

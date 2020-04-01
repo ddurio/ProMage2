@@ -1,4 +1,18 @@
 <Motifs>
+    <Motif name="IslandDefaults">
+        <GroundType     value="EdgedGrass"      type="Tile"/>
+        <EdgeType       value="EdgedWater"      type="Tile"/>
+        <WallType       value="WoodWall"        type="Tile"/>
+        <FloorType      value="HardWoodFloor"   type="Tile"/>
+        <CreateCliffs   value="1.f"             type="Float"/>
+    </Motif>
+    <Motif name="LavaIsland">
+        <GroundType     value="EdgedObsidian"   type="Tile"/>
+        <EdgeType       value="EdgedLava"       type="Tile"/>
+        <WallType       value="StoneWall"       type="Tile"/>
+        <FloorType      value="CaveDirtFloor"   type="Tile"/>
+        <CreateCliffs   value="0.f"             type="Float"/>
+    </Motif>
     <Motif name="Castle">
         <WallType  value="StoneWall"/>
         <FloorType value="HardWoodFloor"/>

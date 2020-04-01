@@ -657,6 +657,7 @@
     <Xml Include="..\..\Run\Data\Gameplay\ActorDefs.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="..\..\Run\Data\Gameplay\DemoMapDefs.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\Inventory.xml" />
     <Xml Include="..\..\Run\Data\Gameplay\ItemDefs.xml">
       <SubType>Designer</SubType>

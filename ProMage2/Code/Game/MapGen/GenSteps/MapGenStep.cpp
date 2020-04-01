@@ -412,6 +412,10 @@ const Strings& MapGenStep::GetMotifs() const {
 void MapGenStep::SaveToXml( XmlDocument& document, XMLElement& element ) const {
     UNUSED( document );
 
+    if( !m_motifHierarchy.empty() && m_motifHierarchy[0] != "" ) {
+        element.SetAttribute( "motif", m_motifHierarchy[0].c_str() );
+    }
+
     // Conditions
     std::string varName = "chanceToRun";
 

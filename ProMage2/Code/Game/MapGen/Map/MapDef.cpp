@@ -29,20 +29,46 @@ std::string MapDef::GetMotif() const {
 
 void MapDef::SaveToXml( XmlDocument& document, XMLElement& element ) const {
     element.SetAttribute( "name", m_defType.c_str() );
-    element.SetAttribute( "fillTile", m_tileFillType.c_str() );
 
-    if( m_tileEdgeType != "" ) {
-        element.SetAttribute( "edgeTile", m_tileEdgeType.c_str() );
+    // Save myself
+    if( m_motif != "" ) {
+        element.SetAttribute( "motif", m_motif.c_str() );
     }
 
-    if( m_width != IntRange::ONE ) {
-        element.SetAttribute( "width", m_width.GetAsString().c_str() );
+    std::string varName = "width";
+
+    if( m_motifVars.IsNameSet( varName ) ) {
+        std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
+        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+    } else if( m_width != IntRange::ZERO ) {
+        element.SetAttribute( varName.c_str(), m_width.GetAsString().c_str() );
     }
 
-    if( m_height != IntRange::ONE ) {
-        element.SetAttribute( "height", m_height.GetAsString().c_str() );
+    varName = "height";
+    if( m_motifVars.IsNameSet( varName ) ) {
+        std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
+        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+    } else if( m_height != IntRange::ZERO ) {
+        element.SetAttribute( varName.c_str(), m_height.GetAsString().c_str() );
     }
 
+    varName = "fillTile";
+    if( m_motifVars.IsNameSet( varName ) ) {
+        std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
+        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+    } else {
+        element.SetAttribute( varName.c_str(), m_tileFillType.c_str() );
+    }
+
+    varName = "edgeTile";
+    if( m_motifVars.IsNameSet( varName ) ) {
+        std::string motifVar = "%" + m_motifVars.GetValue( varName, "" ) + "%";
+        element.SetAttribute( varName.c_str(), motifVar.c_str() );
+    } else if( m_tileEdgeType != "" ) {
+        element.SetAttribute( varName.c_str(), m_tileEdgeType.c_str() );
+    }
+
+    // Save my steps
     int numSteps = (int)m_mapGenSteps.size();
 
     for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
@@ -57,17 +83,16 @@ void MapDef::SaveToXml( XmlDocument& document, XMLElement& element ) const {
 
 
 void MapDef::UpdateMotifHierarchy() {
+    EventArgs args;
+    args.SetValue( MAPGEN_ARG_ATTR_NAME, MAPGEN_ARG_RECALC_ALL );
+    RecalculateMotifVars( args ); // Update myself
+
     int numSteps = (int)m_mapGenSteps.size();
 
     for( int stepIndex = 0; stepIndex < numSteps; stepIndex++ ) {
         MapGenStep* genStep = m_mapGenSteps[stepIndex];
         genStep->UpdateParentMotifs( { m_motif } );
-
-        // Recalculate values
-        EventArgs args;
-        args.SetValue( MAPGEN_ARG_ATTR_NAME, MAPGEN_ARG_RECALC_ALL );
-
-        genStep->RecalculateMotifVars( args );
+        genStep->RecalculateMotifVars( args ); // Update my steps
     }
 }
 
@@ -82,12 +107,22 @@ bool MapDef::RecalculateMotifVars( EventArgs& args ) {
     }
 
     if( calcAllVars || StringICmp( attrName, "fillTile" ) ) {
+        varName = m_motifVars.GetValue( "fillTile", "" );
         m_tileFillType = MotifDef::GetVariableValue( { m_motif }, varName, m_tileFillType );
-    } else if( calcAllVars || StringICmp( attrName, "edgeTile" ) ) {
+    } 
+    
+    if( calcAllVars || StringICmp( attrName, "edgeTile" ) ) {
+        varName = m_motifVars.GetValue( "edgeTile", "" );
         m_tileEdgeType = MotifDef::GetVariableValue( { m_motif }, varName, m_tileEdgeType );
-    } else if( calcAllVars || StringICmp( attrName, "width" ) ) {
+    } 
+    
+    if( calcAllVars || StringICmp( attrName, "width" ) ) {
+        varName = m_motifVars.GetValue( "width", "" );
         m_width = MotifDef::GetVariableValue( { m_motif }, varName, m_width );
-    } else if( calcAllVars || StringICmp( attrName, "height" ) ) {
+    } 
+    
+    if( calcAllVars || StringICmp( attrName, "height" ) ) {
+        varName = m_motifVars.GetValue( "height", "" );
         m_height = MotifDef::GetVariableValue( { m_motif }, varName, m_height );
     }
 
@@ -114,7 +149,7 @@ MapDef::MapDef( const XMLElement& element ) {
 
     // Tile Types
     m_tileFillType = ParseXMLAttribute( element, "fillTile", m_motifVars, { m_motif },   m_tileFillType );
-    GUARANTEE_OR_DIE( m_tileFillType != "", "(MapDef) Map missing required attribute 'fillType'" );
+    GUARANTEE_OR_DIE( m_tileFillType != "", "(MapDef) Map missing required attribute 'fillTile'" );
     m_tileEdgeType = ParseXMLAttribute( element, "edgeTile", m_motifVars, { m_motif },   m_tileEdgeType );
 
     // Size
