@@ -4,7 +4,12 @@
 
 class Tags {
     public:
+    Tags() {};
+    Tags( const std::string& tagsCSV );
+    Tags( const Strings& tagsList );
+
     Strings GetTags() const;
+    std::string GetTagsCSV() const;
 
     void SetTags( std::string tagsCSV );
     void SetTags( const Strings& tagsVec );
@@ -16,6 +21,7 @@ class Tags {
     bool HasTags( const Tags& tagsToMatch ) const;
 
     bool HasAtLeastOneTag( const Tags& tagsToMatch ) const;
+
 
     private:
     Strings m_tags;

@@ -1,8 +1,23 @@
 #include "Engine/Utils/Tags.hpp"
 
 
+Tags::Tags( const std::string& tagsCSV ) {
+    SetTags( tagsCSV );
+}
+
+
+Tags::Tags( const Strings& tagsList ) {
+    SetTags( tagsList );
+}
+
+
 Strings Tags::GetTags() const {
     return m_tags;
+}
+
+
+std::string Tags::GetTagsCSV() const {
+    return JoinStrings( m_tags );
 }
 
 
@@ -17,7 +32,8 @@ void Tags::SetTags( const Strings& tagsVec ) {
 
     for( newTagsIter; newTagsIter != tagsVec.end(); newTagsIter++ ) {
         if( (*newTagsIter)[0] == '!' ) {
-            ClearTags( *newTagsIter );
+            std::string newTagName = newTagsIter->substr( 1 ); // Don't send ! to ClearTags
+            ClearTags( newTagName );
             continue;
         }
 
@@ -46,7 +62,8 @@ void Tags::ClearTags( std::string tagsCSV ) {
 
     for( newTagsIter; newTagsIter != splitTags.end(); newTagsIter++ ) {
         if( (*newTagsIter)[0] == '!' ) {
-            SetTags( *newTagsIter );
+            std::string newTagName = newTagsIter->substr( 1 ); // Don't send ! to SetTags
+            SetTags( newTagName );
             continue;
         }
 
