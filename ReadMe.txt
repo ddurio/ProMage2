@@ -1,5 +1,5 @@
 General:
-- ProMage2 == 'PRO'cedural 'M'ap 'A'lgorithm 'GE'nerator '2'D
+- ProMage2 == 'PRO'cedural 'Ma'p 'G'eneration 'E'ditor '2'D
 - Tilde (`) to open devConsole
 - Execute 'quit' devConsole command, Alt-F4, or click Windows X to quit
 
