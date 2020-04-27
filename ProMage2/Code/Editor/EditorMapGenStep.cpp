@@ -38,7 +38,7 @@ void EditorMapGenStep::RenderStepParams( MapGenStep* genStep, const std::string&
     Strings motifNames = MotifDef::GetAllDefinitionTypes();
     int motifIndex = (isCustomStep) ? 1 : 0;
 
-    if( RenderDropDown( "eMapDefMotif", genStep->m_motifHierarchy[motifIndex], motifNames, "Motif", true, "" ) ) {
+    if( RenderDropDown( "eMapDefMotif", genStep->m_motifHierarchy[motifIndex], motifNames, "Theme", true, "" ) ) {
         if( isCustomStep ) {
             genStep->UpdateParentMotifs( { genStep->m_motifHierarchy[2] } );
         } else {

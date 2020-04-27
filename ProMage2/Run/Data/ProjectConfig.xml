@@ -3,6 +3,6 @@
     fullscreen="false"
     resolution="1920,1080"
     defaultFont="SquirrelFixedFont"
-    editorDefaultMap="IslandWithMotifs"
+    editorDefaultMap="Island"
     editorDefaultDefFile="Data/Gameplay/DemoMapDefs.xml"
 />

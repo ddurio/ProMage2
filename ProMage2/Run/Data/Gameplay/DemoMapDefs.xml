@@ -44,7 +44,7 @@
         <CellularAutomata setTags="stairsDownAccess" ifNeighborType="StairsDown"/>
         <Sprinkle ifIsType="HardWoodFloor" spawnActor="HumanFemale" controller="Player"/>
     </MapDefinition>
-    <MapDefinition name="IslandWithMotifs" motif="IslandDefaults" fillTile="%GroundType%" edgeTile="%EdgeType%" width="20~32" height="10~18">
+    <MapDefinition name="IslandWithThemes" motif="IslandDefaults" fillTile="%GroundType%" edgeTile="%EdgeType%" width="20~32" height="10~18">
         <CellularAutomata chanceToRun="%CreateCliffs%" ifIsType="%GroundType%" setType="CliffGrass" ifNeighborType="%EdgeType%"/>
         <RoomsAndPaths>
             <Rooms count="3" width="2~5" height="3~6" floor="%FloorType%" wall="%WallType%"/>

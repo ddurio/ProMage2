@@ -35,7 +35,7 @@ void EditorMapDef::RenderMapDefParams() {
     RenderTileDropDownOrVar( "eMapDefEdge", m_motifVars, "edgeTile", { m_motif }, m_tileEdgeType, "Edge Type" );
 
     Strings motifNames = MotifDef::GetAllDefinitionTypes();
-    if( RenderDropDown( "eMapDefMotif", m_motif, motifNames, "Motif", true, "" ) ) {
+    if( RenderDropDown( "eMapDefMotif", m_motif, motifNames, "Theme", true, "" ) ) {
         UpdateMotifHierarchy(); // Triggers a RecalcMotifVars internally
     }
 }
