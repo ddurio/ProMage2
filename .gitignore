@@ -26,7 +26,8 @@
 # defualt exe folder; 
 !data/**/*.obj
 !data/*.dll
-!Run/*.dll
+!ProMage2/Run/*.dll
+!ProMage2/Run/*.exe
 
 
 # Ignoring a complete folder (don't want my screenshot folder)
