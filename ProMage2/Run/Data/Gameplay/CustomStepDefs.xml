@@ -19,4 +19,23 @@
             <distFromStairs value="50~999998" type="IntRange"/>
         </Motif>
     </Custom>
+    <Custom name="AddBuildingCluster">
+        <Sprinkle ifHasTags="%LookForTag%" setTags="SpawningHere,AroundSpawn"/>
+        <DistanceField ifHasTags="SpawningHere" setTags="AroundSpawn" maxDistance="%MaxDistance%"/>
+        <RoomsAndPaths ifHasTags="AroundSpawn">
+            <Rooms count="%NumRooms%" width="%RoomWidth%" height="%RoomHeight%" floor="%FloorType%" wall="%WallType%" numOverlaps="%RoomOverlaps%"/>
+            <Paths floor="EdgedSand"/>
+        </RoomsAndPaths>
+        <CellularAutomata ifHasTags="AroundSpawn" setTags="!AroundSpawn,!SpawningHere"/>
+        <Motif name="AddBuildingCluster">
+            <LookForTag     value="PossibleSpawn"   type="String"/>
+            <MaxDistance    value="15"              type="IntRange"/>
+            <NumRooms       value="2~5"             type="IntRange"/>
+            <RoomWidth      value="4~6"             type="IntRange"/>
+            <RoomHeight     value="3~8"             type="IntRange"/>
+            <RoomOverlaps   value="1~4"             type="IntRange"/>
+            <WallType       value="WoodWall"        type="Tile"/>
+            <FloorType      value="HardWoodFloor"   type="Tile"/>
+        </Motif>
+    </Custom>
 </CustomSteps>

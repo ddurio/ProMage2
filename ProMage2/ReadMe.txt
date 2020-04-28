@@ -1,15 +1,15 @@
 Known Issues:
-- Pressing F8 to restart the program can sometimes cause "accessing nullptr" crashes when updating Motif variables
 
 General:
-- ProMage2 == 'PRO'cedural 'M'ap 'A'lgorithm 'GE'nerator '2'D
+- ProMage2 == 'PRO'cedural 'MA'p 'G'eneration 'E'ditor '2'D
 - Tilde (`) to open devConsole
 - Execute 'quit' devConsole command, Alt-F4, or click Windows X to quit
 - Source code available in SMU Perforce: //depot/C28/Students/ddurio/SD/ProMage2/...
+ 		 	   or GitHub at: https://github.com/ddurio/ProMage2
 
 Editor:
 - Launch  ./Run/ProMage2_x64_Editor.exe
-- Can be run from VS in either EditorDebug, EditorFastBreak, EditorRelease build configuration
+- Can also be run from VS in either EditorDebug, EditorFastBreak, or EditorRelease build configuration
 - Layout:
   * Map Window - (Top Left)
 	** Mouse wheel scroll: Zoom in/out
@@ -30,7 +30,7 @@ Editor:
 
 Game:
 - Launch  ./Run/ProMage2_x64.exe
-- Can be run from VS in either GameDebug, GameFastBreak, or GameRelease build configuration
+- Can also be run from VS in either GameDebug, GameFastBreak, or GameRelease build configuration
 - Controls:
 	* WASD to move character
 	* F to interact with stairs (within one tile radius)
