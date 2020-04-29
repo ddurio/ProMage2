@@ -204,6 +204,10 @@ bool Editor::HandleKeyReleased( unsigned char keyCode ) {
 
 
 bool Editor::HandleMouseButton( MouseEvent event, float scrollAmount /*= 0.f */ ) {
+    if( m_mapWindow == nullptr ) {
+        return false;
+    }
+
     return m_mapWindow->HandleMouseButton( event, scrollAmount );
 }
 
